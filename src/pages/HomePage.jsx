@@ -1,32 +1,20 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Hero from '../components/sections/Hero'
 import QueEsTeacherPeri from '../components/sections/QueEsTeacherPeri'
-import Contacto from '../components/sections/Contacto'
 
-// El one-pager. Igual que App.jsx antes: solo importa y ordena las
-// secciones. No agreguen lógica ni contenido aquí — cada sección vive
-// en su propio archivo dentro de /src/components/sections.
+// Página 1/9: Inicio. Ya no incluye Contacto (ahora es su propia
+// página, ver ContactoPage.jsx) — y como cada página del sitio es
+// ahora una ruta real (ver Navbar.jsx), ya no hace falta el
+// useEffect/location.state que reenviaba un scroll-to-sección desde
+// otra ruta: eso solo existía para el patrón de one-pager que ya no
+// aplica.
 function HomePage() {
-  const location = useLocation()
-
-  // Cuando el Navbar navega desde otra ruta (ej. /problemas) con un
-  // scrollTo en el state, hacemos el scroll aquí una vez montada la página.
-  useEffect(() => {
-    const scrollTo = location.state?.scrollTo
-    if (!scrollTo) return
-
-    document.getElementById(scrollTo)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [location.state])
-
   return (
     <>
       <Navbar />
       <main>
         <Hero />
         <QueEsTeacherPeri />
-        <Contacto />
       </main>
     </>
   )
