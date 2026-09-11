@@ -64,7 +64,7 @@ router.post('/signup', async (req, res) => {
     // iniciar sesión por separado.
     res.status(201).json({
       token: issueToken(user),
-      user: { id: user._id, username: user.username },
+      user: { id: user._id, username: user.username, email: user.email },
     })
   } catch (err) {
     // Por si dos peticiones llegan al mismo tiempo y ambas pasan el chequeo
@@ -96,7 +96,7 @@ router.post('/login', async (req, res) => {
 
   res.json({
     token: issueToken(user),
-    user: { id: user._id, username: user.username },
+    user: { id: user._id, username: user.username, email: user.email },
   })
 })
 

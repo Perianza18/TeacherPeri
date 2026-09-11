@@ -6,6 +6,8 @@ import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../components/motion/FloatingSymbol'
 import Counter from '../components/motion/Counter'
 import { EASE, fadeUp, staggerContainer, popIn } from '../components/motion/variants'
+import { apiFetch } from '../lib/api'
+import { useAuth } from '../context/useAuth'
 
 // ---------------------------------------------------------------------------
 // ESQUELETO GENERAL DE ESTE ARCHIVO (para orientarse antes de leer el código
@@ -38,14 +40,10 @@ import { EASE, fadeUp, staggerContainer, popIn } from '../components/motion/vari
 // y ahora un fondo temático animado).
 // ---------------------------------------------------------------------------
 
-// Dirección del backend. En desarrollo, Vite expone las variables que
-// empiezan con VITE_ dentro de import.meta.env — viene de tu archivo .env.
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-
-// Aquí es donde guardamos la sesión en el navegador para que no se pierda
-// al recargar la página (localStorage sobrevive a un refresh; el estado de
-// React no).
-const AUTH_STORAGE_KEY = 'axioma_auth'
+// apiFetch (fetch + token + manejo de errores en un solo lugar) ahora vive
+// en src/lib/api.js — se movió ahí para que AuthContext/AuthModal/
+// ContactForm puedan usar la misma función en vez de reinventarla. Antes
+// era una función local sin exportar, definida aquí mismo.
 
 // Misma paleta que ya usa Hero.jsx para el fondo animado — reutilizarla
 // aquí hace que Problemas se sienta parte del mismo sitio, no una página
@@ -55,32 +53,6 @@ const AXIOMA_ORANGE = '#E57505'
 const AXIOMA_GOLD = '#FFB401'
 const AXIOMA_DARK = '#120303'
 const AXIOMA_GRADIENT = `linear-gradient(135deg, ${AXIOMA_GOLD} 0%, ${AXIOMA_ORANGE} 45%, ${AXIOMA_RED} 100%)`
-
-// apiFetch centraliza las 3 cosas que se repetirían en cada llamada a la
-// API: mandar el body como JSON, agregar el token de sesión si existe, y
-// convertir una respuesta de error en un Error de JavaScript normal que se
-// pueda atrapar con try/catch.
-async function apiFetch(path, { method = 'GET', body, token } = {}) {
-  const headers = { 'Content-Type': 'application/json' }
-  if (token) headers.Authorization = `Bearer ${token}`
-
-  const res = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  })
-
-  // Intentamos leer JSON incluso en errores, porque el backend manda
-  // { error: '...' } en sus respuestas de error (ver server/src/routes/*).
-  const data = await res.json().catch(() => null)
-
-  if (!res.ok) {
-    const error = new Error(data?.error || 'Error de red inesperado.')
-    error.status = res.status
-    throw error
-  }
-  return data
-}
 
 // Un enunciado es texto normal que PUEDE traer fórmulas metidas entre signos
 // de pesos, como en LaTeX de verdad: "Sea $a>0$, demuestra que...". Hay dos
@@ -902,17 +874,14 @@ export default function Problemas() {
   // carpetas de verdad en una computadora).
   const [carpetaActual, setCarpetaActual] = useState(null)
 
-  // auth arranca leyendo lo que haya guardado en localStorage, para que si
-  // ya habías iniciado sesión antes, sigas logueado después de recargar la
-  // página. Si no hay nada guardado (o está corrupto), arranca en null.
-  const [auth, setAuth] = useState(() => {
-    try {
-      const guardado = localStorage.getItem(AUTH_STORAGE_KEY)
-      return guardado ? JSON.parse(guardado) : null
-    } catch {
-      return null
-    }
-  })
+  // auth ya no es un useState local: viene del AuthContext global (ver
+  // src/context/AuthContext.jsx), el MISMO que usa el botón "Iniciar
+  // sesión" del Navbar y el formulario de Contacto — así que iniciar
+  // sesión en cualquier parte del sitio te deja comentar aquí también, sin
+  // volver a loguearte. `login`/`logout` del contexto se renombran a los
+  // nombres que ya usaba el resto de este archivo (handleAuthSuccess/
+  // handleLogout) para no tener que tocar nada más abajo.
+  const { auth, login: handleAuthSuccess, logout: handleLogout } = useAuth()
 
   useEffect(() => {
     apiFetch('/api/problems')
@@ -946,16 +915,6 @@ export default function Problemas() {
     })
     return ids
   }, [categoriasSeleccionadas, categoriasPorId])
-
-  const handleAuthSuccess = (data) => {
-    setAuth(data)
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data))
-  }
-
-  const handleLogout = () => {
-    setAuth(null)
-    localStorage.removeItem(AUTH_STORAGE_KEY)
-  }
 
   const toggle = (setter) => (value) =>
     setter((prev) =>
