@@ -27,7 +27,7 @@ export default function Contacto() {
   return (
     <section
       id="contacto"
-      className="relative mx-auto w-full overflow-hidden bg-[#120303] px-6 py-12 sm:px-10"
+      className="relative mx-auto w-full overflow-hidden bg-[#120303] px-6 pb-12 pt-28 sm:px-10"
     >
       {/* Fondo shader: mismo mesh gradient animado del Hero, paleta TeacherPeri */}
       <div className="pointer-events-none absolute inset-0">
