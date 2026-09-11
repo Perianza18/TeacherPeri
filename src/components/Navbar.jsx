@@ -1,31 +1,34 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { useActiveSection } from '../hooks/useActiveSection'
+import { Link, NavLink } from 'react-router-dom'
 
-// Links que hacen scroll a una sección del one-pager ("/").
-// Si agregan una sección nueva al one-pager, agréguenla aquí también.
-const SCROLL_LINKS = [
-  { id: 'inicio', label: 'Inicio' },
-  { id: 'mision', label: 'Misión' },
-]
-
-// Links de navegación reales de React Router (páginas independientes).
-const ROUTE_LINKS = [
-  { path: '/problemas', label: 'Problemas' },
+// Las 9 páginas del sitio (todas rutas reales de React Router ahora —
+// ya no hay un "one-pager" con secciones ancladas por scroll, así que
+// ya no hace falta la lógica de goToSection/scrollTo que había antes
+// (ver useActiveSection.js, borrado: solo lo usaba este archivo).
+// NavLink (en vez de Link) le agrega automáticamente una clase/estado
+// "activo" cuando la ruta actual coincide, sin necesidad de un hook de
+// scroll-spy para saberlo.
+const NAV_LINKS = [
+  { path: '/', label: 'Inicio' },
+  { path: '/recursos', label: 'Más Recursos' },
+  { path: '/experiencias', label: 'Experiencias' },
+  { path: '/estudia-en-el-extranjero', label: 'Estudia en el Extranjero' },
+  { path: '/contacto', label: 'Contacto' },
+  { path: '/materiales', label: 'Materiales' },
+  { path: '/problemas', label: 'Banco de Problemas' },
   { path: '/sobre-mi', label: 'Sobre mí' },
+  { path: '/colaboradores', label: 'Colaboradores' },
 ]
 
-const CONTACTO_LINK = { id: 'contacto', label: 'Contacto' }
-
-const SECTION_IDS = [...SCROLL_LINKS.map((link) => link.id), CONTACTO_LINK.id]
-
+// NOTA: 9 links en una sola barra horizontal es mucho — para pantallas
+// angostas esto se resuelve con el menú hamburguesa de abajo, pero en
+// desktop todavía no hay un diseño real para tantos items (dropdown,
+// menú agrupado, etc.). Eso es trabajo de la fase de frontend, no de
+// esta fase de estructura — por ahora usa flex-wrap para que al menos
+// no se corte ni se desborde.
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const activeId = useActiveSection(SECTION_IDS)
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24)
@@ -34,34 +37,19 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Si ya estamos en "/", hace scroll directo. Si estamos en otra ruta
-  // (ej. /problemas), navega a "/" y le pasa el id por state para que
-  // HomePage haga el scroll una vez montada.
-  const goToSection = (id) => {
-    if (location.pathname === '/') {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    } else {
-      navigate('/', { state: { scrollTo: id } })
-    }
-    setIsOpen(false)
-  }
+  const linkClass = ({ isActive }) =>
+    `text-sm font-medium transition-colors ${
+      isActive ? 'text-brand-900' : 'text-brand-600 hover:text-brand-900'
+    }`
 
-  const handleScrollClick = (event, id) => {
-    event.preventDefault()
-    goToSection(id)
-  }
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50  bg-brand-[#FFB401]/90 backdrop-blur transition-[padding] duration-300 ${
+      className={`fixed top-0 inset-x-0 z-50 bg-brand-[#FFB401]/90 backdrop-blur transition-[padding] duration-300 ${
         isScrolled ? 'py-0' : 'py-1.5'
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2 sm:px-6">
-       <a
-          href="#inicio"
-          onClick={(event) => handleScrollClick(event, 'inicio')}
-          className="flex items-center"
-        >
+      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6">
+        <Link to="/" onClick={() => setIsOpen(false)} className="flex shrink-0 items-center">
           {/* Sin logo en imagen todavía (el archivo real es de Axioma) —
               wordmark en texto por ahora, mismo gradiente de marca que
               el resto del sitio. Reemplazar por un <img> cuando exista
@@ -75,64 +63,22 @@ export default function Navbar() {
           >
             TeacherPeri
           </span>
-        </a>
+        </Link>
 
-        <ul className="hidden items-center gap-6 md:flex">
-          {SCROLL_LINKS.map((link) => (
-            <li key={link.id} className="relative">
-              <a
-                href={`#${link.id}`}
-                onClick={(event) => handleScrollClick(event, link.id)}
-                className={`relative text-sm font-medium transition-colors ${
-                  activeId === link.id ? 'text-brand-900' : 'text-brand-600 hover:text-brand-900'
-                }`}
-              >
-                {link.label}
-                {activeId === link.id && (
-                  <motion.span
-                    layoutId="nav-underline"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-brand-900"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </a>
-            </li>
-          ))}
-          {ROUTE_LINKS.map((link) => (
+        <ul className="hidden flex-wrap items-center justify-end gap-x-5 gap-y-1 md:flex">
+          {NAV_LINKS.map((link) => (
             <li key={link.path}>
-              <Link
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-900"
-              >
+              <NavLink to={link.path} end={link.path === '/'} className={linkClass}>
                 {link.label}
-              </Link>
+              </NavLink>
             </li>
           ))}
-          <li className="relative">
-            <a
-              href={`#${CONTACTO_LINK.id}`}
-              onClick={(event) => handleScrollClick(event, CONTACTO_LINK.id)}
-              className={`relative text-sm font-medium transition-colors ${
-                activeId === CONTACTO_LINK.id ? 'text-brand-900' : 'text-brand-600 hover:text-brand-900'
-              }`}
-            >
-              {CONTACTO_LINK.label}
-              {activeId === CONTACTO_LINK.id && (
-                <motion.span
-                  layoutId="nav-underline"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full bg-brand-[#FFB401]/90"
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                />
-              )}
-            </a>
-          </li>
         </ul>
 
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-brand-700 md:hidden "
+          className="inline-flex items-center justify-center rounded-md p-2 text-brand-700 md:hidden"
           aria-label="Abrir menú de navegación"
           aria-expanded={isOpen}
         >
@@ -145,40 +91,24 @@ export default function Navbar() {
         </button>
       </nav>
 
-{/* border-t border-brand-200*/}
       {isOpen && (
-        <ul className="flex flex-col gap-1  bg-brand-[#FFB401]/90 backdrop-blur px-4 pb-4 md:hidden">
-          {SCROLL_LINKS.map((link) => (
-            <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                onClick={(event) => handleScrollClick(event, link.id)}
-                className="block rounded-md px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-          {ROUTE_LINKS.map((link) => (
+        <ul className="flex flex-col gap-1 bg-brand-[#FFB401]/90 backdrop-blur px-4 pb-4 md:hidden">
+          {NAV_LINKS.map((link) => (
             <li key={link.path}>
-              <Link
+              <NavLink
                 to={link.path}
+                end={link.path === '/'}
                 onClick={() => setIsOpen(false)}
-                className="block rounded-md px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
+                className={({ isActive }) =>
+                  `block rounded-md px-3 py-2 text-sm font-medium hover:bg-brand-100 ${
+                    isActive ? 'text-brand-900' : 'text-brand-700'
+                  }`
+                }
               >
                 {link.label}
-              </Link>
+              </NavLink>
             </li>
           ))}
-          <li>
-            <a
-              href={`#${CONTACTO_LINK.id}`}
-              onClick={(event) => handleScrollClick(event, CONTACTO_LINK.id)}
-              className="block rounded-md px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
-            >
-              {CONTACTO_LINK.label}
-            </a>
-          </li>
         </ul>
       )}
     </header>

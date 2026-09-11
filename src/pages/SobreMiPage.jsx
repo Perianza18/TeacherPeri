@@ -129,9 +129,9 @@ export default function SobreMiPage() {
               Habilidades
             </motion.h2>
             <motion.div variants={staggerContainer(0.06)} className="flex flex-wrap gap-2">
-              {HABILIDADES.map((h) => (
+              {HABILIDADES.map((h, i) => (
                 <motion.span
-                  key={h}
+                  key={`${h}-${i}`}
                   variants={popIn(0)}
                   className="rounded-full border border-brand-300 bg-white px-4 py-1.5 text-sm text-brand-700"
                 >
@@ -161,8 +161,8 @@ export default function SobreMiPage() {
               Proyectos
             </motion.h2>
             <motion.div variants={staggerContainer(0.08)} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {PROYECTOS.map((p) => (
-                <ProyectoCard key={p.nombre} proyecto={p} />
+              {PROYECTOS.map((p, i) => (
+                <ProyectoCard key={`${p.nombre}-${i}`} proyecto={p} />
               ))}
             </motion.div>
           </motion.div>
