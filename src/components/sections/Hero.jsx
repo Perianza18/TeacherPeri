@@ -1,7 +1,10 @@
+import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../motion/FloatingSymbol'
+import FloatingBlob from '../motion/FloatingBlob'
+import WaveDivider from '../motion/WaveDivider'
 import DrawnCurve from '../motion/DrawnCurve'
 import { EASE, staggerContainer } from '../motion/variants'
 
@@ -11,7 +14,13 @@ import { EASE, staggerContainer } from '../motion/variants'
 // amarillo dorado #FFB401.
 // Encima del fondo: símbolos matemáticos flotantes, curva paramétrica
 // decorativa y entrada del texto en stagger (features de la v2).
-// TODO equipo: ajustar copy si cambia el mensaje.
+//
+// "Integrated Frontend" pass (v3): el fondo (MeshGradient) ahora se
+// mueve más lento que el contenido al hacer scroll (bgY, ver abajo) —
+// es la sensación de profundidad/capas pedida. FloatingBlob agrega
+// manchas borrosas que rompen la simetría del layout. WaveDivider
+// reemplaza el borde recto de abajo por una ola orgánica hacia la
+// siguiente sección.
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -25,6 +34,18 @@ const word = {
 
 export default function Hero() {
   const navigate = useNavigate()
+  const sectionRef = useRef(null)
+
+  // Profundidad: mientras esta sección pasa por la ventana (de
+  // "empieza a entrar" a "termina de salir"), el fondo se desplaza
+  // solo una fracción de lo que se desplaza el scroll real — por eso
+  // se ve más lento que el texto de encima, en vez de estar pegado a
+  // él como una sola imagen plana.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  })
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
 
   const scrollToMision = () => {
     document.getElementById('mision')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -32,11 +53,12 @@ export default function Hero() {
 
   return (
     <section
+      ref={sectionRef}
       id="inicio"
       className="relative flex min-h-screen pb-20 scroll-mt-16 flex-col items-center justify-center gap-10 overflow-hidden bg-[#120303] px-4 pt-16 text-center sm:px-6"
     >
-      {/* Fondo shader: mesh gradient animado en la paleta Axioma */}
-      <div className="pointer-events-none absolute inset-0">
+      {/* Fondo shader: mesh gradient animado, capa "lenta" (bgY) */}
+      <motion.div className="pointer-events-none absolute inset-0" style={{ y: bgY }}>
         <MeshGradient
           className="absolute inset-0 h-full w-full"
           colors={['#B70B0D', '#E57505', '#FFB401', '#120303']}
@@ -48,16 +70,26 @@ export default function Hero() {
         />
         {/* Overlay oscuro para mantener contraste y legibilidad del texto */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#120303]/75 via-[#120303]/35 to-[#120303]/85" />
-      </div>
+      </motion.div>
+
+      {/* Manchas borrosas: rompen la cuadrícula, no se alinean con nada */}
+      <FloatingBlob className="absolute left-[2%] top-[6%]" size={240} color="#E57505" opacity={0.16} duration={10} depth={0.2} />
+      <FloatingBlob className="absolute right-[0%] bottom-[6%]" size={280} color="#B70B0D" opacity={0.14} duration={12} delay={1.2} depth={0.35} />
+
+      {/* La ola va temprano en el DOM a propósito: pointer-events-none ya
+          deja pasar los clicks, pero pintarla ANTES que el texto/botones
+          evita que su franja de luz translúcida quede visualmente encima
+          de la flecha de scroll (que vive cerca del mismo borde). */}
+      <WaveDivider colors={['#FFB40100', '#E5750533', '#FFB40100']} />
 
       {/* Símbolos matemáticos flotando sobre el shader, recoloreados en
           dorado/naranja translúcido para que se lean sobre el fondo oscuro */}
-      <FloatingSymbol symbol="π" className="pointer-events-none absolute left-[10%] top-[22%] text-4xl text-[#FFB401]/40 sm:text-5xl" delay={0} duration={7} rotate={-8} />
-      <FloatingSymbol symbol="∑" className="pointer-events-none absolute right-[12%] top-[18%] text-5xl text-[#E57505]/40 sm:text-6xl" delay={0.4} duration={6} rotate={6} />
-      <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[16%] bottom-[24%] text-4xl text-[#FFB401]/40 sm:text-5xl" delay={0.8} duration={8} rotate={4} />
-      <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[18%] bottom-[20%] text-4xl text-[#E57505]/40 sm:text-5xl" delay={1.2} duration={6.5} rotate={-5} />
-      <FloatingSymbol symbol="∫" className="pointer-events-none absolute left-[6%] top-[52%] text-3xl text-[#FFB401]/30 sm:text-4xl" delay={0.6} duration={9} rotate={10} />
-      <FloatingSymbol symbol="θ" className="pointer-events-none absolute right-[7%] top-[55%] text-3xl text-[#E57505]/30 sm:text-4xl" delay={1} duration={7.5} rotate={-10} />
+      <FloatingSymbol symbol="π" className="pointer-events-none absolute left-[10%] top-[22%] text-4xl text-[#FFB401]/40 sm:text-5xl" delay={0} duration={7} rotate={-8} depth={0.15} />
+      <FloatingSymbol symbol="∑" className="pointer-events-none absolute right-[12%] top-[18%] text-5xl text-[#E57505]/40 sm:text-6xl" delay={0.4} duration={6} rotate={6} depth={0.3} />
+      <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[16%] bottom-[24%] text-4xl text-[#FFB401]/40 sm:text-5xl" delay={0.8} duration={8} rotate={4} depth={0.1} />
+      <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[18%] bottom-[20%] text-4xl text-[#E57505]/40 sm:text-5xl" delay={1.2} duration={6.5} rotate={-5} depth={0.25} />
+      <FloatingSymbol symbol="∫" className="pointer-events-none absolute left-[6%] top-[52%] text-3xl text-[#FFB401]/30 sm:text-4xl" delay={0.6} duration={9} rotate={10} depth={0.2} />
+      <FloatingSymbol symbol="θ" className="pointer-events-none absolute right-[7%] top-[55%] text-3xl text-[#E57505]/30 sm:text-4xl" delay={1} duration={7.5} rotate={-10} depth={0.12} />
 
       <motion.div
         initial="hidden"
