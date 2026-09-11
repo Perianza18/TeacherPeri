@@ -4,23 +4,55 @@ import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../motion/FloatingSymbol'
 import { fadeUp, popIn, revealProps, staggerContainer } from '../motion/variants'
 
-// Sección "¿Qué es TeacherPeri?" (id="mision") — reemplaza a QuienesSomos.jsx
-// (que era "¿Qué es Axioma?", con stats de club: fundación, miembros,
-// competencias/año — ninguno aplica aquí). Mismo fondo MeshGradient oscuro
-// que Hero.jsx, a propósito: la idea es que el home NO alterne entre
-// "hero oscuro y colorido" -> "sección blanca plana" -> "footer oscuro",
-// sino que se sienta como un solo lienzo continuo (ver la explicación de
-// hackthenorth.com que se dio en el chat).
-//
-// TODO: este texto es un primer borrador razonable a partir de la
-// conversación sobre qué es TeacherPeri — no son datos inventados sobre
-// vos, son una descripción del PROYECTO. Ajusta el copy libremente.
+// Sección "Bienvenida + Misión/Visión" (id="mision") de Inicio. Contenido
+// EXACTO pedido para esta página — no es un placeholder ni un borrador.
+// Mismo fondo MeshGradient oscuro que Hero.jsx, a propósito: la idea es
+// que el home NO alterne entre "hero oscuro y colorido" -> "sección
+// blanca plana", sino que se sienta como un solo lienzo continuo.
 
-const PROPUESTAS = [
-  { symbol: '∫', texto: 'Banco de problemas por carpetas, como AoPS' },
-  { symbol: '★', texto: 'Puntos, rachas e insignias, como Khan Academy' },
-  { symbol: '✎', texto: 'Acceso libre y gratuito para cualquier estudiante' },
+// Las 4 tarjetas de acceso rápido — cada una es un <Link> real a la
+// página que describe, no solo texto. El copy de cada una es el mismo
+// que se pidió para "¿Qué encontrarás aquí?".
+const SECCIONES = [
+  {
+    to: '/entrenamiento',
+    titulo: 'Entrenamiento',
+    descripcion:
+      'Nuestro banco de problemas estilo foro, exámenes oficiales y listas de práctica guiadas.',
+  },
+  {
+    to: '/recursos',
+    titulo: 'Más Recursos',
+    descripcion:
+      'Las mejores recomendaciones de sitios, libros y canales para seguir aprendiendo.',
+  },
+  {
+    to: '/experiencias',
+    titulo: 'Experiencias',
+    descripcion: 'Historias de exolímpicos para inspirarte a dar el siguiente paso.',
+  },
+  {
+    to: '/estudia-en-el-extranjero',
+    titulo: 'Estudia en el Extranjero',
+    descripcion: 'La guía definitiva para aplicar a universidades top en EE. UU. y Canadá.',
+  },
 ]
+
+function SeccionCard({ seccion }) {
+  return (
+    <motion.div variants={popIn(0)}>
+      <Link
+        to={seccion.to}
+        className="group flex h-full flex-col gap-2 rounded-2xl border border-white/15 bg-white/5 p-5 text-left backdrop-blur transition-colors hover:border-[#FFB401]/50 hover:bg-white/10"
+      >
+        <h3 className="font-display text-lg text-white transition-colors group-hover:text-[#FFB401]">
+          {seccion.titulo}
+        </h3>
+        <p className="text-sm text-white/70">{seccion.descripcion}</p>
+      </Link>
+    </motion.div>
+  )
+}
 
 export default function QueEsTeacherPeri() {
   return (
@@ -43,46 +75,41 @@ export default function QueEsTeacherPeri() {
       <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[10%] bottom-[18%] text-3xl text-[#E57505]/30 sm:text-4xl" delay={0.8} duration={6.5} rotate={6} />
 
       <motion.div
-        className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center"
+        className="relative mx-auto flex max-w-4xl flex-col items-center gap-8 text-center"
         variants={staggerContainer(0.15)}
         {...revealProps}
       >
-        <motion.h2 variants={fadeUp} className="font-display text-3xl text-white sm:text-4xl">
-          ¿Qué es TeacherPeri?
-        </motion.h2>
-
-        <motion.p variants={fadeUp} className="text-white/80">
-          TeacherPeri es una plataforma para el entrenamiento en matemáticas
-          olímpicas de nivel preparatoria: un banco de problemas navegable
-          por carpetas, con progreso, puntos e insignias, y un blog para
-          compartir contenido nuevo. La misión es fomentar el crecimiento de
-          las matemáticas olímpicas dando acceso libre y gratuito a recursos
-          de calidad, sin importar en qué escuela estudies.
+        <motion.p variants={fadeUp} className="max-w-2xl text-lg text-white/90">
+          ¡Holaaa! Qué bueno que busques más material para entrenarte. Bienvenido a TeacherPeri.
         </motion.p>
 
-        <motion.div
-          variants={staggerContainer(0.1)}
-          className="mt-2 flex flex-wrap items-center justify-center gap-3"
-        >
-          {PROPUESTAS.map((item) => (
-            <motion.span
-              key={item.texto}
-              variants={popIn(0)}
-              className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 backdrop-blur"
-            >
-              <span aria-hidden="true" className="text-[#FFB401]">{item.symbol}</span>
-              {item.texto}
-            </motion.span>
-          ))}
+        <motion.div variants={fadeUp} className="flex flex-col items-center gap-6">
+          <h2 className="font-display text-2xl text-white sm:text-3xl">
+            ¿Qué encontrarás aquí?
+          </h2>
+          <motion.div
+            variants={staggerContainer(0.1)}
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+          >
+            {SECCIONES.map((seccion) => (
+              <SeccionCard key={seccion.to} seccion={seccion} />
+            ))}
+          </motion.div>
         </motion.div>
 
-        <motion.p variants={fadeUp} className="mt-4 text-sm text-white/60">
-          ¿Quién está detrás de este proyecto?{' '}
-          <Link to="/sobre-mi" className="font-medium text-white underline underline-offset-4 hover:text-[#FFB401]">
-            Conóceme en Sobre mí
-          </Link>
-          .
-        </motion.p>
+        <motion.div variants={fadeUp} className="flex max-w-2xl flex-col gap-4 text-left">
+          <p className="text-white/80">
+            <strong className="text-white">Misión:</strong> Hacer que el entrenamiento para
+            olimpiadas de matemáticas sea accesible para todos. Inspirados por la experiencia
+            de dar talleres gratuitos a estudiantes y profesores, buscamos que cualquier
+            persona, sin importar su nivel, tenga los recursos estructurados para alcanzar
+            competencias internacionales.
+          </p>
+          <p className="text-white/80">
+            <strong className="text-white">Visión:</strong> Convertirnos en el punto de
+            encuentro y la herramienta principal de la comunidad olímpica hispanohablante.
+          </p>
+        </motion.div>
       </motion.div>
     </section>
   )
