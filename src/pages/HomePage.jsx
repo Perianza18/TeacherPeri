@@ -2,10 +2,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Hero from '../components/sections/Hero'
-import QuienesSomos from '../components/sections/QuienesSomos'
-import Equipo from '../components/sections/Equipo'
-import Galeria from '../components/sections/Galeria'
-import Eventos from '../components/sections/Eventos'
+import QueEsTeacherPeri from '../components/sections/QueEsTeacherPeri'
 import Contacto from '../components/sections/Contacto'
 
 // El one-pager. Igual que App.jsx antes: solo importa y ordena las
@@ -28,10 +25,7 @@ function HomePage() {
       <Navbar />
       <main>
         <Hero />
-        <QuienesSomos />
-        <Equipo />
-        <Eventos />
-        <Galeria />
+        <QueEsTeacherPeri />
         <Contacto />
       </main>
     </>
