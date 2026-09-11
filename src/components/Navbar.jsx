@@ -7,14 +7,14 @@ import { useActiveSection } from '../hooks/useActiveSection'
 // Si agregan una sección nueva al one-pager, agréguenla aquí también.
 const SCROLL_LINKS = [
   { id: 'inicio', label: 'Inicio' },
-  { id: 'quienes-somos', label: 'Quiénes Somos' },
-  { id: 'equipo', label: 'Equipo' },
-  { id: 'eventos', label: 'Eventos' },
-  { id: 'galeria', label: 'Galería' },
+  { id: 'mision', label: 'Misión' },
 ]
 
-// Link de navegación real de React Router (página independiente).
-const ROUTE_LINK = { path: '/problemas', label: 'Problemas' }
+// Links de navegación reales de React Router (páginas independientes).
+const ROUTE_LINKS = [
+  { path: '/problemas', label: 'Problemas' },
+  { path: '/sobre-mi', label: 'Sobre mí' },
+]
 
 const CONTACTO_LINK = { id: 'contacto', label: 'Contacto' }
 
@@ -50,7 +50,6 @@ export default function Navbar() {
     event.preventDefault()
     goToSection(id)
   }
- {/*border-b border-brand-200 */}
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50  bg-brand-[#FFB401]/90 backdrop-blur transition-[padding] duration-300 ${
@@ -63,11 +62,19 @@ export default function Navbar() {
           onClick={(event) => handleScrollClick(event, 'inicio')}
           className="flex items-center"
         >
-          <img
-            src="/AXIOMA LOGOS (3).png"
-            alt="Axioma"
-            className="h-12 w-auto"
-          />
+          {/* Sin logo en imagen todavía (el archivo real es de Axioma) —
+              wordmark en texto por ahora, mismo gradiente de marca que
+              el resto del sitio. Reemplazar por un <img> cuando exista
+              un logo real de TeacherPeri. */}
+          <span
+            className="font-display bg-clip-text text-2xl text-transparent sm:text-3xl"
+            style={{
+              backgroundImage:
+                'linear-gradient(135deg, var(--color-accent-gold) 0%, var(--color-accent-orange) 45%, var(--color-accent-red) 100%)',
+            }}
+          >
+            TeacherPeri
+          </span>
         </a>
 
         <ul className="hidden items-center gap-6 md:flex">
@@ -91,15 +98,17 @@ export default function Navbar() {
               </a>
             </li>
           ))}
-          <li>
-            <Link
-              to={ROUTE_LINK.path}
-              onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-900"
-            >
-              {ROUTE_LINK.label}
-            </Link>
-          </li>
+          {ROUTE_LINKS.map((link) => (
+            <li key={link.path}>
+              <Link
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-900"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
           <li className="relative">
             <a
               href={`#${CONTACTO_LINK.id}`}
@@ -150,15 +159,17 @@ export default function Navbar() {
               </a>
             </li>
           ))}
-          <li>
-            <Link
-              to={ROUTE_LINK.path}
-              onClick={() => setIsOpen(false)}
-              className="block rounded-md px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
-            >
-              {ROUTE_LINK.label}
-            </Link>
-          </li>
+          {ROUTE_LINKS.map((link) => (
+            <li key={link.path}>
+              <Link
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className="block rounded-md px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
           <li>
             <a
               href={`#${CONTACTO_LINK.id}`}

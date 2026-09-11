@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import ProblemasPage from './pages/ProblemasPage'
+import SobreMiPage from './pages/SobreMiPage'
 import CustomCursor from './components/CustomCursor'
 
 // Este archivo solo define las rutas (+ chrome global como el cursor).
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/problemas" element={<ProblemasPage />} />
+        <Route path="/sobre-mi" element={<SobreMiPage />} />
       </Routes>
     </BrowserRouter>
   )
