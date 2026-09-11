@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { MeshGradient } from '@paper-design/shaders-react'
 import Navbar from '../components/Navbar'
-import { fadeUp, revealProps } from '../components/motion/variants'
+import { fadeUp } from '../components/motion/variants'
 
 // Página 5/8: Estudia en el Extranjero. Contenido EXACTO pedido — guía
 // larga, transcrita completa. Estructura: h2 = título, h3 = las 6
@@ -55,9 +55,17 @@ export default function EstudiaExtranjeroPage() {
           </motion.h1>
         </section>
 
+        {/* initial/animate (dispara una sola vez al montar), NO whileInView:
+            revealProps espera que el 25% del elemento esté visible a la vez
+            para aparecer, pero este artículo es muchísimas pantallas más
+            alto que eso — ese 25% casi nunca se cumple con un scroll normal,
+            así que el contenido se quedaba invisible la mayor parte del
+            tiempo. Un artículo largo no necesita una animación de scroll
+            -reveal de todos modos: solo tiene que aparecer al cargar. */}
         <motion.article
+          initial="hidden"
+          animate="show"
           variants={fadeUp}
-          {...revealProps}
           className="mx-auto max-w-3xl px-4 py-16 sm:px-6"
         >
           <P>
