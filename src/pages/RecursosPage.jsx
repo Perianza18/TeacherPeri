@@ -3,12 +3,11 @@ import Navbar from '../components/Navbar'
 import { fadeUp, revealProps, staggerContainer } from '../components/motion/variants'
 
 // Página 3/8: Más Recursos. Contenido EXACTO pedido, organizado en las
-// categorías dadas. `href: null` en todos a propósito: no se inventaron
-// URLs para estos recursos (algunos son confiables de adivinar bien —
-// AoPS, GeoGebra — pero otros no, como la URL exacta de un canal de
-// YouTube o de una editorial), así que se dejan sin link por ahora en
-// vez de arriesgar un destino equivocado. Agregar el href real de cada
-// uno es la siguiente edición pendiente de este archivo.
+// categorías dadas. Los href ahora son los reales, dados por el
+// usuario (antes se dejaban en null porque yo no estaba seguro de
+// adivinarlos bien). El recurso de video "Ugesaurio / Canal de Ray
+// Flores" se quitó a pedido del usuario y se reemplazó por "Tomás
+// Cantú" (URL también dada por el usuario).
 const CATEGORIAS = [
   {
     titulo: 'Material Oficial y Revistas en Español',
@@ -16,12 +15,12 @@ const CATEGORIAS = [
       {
         nombre: 'Revista Tzaloa (OMM)',
         descripcion: 'Lectura obligatoria con problemas y artículos teóricos.',
-        href: null,
+        href: 'https://www.ommenlinea.org/',
       },
       {
         nombre: 'Editorial Dinosaurio / CARMA',
         descripcion: "Material amigable como el 'Diminuto Curso de Teoría de Números'.",
-        href: null,
+        href: 'http://ommslp.blogspot.com/',
       },
     ],
   },
@@ -31,12 +30,12 @@ const CATEGORIAS = [
       {
         nombre: 'Art of Problem Solving (AoPS)',
         descripcion: 'El foro más grande del mundo para buscar exámenes pasados y soluciones alternativas.',
-        href: null,
+        href: 'https://artofproblemsolving.com/community',
       },
       {
         nombre: 'Handouts de Evan Chen (OTIS)',
         descripcion: 'Guías de estudio avanzadas en Geometría, Álgebra y Combinatoria.',
-        href: null,
+        href: 'https://web.evanchen.cc/olympiad.html',
       },
     ],
   },
@@ -46,12 +45,12 @@ const CATEGORIAS = [
       {
         nombre: '3Blue1Brown en Español',
         descripcion: 'Para entrenar la intuición visual detrás de conceptos complejos.',
-        href: null,
+        href: 'https://www.youtube.com/@3blue1brownespanol',
       },
       {
-        nombre: 'Ugesaurio / Canal de Ray Flores',
+        nombre: 'Tomás Cantú',
         descripcion: 'Para ver el proceso de pensamiento en vivo al resolver problemas.',
-        href: null,
+        href: 'https://www.youtube.com/@Tom%C3%A1sCant%C3%BA',
       },
     ],
   },
@@ -61,7 +60,7 @@ const CATEGORIAS = [
       {
         nombre: 'GeoGebra',
         descripcion: 'Tu mejor amigo para comprobar conjeturas de Geometría antes de demostrarlas.',
-        href: null,
+        href: 'https://www.geogebra.org/',
       },
     ],
   },
