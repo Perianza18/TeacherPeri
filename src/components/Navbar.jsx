@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { useAuth } from '../context/useAuth'
+
+const GRADIENT = 'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)'
 
 // Las 9 páginas del sitio (todas rutas reales de React Router ahora —
 // ya no hay un "one-pager" con secciones ancladas por scroll, así que
@@ -25,6 +28,43 @@ const NAV_LINKS = [
 // menú agrupado, etc.). Eso es trabajo de la fase de frontend, no de
 // esta fase de estructura — por ahora usa flex-wrap para que al menos
 // no se corte ni se desborde.
+
+// Botón/indicador de sesión, siempre visible en la esquina superior
+// derecha (adentro o afuera del menú hamburguesa no importa — no está
+// envuelto en el `md:hidden` de los NAV_LINKS a propósito). `auth` viene
+// del AuthContext global (ver src/context/AuthContext.jsx): es el MISMO
+// estado de sesión que usa Problemas.jsx para sus comentarios y que usa
+// Contacto para autocompletar el formulario, no una copia local.
+function AuthButton() {
+  const { auth, logout, abrirModal } = useAuth()
+
+  if (auth) {
+    return (
+      <div className="flex shrink-0 items-center gap-2 text-sm">
+        <span className="hidden text-brand-700 sm:inline">Hola, {auth.user.username}</span>
+        <button
+          type="button"
+          onClick={logout}
+          className="rounded-full border border-brand-300 px-3 py-1.5 text-xs font-medium text-brand-600 transition-colors hover:border-[#E57505] hover:text-[#E57505]"
+        >
+          Cerrar sesión
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={abrirModal}
+      className="shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-transform active:scale-95"
+      style={{ backgroundImage: GRADIENT }}
+    >
+      Iniciar sesión
+    </button>
+  )
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -64,30 +104,34 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden flex-wrap items-center justify-end gap-x-5 gap-y-1 md:flex">
-          {NAV_LINKS.map((link) => (
-            <li key={link.path}>
-              <NavLink to={link.path} end={link.path === '/'} className={linkClass}>
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        <div className="flex items-center gap-4">
+          <ul className="hidden flex-wrap items-center justify-end gap-x-5 gap-y-1 md:flex">
+            {NAV_LINKS.map((link) => (
+              <li key={link.path}>
+                <NavLink to={link.path} end={link.path === '/'} className={linkClass}>
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
 
-        <button
-          type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-brand-700 md:hidden"
-          aria-label="Abrir menú de navegación"
-          aria-expanded={isOpen}
-        >
-          <span className="sr-only">Menú</span>
-          <div className="flex h-5 w-6 flex-col justify-between">
-            <span className="h-0.5 w-full bg-current" />
-            <span className="h-0.5 w-full bg-current" />
-            <span className="h-0.5 w-full bg-current" />
-          </div>
-        </button>
+          <AuthButton />
+
+          <button
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="inline-flex items-center justify-center rounded-md p-2 text-brand-700 md:hidden"
+            aria-label="Abrir menú de navegación"
+            aria-expanded={isOpen}
+          >
+            <span className="sr-only">Menú</span>
+            <div className="flex h-5 w-6 flex-col justify-between">
+              <span className="h-0.5 w-full bg-current" />
+              <span className="h-0.5 w-full bg-current" />
+              <span className="h-0.5 w-full bg-current" />
+            </div>
+          </button>
+        </div>
       </nav>
 
       {isOpen && (
