@@ -111,7 +111,7 @@ export default function Hero() {
 
       <motion.button
         type="button"
-        onClick={() => navigate('/problemas')}
+        onClick={() => navigate('/entrenamiento')}
         initial="hidden"
         animate="visible"
         variants={fadeUp}

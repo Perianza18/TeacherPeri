@@ -10,12 +10,11 @@ import { Link, NavLink } from 'react-router-dom'
 // scroll-spy para saberlo.
 const NAV_LINKS = [
   { path: '/', label: 'Inicio' },
+  { path: '/entrenamiento', label: 'Entrenamiento' },
   { path: '/recursos', label: 'Más Recursos' },
   { path: '/experiencias', label: 'Experiencias' },
   { path: '/estudia-en-el-extranjero', label: 'Estudia en el Extranjero' },
   { path: '/contacto', label: 'Contacto' },
-  { path: '/materiales', label: 'Materiales' },
-  { path: '/problemas', label: 'Banco de Problemas' },
   { path: '/sobre-mi', label: 'Sobre mí' },
   { path: '/colaboradores', label: 'Colaboradores' },
 ]

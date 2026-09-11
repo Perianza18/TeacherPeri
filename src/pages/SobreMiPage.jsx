@@ -75,7 +75,7 @@ function ProyectoCard({ proyecto }) {
 export default function SobreMiPage() {
   const navigate = useNavigate()
 
-  const irAContacto = () => navigate('/', { state: { scrollTo: 'contacto' } })
+  const irAContacto = () => navigate('/contacto')
 
   return (
     <>
