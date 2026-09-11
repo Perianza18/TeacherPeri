@@ -1,24 +1,32 @@
 @import 'tailwindcss';
 
 /*
-  Paleta neutra para el sitio (texto, fondos, bordes, botones).
-  Cambien estos valores cuando definan la identidad visual definitiva
-  de Axioma para el resto de la página.
+  Paleta cálida de TeacherPeri (texto, fondos, bordes, botones): una
+  rampa crema -> café oscuro (antes era una escala gris fría, "slate",
+  que no tenía nada que ver con los colores que Hero/Contacto/Problemas
+  ya usaban a mano). Los 3 acentos (dorado/naranja/rojo) son los mismos
+  que ya se usaban como hex sueltos en Problemas.jsx (AXIOMA_RED, etc.) —
+  aquí quedan con nombre para poder reusarlos sin repetir el hex en
+  cada archivo.
 */
 @theme {
   --font-display: 'Yeseva One', serif;
   --font-hand: 'Caveat', cursive;
 
-  --color-brand-50: #f8fafc;
-  --color-brand-100: #f1f5f9;
-  --color-brand-200: #e2e8f0;
-  --color-brand-300: #cbd5e1;
-  --color-brand-400: #94a3b8;
-  --color-brand-500: #64748b;
-  --color-brand-600: #475569;
-  --color-brand-700: #334155;
-  --color-brand-800: #1e293b;
-  --color-brand-900: #0f172a;
+  --color-brand-50: #fffbf5;
+  --color-brand-100: #fcf1df;
+  --color-brand-200: #f5dfb8;
+  --color-brand-300: #e8c48a;
+  --color-brand-400: #d5a05c;
+  --color-brand-500: #b87a3e;
+  --color-brand-600: #8f5a2c;
+  --color-brand-700: #6b4020;
+  --color-brand-800: #3f2414;
+  --color-brand-900: #120303;
+
+  --color-accent-gold: #ffb401;
+  --color-accent-orange: #e57505;
+  --color-accent-red: #b70b0d;
 }
 
 html {

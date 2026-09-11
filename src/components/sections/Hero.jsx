@@ -26,8 +26,8 @@ const word = {
 export default function Hero() {
   const navigate = useNavigate()
 
-  const scrollToQuienesSomos = () => {
-    document.getElementById('quienes-somos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const scrollToMision = () => {
+    document.getElementById('mision')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
@@ -73,7 +73,7 @@ export default function Hero() {
               'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)',
           }}
         >
-          AXIOMA | Asociación X Interés Olímpico Matemático del Tecnológico de Monterrey
+          TeacherPeri | Matemáticas Olímpicas
         </span>
 
         <motion.div
@@ -82,16 +82,25 @@ export default function Hero() {
           initial="hidden"
           animate="show"
         >
+          {/* Sin logo en imagen todavía — wordmark en texto grande, mismo
+              tratamiento que el de Navbar.jsx, hasta que exista un logo
+              real de TeacherPeri. */}
           <motion.div variants={word}>
-            <img
-              src="/AXIOMA LOGOS (2).png"
-              alt="Axioma"
-              className="h-[300px] w-auto drop-shadow-[0_0_45px_rgba(255,180,1,0.35)] sm:h-[400px] lg:h-[500px]"
-            />
+            <h1
+              className="font-display bg-clip-text text-6xl text-transparent drop-shadow-[0_0_45px_rgba(255,180,1,0.35)] sm:text-7xl lg:text-8xl"
+              style={{
+                backgroundImage:
+                  'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)',
+              }}
+            >
+              TeacherPeri
+            </h1>
           </motion.div>
 
           <motion.p variants={word} className="max-w-xl text-lg text-white/85 sm:text-xl">
-            Capítulo Estudiantil oficial de la Sociedad Matemática Mexicana (SMM). Un espacio dedicado al entrenamiento de alto rendimiento, la divulgación STEM y la resolución de problemas lógicos de nivel olímpico.
+            Un banco de problemas de matemáticas olímpicas de nivel
+            preparatoria, con progreso, puntos e insignias — acceso libre y
+            gratuito a recursos de calidad para entrenar y crecer.
           </motion.p>
         </motion.div>
       </motion.div>
@@ -121,7 +130,7 @@ export default function Hero() {
       {/* Ícono de flecha animada indicando scroll hacia abajo (clickeable) */}
       <motion.button
         type="button"
-        onClick={scrollToQuienesSomos}
+        onClick={scrollToMision}
         aria-label="Ir a la siguiente sección"
         className="absolute bottom-8 text-[#FFB401] hover:text-[#E57505]"
         animate={{ y: [0, 8, 0] }}
