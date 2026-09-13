@@ -1,6 +1,6 @@
-# Axioma — Club de Matemáticas del Tec de Monterrey
+# TeacherPeri
 
-![CI](https://github.com/catherinegd7/AXIOMA/actions/workflows/ci.yml/badge.svg)
+![CI](PENDIND)
 
 Sitio construido con **React + Vite**, **Tailwind CSS** y **React Router**.
 Es un híbrido: un one-pager con navegación por anclas (scroll suave) para la
