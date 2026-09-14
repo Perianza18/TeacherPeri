@@ -762,41 +762,13 @@ These are not necessarily the only top-level views forever.
 
 ## 21.6 Problem Difficulty Model
 
-Problem difficulty should not be represented only by a vague `easy / medium / hard` scale.
+For MVP, Problem difficulty has exactly three approximate learning values:
 
-TeacherPeri should initially classify difficulty using **two dimensions**:
+- Básico
+- Intermedio
+- Avanzado
 
-### Competition Tier
-
-A problem can be assigned an approximate competition tier such as:
-
-- Regional
-- Estatal
-- Pre-Nacional
-- Nacional
-- Pre-Internacional
-- Internacional
-
-This indicates the general competitive level at which the problem would be appropriate.
-
-### Difficulty Within Tier
-
-Within that tier, TeacherPeri can assign a difficulty from **1 to 6**.
-
-Example:
-
-```text
-Nivel competitivo: Nacional
-Dificultad dentro del nivel: 4 / 6
-```
-
-The six-point scale is intentionally granular and matches the common six-problem structure of major Olympiad exams, but the number should **not** be interpreted as literally meaning “this is Problem 4 of an exam.” It is an approximate difficulty placement within the selected competition tier.
-
-This enables useful filtering such as:
-
-```text
-Geometría · Nacional · Dificultad 2–4
-```
+The database stores normalized values as `basico`, `intermedio`, and `avanzado`; the UI displays localized labels. Difficulty remains an editorial estimate rather than an objective measurement.
 
 Difficulty remains an editorial estimate rather than an objective measurement.
 
@@ -989,6 +961,8 @@ Tags are controlled classification metadata used primarily for:
 - discovery
 
 For MVP, tags should be centrally curated/controlled rather than freely invented by every public user.
+
+Tags are flat descriptors with a unique normalized name/slug and a display label. They are reusable across content types, but public users cannot create official tags.
 
 ---
 
@@ -1776,7 +1750,7 @@ Avoid building unnecessary complexity before there is evidence users need it.
 38. Ordinary users cannot freely publish official TeacherPeri educational content.
 39. Sources are a future concept and **not implemented for MVP**.
 40. Legacy Axioma assumptions do not define TeacherPeri.
-41. Problem difficulty uses a competition tier plus a 1–6 within-tier difficulty scale.
+41. Problem difficulty uses only Básico, Intermedio, or Avanzado for MVP.
 42. Legacy estimated success percentages should be removed rather than presented as measured data.
 43. Content Creators submit official-content proposals for Admin review and do not publish directly in the initial model.
 44. Admins review required metadata, tags, attribution, placement, links/files, and quality before publication.

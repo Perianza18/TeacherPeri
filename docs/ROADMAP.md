@@ -10,7 +10,7 @@ Do not execute a destructive reset merely for validation. Do not change producti
 
 ## 2. Shared content and library infrastructure
 
-Agree on stable object identity, reference conventions, controlled metadata/tags, canonical folder placement, and publishing permissions. Incrementally extract reusable Problem rendering/folder/filter code. Build the shared basis for Problemas, Listas, Teoría, and Exámenes, including addressable content, library-local discovery, pagination, and global training search.
+Agree on stable object identity, reference conventions, controlled metadata/tags, curated multi-folder navigation, and publishing permissions. Topics are a reusable hierarchy of mathematical concepts; Tags are centrally controlled flat descriptors. Incrementally extract reusable Problem rendering/folder/filter code. Build the shared basis for Problemas, Listas, Teoría, and Exámenes, including addressable content, library-local discovery, pagination, and global training search.
 
 Define each material type's needs before choosing storage structures. Lists/Exams may need combinations of problem references, documents, or richer material; that representation is still a product decision. Preserve content records rather than copying them into each context. Server-side permission boundaries must accompany official publishing capabilities.
 

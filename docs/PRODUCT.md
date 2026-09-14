@@ -67,7 +67,11 @@ The current design contains exactly four main material libraries:
 
 The landing page will eventually offer global search across all four. Each library will support recursive folder navigation, local search, filters, and consistent shared metadata/tags.
 
-Folders organize material. Tags classify it across dimensions and do not replace folders. Initially, content has one canonical folder placement and multiple controlled tags. Do not create duplicate content records to represent different classifications or reuse.
+Folders organize material. Tags classify it across dimensions and do not replace folders. Content may have multiple curated folder memberships when it needs to appear in distinct library views; do not create duplicate content records to represent those placements or reuse.
+
+Topics are curated, hierarchical mathematical concepts that say what content is about. They are reusable across the content libraries and may be assigned many-to-many. Tags are centrally controlled, flat descriptors for filtering and discovery; public users cannot create official tags. Official content has a `draft`, `published`, or `archived` lifecycle: public discovery returns published material, while archived records retain their stable identity for existing references.
+
+For the initial library foundation, canonical TeacherPeri difficulty is editorial metadata with exactly `basico`, `intermedio`, or `avanzado` values, displayed in Spanish with accents. Legacy difficulty/success fields remain only while existing records and UI require compatibility; estimated success percentages are not a TeacherPeri learning metric.
 
 ## Experiencias
 
