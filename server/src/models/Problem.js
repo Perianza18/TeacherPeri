@@ -9,7 +9,7 @@
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
-import { publicationFields } from './content.js'
+import { PUBLICATION_STATUSES, publicationFields } from './content.js'
 
 const problemSchema = new mongoose.Schema(
   {
@@ -70,6 +70,15 @@ const problemSchema = new mongoose.Schema(
     exito: { type: Number, default: 0, min: 0, max: 100 },
 
     ...publicationFields,
+    // Existing Problem creation paths predate the official-content workflow.
+    // Preserve their public behavior while all explicit lifecycle values still
+    // control public visibility for new TeacherPeri records.
+    publicationStatus: {
+      type: String,
+      enum: PUBLICATION_STATUSES,
+      default: 'published',
+      index: true,
+    },
   },
   { timestamps: true },
 )

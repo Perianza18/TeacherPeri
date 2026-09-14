@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import Exam from '../models/Exam.js'
-import { idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
+import { idsOrBadRequest, paginatedResponse, textSearch, validObjectId } from './library.utils.js'
 
 const router = Router()
 const published = { publicationStatus: 'published' }
@@ -18,7 +18,11 @@ router.get('/', async (req, res) => {
 })
 router.get('/:id', async (req, res) => {
   if (!validObjectId(req.params.id)) return res.status(400).json({ error: 'Identificador de examen inválido.' })
-  const item = await populatedContent(Exam.findOne({ _id: req.params.id, ...published })).populate('problems.problem').lean()
+  const item = await Exam.findOne({ _id: req.params.id, ...published })
+    .populate('tags', 'name slug label')
+    .populate('categories', 'name parent')
+    .populate('problems.problem')
+    .lean()
   if (!item) return res.status(404).json({ error: 'Ese examen no existe o no está publicado.' })
   item.problems.sort((a, b) => a.position - b.position)
   res.json(item)
