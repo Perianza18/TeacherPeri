@@ -9,6 +9,7 @@
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
+import { publicationFields } from './content.js'
 
 const problemSchema = new mongoose.Schema(
   {
@@ -34,8 +35,22 @@ const problemSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-      required: true,
     },
+
+    // `category` is preserved for legacy records and existing comment/UI
+    // behavior. `categories` is the reusable many-to-many folder placement
+    // used by new library navigation; the backfill copies legacy values.
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
+    topics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }],
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+
+    sourceAttribution: { type: String, trim: true },
+    competition: { type: String, trim: true },
+    round: { type: String, trim: true },
+    problemNumber: { type: Number, min: 1 },
+    // Canonical TeacherPeri field for new content. The accented Spanish
+    // values below are legacy compatibility data only.
+    difficulty: { type: String, enum: ['basico', 'intermedio', 'avanzado'] },
 
     // Estos tres siguen siendo campos sueltos (no carpetas) porque en la UI
     // actual son filtros independientes que se combinan entre sí (un
@@ -53,8 +68,15 @@ const problemSchema = new mongoose.Schema(
 
     // Porcentaje de gente que lo resuelve correctamente.
     exito: { type: Number, default: 0, min: 0, max: 100 },
+
+    ...publicationFields,
   },
   { timestamps: true },
 )
+
+problemSchema.path('categories').validate((categories) => {
+  const ids = categories.map(String)
+  return ids.length === new Set(ids).size
+}, 'A Problem cannot contain duplicate category memberships.')
 
 export default mongoose.model('Problem', problemSchema)
