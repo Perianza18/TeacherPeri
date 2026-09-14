@@ -13,7 +13,9 @@
     "preview": "vite preview",
     "server": "nodemon --watch server server/src/server.js",
     "seed": "node server/src/seed.js",
-    "test": "vitest run"
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "vitest run --config vitest.unit.config.js",
+    "test:integration": "vitest run --config vitest.config.js"
   },
   "dependencies": {
     "@paper-design/shaders-react": "^0.0.80",
