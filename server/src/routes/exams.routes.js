@@ -14,7 +14,14 @@ router.get('/', async (req, res) => {
   if (req.query.competition) filter.competition = textSearch(req.query.competition)
   if (req.query.year) filter.year = req.query.year
   if (req.query.q) filter.$or = [{ competition: textSearch(req.query.q) }, { round: textSearch(req.query.q) }, { organization: textSearch(req.query.q) }]
-  await paginatedResponse({ req, res, model: Exam, filter, sort: { year: -1, competition: 1, round: 1 } })
+  await paginatedResponse({
+    req,
+    res,
+    model: Exam,
+    filter,
+    sort: { year: -1, competition: 1, round: 1 },
+    populate: (query) => query.populate('tags', 'name slug label').populate('categories', 'name parent'),
+  })
 })
 router.get('/:id', async (req, res) => {
   if (!validObjectId(req.params.id)) return res.status(400).json({ error: 'Identificador de examen inválido.' })
