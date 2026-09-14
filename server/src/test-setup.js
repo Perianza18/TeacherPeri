@@ -1,41 +1,38 @@
-// ---------------------------------------------------------------------------
-// test-setup.js — runs once before the whole test suite, and once after.
-// Vitest is told about this file via vitest.config.js's `setupFiles`.
-//
-// Two things happen here:
-//   1. Connect to a SEPARATE database ("axioma_test", not "axioma") on the
-//      same local MongoDB you already have running for development. Tests
-//      never touch your real data, and nothing extra needs installing.
-//   2. Set a fake JWT_SECRET, so tests don't depend on whatever real secret
-//      happens to be in your local .env.
-//
-// Between EACH individual test, every collection gets wiped — so no test
-// can ever see leftover data from a previous one.
-// ---------------------------------------------------------------------------
-
+// Each integration-test file uses a verified disposable local database.
+// Unit tests have a separate config and never import this setup file.
 import { beforeAll, afterAll, afterEach } from 'vitest'
 import mongoose from 'mongoose'
+import { assertVerifiedDatabase, testDatabaseTarget } from './database-safety.js'
 
 process.env.JWT_SECRET = 'clave-de-prueba-no-usar-en-produccion'
 
-// En tu máquina, esto apunta al Mongo local de siempre, en una base
-// separada. En CI (ver .github/workflows/ci.yml), MONGO_TEST_URI se define
-// ahí para apuntar al contenedor de Mongo que levanta el workflow --
-// mismo código, distinta dirección según dónde se corra.
-const TEST_DB_URI = process.env.MONGO_TEST_URI || 'mongodb://localhost:27017/axioma_test'
+// Validate before registering hooks or opening any connection. Never load the
+// application's MONGO_URI from .env for tests.
+const target = testDatabaseTarget()
+let verified = false
 
 beforeAll(async () => {
-  await mongoose.connect(TEST_DB_URI)
+  await mongoose.connect(target.uri, target.connectionOptions)
+  assertVerifiedDatabase(mongoose.connection, target)
+  verified = true
 })
 
 afterEach(async () => {
-  const colecciones = mongoose.connection.collections
-  await Promise.all(Object.values(colecciones).map((c) => c.deleteMany({})))
+  if (!verified) return
+  assertVerifiedDatabase(mongoose.connection, target)
+  const collections = mongoose.connection.collections
+  await Promise.all(Object.values(collections).map((collection) => collection.deleteMany({})))
 })
 
 afterAll(async () => {
-  // Deja la base de prueba vacía (no solo desconectada) para que la
-  // siguiente corrida empiece siempre limpia.
-  await mongoose.connection.dropDatabase()
-  await mongoose.disconnect()
+  try {
+    // A failed setup must never trigger cleanup against an unverified target.
+    if (verified) {
+      assertVerifiedDatabase(mongoose.connection, target)
+      await mongoose.connection.dropDatabase()
+    }
+  } finally {
+    verified = false
+    await mongoose.disconnect()
+  }
 })
