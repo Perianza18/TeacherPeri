@@ -34,4 +34,25 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+categorySchema.pre('validate', async function preventCycles() {
+  if (!this.parent) return
+  if (this._id.equals(this.parent)) this.invalidate('parent', 'A category cannot be its own parent.')
+  const visited = new Set([this._id.toString()])
+  let parentId = this.parent
+  while (parentId) {
+    const key = parentId.toString()
+    if (visited.has(key)) {
+      this.invalidate('parent', 'A category hierarchy cannot contain a cycle.')
+      return
+    }
+    visited.add(key)
+    const parent = await this.constructor.findById(parentId).select('parent').lean()
+    if (!parent) {
+      this.invalidate('parent', 'A category parent must exist.')
+      return
+    }
+    parentId = parent?.parent || null
+  }
+})
+
 export default mongoose.model('Category', categorySchema)
