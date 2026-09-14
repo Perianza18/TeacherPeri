@@ -1,189 +1,112 @@
 # TeacherPeri
 
-![CI](PENDIND)
+Plataforma en español para preparación en olimpiadas de matemáticas y orientación
+universitaria en Estados Unidos y universidades seleccionadas de Canadá. Este
+repositorio migra infraestructura de Axioma de forma incremental.
 
-Sitio construido con **React + Vite**, **Tailwind CSS** y **React Router**.
-Es un híbrido: un one-pager con navegación por anclas (scroll suave) para la
-mayoría del contenido, más páginas independientes con rutas reales para
-contenido que no tiene sentido como sección scrolleable (por ahora,
-`/problemas`).
+## Documentación canónica
 
-## Cómo correr el proyecto
+- [AGENTS.md](AGENTS.md): instrucciones para agentes y colaboradores.
+- [Producto](docs/PRODUCT.md): modelo acordado y límites de alcance.
+- [Arquitectura](docs/ARCHITECTURE.md): implementación actual e invariantes futuras.
+- [Migración](docs/MIGRATION.md): infraestructura reutilizable y legado pendiente.
+- [Roadmap](docs/ROADMAP.md): orden de implementación.
 
-### Solo el frontend (lo de siempre)
+Hoy funcionan el banco de Problemas, sus carpetas/filtros/comentarios, la sesión
+compartida y el formulario de contacto. Las páginas informativas combinan contenido
+estático y placeholders. Rutas, Threads independientes, Mi Espacio y las nuevas
+bibliotecas todavía no están implementados. El código legado no define requisitos.
 
-```bash
-npm install
+## Desarrollo local
+
+Se necesitan Node y npm, y MongoDB para la API y las pruebas de integración.
+`.nvmrc` fija **Node 22.13.0**, el mínimo compatible con todo el lockfile
+(incluido ESLint). El rango de `engines` también admite Node 24 y 26 o superior
+según las restricciones actuales. No se actualizaron dependencias en esta fase.
+
+```sh
+nvm install
+nvm use
+npm ci
+cp .env.example .env
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
+
+Copia el secreto generado a `JWT_SECRET` en `.env`. Conserva una `.env` existente
+si ya configuraste el proyecto; no la sobrescribas. No uses una base con datos
+reales para desarrollo ni para pruebas/reset.
+
+| Variable | Uso |
+| --- | --- |
+| `MONGO_URI` | Obligatoria para la API; la plantilla apunta a `teacherperi_dev` local. |
+| `JWT_SECRET` | Obligatoria para la API; secreto privado generado localmente. |
+| `PORT` | Puerto de API; por defecto `4000`. |
+| `CLIENT_ORIGIN` | Origen permitido por CORS; por defecto `http://localhost:5173`. |
+| `VITE_API_URL` | URL pública de API usada por el frontend; por defecto `http://localhost:4000`. |
+| `MONGO_TEST_URI` | Solo pruebas; se exporta en la terminal/CI, no se carga desde `.env`. |
+| `MONGO_DEV_RESET_URI` | Destino explícito del reset de desarrollo; nunca usa `MONGO_URI`. |
+| `RESET_DATABASE_CONFIRM` | Nombre exacto de la base a restablecer; sin valor por defecto. |
+
+Inicia MongoDB y ejecuta en terminales separadas:
+
+```sh
+npm run server
 npm run dev
 ```
 
-### Frontend + backend (necesario para `/problemas`)
+Frontend: `http://localhost:5173`; API: `http://localhost:4000`. El banco está en
+`/entrenamiento`, no en `/problemas`. La API puede arrancar con la biblioteca vacía;
+el reset no es un paso obligatorio. `npm run build` genera `dist/` y
+`npm run preview` permite revisar ese frontend generado. `dist/` no se versiona.
 
-`/problemas` ahora lee datos reales de una base de datos (Mongo) a través de
-un backend en Express — ya no es un array escrito a mano. Para correr todo
-localmente:
+## Validación y CI
 
-1. **Instala MongoDB una sola vez** (macOS, con [Homebrew](https://brew.sh)):
-   ```bash
-   brew tap mongodb/brew
-   brew install mongodb-community mongosh
-   brew services start mongodb-community
-   ```
-2. **Crea tu `.env`** copiando `.env.example` y generando tu propia clave:
-   ```bash
-   cp .env.example .env
-   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-   # pega el resultado como valor de JWT_SECRET en tu .env
-   ```
-3. **Instala dependencias y llena la base de datos** (93 problemas reales de Putnam y la OMMU, ver `server/src/data/problemasReales.js`):
-   ```bash
-   npm install
-   npm run seed
-   ```
-4. **Corre ambos servidores** (en dos terminales separadas):
-   ```bash
-   npm run server   # backend, http://localhost:4000
-   npm run dev      # frontend, http://localhost:5173
-   ```
-
-`npm run seed` es seguro de correr más de una vez: limpia categorías,
-problemas y comentarios viejos antes de volver a crearlos (las cuentas de
-usuario NO se borran).
-
-### Pruebas del backend
-
-```bash
-npm run test
+```sh
+npm run lint
+npm run build
+npm run test:unit
+# Requiere un MongoDB local dedicado a datos desechables:
+MONGO_TEST_URI=mongodb://127.0.0.1:27017/teacherperi_test npm run test:integration
 ```
 
-Corre contra el mismo Mongo local, pero en una base separada
-(`axioma_test`) que se limpia sola entre cada prueba — nunca toca los datos
-reales de `axioma`. Este mismo comando corre automáticamente en GitHub
-Actions en cada push/PR (ver el badge arriba y `.github/workflows/ci.yml`),
-junto con `npm run lint` y `npm run build`.
+`npm test` ejecuta ambas suites. Las pruebas unitarias de seguridad no conectan a
+MongoDB. Las de integración exigen `NODE_ENV=test` (Vitest lo establece), una URI
+local y una base llamada `teacherperi_test` o `teacherperi_test_<sufijo>`. Sin
+variable usan `mongodb://127.0.0.1:27017/teacherperi_test`. Comprueban el destino
+antes de conectar y antes de limpiar. **Borran datos entre pruebas y eliminan esa
+base al terminar**: nunca guardes información valiosa bajo esos nombres.
 
-## Dos "modos" de contenido
+[GitHub Actions](.github/workflows/ci.yml) ejecuta `npm ci`, lint, build y ambas
+suites con Node de `.nvmrc` y un servicio MongoDB 8.0 efímero en el runner, usando
+`teacherperi_test_ci`. No necesita secretos ni el MongoDB personal de un desarrollador.
+Estas pruebas cubren la API actual y las barreras de seguridad, no la UI completa.
 
-- **Secciones del one-pager** — viven en `/src/components/sections/`. Se
-  renderizan todas juntas dentro de `HomePage.jsx` (ruta `/`) y se navega a
-  ellas con scroll suave, vía anclas (`id="..."`) y los links del Navbar.
-- **Páginas independientes** — viven en `/src/pages/`. Cada una es una ruta
-  real de React Router (ej. `/problemas`) con su propio contenido y su propio
-  `<Navbar />`. No forman parte del scroll del one-pager.
+## Reset explícito de desarrollo
 
-`Problemas.jsx` sigue siendo el componente con todo el contenido (filtros,
-tabla, modal), solo que ya no es una sección scrolleable: ahora vive en
-`/src/pages/Problemas.jsx` y se renderiza dentro de `ProblemasPage.jsx`, que
-es lo que la ruta `/problemas` realmente monta.
+El antiguo `npm run seed` fue reemplazado por `npm run db:reset:dev`. **Es un reset
+destructivo de categorías/problemas de desarrollo, no una migración ni un comando
+para producción.** Recrea sus identificadores. Conserva usuarios y mensajes de
+contacto, y se niega a ejecutar si existen comentarios para proteger su historia.
+Detén la API antes de usarlo: opera sobre una base desechable sin actividad y no
+es una transacción. Si falla parcialmente, no ofrece rollback de datos reales.
 
-## Estructura de carpetas
+Solo si verificaste que la base local es desechable y quieres cargar las 14
+categorías y 93 problemas existentes:
 
-```
-/src
-  /components
-    Navbar.jsx              # Fijo arriba en todas las rutas. Combina links
-                             # de scroll (one-pager) y un <Link> real a /problemas
-    /sections
-      Hero.jsx               # id="inicio"
-      QuienesSomos.jsx       # id="quienes-somos"
-      Equipo.jsx             # id="equipo"
-      Galeria.jsx            # id="galeria"
-      Contacto.jsx           # id="contacto"
-  /pages
-    HomePage.jsx             # Ruta "/" — Navbar + todas las secciones del one-pager
-    ProblemasPage.jsx        # Ruta "/problemas" — Navbar + Problemas.jsx
-    Problemas.jsx            # Contenido de la página de problemas
-  /hooks
-    useInView.js             # Hook de Intersection Observer para animaciones
-  App.jsx                    # Solo define <BrowserRouter> y las <Route>
-  index.css                  # Tailwind + paleta de colores + scroll-behavior
+```sh
+NODE_ENV=development \
+MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_dev \
+RESET_DATABASE_CONFIRM=teacherperi_dev \
+npm run db:reset:dev
 ```
 
-También existe `/server` — el backend en Express + MongoDB que sirve la
-página de Problemas (categorías, problemas y comentarios). Ver "Cómo correr
-el proyecto" arriba para levantarlo localmente.
+El destino debe ser de loopback, con nombre `teacherperi_dev` o
+`teacherperi_dev_<sufijo>`, y coincidir con la confirmación. No hay destino por
+defecto ni fallback a `MONGO_URI`. Se rechazan conexiones remotas/ambiguas y se
+comprueba también la conexión real antes de borrar. Nunca apuntes estos comandos
+a un túnel/proxy hacia una base real. Las futuras migraciones deberán preservar
+identidades e historia; este script no cumple esa función.
 
-```
-/server/src
-  app.js                  # Arma la app de Express (rutas, cors, rate limit) —
-                           # sin conectar a Mongo ni escuchar en un puerto
-  server.js               # El entry point real: conecta Mongo + app.listen()
-  seed.js                 # Llena la base de datos con el contenido de /data
-  test-setup.js           # Conecta a una base de datos aparte para las pruebas
-  /data
-    problemasReales.js    # 93 problemas reales (Putnam, OMMU) — agregar más
-                           # problemas es editar este archivo, no seed.js
-  /models                 # Blueprints de Mongoose: User, Category, Problem, Comment
-  /routes                 # auth, categories, problems, comments
-  /middleware
-    auth.js               # Bloquea rutas que requieren sesión iniciada
-  /__tests__              # Pruebas con vitest + supertest (npm run test)
-```
-
-## Cómo funciona la navegación del Navbar
-
-El Navbar (`src/components/Navbar.jsx`) es compartido y **no deben
-modificarlo sin avisar al equipo**, pero vale la pena entender su
-comportamiento:
-
-- Si ya estás en `/`, los links de sección (Inicio, Quiénes Somos, Equipo,
-  Galería, Contacto) hacen `scrollIntoView` directo.
-- Si estás en otra ruta (ej. `/problemas`), esos mismos links navegan a `/`
-  pasando el id de la sección por `state` (`navigate('/', { state: { scrollTo: id } })`).
-  `HomePage.jsx` lee ese `state` en un `useEffect` al montarse y hace el
-  scroll una vez que el one-pager ya está renderizado.
-- El link "Problemas" es un `<Link to="/problemas">` normal de React Router,
-  no un scroll.
-
-## Reglas de trabajo (para evitar conflictos de Git)
-
-Cada persona del equipo trabaja **únicamente dentro de su archivo de sección
-o página**: `/src/components/sections/*.jsx` o `/src/pages/*.jsx` (sin
-contar `HomePage.jsx`). Esto permite que todos trabajen en paralelo sin
-pisarse el código entre sí.
-
-- ✅ Editen libremente el archivo de su sección o página.
-- ✅ Si necesitan un componente reutilizable propio de su sección, créenlo
-  dentro de la misma carpeta o en una subcarpeta (ej.
-  `sections/equipo/MemberCard.jsx`) y expórtenlo desde ahí.
-- 🚫 No modifiquen `App.jsx` — solo define las rutas, no debe llevar lógica
-  ni contenido.
-- 🚫 No modifiquen `HomePage.jsx` — solo importa y ordena las secciones del
-  one-pager.
-- 🚫 No modifiquen el archivo de sección/página de otra persona.
-- 🚫 Si necesitan cambiar algo compartido (`Navbar.jsx`, `index.css`, la
-  paleta de colores, componentes globales), avisen al equipo antes de tocarlo
-  para evitar pisar el trabajo de alguien más.
-
-## Notas por sección/página
-
-- **Hero**: título, subtítulo, botón CTA que navega a `/problemas` (ruta,
-  no scroll), placeholder para animación/logo 3D y flecha de scroll animada.
-- **QuienesSomos**: misión/visión placeholder, imagen grupal placeholder y
-  animación fade-in-up al hacer scroll (usa el hook `useInView`).
-- **Equipo**: grid responsive de tarjetas a partir del array `MIEMBROS`
-  (foto, nombre, rol, LinkedIn/GitHub).
-- **Galería**: grid responsive de imágenes placeholder (array `IMAGENES`) que
-  abren un lightbox/modal simple al hacer click, sin librería externa.
-- **Problemas** (`/src/pages/Problemas.jsx`, montado en `/problemas`):
-  sidebar de filtros (año, tema, tipo) y tabla, ahora alimentados por el
-  backend (`GET /api/problems`) en vez de un array escrito a mano. El modal
-  de cada problema muestra sus comentarios y permite escribir uno nuevo (o
-  borrar los tuyos) — para comentar hace falta iniciar sesión, con un
-  formulario de login/registro que aparece dentro del propio modal (no se
-  agregó una ruta nueva a propósito, para no tocar `App.jsx`). Además hay
-  una carpeta anidada
-  ("Carpetas" en el sidebar) que refleja las categorías de la base de
-  datos. El enunciado se renderiza con **KaTeX**: cualquier parte del texto
-  entre signos de pesos (`$...$`) se trata como LaTeX real (ver
-  `renderEnunciado` dentro del archivo).
-- **Contacto**: formulario controlado (Nombre, Correo, Mensaje) sin lógica de
-  envío todavía — ver el `TODO` en `handleSubmit`.
-
-## Paleta de colores
-
-La paleta neutra provisional vive en `src/index.css` bajo el bloque
-`@theme` (`--color-brand-50` a `--color-brand-900`). Úsenla con las clases
-`bg-brand-*`, `text-brand-*`, `border-brand-*`, etc. Cuando el club defina su
-identidad visual, solo hay que actualizar esos valores para que se propague
-a todo el sitio web.
+Las etiquetas de dificultad y porcentajes del dataset son estimaciones
+ilustrativas, no estadísticas verificadas. Esta fase no revisa ni inventa contenido
+educativo y mantiene los comentarios incrustados como comportamiento legado.
