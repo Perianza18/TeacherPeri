@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../components/motion/FloatingSymbol'
@@ -8,6 +6,7 @@ import Counter from '../components/motion/Counter'
 import { EASE, fadeUp, staggerContainer, popIn } from '../components/motion/variants'
 import { apiFetch } from '../lib/api'
 import { useAuth } from '../context/useAuth'
+import MathText from '../components/math/MathText'
 
 // ---------------------------------------------------------------------------
 // ESQUELETO GENERAL DE ESTE ARCHIVO (para orientarse antes de leer el código
@@ -64,35 +63,8 @@ const AXIOMA_GRADIENT = `linear-gradient(135deg, ${AXIOMA_GOLD} 0%, ${AXIOMA_ORA
 // cada "$$" se leería mal, como si fueran dos fórmulas vacías pegadas).
 // Lo que queda entre bloques display se vuelve a separar por $...$ normal.
 //
-// katex.renderToString(...) regresa un pedazo de HTML (no JSX) — por eso
-// hace falta dangerouslySetInnerHTML para insertarlo. Esto SOLO es seguro
-// aquí porque el enunciado viene de datos que nosotros mismos sembramos en
-// la base de datos (ver server/src/data/problemasReales.js), no de algo que
-// un visitante haya escrito; los comentarios (que sí son texto de
-// visitantes) nunca pasan por esta función.
-function renderFormulasEnLinea(texto, prefijoKey) {
-  const partes = texto.split(/(\$[^$]+\$)/g)
-  return partes.map((parte, i) => {
-    const esFormula = parte.startsWith('$') && parte.endsWith('$') && parte.length > 1
-    if (!esFormula) return <span key={`${prefijoKey}-${i}`}>{parte}</span>
-
-    const latex = parte.slice(1, -1)
-    const html = katex.renderToString(latex, { throwOnError: false })
-    return <span key={`${prefijoKey}-${i}`} dangerouslySetInnerHTML={{ __html: html }} />
-  })
-}
-
-function renderEnunciado(texto) {
-  const bloques = texto.split(/(\$\$[\s\S]+?\$\$)/g)
-  return bloques.map((bloque, i) => {
-    const esDisplay = bloque.startsWith('$$') && bloque.endsWith('$$') && bloque.length > 4
-    if (!esDisplay) return renderFormulasEnLinea(bloque, i)
-
-    const latex = bloque.slice(2, -2)
-    const html = katex.renderToString(latex, { throwOnError: false, displayMode: true })
-    return <div key={i} className="my-2 overflow-x-auto" dangerouslySetInnerHTML={{ __html: html }} />
-  })
-}
+// La implementación reutilizable vive ahora en MathText: solo KaTeX genera
+// HTML y el resto del texto se mantiene como nodos React seguros.
 
 const AÑOS = ['2021', '2022', '2023', '2024', '2025', '2026']
 const TEMAS = [
@@ -541,7 +513,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
               <div>, y un <div> no puede vivir legalmente dentro de un <p> en
               HTML (el mismo tipo de error que se ve en Contacto.jsx). */}
           <div className="mb-6 whitespace-pre-line text-brand-700">
-            {renderEnunciado(problema.enunciado)}
+            <MathText text={problema.enunciado} />
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto">
