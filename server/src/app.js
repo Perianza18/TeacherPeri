@@ -18,6 +18,11 @@ import categoriesRoutes from './routes/categories.routes.js'
 import problemsRoutes from './routes/problems.routes.js'
 import commentsRoutes from './routes/comments.routes.js'
 import contactRoutes from './routes/contact.routes.js'
+import topicsRoutes from './routes/topics.routes.js'
+import tagsRoutes from './routes/tags.routes.js'
+import theoryRoutes from './routes/theory.routes.js'
+import listsRoutes from './routes/lists.routes.js'
+import examsRoutes from './routes/exams.routes.js'
 
 const app = express()
 
@@ -63,5 +68,10 @@ app.use('/api/categories', categoriesRoutes)
 app.use('/api/problems', problemsRoutes)
 app.use('/api/problems/:problemId/comments', commentsRoutes)
 app.use('/api/contact', contactRoutes)
+app.use('/api/topics', topicsRoutes)
+app.use('/api/tags', tagsRoutes)
+app.use('/api/theory', theoryRoutes)
+app.use('/api/lists', listsRoutes)
+app.use('/api/exams', examsRoutes)
 
 export default app
