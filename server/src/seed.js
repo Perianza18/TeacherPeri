@@ -1,34 +1,29 @@
-// ---------------------------------------------------------------------------
-// seed.js — run once with `npm run seed` to fill the database with the real
-// problem set from server/src/data/problemasReales.js (Putnam 2021-2025,
-// OMMU Primera Ronda 2024-2026, OMMU Nacional 2024-2026 — 93 problems).
-//
-// This replaces the original 5 hand-typed placeholder problems entirely,
-// now that real content exists. Safe to run again later: it clears the old
-// categories/problems/comments first, so it never duplicates data.
-//
-// Categories reference each other by a short string `key` (see the data
-// file) instead of a real database id, since real ids don't exist until
-// after Category.create() runs. `idPorKey` below is what translates one
-// into the other.
-// ---------------------------------------------------------------------------
-
+// DESTRUCTIVE DEVELOPMENT RESET — npm run db:reset:dev, never a migration.
+// Replaces category/problem IDs using the existing problem fixture. Only an
+// explicitly confirmed local teacherperi_dev database may be reset. Refuses
+// databases containing comments so legacy discussion history is preserved.
 import 'dotenv/config'
 import mongoose from 'mongoose'
 import Category from './models/Category.js'
 import Problem from './models/Problem.js'
 import Comment from './models/Comment.js'
 import { categorias, problemas } from './data/problemasReales.js'
+import { assertVerifiedDatabase, developmentResetTarget } from './database-safety.js'
 
-async function seed() {
-  await mongoose.connect(process.env.MONGO_URI)
+async function resetDevelopmentDatabase() {
+  const target = developmentResetTarget()
+  await mongoose.connect(target.uri, target.connectionOptions)
+  assertVerifiedDatabase(mongoose.connection, target)
 
-  // Empezamos limpio cada vez que se corre este script. Comment también se
-  // limpia aquí: como los problemas se borran y se vuelven a crear (con IDs
-  // nuevos), cualquier comentario viejo quedaría apuntando a un problema que
-  // ya no existe. Ojo: NO borramos User — las cuentas de la gente no
-  // deberían desaparecer solo porque alguien volvió a correr este script.
-  await Promise.all([Category.deleteMany({}), Problem.deleteMany({}), Comment.deleteMany({})])
+  if (await Comment.exists({})) {
+    throw new Error('Development reset refused: comments exist. Preserve their history and use a new disposable development database.')
+  }
+  // Reset is only for an offline disposable development database. Users and
+  // contact messages remain; comments are never deleted by this command.
+  assertVerifiedDatabase(mongoose.connection, target)
+  await Category.deleteMany({})
+  assertVerifiedDatabase(mongoose.connection, target)
+  await Problem.deleteMany({})
 
   // Las carpetas están en orden padre-antes-que-hijo dentro del archivo de
   // datos, así que creándolas en ese mismo orden garantiza que, cuando le
@@ -49,12 +44,14 @@ async function seed() {
     })),
   )
 
-  console.log(`Listo: ${categorias.length} categorías y ${problemas.length} problemas creados.`)
-  await mongoose.disconnect()
-  process.exit(0)
+  console.log(`Development reset of ${target.dbName}: ${categorias.length} categorías y ${problemas.length} problemas creados.`)
 }
 
-seed().catch((err) => {
-  console.error('Error al sembrar la base de datos:', err)
-  process.exit(1)
-})
+resetDevelopmentDatabase()
+  .catch((err) => {
+    console.error('Development reset failed:', err.message)
+    process.exitCode = 1
+  })
+  .finally(async () => {
+    await mongoose.disconnect()
+  })
