@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   assertVerifiedDatabase,
+  developmentMigrationTarget,
   developmentResetTarget,
   testDatabaseTarget,
 } from '../database-safety.js'
@@ -14,6 +15,15 @@ function developmentEnv(overrides = {}) {
     NODE_ENV: 'development',
     MONGO_DEV_RESET_URI: 'mongodb://127.0.0.1:27017/teacherperi_dev',
     RESET_DATABASE_CONFIRM: 'teacherperi_dev',
+    ...overrides,
+  }
+}
+
+function migrationEnv(overrides = {}) {
+  return {
+    NODE_ENV: 'development',
+    MONGO_MIGRATION_URI: 'mongodb://127.0.0.1:27017/teacherperi_dev',
+    MIGRATION_DATABASE_CONFIRM: 'teacherperi_dev',
     ...overrides,
   }
 }
@@ -150,6 +160,22 @@ describe('explicit development reset policy', () => {
     { MONGO_DEV_RESET_URI: 'mongodb://localhost/teacherperi_dev?dbName=production' },
   ])('refuses incomplete or unsafe reset configuration: %j', (overrides) => {
     expect(() => developmentResetTarget(developmentEnv(overrides))).toThrow('Database safety check failed')
+  })
+})
+
+describe('explicit development migration policy', () => {
+  it('requires an explicit confirmed local development database', () => {
+    expect(developmentMigrationTarget(migrationEnv()).dbName).toBe('teacherperi_dev')
+  })
+
+  it.each([
+    { NODE_ENV: 'test' },
+    { MONGO_MIGRATION_URI: undefined },
+    { MIGRATION_DATABASE_CONFIRM: 'yes' },
+    { MONGO_MIGRATION_URI: 'mongodb://remote.example/teacherperi_dev' },
+    { MONGO_MIGRATION_URI: 'mongodb://localhost/teacherperi_test' },
+  ])('fails closed for unsafe migration configuration: %j', (overrides) => {
+    expect(() => developmentMigrationTarget(migrationEnv(overrides))).toThrow('Database safety check failed')
   })
 })
 

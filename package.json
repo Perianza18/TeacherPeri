@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "server": "nodemon --watch server server/src/server.js",
     "db:reset:dev": "node server/src/seed.js",
+    "db:backfill:problem-categories": "node server/src/migrations/backfill-problem-categories.js",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "vitest run --config vitest.unit.config.js",
     "test:integration": "vitest run --config vitest.config.js"
