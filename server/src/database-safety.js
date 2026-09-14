@@ -86,6 +86,17 @@ export function developmentResetTarget(env = process.env) {
   return target
 }
 
+// A migration is not a reset. This guard only permits the checked-in
+// backfill utility to operate on an explicit local development database.
+export function developmentMigrationTarget(env = process.env) {
+  if (env.NODE_ENV !== 'development') reject('development migration requires NODE_ENV=development.')
+  const target = localDatabaseTarget(env.MONGO_MIGRATION_URI, 'teacherperi_dev')
+  if (env.MIGRATION_DATABASE_CONFIRM !== target.dbName) {
+    reject('MIGRATION_DATABASE_CONFIRM must exactly equal the development database name.')
+  }
+  return target
+}
+
 export function assertVerifiedDatabase(connection, target) {
   if (connection.readyState !== 1 ||
       connection.name !== target.dbName ||

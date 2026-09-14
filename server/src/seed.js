@@ -41,6 +41,8 @@ async function resetDevelopmentDatabase() {
     problemas.map(({ categoriaKey, ...resto }) => ({
       ...resto,
       category: idPorKey.get(categoriaKey),
+      categories: [idPorKey.get(categoriaKey)],
+      publicationStatus: 'published',
     })),
   )
 
