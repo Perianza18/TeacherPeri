@@ -11,7 +11,7 @@ const tagSchema = new mongoose.Schema(
 )
 
 tagSchema.pre('validate', function normalizeTag() {
-  const normalized = normalizeSlug(this.label || this.name)
+  const normalized = normalizeSlug(this.name || this.label)
   this.name = normalized
   if (!this.slug) this.slug = normalized
   if (this.slug) this.slug = normalizeSlug(this.slug)
