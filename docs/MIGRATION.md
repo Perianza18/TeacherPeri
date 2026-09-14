@@ -17,6 +17,8 @@ TeacherPeri reuses an application originally created for Axioma. Existing code i
 
 Preserve existing working routes and behavior until a scoped migration explicitly replaces them. Extract large components as needed rather than rewriting everything to match a speculative architecture. Do not reuse Category as a Path engine.
 
+When the shared-library phase extends Problems from one legacy `category` to many curated folder memberships, it must backfill the existing Category reference additively and idempotently. It must never reseed, regenerate Problem IDs, delete users, contacts, or comments, or use a development reset as a migration.
+
 ## Stale assumptions
 
 The former README described a club one-pager, anchor navigation, `/problemas`, deleted section/page files, an unsent contact form, nonexistent CI, and old file-ownership restrictions. These descriptions and instructions are superseded by the canonical documents and current README.
@@ -66,6 +68,10 @@ The historical seed cleared categories, problems, and comments and recreated cat
 Tests likewise require a loopback target named `teacherperi_test` or `teacherperi_test_<suffix>` and verification of the connected database before cleanup. A variable name such as `MONGO_TEST_URI` alone is not verification. Consult the guarded setup and README rather than reusing old commands from README history.
 
 Future migrations must preserve stable content identities and relationships so that references, bookmarks, and progress remain valid. No production data is changed by the foundation phase.
+
+## Shared-library backfill
+
+Phase 2 adds an additive `Problem.categories` array while retaining the legacy singular `Problem.category`. New TeacherPeri content must use `categories`; `category` is a temporary compatibility/migration source and should be retired only after the old UI and every persisted legacy record have migrated. `npm run db:backfill:problem-categories` copies every legacy category into that array with `$addToSet`; it is repeatable and does not remove, reseed, or regenerate records. The command requires `NODE_ENV=development`, an explicit loopback `MONGO_MIGRATION_URI` named `teacherperi_dev` (or an allowed suffix), and an exact `MIGRATION_DATABASE_CONFIRM`. It has deliberately not been run by the migration work and is not a production deployment procedure.
 
 ## Foundation boundary
 
