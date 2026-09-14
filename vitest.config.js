@@ -2,15 +2,16 @@
 // frontend build, this one configures testing the Node backend -- keeping
 // them apart avoids the React/browser-specific plugin config leaking into
 // backend tests, which don't need it.
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
     environment: 'node',
     include: ['server/**/*.test.js'],
+    exclude: [...configDefaults.exclude, 'server/**/*.unit.test.js'],
     setupFiles: ['./server/src/test-setup.js'],
     // IMPORTANTE: todos los archivos de prueba comparten la MISMA base de
-    // datos real (axioma_test, ver test-setup.js) -- no una copia aislada
+    // datos desechable (teacherperi_test, ver test-setup.js) -- no una copia aislada
     // por archivo. Si vitest corriera los archivos en paralelo (su
     // comportamiento normal), dos archivos podrían chocar entre sí: uno
     // podría borrar todas las colecciones (afterEach) justo cuando otro
