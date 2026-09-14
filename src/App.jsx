@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import HomePage from './pages/HomePage'
 import EntrenamientoPage from './pages/EntrenamientoPage'
+import Problemas from './pages/Problemas'
 import SobreMiPage from './pages/SobreMiPage'
 import RecursosPage from './pages/RecursosPage'
 import ExperienciasPage from './pages/ExperienciasPage'
@@ -9,6 +10,8 @@ import EstudiaExtranjeroPage from './pages/EstudiaExtranjeroPage'
 import ContactoPage from './pages/ContactoPage'
 import ColaboradoresPage from './pages/ColaboradoresPage'
 import CustomCursor from './components/CustomCursor'
+import LibraryCollection from './components/training/LibraryCollection'
+import LibraryDetailPage from './pages/LibraryDetailPage'
 
 // Este archivo solo define las rutas (+ chrome global como el cursor y,
 // ahora, la sesión de usuario). No agreguen contenido de página aquí: el
@@ -30,7 +33,17 @@ function App() {
         <CustomCursor />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/entrenamiento" element={<EntrenamientoPage />} />
+          <Route path="/entrenamiento" element={<EntrenamientoPage />}>
+            <Route index element={<Navigate to="problemas" replace />} />
+            <Route path="problemas" element={<Problemas />} />
+            <Route path="problemas/:id" element={<LibraryDetailPage type="problemas" />} />
+            <Route path="teoria" element={<LibraryCollection type="theory" title="Teoría" subtitle="Artículos matemáticos nativos con contenido y referencias reutilizables." />} />
+            <Route path="teoria/:id" element={<LibraryDetailPage type="teoria" />} />
+            <Route path="listas" element={<LibraryCollection type="lists" title="Listas" subtitle="Recursos externos atribuidos y enlazados a su fuente original." />} />
+            <Route path="listas/:id" element={<LibraryDetailPage type="listas" />} />
+            <Route path="examenes" element={<LibraryCollection type="exams" title="Exámenes" subtitle="Exámenes que reutilizan Problemas existentes en su orden original." />} />
+            <Route path="examenes/:id" element={<LibraryDetailPage type="examenes" />} />
+          </Route>
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />
           <Route path="/estudia-en-el-extranjero" element={<EstudiaExtranjeroPage />} />
