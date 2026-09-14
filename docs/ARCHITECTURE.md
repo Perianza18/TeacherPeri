@@ -24,7 +24,11 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | Route | Implemented page |
 | --- | --- |
 | `/` | TeacherPeri introduction and home sections |
-| `/entrenamiento` | Problemas plus placeholder Exámenes and Listas tabs |
+| `/entrenamiento` | Redirects to the public Problemas library |
+| `/entrenamiento/problemas`, `/entrenamiento/problemas/:id` | Legacy Problem browser and stable public Problem detail URL |
+| `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Published Theory library and detail URL |
+| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | Published List library and detail URL |
+| `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Published Exam library and detail URL |
 | `/recursos` | Static external-resource directory |
 | `/experiencias` | Empty blog-listing scaffold |
 | `/estudia-en-el-extranjero` | Static university guidance page |
@@ -32,15 +36,18 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | `/sobre-mi` | Personal presentation, with placeholder material |
 | `/colaboradores` | Placeholder |
 
-There are no frontend routes for Paths, Threads, Mi Espacio, or individual content records. `/problemas` and `/materiales` are not current routes. Training tabs, folder position, filters, and the selected problem use component state rather than URLs; switching tabs can discard that state. The intended navigation in PRODUCT.md has not yet been applied.
+There are no frontend routes for Paths, Threads, or Mi Espacio. `/problemas` and `/materiales` are not current routes. Training libraries have stable nested URLs; the legacy Problem browser still keeps its selected modal, filters, and folder position in component state. The intended primary navigation in PRODUCT.md has not yet been applied.
 
 ## Current API and persistence
 
 | API | Current responsibility |
 | --- | --- |
 | `POST /api/auth/signup`, `POST /api/auth/login` | Registration and authentication |
-| `GET /api/categories` | Public category listing |
-| `GET /api/problems`, `GET /api/problems/:id` | Public problem listing/detail |
+| `GET /api/categories`, `GET /api/topics`, `GET /api/tags` | Public folder and controlled-metadata listings |
+| `GET /api/problems`, `GET /api/problems/:id` | Public Problem listing/detail; query parameters opt into server-side discovery pagination |
+| `GET /api/theory`, `GET /api/theory/:id` | Published Theory listing/detail |
+| `GET /api/lists`, `GET /api/lists/:id` | Published externally authored List listing/detail |
+| `GET /api/exams`, `GET /api/exams/:id` | Published Exam listing/detail with ordered Problem references |
 | `GET /api/problems/:problemId/comments` | Public embedded comments |
 | `POST /api/problems/:problemId/comments` | Authenticated comment creation |
 | `DELETE /api/problems/:problemId/comments/:commentId` | Author-only permanent comment deletion, retained legacy behavior |
@@ -52,7 +59,12 @@ Existing Mongoose models are:
 | --- | --- |
 | `User` | Username, email, password hash |
 | `Category` | Folder name and nullable self-referencing parent |
-| `Problem` | Unique readable code, title, statement, Category reference, year, topic, contest type, difficulty, success percentage |
+| `Problem` | Legacy readable code/title/statement and Category reference, plus additive multi-folder, Topic, Tag, attribution, canonical three-level difficulty, and lifecycle fields |
+| `Topic` | Curated self-referencing mathematical concept hierarchy with slug and cycle prevention |
+| `Tag` | Centrally controlled flat name/slug/label descriptor |
+| `Theory` | Native mathematical article with summary, rich text/LaTex source, level, shared metadata, folders, and lifecycle |
+| `List` | Attributed external-resource record with source/PDF links, optional level, shared metadata, folders, and lifecycle |
+| `Exam` | Competition/year/round metadata and ordered references to existing Problems |
 | `Comment` | Problem reference, author reference, flat text body |
 | `ContactMessage` | Author reference, profile category, contact reason, message |
 
@@ -68,11 +80,13 @@ The current public comment response projects username and author ID, not private
 
 ## Reusable folders and Problems
 
-`Category.parent` represents a single-parent folder tree. `src/pages/Problemas.jsx` rebuilds that tree, computes descendants/counts, and offers folders and breadcrumbs. The schema does not currently enforce ordering, acyclicity, or valid parents. Without active filters the browser displays problems in leaf folders; storing material in a parent folder can therefore make it invisible in that browsing mode.
+`Category.parent` represents a single-parent folder tree and rejects self-referential/cyclic writes. `src/pages/Problemas.jsx` rebuilds that tree, computes descendants/counts, and offers folders and breadcrumbs. The legacy `Problem.category` is retained only for migration/current-UI compatibility; new TeacherPeri content uses `Problem.categories` for multiple curated placements without copied Problems. The guarded `db:backfill:problem-categories` utility copies legacy memberships idempotently on an explicitly confirmed local development database; it never resets or deletes records. The legacy field should be retired only after its consumers and all persisted records have migrated.
+
+Topics, Categories, and Tags remain separate persistence concepts: a Topic says what mathematics a record concerns, a Category says where a visitor browses to it, and a Tag is a controlled flat descriptor for filtering/search/discovery. Their references are intentionally many-to-many where content reuse requires it; none is a substitute for the others.
 
 The same component contains problem loading, filters, cards, a problem modal, KaTeX rendering for inline/display mathematics, authentication UI, comments, and animations. This working implementation is valuable but combines many responsibilities; extract reusable parts incrementally when a task requires it.
 
-Current filtering loads all Problems and Categories and runs in the browser:
+The legacy Problem view still loads all Problems and Categories and filters in the browser. New library endpoints use server-side query filters and pagination; the new route-backed Theory, List, and Exam views use those endpoints and provide folder navigation plus local text search. A cross-library search endpoint/UI is still future work.
 
 - OR within a selected metadata dimension; AND between dimensions.
 - Year, topic, contest type, and category filters.
@@ -94,7 +108,7 @@ Content and Paths need stable object identity across references, editorial chang
 
 Use references to reuse one stored object across Paths and discussions. Different libraries may need different material structures, but share consistent identity, metadata/tagging, discovery, and reference conventions. Initial content organization is one canonical folder placement plus multiple controlled tags. Tags complement folders.
 
-Define common metadata and reference contracts before extending each library independently. No universal content collection or final polymorphic-reference schema is prescribed here. Experiences are referenceable narrative content; Thread attachments are separate uploads, not references to existing content.
+Define common metadata and reference contracts before extending each library independently. Topics should be a curated acyclic hierarchy of mathematical concepts; Tags should be centrally controlled flat descriptors. Content may have multiple Category references for distinct curated navigation views without duplication. Official library records need draft/published/archived visibility semantics, with archived records retaining their identities for references. No universal content collection or final polymorphic-reference schema is prescribed here. Experiences are referenceable narrative content; Thread attachments are separate uploads, not references to existing content.
 
 ### Public access, persistence, and authorization
 
