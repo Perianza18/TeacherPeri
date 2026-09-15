@@ -14,15 +14,17 @@ Agree on stable object identity, reference conventions, controlled metadata/tags
 
 Define each material type's needs before choosing storage structures. Lists/Exams may need combinations of problem references, documents, or richer material; that representation is still a product decision. Preserve content records rather than copying them into each context. Server-side permission boundaries must accompany official publishing capabilities.
 
-## 3. Rutas / generic Path engine
+## 3. Rutas / generic Path engine — implemented
 
 Implement ordered child Paths **or** ordered Steps, reference-based content reuse, stable Path identity, and cycle prevention. Support one engine for Olympiad and university journeys. Steps have no completion checkboxes and Paths introduce no prerequisite locks.
 
-Define the leaf-completion and recursive-progress contract here so the next phase can persist it correctly: User ↔ Path completion, equal weighting of unique descendant leaves, and preserved historical completion with future versioning in mind. Do not assume parent-child nesting means exclusive ownership of a child Path.
+Persist leaf completion and recursive progress as a User ↔ Path completion record with equal weighting of unique descendant leaves and preserved historical completion for future versioning. Do not assume parent-child nesting means exclusive ownership of a child Path.
 
-## 4. Mi Espacio, progress, and saving
+The implementation uses standalone Paths, ordered acyclic Path references, leaf-owned Steps, contextual traversal URLs/breadcrumbs, public discovery, authenticated leaf completion, and server-derived unique-leaf progress. It intentionally stops before Phase 4’s followed Routes, saving, dashboard, badges, and recent activity.
 
-Implement private user persistence: manually completed leaf Paths, recursively derived parent progress, followed routes, bookmarks, and continue/recent activity. Keep following separate from saving; followed routes have only pinned/normal placement for MVP.
+## 4. Mi Espacio, following, saving, and activity
+
+Build private Mi Espacio features on Phase 3's existing leaf-completion and recursive unique-leaf progress foundation: followed Routes, bookmarks, a personal dashboard, and continue/recent activity. Keep following separate from saving; followed routes have only pinned/normal placement for MVP. Do not reimplement completion or progress as a second system.
 
 Add meaningful achievement/badge behavior and public earned-badge selection according to the agreed permission/privacy model. Preserve public browsing and avoid introducing a general points or complex priority system without a product decision.
 
