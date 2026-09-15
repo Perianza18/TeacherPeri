@@ -13,32 +13,7 @@ function curriculumPath(title, slug, area, level = 'omm', options = {}) {
   }
 }
 
-function mixedSteps(cycle, emphasis) {
-  return [
-    {
-      order: 1,
-      title: 'Reconoce',
-      description: `Identifica qué áreas y herramientas conocidas podrían servir en los problemas de este bloque. ${emphasis.recognize}`,
-    },
-    {
-      order: 2,
-      title: 'Resuelve',
-      description: `Trabaja la selección sin depender de una etiqueta temática explícita. ${emphasis.solve}`,
-    },
-    {
-      order: 3,
-      title: 'Mezcla',
-      description: `Busca conexiones entre técnicas del Ciclo ${cycle} y herramientas aprendidas anteriormente. ${emphasis.mix}`,
-    },
-    {
-      order: 4,
-      title: 'Reflexiona',
-      description: `Revisa tus soluciones, identifica intentos improductivos y registra qué señales ayudaron a elegir un enfoque. ${emphasis.reflect}`,
-    },
-  ]
-}
-
-function mixedPath(cycle, level, emphasis) {
+function mixedPath(cycle, level) {
   return curriculumPath(
     `Entrenamiento Mixto — Ciclo ${cycle}`,
     `entrenamiento-mixto-ciclo-${cycle}`,
@@ -46,8 +21,7 @@ function mixedPath(cycle, level, emphasis) {
     level,
     {
       description: `Punto de integración del Ciclo ${cycle}: práctica mixta para reconocer, seleccionar y combinar las herramientas estudiadas.`,
-      steps: mixedSteps(cycle, emphasis),
-      editorialGap: 'Necesita una selección revisada de problemas existentes; los Steps actuales solo definen el ritmo de trabajo.',
+      editorialGap: 'Necesita Steps redactados y una selección revisada de problemas existentes.',
     },
   )
 }
@@ -81,12 +55,7 @@ export const OMM_SECTIONS = [
       curriculumPath('Máximo Común Divisor y Algoritmo de Euclides', 'maximo-comun-divisor-y-algoritmo-de-euclides', 'number-theory', 'introductorio'),
       curriculumPath('Factorización y Ecuaciones Elementales', 'factorizacion-y-ecuaciones-elementales', 'algebra', 'introductorio'),
       curriculumPath('Principio del Palomar', 'principio-del-palomar', 'combinatorics', 'introductorio'),
-      mixedPath(1, 'introductorio', {
-        recognize: 'Prioriza reconocer el área general y las herramientas recién estudiadas.',
-        solve: 'Escribe soluciones breves pero completas para problemas accesibles.',
-        mix: 'Compara problemas de las cuatro áreas sin asumir que aparecerán agrupados.',
-        reflect: 'Comprueba que cada argumento tenga una conclusión explícita.',
-      }),
+      mixedPath(1, 'introductorio'),
     ],
   },
   {
@@ -102,12 +71,7 @@ export const OMM_SECTIONS = [
       curriculumPath('Ecuaciones Diofánticas Básicas', 'ecuaciones-diofanticas-basicas', 'number-theory'),
       curriculumPath('Principio de Inclusión-Exclusión', 'principio-de-inclusion-exclusion', 'combinatorics'),
       curriculumPath('Sucesiones: Primeros Patrones', 'sucesiones-primeros-patrones', 'algebra'),
-      mixedPath(2, 'omm', {
-        recognize: 'Distingue entre varias técnicas conocidas antes de comprometerte con una.',
-        solve: 'Acepta argumentos un poco más largos y problemas sin una pista temática evidente.',
-        mix: 'Combina herramientas recientes con fundamentos del Ciclo 1.',
-        reflect: 'Explica por qué la técnica elegida fue adecuada.',
-      }),
+      mixedPath(2, 'omm'),
     ],
   },
   {
@@ -124,12 +88,7 @@ export const OMM_SECTIONS = [
       curriculumPath('Doble Conteo', 'doble-conteo', 'combinatorics'),
       curriculumPath('Configuraciones de Círculos', 'configuraciones-de-circulos', 'geometry'),
       curriculumPath('Recurrencias', 'recurrencias', 'algebra'),
-      mixedPath(3, 'omm', {
-        recognize: 'Busca señales menos explícitas y considera más de un enfoque inicial.',
-        solve: 'Desarrolla argumentos de varias etapas con mayor independencia.',
-        mix: 'Combina técnicas dentro de un mismo problema cuando una sola no baste.',
-        reflect: 'Analiza por qué un primer enfoque pudo fallar y cómo cambiarlo.',
-      }),
+      mixedPath(3, 'omm'),
     ],
   },
   {
@@ -146,12 +105,7 @@ export const OMM_SECTIONS = [
       curriculumPath('Grafos para Olimpiadas', 'grafos-para-olimpiadas', 'combinatorics', 'omm'),
       curriculumPath('Polinomios: Técnicas Avanzadas', 'polinomios-tecnicas-avanzadas', 'algebra', 'avanzado'),
       curriculumPath('Introducción a Ecuaciones Funcionales', 'introduccion-a-ecuaciones-funcionales', 'algebra', 'omm'),
-      mixedPath(4, 'avanzado', {
-        recognize: 'Considera qué punto de vista vuelve visible la estructura del problema.',
-        solve: 'Trabaja con pocas pistas y justifica decisiones intermedias.',
-        mix: 'Integra herramientas antiguas y nuevas aunque la clasificación inicial sea difícil.',
-        reflect: 'Compara enfoques y evalúa cuál produce una solución más clara.',
-      }),
+      mixedPath(4, 'avanzado'),
     ],
   },
   {
@@ -169,12 +123,7 @@ export const OMM_SECTIONS = [
       curriculumPath('Estrategias de Ataque de Problemas', 'estrategias-de-ataque-de-problemas', 'strategy', 'avanzado'),
       curriculumPath('Redacción y Pulido de Soluciones', 'redaccion-y-pulido-de-soluciones', 'proof', 'avanzado'),
       curriculumPath('Problemas de Síntesis', 'problemas-de-sintesis', 'mixed', 'avanzado'),
-      mixedPath(5, 'avanzado', {
-        recognize: 'Evalúa estructura, dificultad y costo de distintos enfoques antes de elegir.',
-        solve: 'Trabaja problemas difíciles y redacta demostraciones completas con ritmo de concurso.',
-        mix: 'Sintetiza herramientas de todo el recorrido y experimenta estratégicamente.',
-        reflect: 'Practica abandonar enfoques improductivos y pulir la solución final.',
-      }),
+      mixedPath(5, 'avanzado'),
     ],
   },
 ]
@@ -182,7 +131,7 @@ export const OMM_SECTIONS = [
 const postCyclePaths = [
   curriculumPath('Simulacros OMM', 'simulacros-omm', 'simulation', 'avanzado', {
     description: 'Transición posterior al recorrido principal hacia simulaciones completas con condiciones cercanas a concurso.',
-    editorialGap: 'Título y estructura interna son provisionales; deben revisarse contra los Exámenes existentes antes de añadir contenido.',
+    editorialGap: 'La estructura como Path padre está acordada; faltan definir Paths de simulación individuales después de revisar Exámenes y Problemas aprobados.',
   }),
   curriculumPath('Consejos para Competir', 'consejos-para-competir', 'orientation', 'avanzado', {
     description: 'Consejos para la etapa de competencia, distintos de la orientación previa al entrenamiento estructurado.',
@@ -259,11 +208,7 @@ export function validateOmmCurriculumDefinition(curriculum = OMM_CURRICULUM) {
       if (!areas.has(requiredArea)) errors.push(`${section.title} is missing ${requiredArea}.`)
     }
     const mixed = entries.at(-1)?.path
-    if (!mixed?.steps.length) errors.push(`${expectedMixedSlug} must be a leaf definition with Steps.`)
-    const stepOrders = mixed?.steps.map(({ order }) => order) || []
-    if (new Set(stepOrders).size !== stepOrders.length || stepOrders.some((order, stepIndex) => order !== stepIndex + 1)) {
-      errors.push(`${expectedMixedSlug} Step order must be unique and contiguous.`)
-    }
+    if (mixed?.steps.length) errors.push(`${expectedMixedSlug} must remain without authored Steps in this draft.`)
   })
 
   const firstCycleIndex = curriculum.entries.findIndex(({ placement }) => placement === 'cycle')
