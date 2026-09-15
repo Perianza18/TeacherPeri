@@ -38,7 +38,7 @@ describe('OMM curriculum definition', () => {
     ])
   })
 
-  it('interleaves all four subject areas and ends every cycle with its mixed leaf Path', () => {
+  it('interleaves all four subject areas and ends every cycle with an unauthored mixed leaf Path', () => {
     OMM_CURRICULUM.sections.forEach((section, index) => {
       const entries = OMM_CURRICULUM.entries.filter(({ sectionKey }) => sectionKey === section.key)
       const areas = new Set(entries.map(({ path }) => path.area))
@@ -47,7 +47,7 @@ describe('OMM curriculum definition', () => {
       }
       const mixed = entries.at(-1).path
       expect(mixed.slug).toBe(`entrenamiento-mixto-ciclo-${index + 1}`)
-      expect(mixed.steps.map(({ title }) => title)).toEqual(['Reconoce', 'Resuelve', 'Mezcla', 'Reflexiona'])
+      expect(mixed.steps).toEqual([])
     })
   })
 
@@ -61,6 +61,11 @@ describe('OMM curriculum definition', () => {
     cycleOne.at(-1).path.slug = 'otro-final'
     expect(() => validateOmmCurriculumDefinition(cycleWithoutMixedEnding)).toThrow('must end')
 
+    const mixedWithPlaceholderStep = curriculumCopy()
+    const mixed = mixedWithPlaceholderStep.entries.find(({ path }) => path.slug === 'entrenamiento-mixto-ciclo-1').path
+    mixed.steps.push({ order: 1, title: 'Reconoce' })
+    expect(() => validateOmmCurriculumDefinition(mixedWithPlaceholderStep)).toThrow('without authored Steps')
+
     const withoutPostCyclePaths = curriculumCopy()
     withoutPostCyclePaths.entries = withoutPostCyclePaths.entries.filter(({ placement }) => placement !== 'post')
     expect(() => validateOmmCurriculumDefinition(withoutPostCyclePaths)).toThrow('Post-cycle Paths are missing')
@@ -73,5 +78,12 @@ describe('OMM curriculum definition', () => {
     expect(tree).toContain('Entrenamiento Mixto — Ciclo 5')
     expect(table.split('\n')).toHaveLength(OMM_CURRICULUM.entries.length + 2)
     expect(table).toContain('`potencia-de-un-punto`')
+  })
+
+  it('keeps Simulacros OMM as an empty draft Path after the five cycles', () => {
+    const simulationPath = OMM_CURRICULUM.entries.find(({ path }) => path.slug === 'simulacros-omm')
+    expect(simulationPath.placement).toBe('post')
+    expect(simulationPath.path.publicationStatus).toBe('draft')
+    expect(simulationPath.path.steps).toEqual([])
   })
 })
