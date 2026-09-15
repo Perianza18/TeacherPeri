@@ -43,23 +43,17 @@ async function preflight(existingBySlug) {
     throw new Error('Preparación para la OMM already owns Steps and cannot receive child Path references.')
   }
 
-  const mixedEntries = OMM_CURRICULUM.entries.filter(({ path }) => path.steps.length)
+  const mixedEntries = OMM_CURRICULUM.entries.filter(({ path }) =>
+    path.slug.startsWith('entrenamiento-mixto-ciclo-'))
   for (const { path: specification } of mixedEntries) {
     const path = existingBySlug.get(specification.slug)
     if (!path) continue
-    const [childReference, section, steps] = await Promise.all([
+    const [childReference, section] = await Promise.all([
       PathReference.exists({ parentPath: path._id }),
       PathSection.exists({ path: path._id }),
-      Step.find({ path: path._id }).sort({ order: 1 }),
     ])
     if (childReference || section) {
       throw new Error(`${specification.title} must remain a leaf Path and cannot own child references or sections.`)
-    }
-    for (const step of steps) {
-      const expected = specification.steps.find(({ order }) => order === step.order)
-      if (expected && expected.title !== step.title) {
-        throw new Error(`${specification.title} has authored Step ${step.order}; refusing to overwrite it with ${expected.title}.`)
-      }
     }
   }
 
@@ -173,33 +167,6 @@ async function applyRootReferences(target, root, pathBySlug, sectionByKey, repor
     !expectedIds.has(reference.childPath.toString())).length
 }
 
-async function applyMixedSteps(target, pathBySlug, report) {
-  const mixedEntries = OMM_CURRICULUM.entries.filter(({ path }) => path.steps.length)
-  for (const { path: specification } of mixedEntries) {
-    const path = pathBySlug.get(specification.slug)
-    const existingSteps = await Step.find({ path: path._id })
-    const existingByOrder = new Map(existingSteps.map((step) => [step.order, step]))
-    for (const stepSpecification of specification.steps) {
-      const existing = existingByOrder.get(stepSpecification.order)
-      if (existing) {
-        if (existing.title !== stepSpecification.title) {
-          throw new Error(`${specification.title} has authored Step ${existing.order}; refusing to overwrite it.`)
-        }
-        report.stepsReused += 1
-        continue
-      }
-      assertVerifiedDatabase(mongoose.connection, target)
-      await Step.create({
-        path: path._id,
-        order: stepSpecification.order,
-        title: stepSpecification.title,
-        description: stepSpecification.description,
-      })
-      report.stepsCreated += 1
-    }
-  }
-}
-
 async function applyOmmCurriculum() {
   validateOmmCurriculumDefinition()
   const target = developmentMigrationTarget()
@@ -214,8 +181,6 @@ async function applyOmmCurriculum() {
     referencesCreated: 0,
     referencesUpdated: 0,
     referencesReused: 0,
-    stepsCreated: 0,
-    stepsReused: 0,
     unrelatedRootReferencesPreserved: 0,
   }
   const pathSpecifications = [OMM_CURRICULUM.root, ...OMM_CURRICULUM.entries.map(({ path }) => path)]
@@ -230,7 +195,6 @@ async function applyOmmCurriculum() {
   const root = existingBySlug.get(OMM_CURRICULUM.root.slug)
   const sectionByKey = await resolveSections(target, root, report)
   await applyRootReferences(target, root, existingBySlug, sectionByKey, report)
-  await applyMixedSteps(target, existingBySlug, report)
 
   console.log(`Applied the OMM curriculum definition to ${target.dbName}.`)
   Object.entries(report).forEach(([key, value]) => console.log(`- ${key}: ${value}`))

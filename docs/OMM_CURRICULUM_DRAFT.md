@@ -6,6 +6,8 @@
 
 This document makes the proposed chronological OMM journey inspectable without promoting provisional curriculum choices into the canonical product contract. The generic Path behavior remains defined by [PRODUCT.md](PRODUCT.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
 
+For the subject-by-subject review view of the same 54-item baseline, see [OMM_SUBJECT_AUDIT.md](OMM_SUBJECT_AUDIT.md).
+
 ## Settled decisions
 
 - `Preparación para la OMM` is one root Path in the generic reusable Path engine.
@@ -14,8 +16,15 @@ This document makes the proposed chronological OMM journey inspectable without p
 - Each cycle ends with its reusable leaf Path `Entrenamiento Mixto — Ciclo N`.
 - Topic Paths use subject/topic identities rather than cycle-specific names. The mixed checkpoints are the intentional exception.
 - All new curriculum records default to `draft`. Nothing becomes public merely because the structure is applied.
-- The mixed Paths use the agreed rhythm `Reconoce → Resuelve → Mezcla → Reflexiona`; their actual problem selections remain editorial work.
+- The mixed Paths remain empty draft leaves. `Reconoce → Resuelve → Mezcla → Reflexiona` is editorial guidance for their progression, not four literal Steps.
+- `Simulacros OMM` is intended to become a parent Path containing reusable individual simulation Paths. Those children will be defined only after approved Exams and Problems are reviewed.
 - No Path completion, progress, access, or Phase 4 behavior is added or changed.
+
+## Mixed-training editorial guidance
+
+Earlier mixed training should emphasize recognizing broad problem areas, identifying recently learned tools, guided practice, and short complete solutions. Later checkpoints should progressively demand more independence, technique selection, combinations of old and new tools, difficult mixed problems, complete proof-writing, strategic experimentation, abandoning unproductive approaches, and reflection.
+
+This progression guides later authoring. It does not prescribe Step titles or create content records. Actual Steps and Problem selections remain pending editorial review.
 
 ## Preview
 
@@ -107,7 +116,7 @@ The section lines above are presentation headings. Every other line is an ordina
 | 9 | Máximo Común Divisor y Algoritmo de Euclides | `maximo-comun-divisor-y-algoritmo-de-euclides` | Ciclo 1 | introductorio | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 10 | Factorización y Ecuaciones Elementales | `factorizacion-y-ecuaciones-elementales` | Ciclo 1 | introductorio | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 11 | Principio del Palomar | `principio-del-palomar` | Ciclo 1 | introductorio | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
-| 12 | Entrenamiento Mixto — Ciclo 1 | `entrenamiento-mixto-ciclo-1` | Ciclo 1 | introductorio | draft | New definition; reuse exact match | 4 | 0 | Needs a reviewed accessible mixed-problem selection. |
+| 12 | Entrenamiento Mixto — Ciclo 1 | `entrenamiento-mixto-ciclo-1` | Ciclo 1 | introductorio | draft | New definition; reuse exact match | 0 | 0 | Needs authored Steps and a reviewed accessible mixed-problem selection. |
 | 13 | Círculos: Ángulos y Propiedades Fundamentales | `circulos-angulos-y-propiedades-fundamentales` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 14 | Congruencias y Residuos | `congruencias-y-residuos` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 15 | Desigualdades Fundamentales | `desigualdades-fundamentales` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
@@ -116,7 +125,7 @@ The section lines above are presentation headings. Every other line is an ordina
 | 18 | Ecuaciones Diofánticas Básicas | `ecuaciones-diofanticas-basicas` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 19 | Principio de Inclusión-Exclusión | `principio-de-inclusion-exclusion` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 20 | Sucesiones: Primeros Patrones | `sucesiones-primeros-patrones` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
-| 21 | Entrenamiento Mixto — Ciclo 2 | `entrenamiento-mixto-ciclo-2` | Ciclo 2 | omm | draft | New definition; reuse exact match | 4 | 0 | Needs a reviewed unlabeled mixed-problem selection. |
+| 21 | Entrenamiento Mixto — Ciclo 2 | `entrenamiento-mixto-ciclo-2` | Ciclo 2 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs authored Steps and a reviewed unlabeled mixed-problem selection. |
 | 22 | Ceva y Menelao | `ceva-y-menelao` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 23 | Polinomios y Raíces | `polinomios-y-raices` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 24 | Teoremas Clásicos de Aritmética Modular | `teoremas-clasicos-de-aritmetica-modular` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Fermat/Euler scope needs editorial review. |
@@ -126,7 +135,7 @@ The section lines above are presentation headings. Every other line is an ordina
 | 28 | Doble Conteo | `doble-conteo` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 29 | Configuraciones de Círculos | `configuraciones-de-circulos` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 30 | Recurrencias | `recurrencias` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
-| 31 | Entrenamiento Mixto — Ciclo 3 | `entrenamiento-mixto-ciclo-3` | Ciclo 3 | omm | draft | New definition; reuse exact match | 4 | 0 | Needs a reviewed multi-technique problem selection. |
+| 31 | Entrenamiento Mixto — Ciclo 3 | `entrenamiento-mixto-ciclo-3` | Ciclo 3 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs authored Steps and a reviewed multi-technique problem selection. |
 | 32 | Transformaciones Geométricas | `transformaciones-geometricas` | Ciclo 4 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Rotation/reflection/homothety scope needs review. |
 | 33 | Sucesiones y Recurrencias Avanzadas | `sucesiones-y-recurrencias-avanzadas` | Ciclo 4 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 34 | Órdenes y Estructura Modular | `ordenes-y-estructura-modular` | Ciclo 4 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
@@ -136,7 +145,7 @@ The section lines above are presentation headings. Every other line is an ordina
 | 38 | Grafos para Olimpiadas | `grafos-para-olimpiadas` | Ciclo 4 | omm | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 39 | Polinomios: Técnicas Avanzadas | `polinomios-tecnicas-avanzadas` | Ciclo 4 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 40 | Introducción a Ecuaciones Funcionales | `introduccion-a-ecuaciones-funcionales` | Ciclo 4 | omm | draft | New definition; reuse exact match | 0 | 0 | Scope and placement need review. |
-| 41 | Entrenamiento Mixto — Ciclo 4 | `entrenamiento-mixto-ciclo-4` | Ciclo 4 | avanzado | draft | New definition; reuse exact match | 4 | 0 | Needs a reviewed viewpoint-selection problem set. |
+| 41 | Entrenamiento Mixto — Ciclo 4 | `entrenamiento-mixto-ciclo-4` | Ciclo 4 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs authored Steps and a reviewed viewpoint-selection problem set. |
 | 42 | Geometría Sintética Avanzada | `geometria-sintetica-avanzada` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
 | 43 | Descenso Infinito y Salto de Vieta | `descenso-infinito-y-salto-de-vieta` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Scope and sequencing need review. |
 | 44 | Ecuaciones Funcionales: Técnicas Intermedias | `ecuaciones-funcionales-tecnicas-intermedias` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs approved Steps/content. |
@@ -147,8 +156,8 @@ The section lines above are presentation headings. Every other line is an ordina
 | 49 | Estrategias de Ataque de Problemas | `estrategias-de-ataque-de-problemas` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs an approved strategy sequence. |
 | 50 | Redacción y Pulido de Soluciones | `redaccion-y-pulido-de-soluciones` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Relationship to Técnicas de Demostración needs review. |
 | 51 | Problemas de Síntesis | `problemas-de-sintesis` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Exact role versus mixed training needs review. |
-| 52 | Entrenamiento Mixto — Ciclo 5 | `entrenamiento-mixto-ciclo-5` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 4 | 0 | Needs hard mixed problems and contest-like sets. |
-| 53 | Simulacros OMM | `simulacros-omm` | — | avanzado | draft | New definition; reuse exact match | 0 | 0 | Title and child/Step structure are provisional; inspect Exams first. |
+| 52 | Entrenamiento Mixto — Ciclo 5 | `entrenamiento-mixto-ciclo-5` | Ciclo 5 | avanzado | draft | New definition; reuse exact match | 0 | 0 | Needs authored Steps, hard mixed problems, and contest-like sets. |
+| 53 | Simulacros OMM | `simulacros-omm` | — | avanzado | draft | New definition; reuse exact match | 0 | 0 | Intended parent; individual simulation Paths require approved Exam/Problem review. |
 | 54 | Consejos para Competir | `consejos-para-competir` | — | avanzado | draft | New definition; reuse exact match | 0 | 0 | Title and content are provisional. |
 
 ## Working assumptions
@@ -158,15 +167,15 @@ The section lines above are presentation headings. Every other line is an ordina
 - `Invariantes` and `Principio Extremal` are placed with combinatorial/problem-solving material for balance, but remain reusable beyond that subject context.
 - `Sucesiones: Primeros Patrones` and `Recurrencias` are currently labeled algebra for the inventory; this does not constrain future Topics or Tags.
 - No controlled Tags are created automatically. Tag governance and exact taxonomy remain deferred.
-- `Simulacros OMM` stays an empty draft until existing Exams and the child-Paths-or-Steps choice are reviewed.
+- `Simulacros OMM` stays an empty draft until reusable individual simulation Paths can be designed from reviewed Exams and Problems.
 - Exact title/slug matches may be reused by the database application. Near or ambiguous matches stop the command for human review rather than being repurposed.
 
 ## Editorial gaps
 
 - The repository has no existing source-defined Paths or approved Theory/List/Exam mappings for this curriculum. Test Paths are fixtures and are not reusable product content.
 - The existing Problem dataset contains OMM/OMMU and Putnam material, but its suitability, difficulty, rights/provenance, and exact curriculum placement have not been reviewed here. No Problem was attached automatically.
-- Every non-mixed topic Path is intentionally an empty draft and needs ordered Steps plus approved references before publication.
-- Each mixed Path has four structural workflow Steps but no problem references. Editorial review must select appropriate existing Problems and decide whether additional Theory, Lists, or Exams belong there.
+- Every topic Path is intentionally an empty draft and needs ordered Steps plus approved references before publication.
+- Each mixed Path is also an empty draft. Editorial review must author its Steps, select appropriate existing Problems, and decide whether additional Theory, Lists, or Exams belong there.
 - The two advice Paths, proof foundations, strategic-solving Paths, synthesis work, and simulations need authored content.
 - The practice-density progression is represented by the curriculum intent and mixed checkpoints; actual problem counts remain undecided.
 
@@ -182,7 +191,7 @@ The command:
 - creates only missing Paths as drafts;
 - creates/reuses the five root-owned PathSections;
 - creates or updates only the specified root PathReferences and preserves unrelated references;
-- creates only missing mixed-training Steps and refuses to overwrite a conflicting authored Step;
+- does not create, replace, or remove any Steps;
 - never deletes or resets any record.
 
 The command has not been run as part of this draft. Run the database-free preview first:
@@ -206,6 +215,5 @@ npm run db:apply:omm-curriculum
 2. Does each cycle’s order reflect the desired prerequisites without implying access locks?
 3. Which Ciclo 4–5 Paths should remain `avanzado`, and which should be `omm`?
 4. Which existing Problems are pedagogically and legally suitable for each topic and mixed checkpoint?
-5. Should `Simulacros OMM` become a parent of reusable simulation Paths or a leaf with Steps referencing Exams?
-6. Is `Problemas de Síntesis` distinct enough from `Entrenamiento Mixto — Ciclo 5`?
-7. How should `Redacción y Pulido de Soluciones` reuse or relate to `Técnicas de Demostración`?
+5. Is `Problemas de Síntesis` distinct enough from `Entrenamiento Mixto — Ciclo 5`?
+6. How should `Redacción y Pulido de Soluciones` reuse or relate to `Técnicas de Demostración`?
