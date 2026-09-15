@@ -188,6 +188,24 @@ A Path must **never contain both child Paths and Steps at the same level** in th
 
 This is a core invariant.
 
+### Path Identity and References
+
+A Path is a unique standalone TeacherPeri object. A Path does not own another Path. Instead, a Path may reference another Path at an explicit position in its ordered child structure. The referenced child remains one object and may be referenced by any number of parent Paths.
+
+For example, `Potencia de un Punto` exists once even when both `Geometría para la OMM` and `Entrenamiento Avanzado de Círculos` include it. Objects are independent; structures connect them through references. A Path therefore has no permanent stored parent. Breadcrumbs must reflect the valid traversal a visitor used to reach a Path, not an arbitrarily selected parent.
+
+### Related Paths
+
+A Path may also point to another independent Path for recommendation or discovery. The controlled relationship types are `prerequisite` (Repasa primero), `deeper` (Profundiza), and `related` (También te puede interesar). A Related Path is never a child Path: it has no structural order and does not participate in hierarchy, breadcrumbs, descendant traversal, completion, or progress. Self-references and duplicate equivalent related references are invalid.
+
+### Path Level
+
+A Path may optionally declare `introductorio`, `omm`, or `avanzado` as its intended context. The field is descriptive only and does not create a Path type, select a separate engine, gate access, or affect completion. The usual OMM content convention may be Main Path → Subject → Module → Topic → Steps, but the generic Path graph has no shallow technical depth limit.
+
+### Presentation Sections
+
+`PathReference.order` is the canonical structural and presentation order of every child Path within a parent. A parent Path may optionally define lightweight presentation sections such as `Ciclo 1 — Primeros Pasos`; each section annotates positions in that existing sequence with a heading and never reorders child references. Unsectioned children may appear before, between, or after sectioned groups while retaining that global order. A section is not a Path and has no slug, standalone route, completion, progress, breadcrumb, search/discovery entry, Related Paths, descendants, or effect on traversal validity. Child Paths remain reusable standalone objects; parents without sections continue to show their normal ordered child list.
+
 ## 6.2 Recursive Example — OMM
 
 ```text
@@ -1805,14 +1823,15 @@ Next:
 - ordered child Paths / Steps invariant
 - references
 - breadcrumbs
-- completion/progress
+- leaf completion and recursive unique-leaf progress
 - reuse
-- add/save actions
 
 ## Phase 4 — Mi Espacio
-- My Routes
+- build on the existing completion/progress foundation
+- My Routes / followed Routes
 - pinned/normal
 - saved items
+- personal dashboard
 - recent activity
 - badges
 

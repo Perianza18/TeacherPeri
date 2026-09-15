@@ -13,6 +13,7 @@ const GRADIENT = 'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)
 // scroll-spy para saberlo.
 const NAV_LINKS = [
   { path: '/', label: 'Inicio' },
+  { path: '/rutas', label: 'Rutas' },
   { path: '/entrenamiento', label: 'Entrenamiento' },
   { path: '/recursos', label: 'Más Recursos' },
   { path: '/experiencias', label: 'Experiencias' },

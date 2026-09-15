@@ -39,6 +39,12 @@ Paths are not content libraries or folders. TeacherPeri should guide students wi
 
 A Path is recursive and reusable. It contains **either** an ordered collection of child Paths **or** an ordered collection of Steps, never both. A Path containing Steps is a leaf Path. The same Path may appear in multiple larger Paths; nesting must not create cycles.
 
+A Path is a unique standalone TeacherPeri object. One Path never owns another Path: an ordered Path reference connects an independent parent Path to an independent child Path. The same child Path can be referenced by several parents without duplication. A Path has no permanent parent, so breadcrumbs reflect the valid traversal through which a visitor reached it rather than a field stored on the Path itself.
+
+A Path may also have non-structural Related Path references for discovery: `prerequisite` (Repasa primero), `deeper` (Profundiza), or `related` (También te puede interesar). These references never create hierarchy, breadcrumbs, ordering, descendants, or progress. They point to the same independent Path identity and must not duplicate it. An optional `introductorio`, `omm`, or `avanzado` level describes intended context only; it never controls access or completion. Curriculum depth remains a content-design choice, not a technical nesting limit.
+
+`PathReference.order` is the canonical structural and presentation order of every child Path within its parent. A parent Path may optionally use lightweight presentation sections to annotate positions in that ordered sequence with headings; they never reorder children. An unsectioned child may appear before, between, or after sectioned children without moving. A section is not a Path: it has no slug, route, completion, progress, breadcrumb, search result, Related Paths, or effect on traversal and descendants. Unsectioned parent Paths retain their existing ordered child presentation.
+
 A Step contains:
 
 - Title.

@@ -76,3 +76,13 @@ Phase 2 adds an additive `Problem.categories` array while retaining the legacy s
 ## Foundation boundary
 
 This phase establishes canonical documentation, database safety, supported runtime/environment setup, CI, accurate package identity, and source-based build handling. It preserves application behavior and does not implement Paths, Threads, new material libraries, Experiences storage, badges, saving, or Mi Espacio. [ROADMAP.md](ROADMAP.md) describes the later sequence; it is not authorization to start those phases automatically.
+
+## Phase 3 Path engine
+
+Phase 3 introduces independent Paths without repurposing `Category.parent` or adding a permanent parent field to a Path. Ordered `PathReference` records form an acyclic DAG, so an existing Path can appear in more than one guide without duplicated Path records. Leaf-owned Steps hold references to existing Phase 2 content by type and stable ID. They do not copy content or add Step completion.
+
+Published traversal is contextual and shareable: every segment in a `/rutas/...` URL must correspond to a stored Path reference. A standalone Path URL intentionally has no invented parent breadcrumb. Public rendering suppresses draft/archived Paths and content; a retained Step reference whose target is no longer public is shown as unavailable instead of being deleted or exposing unpublished details. Completion is a unique User ↔ leaf Path record and recursive parent progress counts unique reachable published leaves once. This adds no Mi Espacio, follow/save, badge, Thread, or Experience system.
+
+Related Path recommendations are stored separately from the structural graph. They use controlled prerequisite, deeper, and related labels but never change hierarchy or progress. Optional Path level metadata is descriptive and does not introduce a second Path engine or a technical curriculum-depth limit.
+
+Path Tags reuse the controlled Tag system for public discovery while remaining separate from Path levels and structural behavior. `PathReference.order` remains the canonical order for every structural child. Optional `PathSection` records annotate that sequence with durable parent-page headings; they never move or reorder child references, and invalid presentation metadata falls back to an unsectioned child rather than hiding it. A section has no route, progress, breadcrumb, descendant, or reusable Path identity.
