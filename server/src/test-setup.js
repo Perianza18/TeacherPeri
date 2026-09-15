@@ -14,6 +14,7 @@ let verified = false
 beforeAll(async () => {
   await mongoose.connect(target.uri, target.connectionOptions)
   assertVerifiedDatabase(mongoose.connection, target)
+  await Promise.all(Object.values(mongoose.models).map((model) => model.init()))
   verified = true
 })
 

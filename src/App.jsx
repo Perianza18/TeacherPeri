@@ -12,6 +12,8 @@ import ColaboradoresPage from './pages/ColaboradoresPage'
 import CustomCursor from './components/CustomCursor'
 import LibraryCollection from './components/training/LibraryCollection'
 import LibraryDetailPage from './pages/LibraryDetailPage'
+import RutasPage from './pages/RutasPage'
+import PathPage from './pages/PathPage'
 
 // Este archivo solo define las rutas (+ chrome global como el cursor y,
 // ahora, la sesión de usuario). No agreguen contenido de página aquí: el
@@ -33,6 +35,8 @@ function App() {
         <CustomCursor />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/rutas" element={<RutasPage />} />
+          <Route path="/rutas/*" element={<PathPage />} />
           <Route path="/entrenamiento" element={<EntrenamientoPage />}>
             <Route index element={<Navigate to="problemas" replace />} />
             <Route path="problemas" element={<Problemas />} />
