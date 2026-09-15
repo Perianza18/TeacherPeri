@@ -52,7 +52,7 @@ describe('Path graph model', () => {
     path.title = 'Título editado'
     await path.save()
     expect(path.slug).toBe('slug-estable')
-    await expect(pathFixture('slug-estable')).rejects.toThrow()
+    await expect(pathFixture('slug-estable')).rejects.toMatchObject({ code: 11000 })
   })
 
   it('keeps Paths independent, supports multiple parents, and rejects duplicate edges/orders', async () => {
