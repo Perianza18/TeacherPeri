@@ -23,6 +23,7 @@ import tagsRoutes from './routes/tags.routes.js'
 import theoryRoutes from './routes/theory.routes.js'
 import listsRoutes from './routes/lists.routes.js'
 import examsRoutes from './routes/exams.routes.js'
+import pathsRoutes from './routes/paths.routes.js'
 
 const app = express()
 
@@ -73,5 +74,6 @@ app.use('/api/tags', tagsRoutes)
 app.use('/api/theory', theoryRoutes)
 app.use('/api/lists', listsRoutes)
 app.use('/api/exams', examsRoutes)
+app.use('/api/paths', pathsRoutes)
 
 export default app

@@ -24,6 +24,9 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | Route | Implemented page |
 | --- | --- |
 | `/` | TeacherPeri introduction and home sections |
+| `/rutas` | Public published-Path discovery with text search |
+| `/rutas/:slug` | Standalone public Path page |
+| `/rutas/:parent/.../:slug` | Contextual public Path traversal with validated breadcrumbs |
 | `/entrenamiento` | Redirects to the public Problemas library |
 | `/entrenamiento/problemas`, `/entrenamiento/problemas/:id` | Legacy Problem browser and stable public Problem detail URL |
 | `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Published Theory library and detail URL |
@@ -36,7 +39,7 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | `/sobre-mi` | Personal presentation, with placeholder material |
 | `/colaboradores` | Placeholder |
 
-There are no frontend routes for Paths, Threads, or Mi Espacio. `/problemas` and `/materiales` are not current routes. Training libraries have stable nested URLs; the legacy Problem browser still keeps its selected modal, filters, and folder position in component state. The intended primary navigation in PRODUCT.md has not yet been applied.
+There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/materiales` are not current routes. Training libraries have stable nested URLs; the legacy Problem browser still keeps its selected modal, filters, and folder position in component state. The intended primary navigation in PRODUCT.md has not yet been applied beyond the Rutas link.
 
 ## Current API and persistence
 
@@ -48,6 +51,10 @@ There are no frontend routes for Paths, Threads, or Mi Espacio. `/problemas` and
 | `GET /api/theory`, `GET /api/theory/:id` | Published Theory listing/detail |
 | `GET /api/lists`, `GET /api/lists/:id` | Published externally authored List listing/detail |
 | `GET /api/exams`, `GET /api/exams/:id` | Published Exam listing/detail with ordered Problem references |
+| `GET /api/paths`, `GET /api/paths/:slug` | Public discovery and standalone detail for structurally valid published Paths |
+| `GET /api/paths?traversal=a/b` | Validated contextual Path traversal and breadcrumbs without reserving a Path slug |
+| `GET /api/paths/:slug/progress` | Authenticated recursively derived Path progress |
+| `PUT /api/paths/:slug/completion` | Authenticated leaf-Path completion toggle/set |
 | `GET /api/problems/:problemId/comments` | Public embedded comments |
 | `POST /api/problems/:problemId/comments` | Authenticated comment creation |
 | `DELETE /api/problems/:problemId/comments/:commentId` | Author-only permanent comment deletion, retained legacy behavior |
@@ -67,8 +74,14 @@ Existing Mongoose models are:
 | `Exam` | Competition/year/round metadata and ordered references to existing Problems |
 | `Comment` | Problem reference, author reference, flat text body |
 | `ContactMessage` | Author reference, profile category, contact reason, message |
+| `Path` | Standalone slugged guide with controlled Tags, optional descriptive level, and lifecycle |
+| `PathReference` | Ordered parent-to-child Path reference in an acyclic reusable graph |
+| `RelatedPath` | Non-structural typed Path recommendation reference |
+| `PathSection` | Parent-owned presentation heading for grouping Path references |
+| `Step` | Ordered leaf-owned instruction with typed TeacherPeri references and external resources |
+| `PathCompletion` | Unique User-to-leaf-Path completion record |
 
-All have timestamps. These are the only implemented domain models; future systems in PRODUCT.md do not yet have storage or APIs. Existing references are not a complete integrity layer: MongoDB does not automatically enforce referenced-record existence or hierarchy acyclicity.
+All have timestamps. Existing references are not a complete integrity layer: MongoDB does not automatically enforce referenced-record existence or hierarchy acyclicity, so Path and Step model validation explicitly protects their MVP invariants.
 
 ## Authentication foundation
 
@@ -96,13 +109,15 @@ The legacy Problem view still loads all Problems and Categories and filters in t
 
 These are present behaviors to preserve until explicitly replaced, not the final search contract. Difficulty/success values in the seed are illustrative estimates and must not be treated as measured learning analytics.
 
-## Future architectural constraints
+## Path engine
 
-### Folders, Paths, and stable identity
+Categories organize material; Paths guide learners through it. The Phase 3 engine uses independent `Path` documents connected by ordered `PathReference` documents, never a `parentPath` field. A child Path can be referenced by multiple parents while preserving one stable identity. `PathReference` rejects self-references, duplicate parent/child edges, duplicate per-parent positions, Paths with Steps, and indirect cycles. `Step` rejects non-leaf ownership and duplicate positions, so a Path contains ordered child Paths or ordered Steps, never both.
 
-Categories organize material; Paths guide learners through it. A single-parent Category tree cannot stand in for a reusable Path graph. A future Path may have multiple parents and must remain acyclic, with ordered children **or** ordered Steps. A Step references content rather than owning duplicate copies.
+Published Path discovery/detail only exposes structurally valid published Paths. Traversal URLs are contextual: `/rutas/a/b` is valid only when the stored reference `a → b` exists, and the API returns breadcrumbs for that exact chain. Standalone URLs have no fabricated parent breadcrumb. A Step stores typed identity references to existing Problem, Theory, List, or Exam records. Public rendering resolves only publicly visible targets; retained references to draft or archived content render as unavailable without copying or leaking the target content.
 
-Content and Paths need stable object identity across references, editorial changes, bookmarks, completion, and activity. Do not regenerate persisted object identities as an ordinary update mechanism. Completion is keyed conceptually by User ↔ Path; unique descendant leaves count once per ancestor. Preserve historical completion and future versioning expectations without choosing a final schema in this phase.
+`Path.tags` reuses the controlled Tag system and supports public Path discovery filtering; tags are descriptive and never alter structural behavior. `RelatedPath` is a separate recommendation-only relation with controlled prerequisite, deeper, and related labels. It is excluded from structural traversal, breadcrumbs, ordering, and progress. `PathReference.order` is the canonical order of every structural child. `PathSection` is optional parent presentation metadata: it annotates positions in that sequence with headings without reordering any child, and the public API returns an ordered presentation stream. A missing or mismatched section falls back to an unsectioned child so presentation metadata cannot hide a valid structural reference. Sections have no identity outside the page and do not affect the graph. `Path.level` is optional `introductorio`, `omm`, or `avanzado` metadata and is descriptive only. None creates a separate Path engine or nesting limit.
+
+`PathCompletion` is unique by User and Path. Only a published leaf may be manually completed. Server-side progress traverses the published graph with visited sets, gathers unique descendant leaves, and counts each once; parent progress is descriptive and cannot lock content. Completion is reused across every traversal that reaches the same leaf. Following, saving, dashboard views, badges, and Path versioning are deliberately not part of this implementation.
 
 ### Shared content and metadata
 
