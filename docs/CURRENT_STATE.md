@@ -46,6 +46,8 @@ The currently recorded section examples are:
 
 Each cycle ends with a normal reusable child Path named **`Entrenamiento Mixto — Ciclo N`**. That child Path remains part of the parent’s `PathReference.order`; it is not a section heading.
 
+The repository now includes a declarative, validated working draft of this complete chronology and a database-free tree/inventory preview. Its proposed topic identities, levels, mixed-training Steps, assumptions, and unresolved editorial work are documented in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md). All proposed Paths default to `draft`; the definition has not itself published or applied curriculum records.
+
 ## Next phase: Phase 4 — Mi Espacio
 
 Phase 4 builds private Mi Espacio on the existing Phase 3 completion/progress foundation. It will add followed Routes (Mis Rutas) with only `pinned` and `normal` placement for MVP, saved items, a personal dashboard, and continue/recent activity. Following a Path and saving an item remain distinct actions. Phase 4 must not create a second completion or progress system.

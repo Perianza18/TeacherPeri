@@ -119,6 +119,12 @@ Published Path discovery/detail only exposes structurally valid published Paths.
 
 `PathCompletion` is unique by User and Path. Only a published leaf may be manually completed. Server-side progress traverses the published graph with visited sets, gathers unique descendant leaves, and counts each once; parent progress is descriptive and cannot lock content. Completion is reused across every traversal that reaches the same leaf. Following, saving, dashboard views, badges, and Path versioning are deliberately not part of this implementation.
 
+### OMM curriculum draft
+
+The repository contains a declarative working definition for `Preparación para la OMM` in `server/src/data/ommCurriculum.js`. It uses the generic engine: the root directly references reusable topic Paths in one chronological order, while five root-owned `PathSection` records provide cycle headings. The database-free `npm run curriculum:preview:omm` command validates and prints the proposed tree and inventory. The full provisional sequence, assumptions, and editorial gaps are recorded in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md).
+
+`npm run db:apply:omm-curriculum` is a guarded additive development migration. It only accepts an explicitly confirmed loopback `teacherperi_dev` target, reuses exact Path identities, creates missing Paths as drafts, and refuses conflicting identities or authored mixed-training Steps. It does not delete records or overwrite existing Path editorial fields. Applying this draft to a database remains a deliberate separate action; the curriculum definition alone does not publish any Path.
+
 ### Shared content and metadata
 
 Use references to reuse one stored object across Paths and discussions. Different libraries may need different material structures, but share consistent identity, metadata/tagging, discovery, and reference conventions. Initial content organization is one canonical folder placement plus multiple controlled tags. Tags complement folders.
