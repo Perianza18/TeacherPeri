@@ -123,7 +123,7 @@ Published Path discovery/detail only exposes structurally valid published Paths.
 
 The repository contains a declarative working definition for `Preparación para la OMM` in `server/src/data/ommCurriculum.js`. It uses the generic engine: the root directly references reusable topic Paths in one chronological order, while five root-owned `PathSection` records provide cycle headings. The database-free `npm run curriculum:preview:omm` command validates and prints the proposed tree and inventory. The full provisional sequence, assumptions, and editorial gaps are recorded in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md).
 
-`npm run db:apply:omm-curriculum` is a guarded additive development migration. It only accepts an explicitly confirmed loopback `teacherperi_dev` target, reuses exact Path identities, and creates missing Paths as drafts. It refuses identity and structural conflicts, does not author Steps, and does not delete records or overwrite existing Path editorial fields. Applying this draft to a database remains a deliberate separate action; the curriculum definition alone does not publish any Path.
+`npm run db:apply:omm-curriculum` is a guarded additive development migration. It only accepts an explicitly confirmed loopback `teacherperi_dev` target, reuses exact Path identities, and creates missing Paths as drafts. It supports recursive references, does not author Steps, and refuses identity or structural conflicts. Draft v2 contains unresolved Groups, so the command currently fails closed before connecting to MongoDB. It does not delete records or overwrite existing Path editorial fields.
 
 ### Shared content and metadata
 
