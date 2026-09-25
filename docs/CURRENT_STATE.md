@@ -46,6 +46,8 @@ The currently recorded section examples are:
 
 Each cycle ends with a normal reusable child Path named **`Entrenamiento Mixto — Ciclo N`**. That child Path remains part of the parent’s `PathReference.order`; it is not a section heading.
 
+The repository now includes Curriculum Draft v2, a human-reviewed recursive working draft with reusable Group Paths, intended empty leaves, root-only cycle sections, and a database-free preview. Its subject audit, pending Groups, and editorial questions are documented in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md) and [OMM_SUBJECT_AUDIT.md](OMM_SUBJECT_AUDIT.md). All proposed Paths default to `draft`; the definition has not itself published or applied curriculum records.
+
 ## Next phase: Phase 4 — Mi Espacio
 
 Phase 4 builds private Mi Espacio on the existing Phase 3 completion/progress foundation. It will add followed Routes (Mis Rutas) with only `pinned` and `normal` placement for MVP, saved items, a personal dashboard, and continue/recent activity. Following a Path and saving an item remain distinct actions. Phase 4 must not create a second completion or progress system.
