@@ -1,5 +1,13 @@
 # OMM launch content audit
 
+## Batch 1 source status — 2026-09-26
+
+Content Batch 1 now has a source-controlled draft definition covering all 35 intended leaves in the pre-cycle Groups and Ciclo 1. It defines 35 substantial Spanish Theory articles and 140 ordered Steps (four per leaf). Source validation reports no empty Batch 1 leaf and no Steps on Group Paths. Nothing has been applied to the database or published.
+
+Two existing Problems are referenced as optional advanced challenges only in the bases/digits leaves: `PUTNAM-2023-A5` and `PUTNAM-2023-B2`. Their existing identities and labels are unchanged. Their status remains `provenance unclear — requires review`; the lesson copy warns learners that provenance is unverified and does not present them as official material.
+
+The original READY/PARTIAL/EMPTY counts below describe the pre-authoring audit of existing content. They are preserved as the evidence baseline rather than retroactively rewritten. Batch 1 source readiness and remaining human-review work are summarized in [OMM_LAUNCH_CONTENT_BATCH1.md](OMM_LAUNCH_CONTENT_BATCH1.md).
+
 ## Scope and method
 
 This audit covers every intended Leaf Path in the three pre-cycle Groups and Ciclos 1–3 of `Preparación para la OMM`. It does not change the curriculum, create Steps, attach references, create content, publish Paths, or run a migration.

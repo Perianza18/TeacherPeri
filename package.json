@@ -13,9 +13,11 @@
     "preview": "vite preview",
     "server": "nodemon --watch server server/src/server.js",
     "curriculum:preview:omm": "node server/src/scripts/preview-omm-curriculum.js",
+    "curriculum:preview:omm-content": "node server/src/scripts/preview-omm-launch-content.js",
     "db:reset:dev": "node server/src/seed.js",
     "db:backfill:problem-categories": "node server/src/migrations/backfill-problem-categories.js",
     "db:apply:omm-curriculum": "node server/src/migrations/apply-omm-curriculum.js",
+    "db:apply:omm-content-batch1": "node server/src/migrations/apply-omm-launch-content.js",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "vitest run --config vitest.unit.config.js",
     "test:integration": "vitest run --config vitest.config.js"
