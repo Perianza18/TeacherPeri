@@ -112,7 +112,14 @@ async function publicChildReference(reference, kinds) {
   const kind = child && kinds.get(child._id.toString())
     ? structureKind(kinds.get(child._id.toString()))
     : 'invalid'
-  if (!child || kind === 'invalid') return { childPath: reference.childPath, order: reference.order, section: reference.section, available: false }
+  if (!child || kind === 'invalid') {
+    const unavailable = { childPath: reference.childPath, order: reference.order, section: reference.section, available: false }
+    if (!reference.previewWhenUnavailable) return unavailable
+    const preview = await Path.findById(reference.childPath).select('title').lean()
+    return preview
+      ? { ...unavailable, title: preview.title, plannedPreview: true, state: 'coming-soon' }
+      : unavailable
+  }
   return {
     childPath: child._id,
     slug: child.slug,
@@ -144,12 +151,28 @@ export async function publicPathDetail(path) {
     const sectionById = new Map(sections.map((section) => [section._id.toString(), section]))
     const childPaths = (await Promise.all(references.map((reference) => publicChildReference(reference, structures))))
       .map((child) => child.section && !sectionById.has(child.section.toString()) ? { ...child, section: null } : child)
+    const childrenBySection = new Map()
+    childPaths.forEach((child) => {
+      if (!child.section) return
+      const key = child.section.toString()
+      if (!childrenBySection.has(key)) childrenBySection.set(key, [])
+      childrenBySection.get(key).push(child)
+    })
     let previousSectionId = null
     const presentation = childPaths.flatMap((child) => {
       const section = child.section ? sectionById.get(child.section.toString()) : null
       const sectionId = section?._id.toString() || null
       const heading = section && sectionId !== previousSectionId
-        ? [{ type: 'section', section: { _id: section._id, title: section.title } }]
+        ? [{
+            type: 'section',
+            section: {
+              _id: section._id,
+              title: section.title,
+              ...(childrenBySection.get(sectionId)?.every((item) => item.plannedPreview)
+                ? { state: 'under-construction' }
+                : {}),
+            },
+          }]
         : []
       previousSectionId = sectionId
       return [...heading, { type: 'child', child }]

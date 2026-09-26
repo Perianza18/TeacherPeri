@@ -45,6 +45,8 @@ A Path may also have non-structural Related Path references for discovery: `prer
 
 `PathReference.order` is the canonical structural and presentation order of every child Path within its parent. A parent Path may optionally use lightweight presentation sections to annotate positions in that ordered sequence with headings; they never reorder children. An unsectioned child may appear before, between, or after sectioned children without moving. A section is not a Path: it has no slug, route, completion, progress, breadcrumb, search result, Related Paths, or effect on traversal and descendants. Unsectioned parent Paths retain their existing ordered child presentation.
 
+An unavailable child reference is anonymous by default. An explicit planned-preview flag may show its title and `Próximamente` state in the parent without a link or any draft description, content, descendants, completion, or progress. Sections composed entirely of these previews may display `En construcción` as derived presentation copy.
+
 A Step contains:
 
 - Title.

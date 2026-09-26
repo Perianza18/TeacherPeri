@@ -18,6 +18,34 @@ describe('OMM Curriculum Draft v2', () => {
     expect(OMM_CURRICULUM.paths.filter((item) => item.slug.startsWith('entrenamiento-mixto-')).every((item) => item.steps.length === 0)).toBe(true)
   })
 
+  it('opts only Ciclos 4–5 root topics into safe unavailable previews', () => {
+    const previews = OMM_CURRICULUM.references.filter((item) => item.previewWhenUnavailable)
+    expect(new Set(previews.map((item) => item.sectionKey))).toEqual(new Set(['cycle-4', 'cycle-5']))
+    expect(previews).toHaveLength(19)
+    expect(previews.map((item) => item.childSlug)).toEqual([
+      'eje-radical',
+      'teoremas-modulares',
+      'sucesiones-y-recurrencias',
+      'transformaciones-geometricas',
+      'funciones-aritmeticas-y-valuaciones',
+      'biyecciones-y-conteo-recursivo',
+      'ecuaciones-funcionales-1',
+      'juegos-y-estrategias',
+      'entrenamiento-mixto-ciclo-4',
+      'semejanza-espiral',
+      'ecuaciones-funcionales-2',
+      'trigonometria-olimpica',
+      'grafos-para-olimpiadas',
+      'construcciones-auxiliares-y-estrategias-geometricas',
+      'estrategias-de-teoria-de-numeros',
+      'estrategias-de-desigualdades',
+      'estrategias-algebraicas',
+      'estrategias-combinatorias',
+      'entrenamiento-mixto-ciclo-5',
+    ])
+    expect(OMM_CURRICULUM.references.filter((item) => item.parentSlug !== OMM_CURRICULUM.root.slug).every((item) => !item.previewWhenUnavailable)).toBe(true)
+  })
+
   it('preserves ordered nested groups and confirmed simulation/number-theory children', () => {
     const bySlug = new Map(OMM_CURRICULUM.paths.map((item) => [item.slug, item]))
     expect(bySlug.get('fundamentos-para-olimpiadas').children.map((item) => item.slug)).toEqual(['que-es-la-omm', 'por-que-hacer-olimpiadas-de-matematicas', 'como-entrenar-para-una-olimpiada', 'como-abordar-un-problema', 'introduccion-a-las-demostraciones', 'como-escribir-una-solucion'])

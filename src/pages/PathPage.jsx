@@ -10,14 +10,42 @@ function joinedPath(slugs) {
   return `/rutas/${slugs.map(encodeURIComponent).join('/')}`
 }
 
-function ChildPathCard({ child, slugs }) {
-  return child.available ? (
+export function ChildPathCard({ child, slugs }) {
+  if (child.available) return (
     <Link to={joinedPath([...slugs, child.slug])} className="block rounded-xl border border-brand-200 bg-white p-5 transition hover:border-[#E57505]">
         <p className="text-xs font-semibold text-brand-500">Paso {child.order}</p>
         <h3 className="mt-1 text-lg font-semibold text-brand-900">{child.title}</h3>
         {child.description && <p className="mt-2 text-sm text-brand-600">{child.description}</p>}
     </Link>
-  ) : <div className="rounded-xl border border-brand-200 bg-brand-50 p-5 text-sm text-brand-600">Este tramo de la Ruta no está disponible públicamente.</div>
+  )
+  if (child.plannedPreview) return (
+    <article
+      aria-disabled="true"
+      aria-label={`${child.title} — Próximamente`}
+      className="rounded-xl border border-brand-200 bg-brand-50 p-5"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold text-brand-500">Paso {child.order}</p>
+          <h3 className="mt-1 text-lg font-semibold text-brand-800">{child.title}</h3>
+        </div>
+        <span className="rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-semibold text-brand-700">Próximamente</span>
+      </div>
+    </article>
+  )
+  return <div className="rounded-xl border border-brand-200 bg-brand-50 p-5 text-sm text-brand-600">Este tramo de la Ruta no está disponible públicamente.</div>
+}
+
+export function PathSectionHeading({ section, index }) {
+  return (
+    <div key={`${section._id}-${index}`} className="pt-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <h3 className="text-lg font-semibold text-brand-800">{section.title}</h3>
+        {section.state === 'under-construction' && <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">En construcción</span>}
+      </div>
+      {section.state === 'under-construction' && <p className="mt-1 text-sm text-brand-600">Estamos preparando y organizando el contenido de este ciclo.</p>}
+    </div>
+  )
 }
 
 export default function PathPage() {
@@ -128,7 +156,7 @@ export default function PathPage() {
                 <h2 className="text-2xl font-semibold text-brand-900">Siguientes Rutas</h2>
                 {path.presentation.map((item, index) => (
                   item.type === 'section'
-                    ? <h3 key={`${item.section._id}-${index}`} className="pt-3 text-lg font-semibold text-brand-800">{item.section.title}</h3>
+                    ? <PathSectionHeading key={`${item.section._id}-${index}`} section={item.section} index={index} />
                     : <ChildPathCard key={item.child.order} child={item.child} slugs={slugs} />
                 ))}
               </div>

@@ -206,6 +206,8 @@ A Path may optionally declare `introductorio`, `omm`, or `avanzado` as its inten
 
 `PathReference.order` is the canonical structural and presentation order of every child Path within a parent. A parent Path may optionally define lightweight presentation sections such as `Ciclo 1 — Primeros Pasos`; each section annotates positions in that existing sequence with a heading and never reorders child references. Unsectioned children may appear before, between, or after sectioned groups while retaining that global order. A section is not a Path and has no slug, standalone route, completion, progress, breadcrumb, search/discovery entry, Related Paths, descendants, or effect on traversal validity. Child Paths remain reusable standalone objects; parents without sections continue to show their normal ordered child list.
 
+Unavailable child references expose no draft title by default. A reference may explicitly opt into a planned preview that reveals only the child title, its existing order, and a noninteractive coming-soon state. It never publishes the child, creates a route, reveals draft descriptions or descendants, or contributes to completion and progress. A section whose children are all planned unavailable previews may derive an `En construcción` presentation state without acquiring structural meaning.
+
 ## 6.2 Recursive Example — OMM
 
 ```text

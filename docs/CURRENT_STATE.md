@@ -30,7 +30,7 @@ Phase 3 added public Rutas discovery and detail pages, standalone and contextual
 - Path Tags are descriptive discovery metadata. Optional `level` is one of `introductorio`, `omm`, or `avanzado` and never controls access or completion.
 - `RelatedPath` is a separate non-structural recommendation relation: `prerequisite`, `deeper`, or `related`. It does not affect hierarchy, breadcrumbs, ordering, descendants, completion, or progress.
 - `PathReference.order` is the only structural and presentation order for child Paths. A `PathSection` inserts a presentation heading into that ordered stream; it never reorders a child and is not a Path, route, breadcrumb, search result, completion unit, or progress unit.
-- Public Path and Step rendering honors publication safety. Draft and archived Paths/content do not leak through discovery or detail; retained unavailable references remain identifiable without exposing their unpublished content.
+- Public Path and Step rendering honors publication safety. Draft and archived Paths/content do not leak through discovery or detail. An unavailable child reference is anonymous by default; an explicit planned-preview opt-in exposes only its title, position, and coming-soon state while keeping it non-navigable and outside progress.
 
 ## Current curriculum-design work: Preparación para la OMM
 
@@ -46,7 +46,7 @@ The currently recorded section examples are:
 
 Each cycle ends with a normal reusable child Path named **`Entrenamiento Mixto — Ciclo N`**. That child Path remains part of the parent’s `PathReference.order`; it is not a section heading.
 
-The repository now includes Curriculum Draft v2, a human-reviewed recursive working draft with reusable Group Paths, intended empty leaves, root-only cycle sections, and a database-free preview. Its subject audit, pending Groups, and editorial questions are documented in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md) and [OMM_SUBJECT_AUDIT.md](OMM_SUBJECT_AUDIT.md). All proposed Paths default to `draft`; the definition has not itself published or applied curriculum records.
+The repository now includes Curriculum Draft v2, a human-reviewed recursive working draft with reusable Group Paths, intended empty leaves, root-only cycle sections, and a database-free preview. Ciclos 4–5 opt their root references into noninteractive `Próximamente` previews; sections made entirely of those previews are presented as `En construcción`. Their Paths and descendants remain draft and inaccessible. Its subject audit, pending Groups, and editorial questions are documented in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md) and [OMM_SUBJECT_AUDIT.md](OMM_SUBJECT_AUDIT.md). All proposed Paths default to `draft`; the definition has not itself published or applied curriculum records.
 
 ## Next phase: Phase 4 — Mi Espacio
 
