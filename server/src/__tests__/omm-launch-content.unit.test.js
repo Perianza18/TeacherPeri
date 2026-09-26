@@ -1,3 +1,4 @@
+import katex from 'katex'
 import { describe, expect, it } from 'vitest'
 import {
   OMM_LAUNCH_CONTENT_BATCH_1,
@@ -67,6 +68,52 @@ describe('OMM launch content Batch 1', () => {
     const futureCycle = structuredClone(OMM_LAUNCH_CONTENT_BATCH_1)
     futureCycle.lessons[0].pathSlug = 'entrenamiento-mixto-ciclo-4'
     expect(() => validateOmmLaunchContentBatch1(futureCycle)).toThrow('outside Batch 1')
+  })
+})
+
+describe('Ciclo 1 Geometry editorial review', () => {
+  const geometrySlugs = [
+    'angulos-paralelas-y-perpendiculares',
+    'semejanza-y-congruencia',
+    'areas-y-razones',
+    'teorema-de-pitagoras',
+  ]
+  const lessons = Object.fromEntries(
+    OMM_LAUNCH_CONTENT_BATCH_1.lessons
+      .filter((lesson) => geometrySlugs.includes(lesson.pathSlug))
+      .map((lesson) => [lesson.pathSlug, lesson]),
+  )
+
+  it('keeps all four reviewed articles beginner-facing and substantial', () => {
+    expect(Object.keys(lessons)).toHaveLength(4)
+    Object.values(lessons).forEach((lesson) => {
+      const wordCount = lesson.theory.content.trim().split(/\s+/u).length
+      expect(wordCount).toBeGreaterThanOrEqual(400)
+      expect(wordCount).toBeLessThanOrEqual(800)
+      expect(new Set(lesson.steps.map((step) => step.title)).size).toBe(4)
+    })
+  })
+
+  it('retains the core teaching targets without leaking advanced Geometry', () => {
+    expect(lessons['angulos-paralelas-y-perpendiculares'].theory.content).toMatch(/360\^|opuestos por el vértice|ángulo exterior|sentido inverso/iu)
+    expect(lessons['semejanza-y-congruencia'].theory.content).toMatch(/Teorema de Tales|factor de escala|LLL|ALL/iu)
+    expect(lessons['areas-y-razones'].theory.content).toMatch(/misma altura|ceviana|descompone|k\^2/iu)
+    expect(lessons['teorema-de-pitagoras'].theory.content).toMatch(/converso|hipotenusa|prueba por áreas|triángulos rectángulos ocultos/iu)
+
+    const reviewedContent = Object.values(lessons).map((lesson) => lesson.theory.content).join('\n')
+    expect(reviewedContent).not.toMatch(/ángulos dirigidos|cuadriláteros? cíclicos?|semejanza espiral|fórmula de Herón|abc\s*\/\s*4R|fórmula trigonométrica/iu)
+  })
+
+  it('renders every reviewed math expression with strict KaTeX parsing', () => {
+    const expressions = Object.values(lessons).flatMap((lesson) => {
+      const texts = [lesson.theory.content, ...lesson.steps.map((step) => step.description)]
+      return texts.flatMap((content) => [...content.matchAll(/\$([^$]+)\$/gu)].map((match) => match[1]))
+    })
+
+    expect(expressions.length).toBeGreaterThan(50)
+    expressions.forEach((expression) => {
+      expect(() => katex.renderToString(expression, { throwOnError: true })).not.toThrow()
+    })
   })
 })
 
