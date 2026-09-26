@@ -166,24 +166,167 @@ Respuestas de control: 1. $5$; 2. sí, porque $7^2+24^2=25^2$; 3. $6\\sqrt2$; 4.
       { title: 'Revisa condiciones y resultados', description: 'Comprueba en cada solución que existía un ángulo recto, que la hipotenusa era el lado mayor y que la longitud obtenida es positiva.' },
     ],
   }),
-  algebraLesson('factorizacion-e-identidades', 'Factorización e identidades',
-    'Transformaciones que revelan productos, ceros y divisibilidad.',
-    'Identidades básicas: $a^2-b^2=(a-b)(a+b)$, $(a\\pm b)^2=a^2\\pm2ab+b^2$, y $a^3-b^3=(a-b)(a^2+ab+b^2)$. Antes de expandir, busca factor común, agrupación o una forma notable. Factorizar sirve para resolver, comparar signos y demostrar divisibilidad.',
-    'Para calcular $1001^2-999^2$, usa diferencia de cuadrados: $(1001-999)(1001+999)=2\\cdot2000=4000$. La estructura evita multiplicaciones largas.',
-    'Aplicar una identidad con signo equivocado; factorizar parcialmente; cancelar términos de una suma; o expandir una expresión cuya forma factorizada contiene la idea.',
-    'Factoriza $x^2-9$, $3x^2+6x$ y $x^3-8$. Después demuestra que la diferencia de cuadrados de dos enteros impares es múltiplo de 8.'),
-  algebraLesson('manipulaciones-y-sustituciones-algebraicas', 'Manipulaciones y sustituciones algebraicas',
-    'Cómo elegir una transformación que preserve información y acerque el objetivo.',
-    'Manipular con propósito significa saber qué forma buscas: simetría, factor, cuadrado, suma fija o variable auxiliar. Toda operación debe respetar dominio y equivalencia. Una sustitución útil comprime una expresión repetida; por ejemplo, si aparecen $x+y$ y $xy$, nómbralos en vez de expandir sin control.',
-    'Si $x+1/x=3$, no necesitas hallar $x$ para calcular $x^2+1/x^2$. Al cuadrar: $x^2+2+1/x^2=9$, luego $x^2+1/x^2=7$. La condición $x\\neq0$ ya está implícita.',
-    'Elevar al cuadrado y olvidar soluciones extra; dividir por una expresión que podría ser cero; sustituir sin traducir la respuesta; o hacer pasos reversibles en una sola dirección sin indicarlo.',
-    'Si $a+b=7$ y $ab=10$, calcula $a^2+b^2$ y $(a-b)^2$ sin resolver primero para $a,b$. Anota por qué cada transformación es válida.'),
-  algebraLesson('ecuaciones-algebraicas', 'Ecuaciones algebraicas',
-    'Resolver preservando equivalencias y usando la estructura antes que la rutina.',
-    'Una solución debe satisfacer la ecuación original. Simplifica ambos lados, controla denominadores y busca factorización. Para $uv=0$, se usa la propiedad del producto cero. Las transformaciones como sumar lo mismo son equivalentes; cuadrar o multiplicar por una expresión variable puede introducir o perder casos y exige verificación.',
-    'Resuelve $x^2-5x=0$: factoriza $x(x-5)=0$, por lo que $x=0$ o $x=5$. Ambas funcionan. En cambio, de $\\sqrt{x}=x-2$, cuadrar da candidatos que deben comprobarse y además requiere $x\\ge0$ y $x-2\\ge0$.',
-    'Dividir entre una variable y perder la solución cero; confundir una identidad con una ecuación; aceptar raíces extra; o no declarar restricciones de denominadores y radicales.',
-    'Resuelve $(x-2)(x+3)=0$ y $1/(x-1)=2$, indicando restricciones. Luego crea una ecuación cuyo conjunto solución sea exactamente $\\{-2,4\\}$.'),
+  L({
+    pathSlug: 'factorizacion-e-identidades', area: 'algebra', title: 'Factorización e identidades: guía esencial',
+    summary: 'Transformaciones estructurales que revelan productos, ceros y divisibilidad.',
+    article: {
+      introduction: 'Aprenderás a reconocer patrones algebraicos y a decidir si conviene desarrollar una expresión o escribirla como producto. En problemas olímpicos, factorizar no es una rutina mecánica: es una manera de hacer visible una estructura que estaba escondida.',
+      ideas: `FACTOR COMÚN Y AGRUPACIÓN
+Factorizar significa reescribir una suma como producto. La primera pregunta debe ser si todos los términos comparten un factor. Por ejemplo, $6x^3-9x^2=3x^2(2x-3)$. Conviene extraer el mayor factor común disponible, pues detenerse en $3x(2x^2-3x)$ deja la expresión factorizada solo parcialmente.
+
+Cuando no hay un factor común global, puede aparecer por grupos. En $ax+ay+bx+by$, los dos primeros términos comparten $a$ y los dos últimos comparten $b$: $a(x+y)+b(x+y)=(a+b)(x+y)$. La agrupación funciona porque consigue un mismo factor entre paréntesis; una separación arbitraria no garantiza nada.
+
+IDENTIDADES QUE CONVIENE RECONOCER
+Las identidades básicas pueden leerse en ambos sentidos:
+$a^2-b^2=(a-b)(a+b)$,
+$(a+b)^2=a^2+2ab+b^2$,
+$(a-b)^2=a^2-2ab+b^2$,
+$a^3-b^3=(a-b)(a^2+ab+b^2)$,
+$a^3+b^3=(a+b)(a^2-ab+b^2)$.
+
+No basta memorizar las fórmulas. Para detectar una diferencia de cuadrados, busca dos términos cuadrados separados por una resta. Para reconocer un binomio al cuadrado, verifica que los extremos sean cuadrados y que el término medio sea el doble del producto de sus raíces. En las fórmulas de cubos, el primer factor conserva el signo entre los cubos y el término medio del segundo factor lleva el signo contrario.
+
+¿CONVIENE DESARROLLAR O FACTORIZAR?
+Factoriza cuando quieras encontrar ceros, demostrar divisibilidad o estudiar cuándo un producto se anula. Conserva un producto intacto si sus factores ya expresan la idea. Desarrolla cuando necesites comparar coeficientes, reunir términos semejantes o revelar una combinación simétrica. Antes de operar, pregunta qué forma acerca más el objetivo.
+
+A veces la identidad no aparece de inmediato. Reagrupar, o sumar y restar la misma cantidad, puede fabricarla sin cambiar la expresión. Esta reescritura debe tener un propósito claro: producir un cuadrado, una diferencia de cuadrados o un factor común.`,
+      example: `EJEMPLO 1: RECONOCIMIENTO DIRECTO
+En $49x^2-25$, ambos términos son cuadrados y están separados por una resta: $(7x)^2-5^2$. Por diferencia de cuadrados,
+$49x^2-25=(7x-5)(7x+5)$.
+
+EJEMPLO 2: REESCRIBIR ANTES DE FACTORIZAR
+La expresión $x^2+6x+5$ no es un cuadrado perfecto porque $5\\neq9$. Sumamos y restamos $9$, la cantidad que completa $(x+3)^2$:
+$x^2+6x+5=x^2+6x+9-4=(x+3)^2-2^2$.
+Ahora aparece una diferencia de cuadrados, así que
+$x^2+6x+5=(x+1)(x+5)$.
+No agregamos valor a la expresión: $+9-4$ reemplaza al $+5$ original.
+
+EJEMPLO 3: FACTORIZACIÓN Y DIVISIBILIDAD
+Para cualquier entero $n$,
+$n^3-n=n(n^2-1)=n(n-1)(n+1)$.
+El producto contiene tres enteros consecutivos. Entre tres consecutivos hay uno divisible por $3$, y al menos uno es par. Por ello el producto es divisible por $6$. La forma desarrollada $n^3-n$ ocultaba esa conclusión; la forma factorizada la vuelve inmediata.`,
+      mistakes: 'Cambiar signos al usar una identidad; confundir $a^2+b^2$ con una diferencia de cuadrados; olvidar el término $2ab$ en un binomio al cuadrado; cancelar términos a través de una suma, como si $(x+2)/x$ fuera $2$; detener la factorización cuando aún hay un factor común o una identidad; desarrollar un producto que ya muestra ceros o divisibilidad; o aplicar una fórmula porque la expresión se parece, sin comprobar todos sus términos.',
+      practice: `1. Factoriza completamente $12x^3-18x^2$.
+2. Factoriza $x^2-16$, $x^2+10x+25$ y $8y^3+1$.
+3. Agrupa y factoriza $x^3+x^2-x-1$.
+4. Resuelve $x^2-10x+21=0$ mediante factorización.
+5. Explica por qué $m^3-m$ es par para todo entero $m$.
+
+Respuestas de control: 1. $6x^2(2x-3)$; 2. $(x-4)(x+4)$, $(x+5)^2$ y $(2y+1)(4y^2-2y+1)$; 3. $(x+1)^2(x-1)$; 4. $x=3$ o $x=7$; 5. $m(m-1)(m+1)$ contiene un factor par.`,
+      summary: 'Busca primero factor común; después examina agrupaciones e identidades en sentido inverso. Reescribe solo para revelar una estructura útil y elige entre desarrollar o factorizar según el objetivo: coeficientes y simetría, o bien ceros, productos y divisibilidad.',
+    },
+    steps: [
+      { title: 'Aprende a ver productos escondidos', description: 'Estudia las señales de factor común, agrupación, cuadrados y cubos; para cada identidad explica cómo reconocerla en sentido inverso.' },
+      { title: 'Reconstruye una factorización estratégica', description: 'Oculta el segundo ejemplo y recupera por qué se suma y resta $9$, qué identidad aparece y cómo se llega al producto final.' },
+      { title: 'Elige entre desarrollar y factorizar', description: 'Resuelve los cinco ejercicios y anota antes de cada uno qué forma —suma o producto— hará visible el objetivo.' },
+      { title: 'Revisa signos, factores y propósito', description: 'Multiplica tus factores para comprobarlos, busca factores pendientes y señala un paso donde expandir habría ocultado información.' },
+    ],
+  }),
+  L({
+    pathSlug: 'manipulaciones-y-sustituciones-algebraicas', area: 'algebra', title: 'Manipulaciones y sustituciones algebraicas: guía esencial',
+    summary: 'Transformaciones guiadas por el objetivo que extraen información sin mover símbolos al azar.',
+    article: {
+      introduction: 'Manipular no significa mover símbolos al azar; significa transformar una expresión hacia una forma útil. Aprenderás a partir de los datos y del objetivo, detectar combinaciones repetidas o simétricas y escoger una transformación que conserve la información necesaria.',
+      ideas: `EMPIEZA POR EL OBJETIVO
+Antes de calcular, escribe qué conoces y qué debes obtener. Si aparecen $x+y$ y $xy$, quizá no necesites conocer $x$ e $y$ por separado. Si buscas $x^2+y^2$, conviene mirar $(x+y)^2=x^2+2xy+y^2$ y despejar
+$x^2+y^2=(x+y)^2-2xy$.
+De forma parecida, $(x-y)^2=(x+y)^2-4xy$. Estas relaciones convierten exactamente los datos disponibles en la cantidad pedida.
+
+La simetría es una pista elemental. Una expresión como $x+y$, $xy$ o $x^2+y^2$ no cambia al intercambiar $x$ e $y$. Si tanto los datos como la pregunta son simétricos, resolver primero cada variable puede ser trabajo innecesario.
+
+EXPRESIONES RECÍPROCAS
+Si aparece $x+1/x$, la presencia del recíproco obliga a registrar $x\\neq0$. Al cuadrar,
+$(x+1/x)^2=x^2+2+1/x^2$,
+de modo que $x^2+1/x^2=(x+1/x)^2-2$. El objetivo no es hallar $x$, sino construir la expresión solicitada a partir de la conocida.
+
+SUSTITUIR UNA ESTRUCTURA REPETIDA
+Una variable temporal reduce ruido. Si una expresión repite muchas veces $x+y$, puedes escribir $t=x+y$, trabajar con $t$ y al final traducir el resultado. Por ejemplo, $(x+y)^2-5(x+y)+6$ se convierte en $t^2-5t+6$. La sustitución es útil cuando comprime una estructura; introducir letras nuevas para partes que aparecen una sola vez suele complicar el problema.
+
+COMBINAR RELACIONES
+Sumar ecuaciones puede eliminar términos con signos opuestos; restarlas puede eliminar términos iguales. Si una relación ya despeja una cantidad, sustituirla en otra puede concentrar la información. Por ejemplo, de $y=2x+1$ y $x+y=10$, sustituir produce $3x+1=10$. Sin embargo, no siempre interesa resolver todo: combina las ecuaciones para obtener directamente la expresión solicitada.
+
+TRANSFORMACIONES VÁLIDAS
+Sumar la misma expresión a ambos lados conserva equivalencia. Multiplicar o dividir por un número no nulo también. Nunca dividas por una expresión variable sin separar el caso en que vale cero. Los denominadores imponen restricciones. Elevar al cuadrado conserva que toda solución original sea candidata, pero puede introducir candidatas nuevas; por eso exige comprobar la relación inicial. Cada paso debe indicar si es reversible o si habrá que verificar al final.`,
+      example: `EJEMPLO 1: NO RESOLVER PARA $x$
+Si $x+1/x=4$, entonces $x\\neq0$. Al cuadrar obtenemos $x^2+2+1/x^2=16$, por lo que $x^2+1/x^2=14$. No hizo falta encontrar los posibles valores de $x$.
+
+EJEMPLO 2: USAR SUMA Y PRODUCTO
+Sean $x+y=9$ y $xy=14$. Entonces
+$x^2+y^2=(x+y)^2-2xy=81-28=53$.
+Además, $(x-y)^2=(x+y)^2-4xy=81-56=25$. Los datos son simétricos y las preguntas también; separar las variables habría añadido trabajo sin aportar información.
+
+EJEMPLO 3: COMBINAR SOLO LO NECESARIO
+Se sabe que $2u+v=11$ y $u-v=1$, y se pide $3u$. Al sumar las dos relaciones, $v$ y $-v$ se cancelan directamente:
+$(2u+v)+(u-v)=11+1$,
+así que $3u=12$. Como esa era exactamente la cantidad solicitada, no es necesario calcular $u$ ni $v$ por separado.`,
+      mistakes: 'Expandir todo antes de mirar los datos; resolver variables individuales cuando solo se pide una combinación simétrica; hacer una sustitución y olvidar volver a la expresión original; dividir por $x$, $x-y$ u otra expresión sin considerar que podría ser cero; ignorar restricciones de denominadores; elevar al cuadrado y tratar cada candidato como solución; o realizar pasos correctos pero sin relación con el objetivo.',
+      practice: `1. Si $a+b=7$ y $ab=10$, calcula $a^2+b^2$ y $(a-b)^2$ sin hallar $a$ y $b$.
+2. Si $z+1/z=5$, calcula $z^2+1/z^2$ e indica la restricción necesaria.
+3. Usa $t=p+q$ para simplificar y evaluar $(p+q)^2-4(p+q)+7$ cuando $p+q=3$.
+4. Si $3r+s=17$ y $2r-s=8$, encuentra $5r$ combinando las ecuaciones.
+
+Respuestas de control: 1. $29$ y $9$; 2. $23$, con $z\\neq0$; 3. $t^2-4t+7=4$; 4. $5r=25$.`,
+      summary: 'Parte de la información dada y de la cantidad buscada. Reconoce simetría y subexpresiones repetidas, combina relaciones para eliminar lo innecesario y usa sustituciones que reduzcan complejidad. Comprueba siempre dominios y distingue los pasos equivalentes de los que crean solo candidatos.',
+    },
+    steps: [
+      { title: 'Traza una ruta desde los datos al objetivo', description: 'Estudia la guía y, antes de operar, relaciona cada objetivo con una identidad o combinación construida a partir de los datos.' },
+      { title: 'Reconstruye tres decisiones eficientes', description: 'Rehaz los ejemplos sin mirar: explica por qué no se resuelve para $x$, por qué se conserva la simetría y por qué se suman las ecuaciones.' },
+      { title: 'Practica sustitución y combinación', description: 'Resuelve los cuatro ejercicios registrando la expresión temporal, la restricción o la cancelación que vuelve útil cada paso.' },
+      { title: 'Audita la lógica de tus transformaciones', description: 'Marca cualquier división o cuadrado, verifica sus condiciones y elimina al menos un cálculo que no contribuya al objetivo.' },
+    ],
+  }),
+  L({
+    pathSlug: 'ecuaciones-algebraicas', area: 'algebra', title: 'Ecuaciones algebraicas: guía esencial',
+    summary: 'Una base responsable para resolver ecuaciones, controlar restricciones y verificar resultados.',
+    article: {
+      introduction: 'Resolver una ecuación significa encontrar todos los valores que hacen verdadera la igualdad original. Aprenderás a distinguir transformaciones equivalentes de pasos que solo producen candidatos, a usar factorización y a tratar con cuidado denominadores y radicales.',
+      ideas: `SOLUCIONES Y EQUIVALENCIA
+Un valor es solución únicamente si satisface la ecuación original. Sumar o restar la misma expresión en ambos lados conserva exactamente las soluciones. Multiplicar o dividir por una constante no nula también. Estas transformaciones son equivalentes y pueden leerse en ambos sentidos.
+
+En una ecuación lineal como $3x-5=10$, sumar $5$ y dividir entre $3$ produce $x=5$. Esta base es importante, pero en problemas menos rutinarios conviene examinar primero la estructura. Dividir por una expresión que depende de $x$ puede perder el caso en que esa expresión es cero. Por ejemplo, dividir $x(x-4)=0$ entre $x$ eliminaría indebidamente la solución $x=0$.
+
+PRODUCTO CERO Y CUADRÁTICAS FACTORIZABLES
+Si $AB=0$ en los números reales, entonces $A=0$ o $B=0$. Por eso llevar todos los términos a un lado y factorizar convierte ciertas cuadráticas en ecuaciones más simples. Esta propiedad solo se aplica cuando un producto es igual a cero; de $AB=6$ no se concluye que un factor sea cero.
+
+RESTRICCIONES Y ECUACIONES RACIONALES
+Una fracción algebraica existe solo cuando su denominador no es cero. Las restricciones se escriben antes de eliminar denominadores y se conservan hasta el final. Multiplicar por un denominador puede producir una ecuación más sencilla, pero cualquier valor prohibido sigue excluido. Cancelar factores también requiere registrar cuándo el factor cancelado era cero.
+
+RADICALES Y CANDIDATOS EXTRAÑOS
+En los números reales, $\\sqrt{A}$ exige $A\\ge0$ y representa la raíz no negativa. Elevar ambos lados al cuadrado no es reversible sin condiciones: números opuestos tienen el mismo cuadrado. Por tanto, las soluciones originales pasan a la ecuación cuadrada, pero esta puede contener candidatos extra. Cada candidato debe comprobarse en la ecuación original.
+
+VERIFICAR ES PARTE DE RESOLVER
+Sustituir al final detecta errores aritméticos, valores prohibidos y candidatos introducidos por pasos no equivalentes. La lista final debe contener todos y solo los valores válidos, no simplemente las raíces de la última expresión obtenida.`,
+      example: `EJEMPLO 1: FACTORIZACIÓN Y PRODUCTO CERO
+Resolvamos $x^2-5x+6=0$. Buscamos dos números cuyo producto sea $6$ y cuya suma sea $-5$:
+$x^2-5x+6=(x-2)(x-3)$.
+Por la propiedad del producto cero, $x-2=0$ o $x-3=0$, así que $x=2$ o $x=3$. Ambos valores verifican la ecuación original.
+
+EJEMPLO 2: ECUACIÓN RACIONAL
+Resolvamos $(x+1)/(x-2)=3$. Primero, $x\\neq2$. Para valores permitidos multiplicamos por $x-2$:
+$x+1=3(x-2)=3x-6$.
+Entonces $7=2x$ y $x=7/2$. Este valor no viola la restricción y, al sustituir, $(7/2+1)/(7/2-2)=3$, de modo que es solución.
+
+EJEMPLO 3: UNA SOLUCIÓN EXTRAÑA AL CUADRAR
+Resolvamos $\\sqrt{x+1}=x-1$. El lado derecho debe ser no negativo, así que una solución requiere $x\\ge1$. Al cuadrar obtenemos
+$x+1=(x-1)^2=x^2-2x+1$,
+es decir, $x^2-3x=0$ y $x(x-3)=0$. Los candidatos son $x=0$ y $x=3$. El primero no cumple $x\\ge1$ y en la ecuación original daría $1=-1$, así que se rechaza. Para $x=3$, $\\sqrt4=2=3-1$; la única solución es $3$.`,
+      mistakes: 'Aceptar un valor porque satisface la última ecuación y no la original; dividir entre una variable y perder su caso cero; aplicar producto cero a una expresión que no está igualada a cero; cancelar términos a través de sumas; olvidar valores prohibidos por denominadores; omitir las condiciones de un radical; elevar al cuadrado y conservar candidatos extraños; o verificar solo una de varias respuestas.',
+      practice: `1. Resuelve $2x-7=9$.
+2. Resuelve $x^2+x-12=0$ por factorización.
+3. Resuelve $2/(x-1)=1$, comenzando por la restricción.
+4. Resuelve $\\sqrt{x+6}=x$ y comprueba cada candidato en la ecuación original.
+5. Explica qué solución se pierde si se divide inmediatamente $x(x+5)=0$ entre $x$.
+
+Respuestas de control: 1. $x=8$; 2. $x=3$ o $x=-4$; 3. $x\\neq1$ y la solución es $x=3$; 4. los candidatos son $3$ y $-2$, pero solo $x=3$ es válido; 5. se pierde $x=0$.`,
+      summary: 'Declara primero el dominio, usa transformaciones equivalentes cuando sea posible y aprovecha producto cero tras factorizar. Si divides por una expresión variable o elevas al cuadrado, registra qué puede perderse o añadirse. La sustitución en la ecuación original cierra siempre la solución.',
+    },
+    steps: [
+      { title: 'Distingue soluciones de candidatos', description: 'Estudia equivalencia, restricciones y producto cero; clasifica cada transformación de la guía como reversible o necesitada de verificación.' },
+      { title: 'Reconstruye tres tipos de ecuación', description: 'Resuelve de nuevo los ejemplos de factorización, fracción y radical, conservando restricciones y comprobaciones explícitas.' },
+      { title: 'Practica con dominio y estructura', description: 'Completa los cinco ejercicios, escribiendo el dominio antes de eliminar denominadores o elevar una igualdad al cuadrado.' },
+      { title: 'Haz una verificación responsable', description: 'Sustituye cada respuesta en la ecuación original y explica cualquier valor perdido, prohibido o extraño que hayas descartado.' },
+    ],
+  }),
   numberTheoryLesson('divisibilidad-y-criterios-de-divisibilidad', 'Divisibilidad y criterios',
     'Lenguaje y herramientas iniciales para reconocer múltiplos sin depender de divisiones largas.',
     'Escribimos $a\\mid b$ si existe un entero $k$ con $b=ak$. Si $a\\mid b$ y $a\\mid c$, entonces $a\\mid mb+nc$ para enteros $m,n$. Los criterios decimales provienen de residuos de potencias de 10: módulo 3 y 9 importa la suma de dígitos; módulo 11, la suma alternada.',
@@ -272,9 +415,6 @@ Respuestas de control: 1. $5$; 2. sí, porque $7^2+24^2=25^2$; 3. $6\\sqrt2$; 4.
   }),
 ]
 
-function algebraLesson(pathSlug, title, summary, ideas, example, mistakes, practice) {
-  return topicLesson(pathSlug, 'algebra', title, summary, ideas, example, mistakes, practice)
-}
 function combinatoricsLesson(pathSlug, title, summary, ideas, example, mistakes, practice) {
   return topicLesson(pathSlug, 'combinatorics', title, summary, ideas, example, mistakes, practice)
 }

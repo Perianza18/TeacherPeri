@@ -117,6 +117,50 @@ describe('Ciclo 1 Geometry editorial review', () => {
   })
 })
 
+describe('Ciclo 1 Algebra editorial review', () => {
+  const algebraSlugs = [
+    'factorizacion-e-identidades',
+    'manipulaciones-y-sustituciones-algebraicas',
+    'ecuaciones-algebraicas',
+  ]
+  const lessons = Object.fromEntries(
+    OMM_LAUNCH_CONTENT_BATCH_1.lessons
+      .filter((lesson) => algebraSlugs.includes(lesson.pathSlug))
+      .map((lesson) => [lesson.pathSlug, lesson]),
+  )
+
+  it('keeps all three reviewed articles substantial with distinct learning Steps', () => {
+    expect(Object.keys(lessons)).toHaveLength(3)
+    Object.values(lessons).forEach((lesson) => {
+      const wordCount = lesson.theory.content.trim().split(/\s+/u).length
+      expect(wordCount).toBeGreaterThanOrEqual(550)
+      expect(wordCount).toBeLessThanOrEqual(800)
+      expect(new Set(lesson.steps.map((step) => step.title)).size).toBe(4)
+    })
+  })
+
+  it('retains the core Algebra teaching targets without later-cycle leakage', () => {
+    expect(lessons['factorizacion-e-identidades'].theory.content).toMatch(/factor común|diferencia de cuadrados|suma.*cubos|¿CONVIENE DESARROLLAR O FACTORIZAR/isu)
+    expect(lessons['manipulaciones-y-sustituciones-algebraicas'].theory.content).toMatch(/EMPIEZA POR EL OBJETIVO|simetría|variable temporal|TRANSFORMACIONES VÁLIDAS/iu)
+    expect(lessons['ecuaciones-algebraicas'].theory.content).toMatch(/PRODUCTO CERO|RESTRICCIONES|candidatos extraños|ecuación original/iu)
+
+    const reviewedContent = Object.values(lessons).map((lesson) => lesson.theory.content).join('\n')
+    expect(reviewedContent).not.toMatch(/Vieta|progresiones? aritméticas?|progresiones? geométricas?|sumas? telescópicas?|raíces de la unidad|ecuaciones funcionales|números complejos/iu)
+  })
+
+  it('renders every reviewed Algebra expression with strict KaTeX parsing', () => {
+    const expressions = Object.values(lessons).flatMap((lesson) => {
+      const texts = [lesson.theory.content, ...lesson.steps.map((step) => step.description)]
+      return texts.flatMap((content) => [...content.matchAll(/\$([^$]+)\$/gu)].map((match) => match[1]))
+    })
+
+    expect(expressions.length).toBeGreaterThan(70)
+    expressions.forEach((expression) => {
+      expect(() => katex.renderToString(expression, { throwOnError: true })).not.toThrow()
+    })
+  })
+})
+
 describe('OMM content application identity safety', () => {
   const theory = OMM_LAUNCH_CONTENT_BATCH_1.lessons[0].theory
   const theoryDocument = { ...theory, topics: [], tags: [], categories: [] }
