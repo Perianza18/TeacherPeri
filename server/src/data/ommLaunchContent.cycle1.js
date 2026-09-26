@@ -327,30 +327,216 @@ Respuestas de control: 1. $x=8$; 2. $x=3$ o $x=-4$; 3. $x\\neq1$ y la solución 
       { title: 'Haz una verificación responsable', description: 'Sustituye cada respuesta en la ecuación original y explica cualquier valor perdido, prohibido o extraño que hayas descartado.' },
     ],
   }),
-  numberTheoryLesson('divisibilidad-y-criterios-de-divisibilidad', 'Divisibilidad y criterios',
-    'Lenguaje y herramientas iniciales para reconocer múltiplos sin depender de divisiones largas.',
-    'Escribimos $a\\mid b$ si existe un entero $k$ con $b=ak$. Si $a\\mid b$ y $a\\mid c$, entonces $a\\mid mb+nc$ para enteros $m,n$. Los criterios decimales provienen de residuos de potencias de 10: módulo 3 y 9 importa la suma de dígitos; módulo 11, la suma alternada.',
-    'Para $5382$, la suma de dígitos es 18, así que es divisible por 9. Para 11, $5-3+8-2=8$, que no es múltiplo de 11; por tanto no es divisible por 11.',
-    'Tratar $a\\mid b$ como una fracción; invertir la relación; aplicar criterios fuera de base 10 sin justificación; o concluir divisibilidad de una suma cuando solo un sumando es divisible.',
-    'Decide divisibilidad por 3, 4, 8, 9 y 11 de 123552. Después demuestra el criterio de 3 escribiendo el número con potencias de 10.'),
-  numberTheoryLesson('primos-y-factorizacion', 'Primos y factorización',
-    'Cómo descomponer enteros y usar exponentes primos para comparar productos.',
-    'Un primo mayor que 1 tiene exactamente dos divisores positivos. Todo entero mayor que 1 se expresa de manera única, salvo orden, como producto de primos. La factorización permite leer divisores: si $n=p_1^{a_1}\\cdots p_r^{a_r}$, cada divisor elige exponentes entre 0 y $a_i$. Para probar primalidad basta revisar primos hasta la raíz cuadrada.',
-    '$360=2^3\\cdot3^2\\cdot5$. Un divisor tiene forma $2^a3^b5^c$ con $0\\le a\\le3$, $0\\le b\\le2$, $0\\le c\\le1$; por eso hay $4\\cdot3\\cdot2=24$ divisores positivos.',
-    'Llamar primo al 1; detener la búsqueda de divisores demasiado pronto; omitir multiplicidades; o creer que una factorización observada sin prueba es única.',
-    'Factoriza 756, cuenta sus divisores y decide cuáles son cuadrados. Luego explica por qué un compuesto $n$ tiene un divisor primo no mayor que $\\sqrt n$.'),
-  numberTheoryLesson('mcd-mcm-y-algoritmo-de-euclides', 'MCD, MCM y algoritmo de Euclides',
-    'Cálculo eficiente y relaciones estructurales entre divisores comunes y múltiplos.',
-    'El MCD es el mayor divisor positivo común; el MCM, el menor múltiplo positivo común. Euclides usa $\\gcd(a,b)=\\gcd(b,r)$ cuando $a=bq+r$. Para positivos, $\\gcd(a,b)\\operatorname{mcm}(a,b)=ab$. La factorización toma mínimos de exponentes para MCD y máximos para MCM.',
-    '$252=198\\cdot1+54$, $198=54\\cdot3+36$, $54=36\\cdot1+18$, $36=18\\cdot2$. Por tanto $\\gcd(252,198)=18$ y el MCM es $252\\cdot198/18=2772$.',
-    'Confundir MCD con un divisor común cualquiera; usar el producto sin dividir por el MCD; cometer errores de residuo; o detener Euclides antes del último residuo no nulo.',
-    'Calcula $\\gcd(414,662)$ con Euclides y verifica por factorización. Después halla el MCM y explica qué representa en un problema de ciclos.'),
-  numberTheoryLesson('bezout-y-combinaciones-lineales', 'Bézout y combinaciones lineales',
-    'Cómo convertir el algoritmo de Euclides en representaciones y criterios de solvencia.',
-    'La identidad de Bézout afirma que existen enteros $x,y$ con $ax+by=\\gcd(a,b)$. Al sustituir hacia atrás en Euclides se encuentran. Los valores que pueden escribirse como $ax+by$ son exactamente los múltiplos del MCD; por ello $ax+by=c$ tiene soluciones enteras si y solo si $\\gcd(a,b)\\mid c$.',
-    'Euclides: $35=22+13$, $22=13+9$, $13=9+4$, $9=2\\cdot4+1$. Sustituyendo hacia atrás se obtiene $1=8\\cdot22-5\\cdot35$. Así también $7=56\\cdot22-35\\cdot35$.',
-    'Buscar coeficientes solo positivos; afirmar existencia sin comprobar la divisibilidad por el MCD; perder signos al sustituir; o creer que la representación es única.',
-    'Encuentra $x,y$ tales que $26x+15y=1$. Usa esa identidad para resolver $26x+15y=7$ y explica por qué $26x+15y=4$ también es soluble.'),
+  L({
+    pathSlug: 'divisibilidad-y-criterios-de-divisibilidad', area: 'number-theory', title: 'Divisibilidad y criterios: guía esencial',
+    summary: 'Lenguaje y razonamiento para demostrar que un entero divide a otro y reconocer múltiplos en base diez.',
+    article: {
+      introduction: 'Aprenderás a tratar la divisibilidad como una relación algebraica que se demuestra, no solo como una división que se efectúa. La definición permitirá justificar propiedades, entender criterios decimales y reconocer estructuras frecuentes en problemas olímpicos.',
+      ideas: `DEFINICIÓN Y LENGUAJE
+Para enteros $a$ y $b$, con $a\\neq0$, escribimos $a\\mid b$ si existe un entero $k$ tal que $b=ak$. Decimos que $a$ es divisor de $b$ y que $b$ es múltiplo de $a$. Si no existe tal entero, escribimos $a\\nmid b$. Por ejemplo, $6\\mid42$ porque $42=6\\cdot7$, mientras que $6\\nmid43$. Los signos no alteran la existencia del factor entero: $a\\mid b$ equivale a $-a\\mid b$ y a $a\\mid-b$. Además, todo entero no nulo divide a $0$.
+
+PROPIEDADES DESDE LA DEFINICIÓN
+Si $a\\mid b$ y $a\\mid c$, existen enteros $r,s$ con $b=ar$ y $c=as$. Entonces
+$b+c=a(r+s)$ y $b-c=a(r-s)$,
+así que $a$ divide tanto la suma como la diferencia. Más generalmente, para enteros $m,n$,
+$mb+nc=a(mr+ns)$,
+por lo que $a\\mid mb+nc$. Esta prueba muestra por qué una combinación lineal de múltiplos de $a$ sigue siendo múltiplo de $a$.
+
+También hay transitividad: si $a\\mid b$ y $b\\mid c$, entonces $b=ar$ y $c=bs$, de modo que $c=a(rs)$ y $a\\mid c$. Si $a\\mid b$, multiplicar $b$ por cualquier entero conserva la divisibilidad. Estas reglas permiten fabricar el objetivo a partir de cantidades cuya divisibilidad ya se conoce.
+
+CRITERIOS EN BASE DIEZ
+Un número es divisible por $2$ si su última cifra es par, por $5$ si termina en $0$ o $5$, por $4$ si sus últimas dos cifras forman un múltiplo de $4$, y por $8$ si sus últimas tres cifras forman un múltiplo de $8$. Esto funciona porque $10$, $100$ o $1000$ hacen que las cifras anteriores aporten un múltiplo del divisor correspondiente.
+
+Para $3$ y $9$, las potencias de $10$ dejan el mismo resto que $1$ al dividirse entre esos números. Por eso un número y la suma de sus cifras dejan el mismo resto: basta revisar esa suma. Para $11$, las potencias de $10$ alternan el efecto de $1$ y $-1$; de ahí que la suma alternada de cifras deba ser múltiplo de $11$.
+
+En olimpiadas, busca expresar el objetivo como combinación de múltiplos conocidos, factorizar una expresión, explotar si un número es par o impar, o traducir una condición sobre cifras a su valor posicional.`,
+      example: `EJEMPLO 1: UNA PRUEBA ALGEBRAICA
+Si $7\\mid a$ y $7\\mid b$, entonces $a=7r$ y $b=7s$ para ciertos enteros $r,s$. Por tanto,
+$3a-2b=21r-14s=7(3r-2s)$.
+Como $3r-2s$ es entero, queda demostrado que $7\\mid(3a-2b)$.
+
+EJEMPLO 2: LEER LAS CIFRAS
+Para $527472$, la suma de cifras es $27$, así que es divisible por $3$ y por $9$. Termina en cifra par; sus últimas dos cifras, $72$, son divisibles por $4$; y sus últimas tres, $472=8\\cdot59$, son divisibles por $8$. La suma alternada $2-7+4-7+2-5=-11$ muestra además divisibilidad por $11$. No es divisible por $5$.
+
+EJEMPLO 3: REVELAR UN PRODUCTO
+Para todo entero $n$, $n^3-n=n(n-1)(n+1)$. Son tres enteros consecutivos: uno es múltiplo de $3$ y al menos uno es par. Por ello el producto es divisible por $6$. La factorización hizo visibles ambos factores necesarios.`,
+      mistakes: 'Leer $a\\mid b$ como una fracción o invertir divisor y múltiplo; afirmar divisibilidad sin exhibir el factor entero; sumar una cantidad no divisible a otra divisible y conservar la conclusión; usar un criterio decimal en otra base; aplicar el criterio de $4$ o $8$ a la suma de cifras; o citar paridad sin explicar dónde aparece el factor $2$.',
+      practice: `1. Demuestra desde la definición: si $5\\mid u$ y $5\\mid v$, entonces $5\\mid(4u+3v)$.
+2. Decide por cuáles de $2,3,4,5,8,9,11$ es divisible $123552$.
+3. Demuestra que la diferencia de los cuadrados de dos enteros impares es divisible por $8$.
+4. Si $d\\mid x$ y $x\\mid y$, prueba que $d\\mid y$.
+
+Respuestas de control: 1. escribe $u=5r$, $v=5s$; 2. por $2,3,4,8,9$ y $11$, pero no por $5$; 3. para $2r+1$ y $2s+1$, la diferencia es $4(r-s)(r+s+1)$ y uno de los últimos factores es par; 4. sustituye $x=dk$ en $y=xq$.`,
+      summary: 'Una afirmación $a\\mid b$ exige escribir $b$ como $a$ por un entero. Desde esa definición surgen las combinaciones lineales y la transitividad. Los criterios decimales son atajos justificados por las potencias de $10$; en problemas, combina, factoriza o traduce cifras para mostrar el factor buscado.',
+    },
+    steps: [
+      { title: 'Habla el lenguaje de divisores y múltiplos', description: 'Estudia la definición y reescribe seis afirmaciones con la forma $b=ak$, incluyendo ejemplos negativos y un caso de no divisibilidad.' },
+      { title: 'Reconstruye una propiedad desde la definición', description: 'Oculta la primera prueba y demuestra de nuevo la combinación lineal, nombrando los enteros que garantizan cada divisibilidad.' },
+      { title: 'Aplica criterios y estructuras', description: 'Resuelve los ejercicios de cifras, factorización y transitividad sin limitarte a anunciar el criterio utilizado.' },
+      { title: 'Comprueba cada afirmación de divisibilidad', description: 'Señala el factor entero final de cada prueba y distingue qué pasos dependen de base diez, paridad o una combinación lineal.' },
+    ],
+  }),
+  L({
+    pathSlug: 'primos-y-factorizacion', area: 'number-theory', title: 'Primos y factorización: guía esencial',
+    summary: 'Cómo descomponer enteros y leer divisores, potencias perfectas y restricciones desde exponentes primos.',
+    article: {
+      introduction: 'Aprenderás qué distingue a un primo de un compuesto, cómo comprobar primalidad de manera razonada y cómo extraer información de una factorización prima. En teoría de números, los primos actúan como piezas básicas de los enteros positivos.',
+      ideas: `PRIMOS, COMPUESTOS Y EL NÚMERO $1$
+Un entero positivo mayor que $1$ es primo si tiene exactamente dos divisores positivos: $1$ y él mismo. Es compuesto si puede escribirse como producto de dos enteros mayores que $1$. El número $1$ no es primo ni compuesto: solo tiene un divisor positivo. Excluirlo hace posible que las factorizaciones primas sean únicas sin insertar tantos factores $1$ como se quiera.
+
+TEOREMA FUNDAMENTAL DE LA ARITMÉTICA
+Todo entero mayor que $1$ puede escribirse como producto de primos. Además, esa escritura es única salvo el orden de los factores. La existencia dice que al descomponer un compuesto el proceso termina en primos; la unicidad permite hablar de “la” factorización prima. En este nivel usaremos el teorema como fundamento, sin desarrollar su demostración completa.
+
+COMPROBAR PRIMALIDAD
+Si $n$ es compuesto y $n=ab$, no pueden cumplirse simultáneamente $a>\\sqrt n$ y $b>\\sqrt n$, pues entonces $ab>n$. Por ello algún factor es a lo más $\\sqrt n$. Para decidir si $n$ es primo basta probar divisibilidad por los primos que no superan esa raíz.
+
+La criba de Eratóstenes genera primos pequeños: escribe los enteros desde $2$, conserva el primer número no tachado y elimina sus múltiplos; repite con el siguiente no tachado. Los números restantes son primos. Es una herramienta de organización, no un sustituto de la justificación en un problema.
+
+LEER EXPONENTES PRIMOS
+Si $n=p_1^{a_1}\\cdots p_r^{a_r}$, cada divisor positivo elige para $p_i$ un exponente entre $0$ y $a_i$. Hay $a_i+1$ elecciones independientes, así que el número de divisores es
+$(a_1+1)\\cdots(a_r+1)$.
+Un cuadrado perfecto tiene todos sus exponentes primos pares; un cubo perfecto los tiene múltiplos de $3$. Más generalmente, una potencia perfecta impone un divisor común mayor que $1$ en sus exponentes. Esta lectura revela divisibilidad, posibles divisores y restricciones sobre productos sin enumerarlos uno por uno.`,
+      example: `EJEMPLO 1: ¿ES $97$ PRIMO?
+Como $\\sqrt{97}<10$, solo probamos los primos $2,3,5,7$. El número no es par, su suma de cifras es $16$, no termina en $0$ o $5$, y no es múltiplo de $7$ porque está entre $91$ y $98$. Ningún primo hasta su raíz lo divide, por lo que $97$ es primo.
+
+EJEMPLO 2: INFORMACIÓN EN LOS EXPONENTES
+$360=2^3\\cdot3^2\\cdot5$. Un divisor tiene forma $2^a3^b5^c$, con $0\\le a\\le3$, $0\\le b\\le2$ y $0\\le c\\le1$. Por tanto hay $4\\cdot3\\cdot2=24$ divisores positivos. Para que el divisor sea cuadrado, los exponentes deben ser pares: hay dos opciones para $a$, dos para $b$ y una para $c$, de modo que $360$ tiene $4$ divisores cuadrados.
+
+EJEMPLO 3: RECONOCER UNA POTENCIA
+$216=2^3\\cdot3^3=(2\\cdot3)^3=6^3$. Los exponentes son múltiplos de $3$, lo que revela el cubo sin ensayar bases. En cambio, $72=2^3\\cdot3^2$ no es cuadrado ni cubo porque sus exponentes no cumplen la condición correspondiente.`,
+      mistakes: 'Llamar primo al $1$; comprobar divisibilidad solo hasta un límite elegido sin relacionarlo con $\\sqrt n$; probar todos los enteros cuando bastan los primos; omitir multiplicidades en una factorización; contar exponentes disponibles como $a_i$ en lugar de $a_i+1$; o afirmar que un producto es cuadrado sin revisar la paridad de todos sus exponentes primos.',
+      practice: `1. Factoriza $756$ y cuenta sus divisores positivos.
+2. Encuentra el mayor divisor cuadrado de $756$.
+3. Decide si $221$ es primo revisando solo los primos necesarios.
+4. Usa una criba para listar los primos no mayores que $30$.
+5. Decide si $540=2^2\\cdot3^3\\cdot5$ es cuadrado, cubo o ninguna de las dos cosas.
+
+Respuestas de control: 1. $756=2^2\\cdot3^3\\cdot7$ y tiene $3\\cdot4\\cdot2=24$ divisores; 2. $2^2\\cdot3^2=36$; 3. no, pues $221=13\\cdot17$; 4. $2,3,5,7,11,13,17,19,23,29$; 5. ninguna.`,
+      summary: 'Los primos son los bloques únicos de toda factorización de un entero mayor que $1$. Para comprobar primalidad basta buscar factores primos hasta la raíz cuadrada. Una vez factorizado el número, sus exponentes describen divisores y detectan cuadrados, cubos y otras potencias perfectas.',
+    },
+    steps: [
+      { title: 'Distingue primos, compuestos y unidades', description: 'Estudia las definiciones, explica por qué $1$ queda fuera y construye ejemplos que muestren existencia y unicidad de la factorización.' },
+      { title: 'Reconstruye una prueba de primalidad', description: 'Repite el análisis de $97$, justificando el límite de la raíz cuadrada y cada prueba de divisibilidad realizada.' },
+      { title: 'Lee información desde los exponentes', description: 'Resuelve los ejercicios de $756$, $221$ y $540$, registrando las elecciones de exponentes en lugar de enumerar divisores.' },
+      { title: 'Verifica factorizaciones y conteos', description: 'Multiplica los factores primos, revisa el número de elecciones y comprueba que cada potencia perfecta cumple todas las condiciones.' },
+    ],
+  }),
+  L({
+    pathSlug: 'mcd-mcm-y-algoritmo-de-euclides', area: 'number-theory', title: 'MCD, MCM y algoritmo de Euclides: guía esencial',
+    summary: 'Conceptos y métodos para controlar divisores comunes, múltiplos comunes y coprimalidad.',
+    article: {
+      introduction: 'Aprenderás qué miden el máximo común divisor y el mínimo común múltiplo, cómo leerlos en factorizaciones primas y por qué el algoritmo de Euclides conserva exactamente los divisores comunes en cada paso.',
+      ideas: `MCD, MCM Y COPRIMALIDAD
+El máximo común divisor de enteros positivos $a,b$, escrito $\\gcd(a,b)$, es el mayor entero positivo que divide a ambos. El mínimo común múltiplo, escrito $\\operatorname{mcm}(a,b)$, es el menor entero positivo divisible por ambos. “Máximo” y “mínimo” describen conjuntos distintos: divisores comunes frente a múltiplos comunes.
+
+Si $\\gcd(a,b)=1$, los números son coprimos o primos relativos. Ninguno necesita ser primo: $8$ y $15$ son compuestos y coprimos porque no comparten factores primos. Dos enteros consecutivos siempre son coprimos: cualquier divisor común dividiría también su diferencia, que es $1$.
+
+EL PUNTO DE VISTA DE LOS EXPONENTES
+Al escribir ambos números con los mismos primos, el MCD toma en cada primo el menor exponente, pues ese es el máximo que cabe en los dos. El MCM toma el mayor, pues debe contener suficiente de cada primo para ser múltiplo de ambos.
+
+Para positivos,
+$\\gcd(a,b)\\operatorname{mcm}(a,b)=ab$.
+En cada primo, el exponente mínimo más el máximo es la suma de los dos exponentes originales. Así, ambos lados tienen exactamente la misma factorización prima. La identidad permite obtener el MCM después de conocer el MCD, pero conviene dividir antes de multiplicar para evitar números innecesariamente grandes.
+
+POR QUÉ FUNCIONA EUCLIDES
+Si $a=bq+r$, entonces $\\gcd(a,b)=\\gcd(b,r)$. En efecto, un divisor común de $a$ y $b$ divide $r=a-bq$. En sentido contrario, un divisor común de $b$ y $r$ divide $a=bq+r$. Por tanto, los pares $(a,b)$ y $(b,r)$ tienen exactamente los mismos divisores comunes.
+
+El algoritmo repite divisiones con residuo. Cuando aparece residuo $0$, el último residuo no nulo es el MCD. No es solo una receta: cada reemplazo conserva el conjunto de divisores comunes y reduce los números hasta que el MCD queda visible.
+
+El MCM aparece en situaciones de repetición: si dos eventos ocurren cada $a$ y $b$ unidades, el primer instante positivo en que coinciden es $\\operatorname{mcm}(a,b)$.`,
+      example: `EJEMPLO 1: FACTORIZACIÓN PRIMA
+$84=2^2\\cdot3\\cdot7$ y $126=2\\cdot3^2\\cdot7$. Tomando exponentes mínimos,
+$\\gcd(84,126)=2\\cdot3\\cdot7=42$.
+Tomando máximos,
+$\\operatorname{mcm}(84,126)=2^2\\cdot3^2\\cdot7=252$.
+La comprobación da $42\\cdot252=84\\cdot126=10584$.
+
+EJEMPLO 2: ALGORITMO DE EUCLIDES COMPLETO
+$252=198\\cdot1+54$,
+$198=54\\cdot3+36$,
+$54=36\\cdot1+18$,
+$36=18\\cdot2+0$.
+El último residuo no nulo es $18$, así que $\\gcd(252,198)=18$. La identidad producto da
+$\\operatorname{mcm}(252,198)=252\\cdot198/18=2772$.
+
+EJEMPLO 3: CICLOS
+Dos señales se repiten cada $12$ y $18$ minutos. Como $12=2^2\\cdot3$ y $18=2\\cdot3^2$, su MCM es $2^2\\cdot3^2=36$. Si coinciden ahora, volverán a coincidir por primera vez en $36$ minutos.`,
+      mistakes: 'Confundir un divisor común con el máximo, o un múltiplo común con el mínimo; tomar exponentes máximos para el MCD; creer que coprimos significa que ambos números son primos; perder un residuo en Euclides; detenerse antes del residuo cero; usar el producto $ab$ como MCM sin dividir por el MCD; o aplicar el MCD cuando el problema pide la primera coincidencia de ciclos.',
+      practice: `1. Calcula $\\gcd(414,662)$ con Euclides.
+2. Halla $\\operatorname{mcm}(414,662)$ usando la relación producto.
+3. Calcula MCD y MCM de $72=2^3\\cdot3^2$ y $120=2^3\\cdot3\\cdot5$.
+4. Prueba que $35$ y $36$ son coprimos sin factorizarlos por completo.
+5. Dos actividades se repiten cada $8$ y $12$ días. ¿Después de cuántos días coinciden por primera vez?
+
+Respuestas de control: 1. $2$; 2. $137034$; 3. MCD $24$ y MCM $360$; 4. todo divisor común divide $36-35=1$; 5. $24$ días.`,
+      summary: 'El MCD reúne los factores compartidos con exponentes mínimos; el MCM reúne todos los necesarios con exponentes máximos. Euclides funciona porque reemplazar $(a,b)$ por $(b,r)$ conserva los divisores comunes. Coprimalidad significa MCD igual a $1$, no primalidad individual.',
+    },
+    steps: [
+      { title: 'Separa divisores, múltiplos y coprimalidad', description: 'Estudia las definiciones y construye ejemplos que distingan MCD, MCM y pares coprimos compuestos.' },
+      { title: 'Justifica y ejecuta Euclides', description: 'Reconstruye por qué el residuo conserva los divisores comunes y repite el algoritmo completo para $252$ y $198$.' },
+      { title: 'Alterna factorización, Euclides y ciclos', description: 'Resuelve los cinco ejercicios eligiendo el método que muestre mejor exponentes, residuos o coincidencias.' },
+      { title: 'Comprueba con productos y diferencias', description: 'Verifica la relación MCD–MCM, cada división con residuo y el argumento de coprimalidad de números consecutivos.' },
+    ],
+  }),
+  L({
+    pathSlug: 'bezout-y-combinaciones-lineales', area: 'number-theory', title: 'Bézout y combinaciones lineales: guía esencial',
+    summary: 'Cómo convertir el algoritmo de Euclides en representaciones enteras y criterios de solvencia.',
+    article: {
+      introduction: 'Aprenderás a expresar el máximo común divisor como combinación de dos enteros y a decidir cuándo una ecuación $ax+by=c$ admite soluciones enteras. La identidad de Bézout continúa de manera natural el algoritmo de Euclides.',
+      ideas: `COMBINACIONES LINEALES ENTERAS
+Una combinación lineal entera de $a$ y $b$ es un número de la forma $ax+by$, donde $x$ e $y$ son enteros, posiblemente negativos o cero. Si $d$ divide a $a$ y a $b$, entonces divide toda combinación $ax+by$: al escribir $a=dr$ y $b=ds$, queda $ax+by=d(rx+sy)$.
+
+IDENTIDAD DE BÉZOUT
+La identidad de Bézout afirma que existen enteros $x,y$ tales que
+$ax+by=\\gcd(a,b)$.
+Conceptualmente, el MCD no solo divide toda combinación: es la menor cantidad positiva que puede obtenerse de esta forma. Cuando $a$ y $b$ son coprimos, su MCD es $1$, así que alguna combinación entera de ellos vale $1$. Los coeficientes pueden ser negativos y normalmente no son únicos.
+
+EUCLIDES EXTENDIDO
+Para encontrar los coeficientes, primero ejecuta el algoritmo de Euclides. Luego toma el último residuo no nulo y sustituye hacia atrás cada residuo usando la igualdad anterior. En cada línea conserva paréntesis y reúne coeficientes; así se reducen errores de signo. El proceso termina expresando el MCD mediante los dos números originales.
+
+QUÉ ENTEROS PUEDEN REPRESENTARSE
+Sea $d=\\gcd(a,b)$. Toda combinación $ax+by$ es múltiplo de $d$, porque $d$ divide a ambos términos. En sentido contrario, Bézout da $ax_0+by_0=d$ para ciertos $x_0,y_0$. Multiplicar por cualquier entero $k$ produce
+$a(kx_0)+b(ky_0)=kd$.
+Por tanto, los enteros representables son exactamente los múltiplos del MCD.
+
+Se sigue el criterio de solvencia: $ax+by=c$ tiene soluciones enteras si y solo si $\\gcd(a,b)\\mid c$. La divisibilidad decide existencia. Este Path no busca describir todas las soluciones; su objetivo es construir una representación y distinguir lo posible de lo imposible.`,
+      example: `EJEMPLO 1: REPRESENTAR $1$ MEDIANTE EUCLIDES
+Como $35$ y $22$ son coprimos, ejecutamos:
+$35=22+13$,
+$22=13+9$,
+$13=9+4$,
+$9=2\\cdot4+1$.
+Ahora sustituimos hacia atrás:
+$1=9-2\\cdot4$,
+$1=9-2(13-9)=3\\cdot9-2\\cdot13$,
+$1=3(22-13)-2\\cdot13=3\\cdot22-5\\cdot13$,
+$1=3\\cdot22-5(35-22)=8\\cdot22-5\\cdot35$.
+Así, $35(-5)+22(8)=1$. Una verificación directa da $-175+176=1$.
+
+EJEMPLO 2: ESCALAR LA REPRESENTACIÓN
+Multiplicando la última igualdad por $7$ obtenemos
+$35(-35)+22(56)=7$.
+Por tanto, $35x+22y=7$ tiene, por ejemplo, la solución entera $x=-35$, $y=56$.
+
+EJEMPLO 3: DETECTAR IMPOSIBILIDAD
+$\\gcd(18,30)=6$. Toda combinación $18x+30y$ es múltiplo de $6$, pero $7$ no lo es. En consecuencia, $18x+30y=7$ no tiene soluciones enteras. En cambio, $18(-1)+30(1)=12$ muestra una solución para el objetivo $12$, que sí es múltiplo de $6$.`,
+      mistakes: 'Buscar solo coeficientes positivos; confundir combinación lineal con producto; detener Euclides antes del último residuo no nulo; sustituir hacia atrás perdiendo paréntesis o signos; afirmar que todo entero es representable aunque el MCD no sea $1$; escalar el resultado sin escalar ambos coeficientes; o concluir imposibilidad sin comprobar si el MCD divide al objetivo.',
+      practice: `1. Usa Euclides extendido para demostrar $1=26(-4)+15(7)$.
+2. Escala esa identidad para representar $7$ como $26x+15y$.
+3. Decide si $18x+30y=25$ tiene soluciones enteras y justifica sin probar valores.
+4. Encuentra una representación de $12$ como $18x+30y$.
+5. Explica por qué toda combinación $42x+30y$ es múltiplo de $6$.
+
+Respuestas de control: 1. las sustituciones dan $1=7\\cdot15-4\\cdot26$; 2. $x=-28$, $y=49$; 3. no, porque $6\\nmid25$; 4. $x=-1$, $y=1$; 5. $42x+30y=6(7x+5y)$.`,
+      summary: 'Toda combinación de $a,b$ es múltiplo de su MCD, y Bézout garantiza que el propio MCD puede construirse como combinación entera. Las sustituciones hacia atrás en Euclides encuentran coeficientes. Así, $ax+by=c$ es soluble en enteros exactamente cuando el MCD divide a $c$.',
+    },
+    steps: [
+      { title: 'Conecta combinaciones con divisibilidad', description: 'Estudia la definición y demuestra por qué un divisor común de $a,b$ divide automáticamente cualquier combinación $ax+by$.' },
+      { title: 'Reconstruye Euclides hacia atrás', description: 'Repite todas las divisiones para $35,22$ y cada sustitución hasta verificar $35(-5)+22(8)=1$.' },
+      { title: 'Decide existencia y construye ejemplos', description: 'Resuelve los cinco ejercicios, usando primero el MCD para decidir posibilidad y después escalando una identidad cuando corresponda.' },
+      { title: 'Audita signos y criterios de solvencia', description: 'Comprueba cada combinación por sustitución directa y explica por qué los casos imposibles fallan antes de buscar coeficientes.' },
+    ],
+  }),
   combinatoricsLesson('principio-aditivo-y-multiplicativo', 'Principios aditivo y multiplicativo',
     'Cómo dividir elecciones en casos o etapas sin omitir ni contar dos veces.',
     'Si opciones incompatibles se separan en casos, sus cantidades se suman. Si una construcción tiene etapas y cada elección de una etapa puede combinarse con las siguientes, las cantidades se multiplican. Antes de operar, pregunta si estás eligiendo “esto o aquello” o “esto y después aquello”. Los casos aditivos deben ser disjuntos.',

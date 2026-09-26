@@ -161,6 +161,63 @@ describe('Ciclo 1 Algebra editorial review', () => {
   })
 })
 
+describe('Ciclo 1 Number Theory editorial review', () => {
+  const numberTheorySlugs = [
+    'divisibilidad-y-criterios-de-divisibilidad',
+    'primos-y-factorizacion',
+    'mcd-mcm-y-algoritmo-de-euclides',
+    'bezout-y-combinaciones-lineales',
+  ]
+  const lessons = Object.fromEntries(
+    OMM_LAUNCH_CONTENT_BATCH_1.lessons
+      .filter((lesson) => numberTheorySlugs.includes(lesson.pathSlug))
+      .map((lesson) => [lesson.pathSlug, lesson]),
+  )
+
+  it('keeps all four reviewed articles substantial with distinct learning Steps', () => {
+    expect(Object.keys(lessons)).toHaveLength(4)
+    Object.values(lessons).forEach((lesson) => {
+      const wordCount = lesson.theory.content.trim().split(/\s+/u).length
+      expect(wordCount).toBeGreaterThanOrEqual(550)
+      expect(wordCount).toBeLessThanOrEqual(800)
+      expect(new Set(lesson.steps.map((step) => step.title)).size).toBe(4)
+    })
+  })
+
+  it('retains the foundational Number Theory targets without later-cycle leakage', () => {
+    expect(lessons['divisibilidad-y-criterios-de-divisibilidad'].theory.content).toMatch(/DEFINICIÓN Y LENGUAJE|PROPIEDADES DESDE LA DEFINICIÓN|CRITERIOS EN BASE DIEZ|combinación lineal/iu)
+    expect(lessons['primos-y-factorizacion'].theory.content).toMatch(/número 1.*no es primo ni compuesto|TEOREMA FUNDAMENTAL|criba de Eratóstenes|LEER EXPONENTES/isu)
+    expect(lessons['mcd-mcm-y-algoritmo-de-euclides'].theory.content).toMatch(/COPRIMALIDAD|exponentes mínimos|POR QUÉ FUNCIONA EUCLIDES|último residuo no nulo/iu)
+    expect(lessons['bezout-y-combinaciones-lineales'].theory.content).toMatch(/IDENTIDAD DE BÉZOUT|EUCLIDES EXTENDIDO|sustituimos hacia atrás|exactamente los múltiplos/iu)
+
+    const reviewedContent = Object.values(lessons).map((lesson) => lesson.theory.content).join('\n')
+    expect(reviewedContent).not.toMatch(/teorema de Fermat|teorema de Euler|teorema chino|multiplicative order|orden multiplicativo|residuos cuadráticos|valuaciones?|funciones aritméticas|\bLTE\b|descenso infinito/iu)
+  })
+
+  it('keeps the checked numerical examples internally consistent', () => {
+    expect(527472 % 11).toBe(0)
+    expect(123552 % 11).toBe(0)
+    expect(42 * 252).toBe(84 * 126)
+    expect((252 * 198) / 18).toBe(2772)
+    expect((414 * 662) / 2).toBe(137034)
+    expect(26 * -4 + 15 * 7).toBe(1)
+    expect(35 * -5 + 22 * 8).toBe(1)
+    expect(18 * -1 + 30).toBe(12)
+  })
+
+  it('renders every reviewed Number Theory expression with strict KaTeX parsing', () => {
+    const expressions = Object.values(lessons).flatMap((lesson) => {
+      const texts = [lesson.theory.content, ...lesson.steps.map((step) => step.description)]
+      return texts.flatMap((content) => [...content.matchAll(/\$([^$]+)\$/gu)].map((match) => match[1]))
+    })
+
+    expect(expressions.length).toBeGreaterThan(100)
+    expressions.forEach((expression) => {
+      expect(() => katex.renderToString(expression, { throwOnError: true })).not.toThrow()
+    })
+  })
+})
+
 describe('OMM content application identity safety', () => {
   const theory = OMM_LAUNCH_CONTENT_BATCH_1.lessons[0].theory
   const theoryDocument = { ...theory, topics: [], tags: [], categories: [] }
