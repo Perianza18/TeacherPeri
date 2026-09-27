@@ -11,11 +11,11 @@ const LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0B0B0F] text-white">
+    <footer className="border-t-4 border-black bg-[#111111] text-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
         <div>
           <Link to="/" className="text-2xl font-extrabold tracking-[-0.04em]">
-            Teacher<span className="tp-gradient-text">Peri</span>
+            Teacher<span className="text-accent-sky">Peri</span>
           </Link>
           <p className="mt-3 max-w-md text-sm leading-6 text-white/55">
             Matemáticas olímpicas y orientación universitaria, organizadas para que puedas encontrar un camino y seguir explorando por tu cuenta.

@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-display: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Arial", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Arial Black", "Arial", ui-sans-serif, system-ui, sans-serif;
 
   --color-brand-50: #faf8f5;
   --color-brand-100: #f2efe9;
@@ -15,11 +15,15 @@
   --color-brand-800: #292826;
   --color-brand-900: #111113;
 
-  --color-accent-purple: #7c3aed;
-  --color-accent-violet: #6d28d9;
-  --color-accent-blue: #2563eb;
-  --color-accent-purple-soft: #f3eeff;
-  --color-accent-blue-soft: #eef5ff;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-violet: #6d3ee8;
+  --color-accent-blue: #377cf6;
+  --color-accent-sky: #86d7ff;
+  --color-accent-mint: #8ee8bf;
+  --color-accent-coral: #ff7f79;
+  --color-accent-yellow: #ffd65a;
+  --color-accent-purple-soft: #eee7ff;
+  --color-accent-blue-soft: #e5f1ff;
 }
 
 :root {
@@ -57,16 +61,73 @@ textarea {
 }
 
 .tp-gradient-text {
-  background-image: linear-gradient(120deg, #a78bfa 0%, #7c3aed 42%, #2563eb 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+  color: #9d7cff;
 }
 
 .tp-gradient {
-  background-image: linear-gradient(120deg, #7c3aed 0%, #5b5fe9 50%, #2563eb 100%);
+  background: #6d3ee8;
 }
 
 .tp-reading {
   background: #faf8f5;
+}
+
+.tp-card {
+  border: 3px solid #111111;
+  border-radius: 1.15rem;
+  box-shadow: 7px 7px 0 #111111;
+}
+
+.tp-card-soft {
+  border: 2px solid #111111;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0 #111111;
+}
+
+.tp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #111111;
+  border-radius: .75rem;
+  box-shadow: 4px 4px 0 #111111;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.tp-button:hover {
+  transform: translate(-1px, -2px);
+  box-shadow: 6px 6px 0 #111111;
+}
+
+.tp-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #111111;
+}
+
+.tp-kicker {
+  display: inline-flex;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  background: #ffd65a;
+  padding: .35rem .75rem;
+  color: #111111;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.tp-dot-grid {
+  background-image: radial-gradient(#111111 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

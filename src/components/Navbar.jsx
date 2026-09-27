@@ -35,7 +35,7 @@ function AuthButton({ dark }) {
     <button
       type="button"
       onClick={abrirModal}
-      className="tp-gradient shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-950/10 transition hover:-translate-y-0.5 active:translate-y-0"
+      className="tp-button shrink-0 bg-accent-purple px-4 py-2 text-sm font-black text-white"
     >
       Iniciar sesión
     </button>
@@ -60,12 +60,12 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${dark ? 'bg-transparent py-2' : 'border-b border-black/5 bg-[#FAF8F5]/92 py-0 shadow-[0_1px_18px_rgba(17,17,19,0.04)] backdrop-blur-xl'}`}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${dark ? 'bg-transparent py-2' : 'border-b-2 border-black bg-[#FAF8F5]/95 py-0 backdrop-blur-xl'}`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link to="/" className="shrink-0">
           <span className={`text-xl font-extrabold tracking-[-0.04em] sm:text-2xl ${dark ? 'text-white' : 'text-brand-900'}`}>
-            Teacher<span className="tp-gradient-text">Peri</span>
+            Teacher<span className="text-accent-purple">Peri</span>
           </span>
         </Link>
 
@@ -104,7 +104,7 @@ export default function Navbar() {
       </nav>
 
       {isOpen && (
-        <div className="border-t border-brand-200 bg-[#FAF8F5]/98 px-4 py-3 shadow-xl backdrop-blur-xl lg:hidden">
+        <div className="border-y-2 border-black bg-[#FAF8F5] px-4 py-3 shadow-[0_5px_0_#111] lg:hidden">
           <ul className="mx-auto max-w-7xl space-y-1">
             {NAV_LINKS.map((link) => (
               <li key={link.path}>
