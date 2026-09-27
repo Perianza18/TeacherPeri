@@ -1,52 +1,29 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
-const GRADIENT = 'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)'
-
-// Las 9 páginas del sitio (todas rutas reales de React Router ahora —
-// ya no hay un "one-pager" con secciones ancladas por scroll, así que
-// ya no hace falta la lógica de goToSection/scrollTo que había antes
-// (ver useActiveSection.js, borrado: solo lo usaba este archivo).
-// NavLink (en vez de Link) le agrega automáticamente una clase/estado
-// "activo" cuando la ruta actual coincide, sin necesidad de un hook de
-// scroll-spy para saberlo.
 const NAV_LINKS = [
   { path: '/', label: 'Inicio' },
   { path: '/rutas', label: 'Rutas' },
-  { path: '/entrenamiento', label: 'Entrenamiento' },
-  { path: '/recursos', label: 'Más Recursos' },
+  { path: '/entrenamiento', label: 'Zona de Entrenamiento' },
+  { path: '/estudia-en-el-extranjero', label: 'Universidad' },
   { path: '/experiencias', label: 'Experiencias' },
-  { path: '/estudia-en-el-extranjero', label: 'Estudia en el Extranjero' },
-  { path: '/contacto', label: 'Contacto' },
   { path: '/sobre-mi', label: 'Sobre mí' },
-  { path: '/colaboradores', label: 'Colaboradores' },
 ]
 
-// NOTA: 9 links en una sola barra horizontal es mucho — para pantallas
-// angostas esto se resuelve con el menú hamburguesa de abajo, pero en
-// desktop todavía no hay un diseño real para tantos items (dropdown,
-// menú agrupado, etc.). Eso es trabajo de la fase de frontend, no de
-// esta fase de estructura — por ahora usa flex-wrap para que al menos
-// no se corte ni se desborde.
-
-// Botón/indicador de sesión, siempre visible en la esquina superior
-// derecha (adentro o afuera del menú hamburguesa no importa — no está
-// envuelto en el `md:hidden` de los NAV_LINKS a propósito). `auth` viene
-// del AuthContext global (ver src/context/AuthContext.jsx): es el MISMO
-// estado de sesión que usa Problemas.jsx para sus comentarios y que usa
-// Contacto para autocompletar el formulario, no una copia local.
-function AuthButton() {
+function AuthButton({ dark }) {
   const { auth, logout, abrirModal } = useAuth()
 
   if (auth) {
     return (
-      <div className="flex shrink-0 items-center gap-2 text-sm">
-        <span className="hidden text-brand-700 sm:inline">Hola, {auth.user.username}</span>
+      <div className="flex shrink-0 items-center gap-2">
+        <span className={`hidden text-sm sm:inline ${dark ? 'text-white/70' : 'text-brand-600'}`}>
+          {auth.user.username}
+        </span>
         <button
           type="button"
           onClick={logout}
-          className="rounded-full border border-brand-300 px-3 py-1.5 text-xs font-medium text-brand-600 transition-colors hover:border-[#E57505] hover:text-[#E57505]"
+          className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${dark ? 'border-white/20 text-white hover:bg-white/10' : 'border-brand-200 text-brand-700 hover:border-brand-300 hover:bg-white'}`}
         >
           Cerrar sesión
         </button>
@@ -58,8 +35,7 @@ function AuthButton() {
     <button
       type="button"
       onClick={abrirModal}
-      className="shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-transform active:scale-95"
-      style={{ backgroundImage: GRADIENT }}
+      className="tp-gradient shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-950/10 transition hover:-translate-y-0.5 active:translate-y-0"
     >
       Iniciar sesión
     </button>
@@ -67,93 +43,85 @@ function AuthButton() {
 }
 
 export default function Navbar() {
+  const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const isHome = location.pathname === '/'
+  const dark = isHome && !isScrolled
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 24)
+    const onScroll = () => setIsScrolled(window.scrollY > 28)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const linkClass = ({ isActive }) =>
-    `text-sm font-medium transition-colors ${
-      isActive ? 'text-brand-900' : 'text-brand-600 hover:text-brand-900'
-    }`
+  useEffect(() => setIsOpen(false), [location.pathname])
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 bg-brand-[#FFB401]/90 backdrop-blur transition-[padding] duration-300 ${
-        isScrolled ? 'py-0' : 'py-1.5'
-      }`}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${dark ? 'bg-transparent py-2' : 'border-b border-black/5 bg-[#FAF8F5]/92 py-0 shadow-[0_1px_18px_rgba(17,17,19,0.04)] backdrop-blur-xl'}`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6">
-        <Link to="/" onClick={() => setIsOpen(false)} className="flex shrink-0 items-center">
-          {/* Sin logo en imagen todavía (el archivo real es de Axioma) —
-              wordmark en texto por ahora, mismo gradiente de marca que
-              el resto del sitio. Reemplazar por un <img> cuando exista
-              un logo real de TeacherPeri. */}
-          <span
-            className="font-display bg-clip-text text-2xl text-transparent sm:text-3xl"
-            style={{
-              backgroundImage:
-                'linear-gradient(135deg, var(--color-accent-gold) 0%, var(--color-accent-orange) 45%, var(--color-accent-red) 100%)',
-            }}
-          >
-            TeacherPeri
+      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <Link to="/" className="shrink-0">
+          <span className={`text-xl font-extrabold tracking-[-0.04em] sm:text-2xl ${dark ? 'text-white' : 'text-brand-900'}`}>
+            Teacher<span className="tp-gradient-text">Peri</span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <ul className="hidden flex-wrap items-center justify-end gap-x-5 gap-y-1 md:flex">
+        <div className="flex items-center gap-3">
+          <ul className="hidden items-center gap-5 lg:flex">
             {NAV_LINKS.map((link) => (
               <li key={link.path}>
-                <NavLink to={link.path} end={link.path === '/'} className={linkClass}>
+                <NavLink
+                  to={link.path}
+                  end={link.path === '/'}
+                  className={({ isActive }) =>
+                    `text-sm font-medium transition-colors ${dark
+                      ? isActive ? 'text-white' : 'text-white/65 hover:text-white'
+                      : isActive ? 'text-brand-900' : 'text-brand-600 hover:text-brand-900'
+                    }`
+                  }
+                >
                   {link.label}
                 </NavLink>
               </li>
             ))}
           </ul>
 
-          <AuthButton />
+          <AuthButton dark={dark} />
 
           <button
             type="button"
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="inline-flex items-center justify-center rounded-md p-2 text-brand-700 md:hidden"
-            aria-label="Abrir menú de navegación"
+            onClick={() => setIsOpen((value) => !value)}
+            aria-label="Abrir menú"
             aria-expanded={isOpen}
+            className={`grid h-10 w-10 place-items-center rounded-xl lg:hidden ${dark ? 'text-white hover:bg-white/10' : 'text-brand-900 hover:bg-white'}`}
           >
-            <span className="sr-only">Menú</span>
-            <div className="flex h-5 w-6 flex-col justify-between">
-              <span className="h-0.5 w-full bg-current" />
-              <span className="h-0.5 w-full bg-current" />
-              <span className="h-0.5 w-full bg-current" />
-            </div>
+            <span className="text-xl leading-none">{isOpen ? '×' : '☰'}</span>
           </button>
         </div>
       </nav>
 
       {isOpen && (
-        <ul className="flex flex-col gap-1 bg-brand-[#FFB401]/90 backdrop-blur px-4 pb-4 md:hidden">
-          {NAV_LINKS.map((link) => (
-            <li key={link.path}>
-              <NavLink
-                to={link.path}
-                end={link.path === '/'}
-                onClick={() => setIsOpen(false)}
-                className={({ isActive }) =>
-                  `block rounded-md px-3 py-2 text-sm font-medium hover:bg-brand-100 ${
-                    isActive ? 'text-brand-900' : 'text-brand-700'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        <div className="border-t border-brand-200 bg-[#FAF8F5]/98 px-4 py-3 shadow-xl backdrop-blur-xl lg:hidden">
+          <ul className="mx-auto max-w-7xl space-y-1">
+            {NAV_LINKS.map((link) => (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  end={link.path === '/'}
+                  className={({ isActive }) =>
+                    `block rounded-xl px-3 py-2.5 text-sm font-medium ${isActive ? 'bg-accent-purple-soft text-accent-violet' : 'text-brand-700 hover:bg-white'}`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+            <li><Link to="/contacto" className="block rounded-xl px-3 py-2.5 text-sm font-medium text-brand-700 hover:bg-white">Contacto</Link></li>
+          </ul>
+        </div>
       )}
     </header>
   )

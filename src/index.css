@@ -1,48 +1,72 @@
 @import 'tailwindcss';
 
-/*
-  Paleta cálida de TeacherPeri (texto, fondos, bordes, botones): una
-  rampa crema -> café oscuro (antes era una escala gris fría, "slate",
-  que no tenía nada que ver con los colores que Hero/Contacto/Problemas
-  ya usaban a mano). Los 3 acentos (dorado/naranja/rojo) son los mismos
-  que ya se usaban como hex sueltos en Problemas.jsx (AXIOMA_RED, etc.) —
-  aquí quedan con nombre para poder reusarlos sin repetir el hex en
-  cada archivo.
-*/
 @theme {
-  --font-display: 'Yeseva One', serif;
-  --font-hand: 'Caveat', cursive;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  --color-brand-50: #fffbf5;
-  --color-brand-100: #fcf1df;
-  --color-brand-200: #f5dfb8;
-  --color-brand-300: #e8c48a;
-  --color-brand-400: #d5a05c;
-  --color-brand-500: #b87a3e;
-  --color-brand-600: #8f5a2c;
-  --color-brand-700: #6b4020;
-  --color-brand-800: #3f2414;
-  --color-brand-900: #120303;
+  --color-brand-50: #faf8f5;
+  --color-brand-100: #f2efe9;
+  --color-brand-200: #e5e1da;
+  --color-brand-300: #d0cbc2;
+  --color-brand-400: #aaa59d;
+  --color-brand-500: #7a766f;
+  --color-brand-600: #5f5c57;
+  --color-brand-700: #46433f;
+  --color-brand-800: #292826;
+  --color-brand-900: #111113;
 
-  --color-accent-gold: #ffb401;
-  --color-accent-orange: #e57505;
-  --color-accent-red: #b70b0d;
+  --color-accent-purple: #7c3aed;
+  --color-accent-violet: #6d28d9;
+  --color-accent-blue: #2563eb;
+  --color-accent-purple-soft: #f3eeff;
+  --color-accent-blue-soft: #eef5ff;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  background: var(--color-brand-50);
+  color: var(--color-brand-900);
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--color-brand-50);
 }
 
 body {
-  @apply bg-brand-50 text-brand-900 antialiased;
+  @apply m-0 bg-brand-50 text-brand-900 antialiased;
 }
 
-/* Oculta el cursor nativo solo en dispositivos con mouse real, donde
-   CustomCursor.jsx dibuja el punto/anillo que lo reemplaza. */
-@media (pointer: fine) {
-  body,
-  a,
-  button {
-    cursor: none;
-  }
+::selection {
+  background: #ddd2ff;
+  color: #17111f;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-purple);
+  outline-offset: 3px;
+}
+
+.tp-gradient-text {
+  background-image: linear-gradient(120deg, #a78bfa 0%, #7c3aed 42%, #2563eb 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.tp-gradient {
+  background-image: linear-gradient(120deg, #7c3aed 0%, #5b5fe9 50%, #2563eb 100%);
+}
+
+.tp-reading {
+  background: #faf8f5;
 }
