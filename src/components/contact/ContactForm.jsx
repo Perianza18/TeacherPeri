@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 
-const GRADIENT = 'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)'
+const GRADIENT = 'linear-gradient(135deg, #2563EB 0%, #5B5FE9 45%, #7C3AED 100%)'
 
 const PERFILES = [
   'Estudiante de Secundaria/Prepa',
@@ -20,7 +20,7 @@ const MOTIVOS = [
 ]
 
 const selectClass =
-  'rounded-lg border border-brand-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#E57505] focus:ring-2 focus:ring-[#E57505]/30'
+  'rounded-lg border border-brand-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
 
 // El formulario de Contacto, fusionado con la sesión global (ver
 // AuthContext): sin sesión, muestra el prompt para iniciar sesión en vez

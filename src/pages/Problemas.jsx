@@ -47,10 +47,10 @@ import MathText from '../components/math/MathText'
 // Misma paleta que ya usa Hero.jsx para el fondo animado — reutilizarla
 // aquí hace que Problemas se sienta parte del mismo sitio, no una página
 // aparte con sus propios colores inventados.
-const AXIOMA_RED = '#B70B0D'
-const AXIOMA_ORANGE = '#E57505'
-const AXIOMA_GOLD = '#FFB401'
-const AXIOMA_DARK = '#120303'
+const AXIOMA_RED = '#7C3AED'
+const AXIOMA_ORANGE = '#5B5FE9'
+const AXIOMA_GOLD = '#2563EB'
+const AXIOMA_DARK = '#0B0B0F'
 const AXIOMA_GRADIENT = `linear-gradient(135deg, ${AXIOMA_GOLD} 0%, ${AXIOMA_ORANGE} 45%, ${AXIOMA_RED} 100%)`
 
 // Un enunciado es texto normal que PUEDE traer fórmulas metidas entre signos
@@ -126,7 +126,7 @@ function contarProblemas(nodo, problemas) {
 const DIFICULTAD_STYLES = {
   Fácil: 'bg-emerald-500 text-white',
   Media: `text-brand-900`,
-  Difícil: 'bg-[#B70B0D] text-white',
+  Difícil: 'bg-[#7C3AED] text-white',
 }
 const DIFICULTAD_BG = {
   Media: AXIOMA_GOLD,
@@ -171,7 +171,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
                 className={`inline-block select-none rounded-full border px-3 py-1 text-xs font-medium transition-all duration-200 active:scale-95 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-900 peer-focus-visible:ring-offset-1 ${
                   activo
                     ? 'border-transparent text-white shadow-md'
-                    : 'border-brand-300 bg-white text-brand-600 hover:border-[#E57505] hover:text-[#E57505]'
+                    : 'border-brand-300 bg-white text-brand-600 hover:border-[#5B5FE9] hover:text-[#5B5FE9]'
                 }`}
                 style={activo ? { backgroundImage: AXIOMA_GRADIENT } : undefined}
               >
@@ -282,7 +282,7 @@ function AuthInlineForm({ onAuthSuccess }) {
   }
 
   const inputClass =
-    'rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#E57505] focus:ring-2 focus:ring-[#E57505]/30'
+    'rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-brand-200 bg-white p-4 shadow-sm">
@@ -334,7 +334,7 @@ function AuthInlineForm({ onAuthSuccess }) {
         <button
           type="button"
           onClick={() => setModo(modo === 'login' ? 'signup' : 'login')}
-          className="text-sm text-brand-600 underline hover:text-[#E57505]"
+          className="text-sm text-brand-600 underline hover:text-[#5B5FE9]"
         >
           {modo === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta'}
         </button>
@@ -548,7 +548,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
                   placeholder="Escribe un comentario..."
                   rows={3}
                   maxLength={2000}
-                  className="rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#E57505] focus:ring-2 focus:ring-[#E57505]/30"
+                  className="rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30"
                 />
                 {errorComentario && (
                   <p className="text-sm text-rose-600">{errorComentario}</p>
@@ -610,7 +610,7 @@ function ProblemaCard({ problema, tilt, onOpen }) {
         </span>
       </div>
 
-      <h3 className="text-base font-semibold text-brand-900 transition-colors group-hover:text-[#B70B0D]">
+      <h3 className="text-base font-semibold text-brand-900 transition-colors group-hover:text-[#7C3AED]">
         {formatearTitulo(problema)}
       </h3>
     </motion.button>
@@ -652,7 +652,7 @@ function FolderCard({ nodo, count, color, tilt, onOpen }) {
       className="group flex flex-col items-center gap-2 rounded-2xl border border-brand-200 bg-[#FFFBF5] px-5 py-8 text-center shadow-md shadow-black/5 transition-shadow duration-200 hover:shadow-xl hover:shadow-brand-900/10"
     >
       <FolderIcon className="h-12 w-12 transition-transform group-hover:scale-110" style={{ color }} />
-      <h3 className="text-lg font-semibold text-brand-900 transition-colors group-hover:text-[#B70B0D]">
+      <h3 className="text-lg font-semibold text-brand-900 transition-colors group-hover:text-[#7C3AED]">
         {nodo.name}
       </h3>
       <span className="text-xs text-brand-500">
@@ -679,7 +679,7 @@ function Breadcrumb({ ruta, onNavigate }) {
               <button
                 type="button"
                 onClick={() => onNavigate(item._id)}
-                className="text-brand-500 transition-colors hover:text-[#E57505] hover:underline"
+                className="text-brand-500 transition-colors hover:text-[#5B5FE9] hover:underline"
               >
                 {item.name}
               </button>
@@ -998,13 +998,13 @@ export default function Problemas() {
             distortion={0.7}
             swirl={0.25}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#120303]/70 via-[#120303]/40 to-[#120303]/85" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/70 via-[#0B0B0F]/40 to-[#0B0B0F]/85" />
         </div>
 
-        <FloatingSymbol symbol="∑" className="pointer-events-none absolute left-[8%] top-[18%] text-3xl text-[#FFB401]/40 sm:text-4xl" delay={0} duration={7} rotate={-6} />
-        <FloatingSymbol symbol="π" className="pointer-events-none absolute right-[10%] top-[22%] text-3xl text-[#E57505]/40 sm:text-4xl" delay={0.5} duration={6} rotate={6} />
-        <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[14%] bottom-[16%] text-2xl text-[#FFB401]/30 sm:text-3xl" delay={0.9} duration={8} rotate={4} />
-        <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[16%] bottom-[18%] text-2xl text-[#E57505]/30 sm:text-3xl" delay={1.2} duration={6.5} rotate={-5} />
+        <FloatingSymbol symbol="∑" className="pointer-events-none absolute left-[8%] top-[18%] text-3xl text-[#2563EB]/40 sm:text-4xl" delay={0} duration={7} rotate={-6} />
+        <FloatingSymbol symbol="π" className="pointer-events-none absolute right-[10%] top-[22%] text-3xl text-[#5B5FE9]/40 sm:text-4xl" delay={0.5} duration={6} rotate={6} />
+        <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[14%] bottom-[16%] text-2xl text-[#2563EB]/30 sm:text-3xl" delay={0.9} duration={8} rotate={4} />
+        <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[16%] bottom-[18%] text-2xl text-[#5B5FE9]/30 sm:text-3xl" delay={1.2} duration={6.5} rotate={-5} />
 
         <div className="relative flex flex-col items-center gap-3">
           <span
@@ -1062,7 +1062,7 @@ export default function Problemas() {
           className="flex flex-col gap-6 self-start rounded-2xl border border-white/60 bg-[#FFFBF5]/90 p-5 shadow-lg shadow-black/5 backdrop-blur-md md:sticky md:top-28 md:max-h-[calc(100vh-9rem)] md:overflow-y-auto"
         >
           <div className="flex items-center gap-2 border-b border-brand-200 pb-3">
-            <span className="font-serif text-lg italic text-[#E57505]">∫</span>
+            <span className="font-serif text-lg italic text-[#5B5FE9]">∫</span>
             <h2 className="text-sm font-bold uppercase tracking-wide text-brand-900">Explorar</h2>
           </div>
           <FilterGroup
