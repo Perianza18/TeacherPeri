@@ -2,14 +2,14 @@
 
 Plataforma en español para preparación en olimpiadas de matemáticas y orientación
 universitaria en Estados Unidos y universidades seleccionadas de Canadá. Este
-repositorio migra infraestructura de Axioma de forma incremental.
+repositorio contiene la aplicación activa de TeacherPeri y evoluciona de forma incremental.
 
 ## Documentación canónica
 
 - [Guía de desarrollo y contribución](docs/DEVELOPMENT.md): prácticas de ingeniería, seguridad y validación.
 - [Producto](docs/PRODUCT.md): modelo acordado y límites de alcance.
 - [Arquitectura](docs/ARCHITECTURE.md): implementación actual e invariantes futuras.
-- [Migración](docs/MIGRATION.md): infraestructura reutilizable y legado pendiente.
+- [Migración](docs/MIGRATION.md): compatibilidad, migraciones de datos y seguridad operacional.
 - [Roadmap](docs/ROADMAP.md): orden de implementación.
 
 Hoy funcionan el banco de Problemas, sus carpetas/filtros/comentarios, la sesión
