@@ -56,8 +56,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => setIsOpen(false), [location.pathname])
-
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${dark ? 'bg-transparent py-2' : 'border-b-2 border-black bg-[#FAF8F5]/95 py-0 backdrop-blur-xl'}`}
@@ -76,6 +74,7 @@ export default function Navbar() {
                 <NavLink
                   to={link.path}
                   end={link.path === '/'}
+                  onClick={() => setIsOpen(false)}
                   className={({ isActive }) =>
                     `text-sm font-medium transition-colors ${dark
                       ? isActive ? 'text-white' : 'text-white/65 hover:text-white'
@@ -119,7 +118,7 @@ export default function Navbar() {
                 </NavLink>
               </li>
             ))}
-            <li><Link to="/contacto" className="block rounded-xl px-3 py-2.5 text-sm font-medium text-brand-700 hover:bg-white">Contacto</Link></li>
+            <li><Link to="/contacto" onClick={() => setIsOpen(false)} className="block rounded-xl px-3 py-2.5 text-sm font-medium text-brand-700 hover:bg-white">Contacto</Link></li>
           </ul>
         </div>
       )}

@@ -13,15 +13,15 @@ function joinedPath(slugs) {
 
 function ChildPathCard({ child, slugs }) {
   if (!child.available) {
-    return <div className="rounded-2xl border border-brand-200 bg-white p-5 text-sm text-brand-500">Este tramo de la Ruta no está disponible públicamente.</div>
+    return <div className="rounded-xl border-2 border-brand-300 bg-white p-5 text-sm text-brand-500">Este tramo de la Ruta no está disponible públicamente.</div>
   }
 
   return (
-    <Link to={joinedPath([...slugs, child.slug])} className="group block rounded-2xl border border-brand-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg">
+    <Link to={joinedPath([...slugs, child.slug])} className="tp-card-soft group block bg-white p-5 transition hover:-translate-y-1">
       <div className="flex items-start gap-4">
-        <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent-purple-soft text-xs font-bold text-violet-700">{child.order}</span>
+        <span className="mt-1 grid h-9 w-9 shrink-0 place-items-center border-2 border-black bg-accent-yellow text-xs font-black text-brand-900">{child.order}</span>
         <div>
-          <h3 className="text-lg font-semibold tracking-tight text-brand-900">{child.title}</h3>
+          <h3 className="text-lg font-black uppercase tracking-[-.02em] text-brand-900">{child.title}</h3>
           {child.description && <p className="mt-2 text-sm leading-6 text-brand-600">{child.description}</p>}
           <span className="mt-4 inline-block text-sm font-semibold text-brand-800 transition group-hover:translate-x-1">Abrir Ruta →</span>
         </div>
@@ -118,12 +118,12 @@ export default function PathPage() {
                 ))}
               </nav>
 
-              <header className="mt-6 rounded-[2rem] border border-brand-200 bg-white p-6 shadow-[0_12px_40px_rgba(17,17,19,.045)] sm:p-8">
+              <header className={`mt-6 p-6 sm:p-8 ${path.kind === 'parent' ? 'tp-card bg-accent-sky' : 'rounded-2xl border-2 border-brand-300 bg-white'}`}>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">Ruta</span>
-                  {path.level && <span className="rounded-full bg-brand-100 px-2.5 py-1 text-xs text-brand-600">{LEVEL_LABELS[path.level]}</span>}
+                  <span className="text-xs font-black uppercase tracking-[0.16em] text-accent-violet">Ruta</span>
+                  {path.level && <span className="border-2 border-black bg-accent-yellow px-2.5 py-1 text-xs font-bold text-brand-900">{LEVEL_LABELS[path.level]}</span>}
                 </div>
-                <h1 className="mt-4 text-4xl font-bold tracking-[-0.04em] text-brand-900 sm:text-5xl">{path.title}</h1>
+                <h1 className={`mt-4 text-4xl font-black tracking-[-0.05em] text-brand-900 sm:text-5xl ${path.kind === 'parent' ? 'uppercase' : ''}`}>{path.title}</h1>
                 {path.description && <p className="mt-5 max-w-3xl text-lg leading-8 text-brand-600">{path.description}</p>}
                 {path.tags?.length > 0 && <div className="mt-5 flex flex-wrap gap-2">{path.tags.map((tag) => <span key={tag._id} className="rounded-full bg-accent-purple-soft px-2.5 py-1 text-xs text-violet-700">{tag.label}</span>)}</div>}
 
@@ -133,8 +133,8 @@ export default function PathPage() {
                       <span>Progreso</span>
                       <span>{visibleProgress.percentage}%</span>
                     </div>
-                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-brand-100">
-                      <div className="tp-gradient h-full rounded-full" style={{ width: `${visibleProgress.percentage}%` }} />
+                    <div className="mt-2 h-3 overflow-hidden border-2 border-black bg-white">
+                      <div className="h-full bg-accent-purple" style={{ width: `${visibleProgress.percentage}%` }} />
                     </div>
                     <p className="mt-2 text-xs text-brand-500">{visibleProgress.completedLeaves} de {visibleProgress.totalLeaves} Rutas hoja</p>
                   </div>
@@ -145,7 +145,7 @@ export default function PathPage() {
                     type="button"
                     onClick={() => setCompletion(!completed)}
                     disabled={updating}
-                    className="mt-7 rounded-xl bg-brand-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 disabled:opacity-50"
+                    className="tp-button mt-7 bg-brand-900 px-4 py-2.5 text-sm font-black text-white disabled:opacity-50"
                   >
                     {!auth ? 'Inicia sesión para marcarla completa' : completed ? 'Marcar como pendiente' : 'Marcar Ruta completa'}
                   </button>
@@ -161,15 +161,13 @@ export default function PathPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="relative space-y-4 border-l-4 border-black pl-5 sm:pl-8">
                     {path.presentation.map((item, index) => (
                       item.type === 'section'
                         ? (
-                          <div key={`${item.section._id}-${index}`} className="pt-6 first:pt-0">
-                            <div className="flex items-center gap-3">
-                              <span className="h-px flex-1 bg-gradient-to-r from-violet-300 to-transparent" />
-                              <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-brand-600">{item.section.title}</h3>
-                              <span className="h-px flex-1 bg-gradient-to-l from-blue-300 to-transparent" />
+                          <div key={`${item.section._id}-${index}`} className="pt-7 first:pt-0">
+                            <div className="relative -ml-8 inline-flex border-2 border-black bg-accent-coral px-4 py-2 shadow-[3px_3px_0_#111] sm:-ml-11">
+                              <h3 className="text-sm font-black uppercase tracking-[0.14em] text-brand-900">{item.section.title}</h3>
                             </div>
                           </div>
                         )
@@ -185,9 +183,9 @@ export default function PathPage() {
                   <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-900">Pasos</h2>
                   <div className="mt-6 space-y-4">
                     {path.steps.map((step) => (
-                      <article key={step._id} className="rounded-3xl border border-brand-200 bg-white p-6">
+                      <article key={step._id} className="rounded-2xl border-2 border-brand-300 bg-white p-6">
                         <div className="flex items-start gap-4">
-                          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-900 text-xs font-bold text-white">{step.order}</span>
+                          <span className="grid h-9 w-9 shrink-0 place-items-center border-2 border-black bg-brand-900 text-xs font-bold text-white">{step.order}</span>
                           <div className="min-w-0 flex-1">
                             <h3 className="text-lg font-semibold text-brand-900">{step.title}</h3>
                             {step.description && <p className="mt-3 whitespace-pre-wrap leading-7 text-brand-600">{step.description}</p>}
@@ -220,7 +218,7 @@ export default function PathPage() {
               )}
 
               {path.relatedPaths.length > 0 && (
-                <aside className="mt-10 rounded-3xl border border-brand-200 bg-[#F5F2ED] p-6">
+                <aside className="mt-10 rounded-2xl border-2 border-brand-300 bg-[#F5F2ED] p-6">
                   <h2 className="text-xl font-bold text-brand-900">Rutas relacionadas</h2>
                   <div className="mt-4 grid gap-3 md:grid-cols-2">
                     {path.relatedPaths.map((related) => (

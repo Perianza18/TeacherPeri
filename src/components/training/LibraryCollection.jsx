@@ -12,29 +12,30 @@ function itemTitle(type, item) {
 
 export default function LibraryCollection({ type, title, subtitle }) {
   const [query, setQuery] = useState('')
-  const [items, setItems] = useState([])
+  const [results, setResults] = useState({ requestKey: null, items: [], error: null })
   const [categories, setCategories] = useState([])
   const [topics, setTopics] = useState([])
   const [tags, setTags] = useState([])
   const [folder, setFolder] = useState(null)
   const [topic, setTopic] = useState('')
   const [tag, setTag] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const requestKey = `${type}\u0000${query}\u0000${folder || ''}\u0000${topic}\u0000${tag}`
+  const loading = results.requestKey !== requestKey
+  const items = loading ? [] : results.items
+  const error = loading ? null : results.error
 
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
     const params = new URLSearchParams({ page: '1', limit: '20' })
     if (query.trim()) params.set('q', query.trim())
     if (folder) params.set('categories', folder)
     if (topic) params.set('topics', topic)
     if (tag) params.set('tags', tag)
     apiFetch(`/api/${type}?${params}`)
-      .then((result) => { if (!cancelled) { setItems(result.items); setError(null); setLoading(false) } })
-      .catch((requestError) => { if (!cancelled) { setError(requestError.message); setLoading(false) } })
+      .then((result) => { if (!cancelled) setResults({ requestKey, items: result.items, error: null }) })
+      .catch((requestError) => { if (!cancelled) setResults({ requestKey, items: [], error: requestError.message }) })
     return () => { cancelled = true }
-  }, [type, query, folder, topic, tag])
+  }, [type, query, folder, topic, tag, requestKey])
 
   useEffect(() => {
     Promise.all([apiFetch('/api/categories'), apiFetch('/api/topics'), apiFetch('/api/tags')])
@@ -49,15 +50,15 @@ export default function LibraryCollection({ type, title, subtitle }) {
     <section className="mx-auto max-w-7xl px-4 pb-24 pt-14 sm:px-6 lg:px-8">
       <TrainingHeader eyebrow="Zona de Entrenamiento" title={title} subtitle={subtitle} />
 
-      <div className="rounded-3xl border border-brand-200 bg-white p-5 shadow-[0_8px_30px_rgba(17,17,19,.035)]">
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Buscar en ${title.toLowerCase()}`} className="w-full rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3.5 outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100" />
+      <div className="tp-card-soft bg-white p-5">
+        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Buscar en ${title.toLowerCase()}`} className="w-full rounded-xl border-2 border-black bg-brand-50 px-4 py-3.5 outline-none focus:bg-white" />
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           <select value={topic} onChange={(event) => setTopic(event.target.value)} className="rounded-xl border border-brand-200 bg-brand-50 p-3 text-sm text-brand-700"><option value="">Todos los temas</option>{topics.map((entry) => <option key={entry._id} value={entry._id}>{entry.name}</option>)}</select>
           <select value={tag} onChange={(event) => setTag(event.target.value)} className="rounded-xl border border-brand-200 bg-brand-50 p-3 text-sm text-brand-700"><option value="">Todas las etiquetas</option>{tags.map((entry) => <option key={entry._id} value={entry._id}>{entry.label}</option>)}</select>
         </div>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-brand-200 bg-white p-4">
+      <div className="mt-6 rounded-xl border-2 border-brand-300 bg-white p-4">
         <div className="mb-3 flex items-center gap-2 text-sm text-brand-500">
           <button type="button" onClick={() => setFolder(null)} className="font-medium hover:text-brand-900">Inicio</button>
           {current && <><span>›</span><span className="text-brand-800">{current.name}</span></>}
@@ -72,9 +73,9 @@ export default function LibraryCollection({ type, title, subtitle }) {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
-          <Link key={item._id} to={`/entrenamiento/${PATHS[type]}/${item._id}`} className="group rounded-3xl border border-brand-200 bg-white p-5 transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-600">{title}</p>
-            <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-900">{itemTitle(type, item)}</h3>
+          <Link key={item._id} to={`/entrenamiento/${PATHS[type]}/${item._id}`} className="tp-card-soft group bg-white p-5 transition hover:-translate-y-1">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-accent-violet">{title}</p>
+            <h3 className="mt-3 text-lg font-black tracking-tight text-brand-900">{itemTitle(type, item)}</h3>
             {item.summary && <p className="mt-3 text-sm leading-6 text-brand-600">{item.summary}</p>}
             {type === 'lists' && item.sourceOrganization && <p className="mt-5 text-xs text-brand-500">Fuente: {item.sourceOrganization}</p>}
             {type === 'exams' && <p className="mt-5 text-xs text-brand-500">{item.problems?.length || 0} problemas</p>}
