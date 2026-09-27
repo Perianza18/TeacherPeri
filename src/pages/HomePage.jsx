@@ -1,22 +1,22 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Hero from '../components/sections/Hero'
 import { apiFetch } from '../lib/api'
 
 const journeyCards = [
-  { title: 'Prepararme para Olimpiadas', text: 'Sigue una Ruta estructurada y entrena con material reutilizable.', to: '/rutas', accent: 'from-violet-500 to-purple-700' },
-  { title: 'Prepararme para Universidad', text: 'Entiende el proceso y construye tu camino paso a paso.', to: '/estudia-en-el-extranjero', accent: 'from-blue-500 to-indigo-700' },
-  { title: 'Explorar por mi cuenta', text: 'Ve directo a problemas, teoría, listas y exámenes.', to: '/entrenamiento', accent: 'from-zinc-700 to-zinc-950' },
+  { number: '01', title: 'Prepararme para Olimpiadas', text: 'Sigue una Ruta estructurada y entrena con material reutilizable.', to: '/rutas', color: 'bg-accent-purple text-white', rotate: '-rotate-1' },
+  { number: '02', title: 'Prepararme para Universidad', text: 'Entiende el proceso y construye tu camino paso a paso.', to: '/estudia-en-el-extranjero', color: 'bg-accent-sky text-brand-900', rotate: 'lg:rotate-1' },
+  { number: '03', title: 'Explorar por mi cuenta', text: 'Ve directo a problemas, teoría, listas y exámenes.', to: '/entrenamiento', color: 'bg-accent-coral text-brand-900', rotate: 'lg:-rotate-1' },
 ]
 
 const libraries = [
-  ['Problemas', 'Practica directamente con problemas organizados.', '/entrenamiento/problemas', 'π'],
-  ['Teoría', 'Lee explicaciones matemáticas nativas y reutilizables.', '/entrenamiento/teoria', '∑'],
-  ['Listas', 'Encuentra colecciones de entrenamiento de distintas fuentes.', '/entrenamiento/listas', '≡'],
-  ['Exámenes', 'Explora exámenes y sus problemas en orden.', '/entrenamiento/examenes', '√'],
+  ['Problemas', 'Practica con problemas organizados.', '/entrenamiento/problemas', 'π', 'bg-accent-yellow'],
+  ['Teoría', 'Lee explicaciones matemáticas reutilizables.', '/entrenamiento/teoria', '∑', 'bg-accent-mint'],
+  ['Listas', 'Encuentra colecciones de distintas fuentes.', '/entrenamiento/listas', '≡', 'bg-accent-sky'],
+  ['Exámenes', 'Explora exámenes y sus problemas en orden.', '/entrenamiento/examenes', '√', 'bg-accent-coral'],
 ]
 
 const searchConfig = [
@@ -27,10 +27,16 @@ const searchConfig = [
 ]
 
 function Reveal({ children, className = '' }) {
+  const reduceMotion = useReducedMotion()
+  return <motion.div initial={reduceMotion ? false : { opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.18 }} transition={{ duration: 0.4 }} className={className}>{children}</motion.div>
+}
+
+function SectionHeading({ eyebrow, children, light = false }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.55 }} className={className}>
-      {children}
-    </motion.div>
+    <div>
+      <span className="tp-kicker">{eyebrow}</span>
+      <h2 className={`mt-5 max-w-4xl text-4xl font-black uppercase leading-[.98] tracking-[-.055em] sm:text-5xl ${light ? 'text-white' : 'text-brand-900'}`}>{children}</h2>
+    </div>
   )
 }
 
@@ -43,43 +49,26 @@ function TrainingSearch() {
     const q = query.trim()
     if (!q) return
     setState({ loading: true, results: [], error: null })
-    try {
-      const responses = await Promise.all(searchConfig.map(([api, label, path]) =>
-        apiFetch(`/api/${api}?q=${encodeURIComponent(q)}&page=1&limit=4`)
-          .then((data) => (data.items || []).map((item) => ({ item, label, path })))
-          .catch(() => [])
-      ))
-      setState({ loading: false, results: responses.flat(), error: null })
-    } catch {
-      setState({ loading: false, results: [], error: 'No fue posible completar la búsqueda.' })
-    }
+    const responses = await Promise.all(searchConfig.map(([api, label, path]) => apiFetch(`/api/${api}?q=${encodeURIComponent(q)}&page=1&limit=4`).then((data) => (data.items || []).map((item) => ({ item, label, path }))).catch(() => [])))
+    setState({ loading: false, results: responses.flat(), error: null })
   }
 
-  function titleFor(result) {
-    const { item, path } = result
+  function titleFor({ item, path }) {
     if (path === 'examenes') return `${item.competition} ${item.year} · ${item.round}`
     return item.title || item.codigo || 'Contenido'
   }
 
   return (
     <div className="mt-8">
-      <form onSubmit={submit} className="flex flex-col gap-3 sm:flex-row">
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar problemas, teoría, listas o exámenes..." className="min-w-0 flex-1 rounded-2xl border border-brand-200 bg-white px-5 py-4 text-brand-900 shadow-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100" />
-        <button className="tp-gradient rounded-2xl px-6 py-4 text-sm font-semibold text-white shadow-lg shadow-violet-950/10">Buscar</button>
+      <form onSubmit={submit} className="tp-card flex flex-col gap-3 bg-white p-3 sm:flex-row">
+        <label className="sr-only" htmlFor="global-search">Buscar en todas las bibliotecas</label>
+        <input id="global-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Busca en todo TeacherPeri…" className="min-w-0 flex-1 rounded-xl border-2 border-black bg-brand-50 px-5 py-4 font-semibold outline-none focus:bg-white" />
+        <button className="tp-button bg-accent-purple px-7 py-4 text-sm font-black text-white">BUSCAR →</button>
       </form>
-      {state.loading && <p className="mt-4 text-sm text-brand-500">Buscando…</p>}
-      {state.error && <p className="mt-4 text-sm text-red-600">{state.error}</p>}
-      {!state.loading && state.results.length > 0 && (
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {state.results.map((result) => (
-            <Link key={`${result.path}-${result.item._id}`} to={`/entrenamiento/${result.path}/${result.item._id}`} className="rounded-xl border border-brand-200 bg-white px-4 py-3 transition hover:border-violet-300 hover:shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">{result.label}</p>
-              <p className="mt-1 text-sm font-semibold text-brand-900">{titleFor(result)}</p>
-            </Link>
-          ))}
-        </div>
-      )}
-      {!state.loading && query.trim() && state.results.length === 0 && !state.error && <p className="mt-4 text-sm text-brand-500">No encontramos resultados para esa búsqueda.</p>}
+      {state.loading && <p className="mt-5 font-semibold text-brand-600">Buscando…</p>}
+      {state.error && <p className="mt-5 text-red-700">{state.error}</p>}
+      {!state.loading && state.results.length > 0 && <div className="mt-5 grid gap-3 sm:grid-cols-2">{state.results.map((result) => <Link key={`${result.path}-${result.item._id}`} to={`/entrenamiento/${result.path}/${result.item._id}`} className="tp-card-soft bg-white px-4 py-3 transition hover:-translate-y-0.5"><p className="text-xs font-black uppercase tracking-wide text-accent-violet">{result.label}</p><p className="mt-1 font-bold">{titleFor(result)}</p></Link>)}</div>}
+      {!state.loading && query.trim() && state.results.length === 0 && !state.error && <p className="mt-5 text-brand-600">No encontramos resultados para esa búsqueda.</p>}
     </div>
   )
 }
@@ -88,140 +77,39 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="bg-brand-50">
+      <main className="overflow-hidden bg-brand-50">
         <Hero />
 
-        <section className="px-4 py-24 sm:px-6 lg:px-8">
+        <section className="px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-violet-600">Empieza por aquí</p>
-              <h2 className="mt-3 max-w-3xl text-4xl font-bold tracking-[-0.04em] text-brand-900 sm:text-5xl">¿Qué quieres hacer?</h2>
-            </Reveal>
-            <div className="mt-10 grid gap-4 lg:grid-cols-3">
-              {journeyCards.map((card, index) => (
-                <Reveal key={card.title}>
-                  <Link to={card.to} className="group block h-full rounded-3xl border border-brand-200 bg-white p-6 shadow-[0_10px_30px_rgba(17,17,19,.04)] transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_18px_40px_rgba(17,17,19,.08)]">
-                    <div className={`h-1.5 w-12 rounded-full bg-gradient-to-r ${card.accent}`} />
-                    <h3 className="mt-8 text-xl font-semibold tracking-tight text-brand-900">{card.title}</h3>
-                    <p className="mt-3 leading-7 text-brand-600">{card.text}</p>
-                    <p className="mt-8 text-sm font-semibold text-brand-900">Explorar <span className="transition group-hover:translate-x-1 inline-block">→</span></p>
-                  </Link>
-                </Reveal>
-              ))}
+            <Reveal><SectionHeading eyebrow="Empieza por aquí">¿Qué quieres hacer?</SectionHeading></Reveal>
+            <div className="mt-10 grid gap-7 lg:grid-cols-3">
+              {journeyCards.map((card) => <Reveal key={card.title}><Link to={card.to} className={`tp-card group block h-full p-7 transition hover:-translate-y-2 hover:rotate-0 ${card.color} ${card.rotate}`}><span className="grid h-11 w-11 place-items-center border-2 border-black bg-white font-black text-brand-900">{card.number}</span><h3 className="mt-10 text-2xl font-black uppercase leading-tight tracking-[-.035em]">{card.title}</h3><p className="mt-4 font-medium leading-7 opacity-80">{card.text}</p><p className="mt-8 font-black">EXPLORAR <span className="inline-block transition group-hover:translate-x-1">→</span></p></Link></Reveal>)}
             </div>
           </div>
         </section>
 
-        <section className="border-y border-brand-200/70 bg-white px-4 py-24 sm:px-6 lg:px-8">
-          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-violet-600">Rutas</p>
-              <h2 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-brand-900">No tienes que descubrir el camino solo.</h2>
-              <p className="mt-5 max-w-xl leading-7 text-brand-600">Las Rutas organizan qué hacer y en qué orden, sin convertir TeacherPeri en un sistema rígido.</p>
-              <Link to="/rutas" className="mt-7 inline-flex rounded-xl border border-brand-200 bg-brand-900 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5">Explorar todas las Rutas</Link>
-            </Reveal>
-            <Reveal>
-              <div className="rounded-[2rem] border border-brand-200 bg-brand-50 p-7 sm:p-9">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-500">Preparación para la OMM</p>
-                <div className="mt-7 space-y-0">
-                  {['Primeros Pasos', 'Herramientas Fundamentales', 'Construyendo Técnica', 'Ampliando Herramientas', 'Integración y Estrategia'].map((label, index) => (
-                    <div key={label} className="relative flex min-h-20 items-start gap-4">
-                      {index < 4 && <span className="absolute left-[11px] top-6 h-full w-px bg-gradient-to-b from-violet-400 to-blue-400" />}
-                      <span className={`relative z-10 mt-0.5 h-6 w-6 rounded-full border-4 border-brand-50 ${index < 2 ? 'tp-gradient' : 'bg-brand-300'}`} />
-                      <div>
-                        <p className="text-xs font-semibold text-brand-400">Ciclo {index + 1}</p>
-                        <p className="mt-1 font-semibold text-brand-900">{label}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
+        <section className="border-y-4 border-black bg-accent-blue-soft px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <Reveal className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-end"><div className="lg:pb-8"><SectionHeading eyebrow="Rutas">No tienes que descubrir el camino solo.</SectionHeading><p className="mt-5 max-w-xl text-lg leading-8 text-brand-700">Las Rutas organizan qué hacer y en qué orden sin convertir tu aprendizaje en un sistema rígido.</p><Link to="/rutas" className="tp-button mt-7 bg-brand-900 px-5 py-3 text-sm font-black text-white">VER TODAS LAS RUTAS →</Link></div><div className="tp-card relative bg-white p-6 sm:p-8"><span className="absolute -right-3 -top-4 rotate-3 border-2 border-black bg-accent-coral px-3 py-2 text-xs font-black">RUTA DESTACADA</span><p className="text-sm font-black uppercase tracking-[.15em] text-accent-violet">Preparación para la OMM</p><div className="mt-7 grid gap-3 sm:grid-cols-5">{['Primeros Pasos', 'Herramientas Fundamentales', 'Construyendo Técnica', 'Ampliando Herramientas', 'Integración y Estrategia'].map((label, index) => <div key={label} className="relative border-2 border-black bg-brand-50 p-4 sm:min-h-40"><span className="grid h-8 w-8 place-items-center bg-accent-yellow text-sm font-black">{index + 1}</span><p className="mt-5 text-xs font-black uppercase leading-5">{label}</p>{index < 4 && <span className="absolute -right-3 top-1/2 z-10 hidden text-xl font-black sm:block">→</span>}</div>)}</div></div></Reveal>
           </div>
         </section>
 
-        <section className="px-4 py-24 sm:px-6 lg:px-8">
+        <section className="px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Zona de Entrenamiento</p>
-              <h2 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-brand-900">Entrena directamente con el material.</h2>
-              <p className="mt-4 max-w-2xl leading-7 text-brand-600">Busca en las cuatro bibliotecas o entra directamente a la que necesitas.</p>
-            </Reveal>
+            <Reveal><SectionHeading eyebrow="Zona de Entrenamiento">Todo el material. Una sola búsqueda.</SectionHeading><p className="mt-4 max-w-2xl text-lg leading-8 text-brand-700">Busca en las cuatro bibliotecas o entra directamente a la que necesitas.</p></Reveal>
             <TrainingSearch />
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {libraries.map(([title, text, to, symbol]) => (
-                <Link key={title} to={to} className="group rounded-3xl border border-brand-200 bg-white p-6 transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg">
-                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-accent-purple-soft text-xl font-semibold text-violet-700">{symbol}</span>
-                  <h3 className="mt-7 text-lg font-semibold text-brand-900">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-brand-600">{text}</p>
-                  <span className="mt-6 inline-block text-brand-400 transition group-hover:translate-x-1 group-hover:text-violet-600">→</span>
-                </Link>
-              ))}
-            </div>
+            <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{libraries.map(([title, text, to, symbol, color], index) => <Link key={title} to={to} className={`tp-card group p-6 transition hover:-translate-y-2 hover:rotate-0 ${color} ${index === 1 ? 'lg:rotate-1' : index === 3 ? 'lg:-rotate-1' : ''}`}><span className="grid h-12 w-12 place-items-center border-2 border-black bg-white text-2xl font-black">{symbol}</span><h3 className="mt-7 text-xl font-black uppercase">{title}</h3><p className="mt-3 text-sm font-medium leading-6 text-brand-700">{text}</p><span className="mt-7 inline-block font-black transition group-hover:translate-x-1">ABRIR →</span></Link>)}</div>
           </div>
         </section>
 
-        <section className="relative overflow-hidden bg-[#0B0B0F] px-4 py-24 text-white sm:px-6 lg:px-8">
-          <div className="pointer-events-none absolute right-[10%] top-0 h-80 w-80 rounded-full bg-blue-600/20 blur-3xl" />
-          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">Universidad</p>
-              <h2 className="mt-3 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">Construye tu camino para estudiar en el extranjero.</h2>
-              <p className="mt-5 max-w-xl leading-7 text-white/60">TeacherPeri también organiza la preparación universitaria como una ruta abierta y flexible.</p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link to="/estudia-en-el-extranjero" className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-brand-900">Explorar Universidad</Link>
-                <Link to="/rutas" className="rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white">Ver Rutas</Link>
-              </div>
-            </Reveal>
-            <Reveal>
-              <div className="space-y-3">
-                {['Entender el proceso', 'Construir tu preparación', 'Preparar aplicaciones', 'Enviar y dar seguimiento', 'Comparar opciones'].map((item, index) => (
-                  <div key={item} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.045] px-5 py-4 backdrop-blur">
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blue-500/15 text-xs font-bold text-blue-200">{index + 1}</span>
-                    <span className="font-medium text-white/80">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </div>
+        <section className="relative border-y-4 border-black bg-[#111111] px-4 py-20 text-white sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-center"><Reveal><SectionHeading eyebrow="Universidad" light>Construye tu camino para estudiar en el extranjero.</SectionHeading><p className="mt-5 max-w-xl text-lg leading-8 text-white/70">TeacherPeri organiza la preparación universitaria como una ruta abierta y flexible.</p><Link to="/estudia-en-el-extranjero" className="tp-button mt-7 bg-accent-sky px-5 py-3 text-sm font-black text-brand-900">EXPLORAR UNIVERSIDAD →</Link></Reveal><Reveal><div className="grid gap-3 sm:grid-cols-2">{['Entender el proceso', 'Construir tu preparación', 'Preparar aplicaciones', 'Comparar opciones'].map((item, index) => <div key={item} className={`tp-card-soft p-4 text-brand-900 ${index % 2 ? 'bg-accent-purple text-white' : 'bg-white'}`}><span className="text-xs font-black">0{index + 1}</span><p className="mt-3 font-black uppercase">{item}</p></div>)}</div></Reveal></div>
         </section>
 
-        <section className="px-4 py-24 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <Reveal className="text-center">
-              <h2 className="text-4xl font-bold tracking-[-0.04em] text-brand-900">¿Por qué TeacherPeri?</h2>
-            </Reveal>
-            <div className="mt-10 grid gap-8 md:grid-cols-3">
-              {[
-                ['Encuentra una dirección', 'Entiende qué puedes hacer y en qué orden, sin depender de información fragmentada.'],
-                ['Aprende sin restricciones', 'El progreso describe tu recorrido; nunca bloquea contenido público.'],
-                ['Todo está conectado', 'Rutas y bibliotecas reutilizan los mismos objetos en lugar de duplicarlos.'],
-              ].map(([title, text]) => (
-                <Reveal key={title}>
-                  <div className="border-t border-brand-300 pt-5">
-                    <h3 className="text-lg font-semibold text-brand-900">{title}</h3>
-                    <p className="mt-3 leading-7 text-brand-600">{text}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
+        <section className="px-4 py-20 sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><Reveal><SectionHeading eyebrow="El método">¿Por qué TeacherPeri?</SectionHeading></Reveal><div className="mt-10 grid gap-5 md:grid-cols-3">{[['Encuentra una dirección', 'Entiende qué puedes hacer y en qué orden.'], ['Aprende sin restricciones', 'Tu progreso describe el recorrido; nunca bloquea contenido.'], ['Todo está conectado', 'Rutas y bibliotecas reutilizan los mismos objetos.']].map(([title, text], index) => <Reveal key={title}><div className="h-full border-l-4 border-black bg-white p-6"><span className="text-sm font-black text-accent-violet">0{index + 1}</span><h3 className="mt-4 text-xl font-black uppercase">{title}</h3><p className="mt-3 leading-7 text-brand-600">{text}</p></div></Reveal>)}</div></div></section>
 
-        <section className="border-t border-brand-200 bg-[#F5F2ED] px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between">
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-violet-600">Sobre TeacherPeri</p>
-              <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-[-0.035em] text-brand-900">Un proyecto construido desde la experiencia de aprender, competir y enseñar.</h2>
-            </Reveal>
-            <Reveal>
-              <div className="flex gap-3">
-                <Link to="/sobre-mi" className="rounded-xl bg-brand-900 px-5 py-3 text-sm font-semibold text-white">Sobre mí</Link>
-                <Link to="/contacto" className="rounded-xl border border-brand-300 bg-white px-5 py-3 text-sm font-semibold text-brand-900">Contacto</Link>
-              </div>
-            </Reveal>
-          </div>
-        </section>
+        <section className="border-t-4 border-black bg-accent-yellow px-4 py-16 sm:px-6 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between"><Reveal><p className="text-sm font-black uppercase tracking-[.16em]">Sobre TeacherPeri</p><h2 className="mt-3 max-w-3xl text-3xl font-black uppercase leading-tight tracking-[-.04em]">Construido desde la experiencia de aprender, competir y enseñar.</h2></Reveal><Reveal><div className="flex flex-wrap gap-3"><Link to="/sobre-mi" className="tp-button bg-brand-900 px-5 py-3 text-sm font-black text-white">SOBRE MÍ</Link><Link to="/contacto" className="tp-button bg-white px-5 py-3 text-sm font-black">CONTACTO</Link></div></Reveal></div></section>
       </main>
       <Footer />
     </>
