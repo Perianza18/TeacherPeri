@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../components/motion/FloatingSymbol'
 import Counter from '../components/motion/Counter'
 import { EASE, fadeUp, staggerContainer, popIn } from '../components/motion/variants'
@@ -51,7 +50,7 @@ const TP_RED = '#7C3AED'
 const TP_ORANGE = '#5B5FE9'
 const TP_GOLD = '#2563EB'
 const TP_DARK = '#0B0B0F'
-const TP_GRADIENT = `linear-gradient(135deg, ${TP_GOLD} 0%, ${TP_ORANGE} 45%, ${TP_RED} 100%)`
+const TP_ACCENT = TP_ORANGE
 
 // Un enunciado es texto normal que PUEDE traer fórmulas metidas entre signos
 // de pesos, como en LaTeX de verdad: "Sea $a>0$, demuestra que...". Hay dos
@@ -173,7 +172,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
                     ? 'border-transparent text-white shadow-md'
                     : 'border-brand-300 bg-white text-brand-600 hover:border-[#5B5FE9] hover:text-[#5B5FE9]'
                 }`}
-                style={activo ? { backgroundImage: TP_GRADIENT } : undefined}
+                style={activo ? { backgroundColor: TP_ACCENT } : undefined}
               >
                 {option}
               </span>
@@ -327,7 +326,7 @@ function AuthInlineForm({ onAuthSuccess }) {
           type="submit"
           disabled={enviando}
           className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-          style={{ backgroundImage: TP_GRADIENT }}
+          style={{ backgroundColor: TP_ACCENT }}
         >
           {enviando ? 'Un momento...' : modo === 'login' ? 'Iniciar sesión' : 'Registrarme'}
         </button>
@@ -358,7 +357,7 @@ function ComentarioItem({ comentario, esPropio, onEliminar }) {
       <div
         aria-hidden="true"
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-        style={{ backgroundImage: `linear-gradient(135deg, ${TP_ORANGE}, ${TP_GOLD})` }}
+        style={{ backgroundColor: TP_ORANGE }}
       >
         {username.charAt(0).toUpperCase()}
       </div>
@@ -488,7 +487,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
       >
         {/* Franja de color: mismo gradiente de marca que el resto de la
             página, para que el modal se sienta parte del mismo sistema. */}
-        <div className="h-1.5 w-full shrink-0" style={{ backgroundImage: TP_GRADIENT }} />
+        <div className="h-1.5 w-full shrink-0" style={{ backgroundColor: TP_ACCENT }} />
 
         <div className="flex min-h-0 flex-1 flex-col p-6">
           <div className="mb-4 flex items-start justify-between gap-4">
@@ -561,7 +560,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
                     type="submit"
                     disabled={enviandoComentario}
                     className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-                    style={{ backgroundImage: TP_GRADIENT }}
+                    style={{ backgroundColor: TP_ACCENT }}
                   >
                     {enviandoComentario ? 'Enviando...' : 'Comentar'}
                   </button>
@@ -775,23 +774,7 @@ function FallingLeaf({ left, delay, duration, size, color, drift }) {
 function AutumnBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      {/* Cielo: crema arriba -> rojo profundo abajo, todo dentro de la
-          paleta actual de TeacherPeri (ver TP_* arriba) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(180deg, #FFF3E2 0%, #FDD9A0 20%, ${TP_GOLD} 40%, ${TP_ORANGE} 58%, ${TP_RED} 76%, ${AUTUMN_BROWN} 100%)`,
-        }}
-      />
-
-      {/* "Sol" de otoño: un brillo que respira despacio (escala + opacidad
-          en loop) — la parte "dinámica" del cielo, no es una imagen fija */}
-      <motion.div
-        className="absolute -top-40 left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full blur-3xl"
-        style={{ background: 'radial-gradient(circle, #FFF3E2cc 0%, transparent 70%)' }}
-        animate={{ opacity: [0.6, 0.9, 0.6], scale: [1, 1.06, 1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-      />
+      <div className="absolute inset-0 bg-brand-50" />
 
       {/* Copas de árboles: manchas redondeadas y borrosas formando una
           línea de bosque cerca del piso de la ventana */}
@@ -814,10 +797,7 @@ function AutumnBackground() {
 
       {/* Se funde con el crema del contenido: para cuando la vista llega a
           la cuadrícula de problemas, el fondo ya no compite con el texto */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-[50%]"
-        style={{ background: 'linear-gradient(180deg, transparent 0%, #FAF3EA 100%)' }}
-      />
+      <div className="absolute inset-x-0 bottom-0 h-[50%] bg-brand-50/90" />
 
       {LEAVES.map((hoja, i) => (
         <FallingLeaf key={i} {...hoja} />
@@ -980,26 +960,14 @@ export default function Problemas() {
     <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <AutumnBackground />
 
-      {/* Encabezado: mismo fondo shader animado que el Hero (MeshGradient +
-          símbolos flotantes), a menor escala — así la página de Problemas
-          se siente parte del mismo sitio en vez de una página aparte. */}
       <motion.div
         initial="hidden"
         animate="show"
         variants={fadeUp}
-        className="relative mb-12 overflow-hidden rounded-3xl px-6 py-10 text-center shadow-2xl shadow-black/20 sm:px-10"
+        className="relative mb-12 overflow-hidden rounded-2xl border-4 border-black px-6 py-10 text-center shadow-[7px_7px_0_#111] sm:px-10"
         style={{ backgroundColor: TP_DARK }}
       >
-        <div className="pointer-events-none absolute inset-0">
-          <MeshGradient
-            className="absolute inset-0 h-full w-full"
-            colors={[TP_RED, TP_ORANGE, TP_GOLD, TP_DARK]}
-            speed={0.25}
-            distortion={0.7}
-            swirl={0.25}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/70 via-[#0B0B0F]/40 to-[#0B0B0F]/85" />
-        </div>
+        <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
 
         <FloatingSymbol symbol="∑" className="pointer-events-none absolute left-[8%] top-[18%] text-3xl text-[#2563EB]/40 sm:text-4xl" delay={0} duration={7} rotate={-6} />
         <FloatingSymbol symbol="π" className="pointer-events-none absolute right-[10%] top-[22%] text-3xl text-[#5B5FE9]/40 sm:text-4xl" delay={0.5} duration={6} rotate={6} />
@@ -1008,8 +976,7 @@ export default function Problemas() {
 
         <div className="relative flex flex-col items-center gap-3">
           <span
-            className="bg-clip-text text-xs font-semibold uppercase tracking-[0.35em] text-transparent"
-            style={{ backgroundImage: TP_GRADIENT }}
+            className="text-xs font-black uppercase tracking-[0.35em] text-accent-sky"
           >
             Colección de problemas
           </span>

@@ -1,5 +1,3 @@
-import { MeshGradient } from '@paper-design/shaders-react'
-
 // Sección Contacto (id="contacto")
 // Fondo animado con shaders (@paper-design/shaders-react), mismo tipo de
 // mesh gradient que el Hero, en la paleta TeacherPeri: rojo #7C3AED,
@@ -27,22 +25,9 @@ export default function Contacto() {
   return (
     <section
       id="contacto"
-      className="relative mx-auto w-full overflow-hidden bg-[#0B0B0F] px-6 py-12 sm:px-10"
+      className="relative mx-auto w-full overflow-hidden border-t-4 border-black bg-[#111111] px-6 py-12 sm:px-10"
     >
-      {/* Fondo shader: mismo mesh gradient animado del Hero, paleta TeacherPeri */}
-      <div className="pointer-events-none absolute inset-0">
-        <MeshGradient
-          className="absolute inset-0 h-full w-full"
-          colors={['#7C3AED', '#5B5FE9', '#2563EB', '#0B0B0F']}
-          speed={0.3}
-          distortion={0.85}
-          swirl={0.3}
-          grainMixer={0.05}
-          grainOverlay={0.05}
-        />
-        {/* Overlay oscuro para mantener contraste y legibilidad del contenido */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/75 via-[#0B0B0F]/35 to-[#0B0B0F]/85" />
-      </div>
+      <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
 
       {/* CONTÁCTANOS */}
       <div className="relative text-center">

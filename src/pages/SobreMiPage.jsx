@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import Navbar from '../components/Navbar'
 import FloatingSymbol from '../components/motion/FloatingSymbol'
 import { fadeUp, popIn, revealProps, staggerContainer } from '../components/motion/variants'
@@ -81,20 +80,8 @@ export default function SobreMiPage() {
     <>
       <Navbar />
       <main>
-        {/* Encabezado: mismo tratamiento que el header de /problemas —
-            fondo oscuro + MeshGradient animado, para que la página se
-            sienta parte del mismo sitio. */}
-        <section className="relative overflow-hidden bg-[#0B0B0F] px-4 py-28 text-center sm:px-6">
-          <div className="pointer-events-none absolute inset-0">
-            <MeshGradient
-              className="absolute inset-0 h-full w-full"
-              colors={['#7C3AED', '#5B5FE9', '#2563EB', '#0B0B0F']}
-              speed={0.25}
-              distortion={0.7}
-              swirl={0.25}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/75 via-[#0B0B0F]/40 to-[#0B0B0F]/85" />
-          </div>
+        <section className="relative overflow-hidden border-b-4 border-black bg-[#111111] px-4 py-28 text-center sm:px-6">
+          <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
           <FloatingSymbol symbol="π" className="pointer-events-none absolute left-[10%] top-[20%] text-3xl text-[#2563EB]/30 sm:text-4xl" delay={0} duration={7} rotate={-6} />
           <FloatingSymbol symbol="∑" className="pointer-events-none absolute right-[12%] bottom-[22%] text-3xl text-[#5B5FE9]/30 sm:text-4xl" delay={0.6} duration={6.5} rotate={6} />
 
@@ -176,8 +163,7 @@ export default function SobreMiPage() {
             variants={fadeUp}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
-            className="rounded-full px-8 py-3 text-sm font-semibold text-white shadow-lg"
-            style={{ backgroundImage: 'linear-gradient(135deg, #2563EB 0%, #5B5FE9 45%, #7C3AED 100%)' }}
+            className="tp-button bg-accent-purple px-8 py-3 text-sm font-black text-white"
           >
             Contáctame
           </motion.button>

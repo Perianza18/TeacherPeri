@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 
-const GRADIENT = 'linear-gradient(135deg, #2563EB 0%, #5B5FE9 45%, #7C3AED 100%)'
-
 const PERFILES = [
   'Estudiante de Secundaria/Prepa',
   'Exolímpico/Entrenador',
@@ -66,8 +64,7 @@ export default function ContactForm() {
         <button
           type="button"
           onClick={abrirModal}
-          className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-md transition-transform active:scale-95"
-          style={{ backgroundImage: GRADIENT }}
+          className="tp-button bg-accent-purple px-5 py-2 text-sm font-black text-white"
         >
           Iniciar sesión
         </button>
@@ -137,8 +134,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-        style={{ backgroundImage: GRADIENT }}
+        className="tp-button bg-accent-purple px-4 py-2 text-sm font-black text-white disabled:opacity-50"
       >
         {enviando ? 'Enviando...' : 'Enviar mensaje'}
       </button>

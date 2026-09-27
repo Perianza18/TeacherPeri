@@ -28,9 +28,9 @@ export default function LibraryDetailPage({ type }) {
         {!item && !error && <p className="mt-8 text-brand-500">Cargando contenido…</p>}
         {item && (
           <article className="mt-8">
-            <header className="border-b border-brand-200 pb-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">{config.label}</p>
-              <h1 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-brand-900 sm:text-5xl">{title}</h1>
+            <header className="border-b-2 border-brand-300 pb-8">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-accent-violet">{config.label}</p>
+              <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-brand-900 sm:text-5xl">{title}</h1>
               {item.summary && <p className="mt-5 max-w-3xl text-lg leading-8 text-brand-600">{item.summary}</p>}
             </header>
 
@@ -48,7 +48,7 @@ export default function LibraryDetailPage({ type }) {
 }
 
 function ResourceLinks({ item }) {
-  return <div className="mt-10 flex flex-wrap gap-3">{item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="rounded-xl bg-brand-900 px-4 py-2.5 text-sm font-semibold text-white">Fuente original</a>}{item.pdfUrl && <a href={item.pdfUrl} target="_blank" rel="noreferrer" className="rounded-xl border border-brand-300 bg-white px-4 py-2.5 text-sm font-semibold text-brand-800">Abrir PDF</a>}</div>
+  return <div className="mt-10 flex flex-wrap gap-3">{item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="tp-button bg-brand-900 px-4 py-2.5 text-sm font-bold text-white">Fuente original</a>}{item.pdfUrl && <a href={item.pdfUrl} target="_blank" rel="noreferrer" className="tp-button bg-white px-4 py-2.5 text-sm font-bold text-brand-800">Abrir PDF</a>}</div>
 }
 
 function ExamProblems({ problems = [] }) {

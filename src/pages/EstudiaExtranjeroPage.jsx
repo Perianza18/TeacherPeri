@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import Navbar from '../components/Navbar'
 import { fadeUp } from '../components/motion/variants'
 
@@ -34,22 +33,13 @@ export default function EstudiaExtranjeroPage() {
     <>
       <Navbar />
       <main>
-        <section className="relative overflow-hidden bg-[#0B0B0F] px-4 py-24 text-center sm:px-6">
-          <div className="pointer-events-none absolute inset-0">
-            <MeshGradient
-              className="absolute inset-0 h-full w-full"
-              colors={['#7C3AED', '#5B5FE9', '#2563EB', '#0B0B0F']}
-              speed={0.22}
-              distortion={0.7}
-              swirl={0.25}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0F]/75 via-[#0B0B0F]/40 to-[#0B0B0F]/85" />
-          </div>
+        <section className="relative overflow-hidden border-b-4 border-black bg-[#111111] px-4 py-24 text-center sm:px-6">
+          <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
           <motion.h1
             initial="hidden"
             animate="show"
             variants={fadeUp}
-            className="font-display relative text-3xl text-white sm:text-4xl"
+            className="font-display relative text-3xl font-black uppercase tracking-[-.04em] text-white sm:text-5xl"
           >
             🎓 Estudia en el Extranjero siendo Olímpico
           </motion.h1>
