@@ -71,7 +71,7 @@ describe('disposable test database policy', () => {
     '',
     'mongodb://localhost/teacherperi',
     'mongodb://localhost/teacherperi_dev',
-    'mongodb://localhost/axioma_test',
+    'mongodb://localhost/otherapp_test',
     'mongodb://localhost/admin',
     'mongodb://localhost/local',
     'mongodb://localhost/config',

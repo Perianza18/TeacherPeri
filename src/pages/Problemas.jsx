@@ -14,7 +14,7 @@ import MathText from '../components/math/MathText'
 //
 //   1. Configuración: dirección de la API + helper apiFetch() para hablar
 //      con el backend (fetch + manejo de errores en un solo lugar).
-//   2. Constantes de filtros (AÑOS, TEMAS, TIPOS) + paleta Axioma reutilizada
+//   2. Constantes de filtros (AÑOS, TEMAS, TIPOS) + paleta de TeacherPeri
 //      del Hero (rojo/naranja/dorado) para el rediseño visual.
 //   3. FilterGroup       -> la lista de opciones de un filtro, ahora como
 //                           "chips" de color en vez de checkboxes planos.
@@ -47,11 +47,11 @@ import MathText from '../components/math/MathText'
 // Misma paleta que ya usa Hero.jsx para el fondo animado — reutilizarla
 // aquí hace que Problemas se sienta parte del mismo sitio, no una página
 // aparte con sus propios colores inventados.
-const AXIOMA_RED = '#7C3AED'
-const AXIOMA_ORANGE = '#5B5FE9'
-const AXIOMA_GOLD = '#2563EB'
-const AXIOMA_DARK = '#0B0B0F'
-const AXIOMA_GRADIENT = `linear-gradient(135deg, ${AXIOMA_GOLD} 0%, ${AXIOMA_ORANGE} 45%, ${AXIOMA_RED} 100%)`
+const TP_RED = '#7C3AED'
+const TP_ORANGE = '#5B5FE9'
+const TP_GOLD = '#2563EB'
+const TP_DARK = '#0B0B0F'
+const TP_GRADIENT = `linear-gradient(135deg, ${TP_GOLD} 0%, ${TP_ORANGE} 45%, ${TP_RED} 100%)`
 
 // Un enunciado es texto normal que PUEDE traer fórmulas metidas entre signos
 // de pesos, como en LaTeX de verdad: "Sea $a>0$, demuestra que...". Hay dos
@@ -99,9 +99,9 @@ function buildCategoryTree(categorias) {
   return { raices, byId }
 }
 
-// Si seleccionas la carpeta "Interno Axioma", también quieres ver los
+// Si seleccionas la carpeta "Colección interna", también quieres ver los
 // problemas de "2024" y "2023" adentro — no solo problemas que apunten
-// EXACTAMENTE a "Interno Axioma". Esta función regresa el _id de una
+// EXACTAMENTE a "Colección interna". Esta función regresa el _id de una
 // carpeta MÁS los _id de todas sus subcarpetas (a cualquier profundidad).
 function collectDescendantIds(nodo) {
   return nodo.children.reduce(
@@ -122,20 +122,20 @@ function contarProblemas(nodo, problemas) {
 
 // Colores "estampa" por dificultad — mismo significado de siempre (verde
 // fácil, ámbar media, rojo difícil) pero usando el rojo/dorado de la marca
-// Axioma en vez de un ámbar/rosa genérico.
+// TeacherPeri en vez de un ámbar/rosa genérico.
 const DIFICULTAD_STYLES = {
   Fácil: 'bg-emerald-500 text-white',
   Media: `text-brand-900`,
   Difícil: 'bg-[#7C3AED] text-white',
 }
 const DIFICULTAD_BG = {
-  Media: AXIOMA_GOLD,
+  Media: TP_GOLD,
 }
 
 // Colores de acento por profundidad en el árbol de carpetas — ciclan entre
 // los 3 tonos de la marca para que se note visualmente qué tan anidada
 // está cada carpeta, sin depender solo de la indentación.
-const CATEGORY_ACCENTS = [AXIOMA_RED, AXIOMA_ORANGE, AXIOMA_GOLD]
+const CATEGORY_ACCENTS = [TP_RED, TP_ORANGE, TP_GOLD]
 
 // El título que se muestra en pantalla: competencia + año + número de
 // problema (ej. "Putnam 2025 — Problema B6"), en vez de la frase
@@ -173,7 +173,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
                     ? 'border-transparent text-white shadow-md'
                     : 'border-brand-300 bg-white text-brand-600 hover:border-[#5B5FE9] hover:text-[#5B5FE9]'
                 }`}
-                style={activo ? { backgroundImage: AXIOMA_GRADIENT } : undefined}
+                style={activo ? { backgroundImage: TP_GRADIENT } : undefined}
               >
                 {option}
               </span>
@@ -327,7 +327,7 @@ function AuthInlineForm({ onAuthSuccess }) {
           type="submit"
           disabled={enviando}
           className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-          style={{ backgroundImage: AXIOMA_GRADIENT }}
+          style={{ backgroundImage: TP_GRADIENT }}
         >
           {enviando ? 'Un momento...' : modo === 'login' ? 'Iniciar sesión' : 'Registrarme'}
         </button>
@@ -358,7 +358,7 @@ function ComentarioItem({ comentario, esPropio, onEliminar }) {
       <div
         aria-hidden="true"
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-        style={{ backgroundImage: `linear-gradient(135deg, ${AXIOMA_ORANGE}, ${AXIOMA_GOLD})` }}
+        style={{ backgroundImage: `linear-gradient(135deg, ${TP_ORANGE}, ${TP_GOLD})` }}
       >
         {username.charAt(0).toUpperCase()}
       </div>
@@ -488,7 +488,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
       >
         {/* Franja de color: mismo gradiente de marca que el resto de la
             página, para que el modal se sienta parte del mismo sistema. */}
-        <div className="h-1.5 w-full shrink-0" style={{ backgroundImage: AXIOMA_GRADIENT }} />
+        <div className="h-1.5 w-full shrink-0" style={{ backgroundImage: TP_GRADIENT }} />
 
         <div className="flex min-h-0 flex-1 flex-col p-6">
           <div className="mb-4 flex items-start justify-between gap-4">
@@ -561,7 +561,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
                     type="submit"
                     disabled={enviandoComentario}
                     className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-                    style={{ backgroundImage: AXIOMA_GRADIENT }}
+                    style={{ backgroundImage: TP_GRADIENT }}
                   >
                     {enviandoComentario ? 'Enviando...' : 'Comentar'}
                   </button>
@@ -698,7 +698,7 @@ function Breadcrumb({ ruta, onNavigate }) {
 // quieto detrás, como un telón de fondo real, en vez de tener que ser tan
 // alto como los 93 problemas de la cuadrícula.
 //
-// Usa SOLO tonos de la paleta Axioma (rojo/naranja/dorado + un café oscuro
+// Usa SOLO tonos de la paleta TeacherPeri (rojo/naranja/dorado + un café oscuro
 // para dar profundidad) — nada de verde: así las "hojas" leen como otoño Y
 // la página se mantiene naranja, tal como se pidió.
 //
@@ -715,15 +715,15 @@ const AUTUMN_BROWN_LIGHT = '#7a2e12'
 // ventana, leen como una línea de copas de árboles vista de lejos.
 const TREE_BLOBS = [
   { left: '-5%', bottom: '-6rem', size: 260, color: AUTUMN_BROWN, opacity: 0.55 },
-  { left: '10%', bottom: '-8rem', size: 320, color: AXIOMA_RED, opacity: 0.45 },
+  { left: '10%', bottom: '-8rem', size: 320, color: TP_RED, opacity: 0.45 },
   { left: '28%', bottom: '-5rem', size: 240, color: AUTUMN_BROWN_LIGHT, opacity: 0.5 },
-  { left: '45%', bottom: '-7rem', size: 300, color: AXIOMA_ORANGE, opacity: 0.4 },
+  { left: '45%', bottom: '-7rem', size: 300, color: TP_ORANGE, opacity: 0.4 },
   { left: '63%', bottom: '-6rem', size: 260, color: AUTUMN_BROWN, opacity: 0.5 },
-  { left: '80%', bottom: '-8rem', size: 320, color: AXIOMA_RED, opacity: 0.45 },
+  { left: '80%', bottom: '-8rem', size: 320, color: TP_RED, opacity: 0.45 },
   { left: '95%', bottom: '-5rem', size: 240, color: AUTUMN_BROWN_LIGHT, opacity: 0.5 },
 ]
 
-const LEAF_COLORS = [AXIOMA_RED, AXIOMA_ORANGE, AXIOMA_GOLD, AUTUMN_BROWN_LIGHT]
+const LEAF_COLORS = [TP_RED, TP_ORANGE, TP_GOLD, AUTUMN_BROWN_LIGHT]
 const LEAVES = [
   { left: '4%', delay: 0, duration: 13, size: 18, drift: 40 },
   { left: '14%', delay: 3, duration: 16, size: 14, drift: 30 },
@@ -776,11 +776,11 @@ function AutumnBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
       {/* Cielo: crema arriba -> rojo profundo abajo, todo dentro de la
-          paleta de marca de siempre (ver AXIOMA_* arriba) */}
+          paleta actual de TeacherPeri (ver TP_* arriba) */}
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(180deg, #FFF3E2 0%, #FDD9A0 20%, ${AXIOMA_GOLD} 40%, ${AXIOMA_ORANGE} 58%, ${AXIOMA_RED} 76%, ${AUTUMN_BROWN} 100%)`,
+          background: `linear-gradient(180deg, #FFF3E2 0%, #FDD9A0 20%, ${TP_GOLD} 40%, ${TP_ORANGE} 58%, ${TP_RED} 76%, ${AUTUMN_BROWN} 100%)`,
         }}
       />
 
@@ -988,12 +988,12 @@ export default function Problemas() {
         animate="show"
         variants={fadeUp}
         className="relative mb-12 overflow-hidden rounded-3xl px-6 py-10 text-center shadow-2xl shadow-black/20 sm:px-10"
-        style={{ backgroundColor: AXIOMA_DARK }}
+        style={{ backgroundColor: TP_DARK }}
       >
         <div className="pointer-events-none absolute inset-0">
           <MeshGradient
             className="absolute inset-0 h-full w-full"
-            colors={[AXIOMA_RED, AXIOMA_ORANGE, AXIOMA_GOLD, AXIOMA_DARK]}
+            colors={[TP_RED, TP_ORANGE, TP_GOLD, TP_DARK]}
             speed={0.25}
             distortion={0.7}
             swirl={0.25}
@@ -1009,7 +1009,7 @@ export default function Problemas() {
         <div className="relative flex flex-col items-center gap-3">
           <span
             className="bg-clip-text text-xs font-semibold uppercase tracking-[0.35em] text-transparent"
-            style={{ backgroundImage: AXIOMA_GRADIENT }}
+            style={{ backgroundImage: TP_GRADIENT }}
           >
             Colección de problemas
           </span>

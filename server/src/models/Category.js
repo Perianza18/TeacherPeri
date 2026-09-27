@@ -2,7 +2,7 @@
 // Category model — the "folders" from the AoPS-style structure.
 //
 // A category can point to another category as its "parent", which is how
-// folders end up nested inside folders (e.g. "Interno Axioma" contains
+// folders end up nested inside folders (e.g. "Colección interna" contains
 // "2024", the same way AoPS nests Contest > Year). A category with
 // parent = null is a top-level folder.
 //
@@ -14,7 +14,7 @@ import mongoose from 'mongoose'
 
 const categorySchema = new mongoose.Schema(
   {
-    // El nombre visible de la carpeta, ej. "Interno Axioma" o "2024".
+    // El nombre visible de la carpeta, ej. "Colección interna" o "2024".
     name: {
       type: String,
       required: true,

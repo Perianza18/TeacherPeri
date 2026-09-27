@@ -11,7 +11,7 @@ describe('GET /api/categories', () => {
   })
 
   it('regresa carpetas de nivel superior y sus subcarpetas, con el enlace parent correcto', async () => {
-    const papa = await Category.create({ name: 'Interno Axioma' })
+    const papa = await Category.create({ name: 'Colección interna' })
     const hijo = await Category.create({ name: '2024', parent: papa._id })
 
     const res = await request(app).get('/api/categories')
