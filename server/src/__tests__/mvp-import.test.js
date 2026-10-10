@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import mongoose from 'mongoose'
 import request from 'supertest'
 import app from '../app.js'
@@ -60,7 +60,17 @@ describe('MVP atomic import and public journey', () => {
     const child = await CONTENT_MODELS.Category.findOne({ name: 'Álgebra' })
     expect(String(child.parent)).toBe(String(original._id))
   }, 60000)
-  it('rejects standalone servers before content mutations', async () => {
+  it('rolls back a failure after content writes have started', async () => {
+    const unrelated = await CONTENT_MODELS.Category.create({ name: 'Keep this folder' })
+    const save = vi.spyOn(CONTENT_MODELS.Step.prototype, 'save').mockRejectedValueOnce(new Error('Injected save failure'))
+    try { await expect(importMvpContent({ apply: true })).rejects.toThrow('Injected save failure') } finally { save.mockRestore() }
+    expect(await CONTENT_MODELS.Problem.countDocuments()).toBe(0)
+    expect(await CONTENT_MODELS.Theory.countDocuments()).toBe(0)
+    expect(await CONTENT_MODELS.Exam.countDocuments()).toBe(0)
+    expect(await CONTENT_MODELS.Path.countDocuments()).toBe(0)
+    expect(await CONTENT_MODELS.Category.exists({ _id: unrelated._id })).toBeTruthy()
+  }, 60000)
+  it('runs transactional validation on a replica set', async () => {
     const hello = await mongoose.connection.db.admin().command({ hello: 1 })
     expect(hello.setName).toBeTruthy()
   })

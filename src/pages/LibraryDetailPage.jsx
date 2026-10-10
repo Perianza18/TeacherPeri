@@ -6,9 +6,18 @@ import MathText from '../components/math/MathText'
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
 function ArticleText({ text }) {
-  return String(text).split(/\n\n/).map((block, i) => /^[A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ0-9 —:–,¿?().$\\{}^/-]+$/.test(block.trim()) && block.length < 110
-    ? <h2 key={i} className="mt-10 border-l-4 border-violet-500 pl-4 text-lg font-black text-brand-900">{block}</h2>
-    : <MathText key={i} text={block} className="my-5 whitespace-pre-wrap text-base leading-8 text-brand-900" />)
+  const major = new Set(['IDEAS CLAVE', 'EJEMPLO TRABAJADO', 'ERRORES FRECUENTES', 'PRACTICA', 'EN RESUMEN', 'AMPLIACIÓN Y COMPROBACIONES'])
+  return String(text).split(/\n\n/).flatMap((block, i) => {
+    const lines = block.split('\n')
+    const headings = []
+    while (lines.length && /^[A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ0-9 —:–,¿?()./-]+$/.test(lines[0]) && lines[0].length < 110) {
+      const title = lines.shift()
+      headings.push(major.has(title)
+        ? <h2 key={`${i}-h${headings.length}`} className="mt-10 mb-4 border-l-4 border-violet-500 pl-4 text-lg font-black text-brand-900">{title === 'PRACTICA' ? 'PRÁCTICA' : title}</h2>
+        : <h3 key={`${i}-h${headings.length}`} className="mt-6 text-sm font-black text-brand-900">{title}</h3>)
+    }
+    return [...headings, ...(lines.length ? [<MathText key={i} text={lines.join('\n')} className="my-5 whitespace-pre-wrap text-base leading-8 text-brand-900" />] : [])]
+  })
 }
 const safeUrl = (url) => /^https?:\/\//i.test(url || '')
 
@@ -32,7 +41,7 @@ export default function LibraryDetailPage({ type }) {
   }, [config.api, id, type, key])
   const title = type === 'examenes' && item ? `${item.competition} ${item.year} · ${item.round}` : item?.title || item?.titulo || item?.codigo
   const fromPath = location.state?.fromPath
-  return <main className="tp-reading min-h-[70vh] px-4 pb-24 pt-12 sm:px-6"><div className="mx-auto max-w-4xl">
+  return <section className="tp-reading min-h-[70vh] px-4 pb-24 pt-12 sm:px-6"><div className="mx-auto max-w-4xl">
     <div className="flex flex-wrap gap-4 text-sm font-semibold"><Link to={`/entrenamiento/${type}`} className="text-violet-700">← Volver a {config.label}</Link>{fromPath && <Link to={fromPath} className="text-brand-700">← Volver a la Ruta</Link>}</div>
     {error && <p role="alert" className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</p>}
     {!item && !error && <p className="mt-8 text-brand-500">Cargando contenido…</p>}
@@ -56,5 +65,5 @@ export default function LibraryDetailPage({ type }) {
       </div>
       {result.paths.length > 0 && <aside className="border-t-2 border-brand-300 pt-6"><h2 className="font-black text-brand-900">Continúa en una Ruta</h2><div className="mt-3 flex flex-wrap gap-3">{result.paths.map((p) => <Link key={p._id} className="rounded-xl border border-brand-300 bg-white px-4 py-2 text-sm font-bold text-violet-700" to={`/rutas/${p.slug}`}>{p.title} →</Link>)}</div></aside>}
     </article>}
-  </div></main>
+  </div></section>
 }

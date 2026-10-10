@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EASE } from '../components/motion/variants'
 import { apiFetch } from '../lib/api'
+import useDialog from '../hooks/useDialog'
 import { useAuth } from '../context/useAuth'
 import MathText from '../components/math/MathText'
 import LibraryCollection from '../components/training/LibraryCollection'
@@ -140,6 +141,7 @@ function ComentarioItem({ comentario, esPropio, onEliminar }) {
 }
 
 function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }) {
+  const dialogRef = useDialog(onClose)
   // Arranca en `true` a propósito: este componente se desmonta y se vuelve
   // a montar cada vez que se cierra el modal y se abre con OTRO problema
   // (ver más abajo, donde se le pone key={problema._id}), así que "recién
@@ -165,17 +167,6 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
       cancelado = true
     }
   }, [problema._id])
-
-  // Cierra el modal con la tecla Escape, además del click afuera que ya
-  // existía. Estándar de accesibilidad para cualquier modal: alguien
-  // navegando con teclado (o sin mouse) necesita una forma de salir.
-  useEffect(() => {
-    function alPresionarTecla(event) {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', alPresionarTecla)
-    return () => window.removeEventListener('keydown', alPresionarTecla)
-  }, [onClose])
 
   const handleEliminarComentario = async (commentId) => {
     try {
@@ -234,6 +225,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: 16 }}
         transition={{ duration: 0.25, ease: EASE }}
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="titulo-modal-problema"
