@@ -3,9 +3,10 @@
 ## Final MVP sprint — October 2026
 
 The sprint integrates the editorial design through `58a3b056` with the OMM
-curriculum. The original baseline merge recorded the later curriculum commits
-but omitted their tree changes; those lessons, model changes and tests have been
-restored without changing existing published history.
+curriculum through `f6c3e368`. The stable baseline contained the initial curriculum
+merge; six later curriculum commits had not yet reached main. Their lessons,
+models, previews and tests are integrated, and both branch histories are preserved
+without rewriting existing published commits.
 
 Implemented release:
 
