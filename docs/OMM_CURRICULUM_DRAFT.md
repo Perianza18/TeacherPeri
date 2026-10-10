@@ -22,7 +22,7 @@ Mixed training progresses from recognition and guided practice toward independen
 
 ## Pending Group Paths
 
-The following Groups intentionally have no children yet and cause the guarded migration to fail closed before connecting to MongoDB:
+The following Groups intentionally have no children yet and are permitted only as empty, unpublished planned identities:
 
 - Estrategias de Desigualdades
 - Estrategias Algebraicas
@@ -32,7 +32,7 @@ The following Groups intentionally have no children yet and cause the guarded mi
 
 ## Safe application
 
-The curriculum application remains additive, identity-safe, non-destructive, and guarded by the development migration target. It must not be run for Draft v2: unresolved Groups intentionally prevent database connection or mutation. No database operation was performed while creating this draft.
+The curriculum application remains additive, identity-safe, non-destructive, and guarded by the development migration target. Unresolved Groups no longer block the whole application, but validation requires them to remain draft and rejects Steps or invented child references. Root references in Ciclos 4–5 opt into title-only coming-soon previews; nested references, Ciclos 1–3, and post-cycle material do not. Running the migration remains an explicit operator action and was not part of this change.
 
 ## Editorial questions
 

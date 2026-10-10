@@ -3,7 +3,7 @@
 **Status:** Living specification  
 **Purpose:** Preserve the complete agreed product model, design logic, UX rules, domain concepts, and deferred ideas for TeacherPeri.  
 **Relationship to other docs:** `PRODUCT.md` should remain the concise canonical product contract. This file is the detailed companion containing the full reasoning, examples, UX behavior, and implementation-facing product decisions.  
-**Important:** Legacy Axioma code, comments, README content, routes, or assumptions do **not** define TeacherPeri requirements unless explicitly retained here or in `PRODUCT.md`.
+**Important:** Stale code, comments, superseded documentation, routes, or assumptions do **not** define TeacherPeri requirements unless explicitly retained here or in `PRODUCT.md`.
 
 ---
 
@@ -205,6 +205,8 @@ A Path may optionally declare `introductorio`, `omm`, or `avanzado` as its inten
 ### Presentation Sections
 
 `PathReference.order` is the canonical structural and presentation order of every child Path within a parent. A parent Path may optionally define lightweight presentation sections such as `Ciclo 1 — Primeros Pasos`; each section annotates positions in that existing sequence with a heading and never reorders child references. Unsectioned children may appear before, between, or after sectioned groups while retaining that global order. A section is not a Path and has no slug, standalone route, completion, progress, breadcrumb, search/discovery entry, Related Paths, descendants, or effect on traversal validity. Child Paths remain reusable standalone objects; parents without sections continue to show their normal ordered child list.
+
+Unavailable child references expose no draft title by default. A reference may explicitly opt into a planned preview that reveals only the child title, its existing order, and a noninteractive coming-soon state. It never publishes the child, creates a route, reveals draft descriptions or descendants, or contributes to completion and progress. A section whose children are all planned unavailable previews may derive an `En construcción` presentation state without acquiring structural meaning.
 
 ## 6.2 Recursive Example — OMM
 
@@ -676,7 +678,7 @@ This principle can be summarized as:
 
 > **Folders provide structure. Filters provide precision. Search provides speed.**
 
-Folder navigation is inspired by AoPS and the current Axioma problem-browser behavior.
+Folder navigation is inspired by AoPS and the current TeacherPeri problem-browser behavior.
 
 The exact filter sets can differ by library.
 
@@ -1767,7 +1769,7 @@ Avoid building unnecessary complexity before there is evidence users need it.
 37. Content Creator and Moderator are distinct roles.
 38. Ordinary users cannot freely publish official TeacherPeri educational content.
 39. Sources are a future concept and **not implemented for MVP**.
-40. Legacy Axioma assumptions do not define TeacherPeri.
+40. Stale implementation assumptions do not define TeacherPeri.
 41. Problem difficulty uses only Básico, Intermedio, or Avanzado for MVP.
 42. Legacy estimated success percentages should be removed rather than presented as measured data.
 43. Content Creators submit official-content proposals for Admin review and do not publish directly in the initial model.
@@ -1783,7 +1785,7 @@ Avoid building unnecessary complexity before there is evidence users need it.
 
 1. Incrementally migrate the existing React/Vite + Express + MongoDB/Mongoose application.
 2. Avoid unnecessary framework rewrites.
-3. Preserve useful Axioma infrastructure where it helps TeacherPeri.
+3. Preserve useful existing infrastructure where it helps TeacherPeri.
 4. Do not treat the existing Category model as the Path system.
 5. Extract reusable library/navigation behavior from the current Problem implementation.
 6. Use stable object identities.
@@ -1915,3 +1917,13 @@ When a decision changes:
 5. Ensure contributors read the current docs before architectural work.
 
 This file exists so TeacherPeri decisions remain grounded in documented context.
+
+## Final MVP sprint scope
+
+Original educational content is authorized for the OMM MVP. Preparation and
+Ciclo 1 are implemented as referenced content; later unfinished curriculum
+remains draft. Lists may contain ordered canonical Problem references alongside
+attributed external links. Exams are ordered canonical Problem references with
+metadata and optional external source links; the release includes only original
+TeacherPeri practice, not hosted official PDFs. Phase 4 remains deferred. See
+CURRENT_STATE.md, CONTENT_IMPORT.md and DEPLOYMENT.md for this release.

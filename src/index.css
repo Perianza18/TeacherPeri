@@ -1,48 +1,133 @@
 @import 'tailwindcss';
 
-/*
-  Paleta cálida de TeacherPeri (texto, fondos, bordes, botones): una
-  rampa crema -> café oscuro (antes era una escala gris fría, "slate",
-  que no tenía nada que ver con los colores que Hero/Contacto/Problemas
-  ya usaban a mano). Los 3 acentos (dorado/naranja/rojo) son los mismos
-  que ya se usaban como hex sueltos en Problemas.jsx (AXIOMA_RED, etc.) —
-  aquí quedan con nombre para poder reusarlos sin repetir el hex en
-  cada archivo.
-*/
 @theme {
-  --font-display: 'Yeseva One', serif;
-  --font-hand: 'Caveat', cursive;
+  --font-sans: "Arial", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Arial Black", "Arial", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50: #fffbf5;
-  --color-brand-100: #fcf1df;
-  --color-brand-200: #f5dfb8;
-  --color-brand-300: #e8c48a;
-  --color-brand-400: #d5a05c;
-  --color-brand-500: #b87a3e;
-  --color-brand-600: #8f5a2c;
-  --color-brand-700: #6b4020;
-  --color-brand-800: #3f2414;
-  --color-brand-900: #120303;
+  --color-brand-50: #faf8f5;
+  --color-brand-100: #f2efe9;
+  --color-brand-200: #e5e1da;
+  --color-brand-300: #d0cbc2;
+  --color-brand-400: #aaa59d;
+  --color-brand-500: #7a766f;
+  --color-brand-600: #5f5c57;
+  --color-brand-700: #46433f;
+  --color-brand-800: #292826;
+  --color-brand-900: #111113;
 
-  --color-accent-gold: #ffb401;
-  --color-accent-orange: #e57505;
-  --color-accent-red: #b70b0d;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-violet: #6d3ee8;
+  --color-accent-blue: #377cf6;
+  --color-accent-sky: #86d7ff;
+  --color-accent-mint: #8ee8bf;
+  --color-accent-coral: #ff7f79;
+  --color-accent-yellow: #ffd65a;
+  --color-accent-purple-soft: #eee7ff;
+  --color-accent-blue-soft: #e5f1ff;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  background: var(--color-brand-50);
+  color: var(--color-brand-900);
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--color-brand-50);
 }
 
 body {
-  @apply bg-brand-50 text-brand-900 antialiased;
+  @apply m-0 bg-brand-50 text-brand-900 antialiased;
 }
 
-/* Oculta el cursor nativo solo en dispositivos con mouse real, donde
-   CustomCursor.jsx dibuja el punto/anillo que lo reemplaza. */
-@media (pointer: fine) {
-  body,
-  a,
-  button {
-    cursor: none;
+::selection {
+  background: #ddd2ff;
+  color: #17111f;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-purple);
+  outline-offset: 3px;
+}
+
+.tp-gradient-text {
+  color: #9d7cff;
+}
+
+.tp-gradient {
+  background: #6d3ee8;
+}
+
+.tp-reading {
+  background: #faf8f5;
+}
+
+.tp-card {
+  border: 3px solid #111111;
+  border-radius: 1.15rem;
+  box-shadow: 7px 7px 0 #111111;
+}
+
+.tp-card-soft {
+  border: 2px solid #111111;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0 #111111;
+}
+
+.tp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #111111;
+  border-radius: .75rem;
+  box-shadow: 4px 4px 0 #111111;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.tp-button:hover {
+  transform: translate(-1px, -2px);
+  box-shadow: 6px 6px 0 #111111;
+}
+
+.tp-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #111111;
+}
+
+.tp-kicker {
+  display: inline-flex;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  background: #ffd65a;
+  padding: .35rem .75rem;
+  color: #111111;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.tp-dot-grid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Crect width='2' height='2' fill='%23111111'/%3E%3C/svg%3E");
+  background-size: 14px 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

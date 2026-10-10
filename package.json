@@ -11,14 +11,20 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "nodemon --watch server server/src/server.js",
+    "server": "node --watch server/src/server.js",
     "curriculum:preview:omm": "node server/src/scripts/preview-omm-curriculum.js",
+    "curriculum:preview:omm-content": "node server/src/scripts/preview-omm-launch-content.js",
     "db:reset:dev": "node server/src/seed.js",
     "db:backfill:problem-categories": "node server/src/migrations/backfill-problem-categories.js",
     "db:apply:omm-curriculum": "node server/src/migrations/apply-omm-curriculum.js",
+    "db:apply:omm-content-batch1": "node server/src/migrations/apply-omm-launch-content.js",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "vitest run --config vitest.unit.config.js",
-    "test:integration": "vitest run --config vitest.config.js"
+    "test:integration": "vitest run --config vitest.config.js",
+    "content:validate": "node --input-type=module -e \"import {validateMvpContent} from './server/src/data/validateMvpContent.js'; console.log(validateMvpContent())\"",
+    "content:import": "node server/src/scripts/import-mvp-content.js",
+    "test:browser": "playwright test",
+    "start": "node server/src/server.js"
   },
   "dependencies": {
     "@paper-design/shaders-react": "^0.0.80",
@@ -39,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.56.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
@@ -46,7 +53,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.4",
     "globals": "^17.11.0",
-    "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
     "vite": "^8.2.2",
     "vitest": "^5.0.0"

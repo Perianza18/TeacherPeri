@@ -10,7 +10,7 @@
 // también, en vez de tener su propia copia.
 // ---------------------------------------------------------------------------
 
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+export const API_BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:4000')
 
 export async function apiFetch(path, { method = 'GET', body, token } = {}) {
   const headers = { 'Content-Type': 'application/json' }
@@ -27,6 +27,7 @@ export async function apiFetch(path, { method = 'GET', body, token } = {}) {
   if (!res.ok) {
     const error = new Error(data?.error || 'Error de red inesperado.')
     error.status = res.status
+    if (res.status === 401 && token) window.dispatchEvent(new Event('teacherperi:auth-expired'))
     throw error
   }
   return data

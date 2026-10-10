@@ -39,7 +39,7 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | `/sobre-mi` | Personal presentation, with placeholder material |
 | `/colaboradores` | Placeholder |
 
-There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/materiales` are not current routes. Training libraries have stable nested URLs; the legacy Problem browser still keeps its selected modal, filters, and folder position in component state. The intended primary navigation in PRODUCT.md has not yet been applied beyond the Rutas link.
+There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/materiales` are not current routes. Training libraries have stable nested URLs; the shared library browser keeps filters and folder selection in component state and provides route-backed detail pages. The intended primary navigation in PRODUCT.md has not yet been applied beyond the Rutas link.
 
 ## Current API and persistence
 
@@ -87,7 +87,7 @@ All have timestamps. Existing references are not a complete integrity layer: Mon
 
 Signup hashes passwords with bcrypt; login/signup issue seven-day JWTs with the user ID in `sub`. The client stores the token and returned account data in localStorage under `teacherperi_auth`. `AuthProvider` exposes session state and a global authentication modal. The problem modal also has an inline authentication form.
 
-`requireAuth` verifies bearer-token signature/expiry and attaches the user ID to the request. It does not currently check account existence/status, implement roles, or provide token revocation. There is no refresh, password-recovery, email-verification, or session-validation endpoint. Logout clears the client's stored session. Session-expiry handling is not fully centralized.
+`requireAuth` verifies bearer-token signature/expiry and attaches the user ID to the request. It checks that the account exists; account status, roles and token revocation remain deferred. There is no refresh, password-recovery, email-verification, or session-validation endpoint. Logout clears the client's stored session. Session-expiry handling is not fully centralized.
 
 The current public comment response projects username and author ID, not private email or password hash. Contact submissions have no public listing endpoint. Public data projections must remain explicit as identity features expand.
 
@@ -99,13 +99,13 @@ Topics, Categories, and Tags remain separate persistence concepts: a Topic says 
 
 The same component contains problem loading, filters, cards, a problem modal, KaTeX rendering for inline/display mathematics, authentication UI, comments, and animations. This working implementation is valuable but combines many responsibilities; extract reusable parts incrementally when a task requires it.
 
-The legacy Problem view still loads all Problems and Categories and filters in the browser. New library endpoints use server-side query filters and pagination; the new route-backed Theory, List, and Exam views use those endpoints and provide folder navigation plus local text search. A cross-library search endpoint/UI is still future work.
+The Problem view now shares paginated server discovery, recursive category navigation and controlled metadata filters with the other libraries. New library endpoints use server-side query filters and pagination; the new route-backed Theory, List, and Exam views use those endpoints and provide folder navigation plus local text search. A cross-library search endpoint/UI is still future work.
 
 - OR within a selected metadata dimension; AND between dimensions.
 - Year, topic, contest type, and category filters.
 - A category selection includes its descendants.
 - Any active filter shows matching results across the library, independent of the browsed folder.
-- Hardcoded metadata options; no text search or pagination.
+- Dynamic metadata options, text search and pagination.
 
 These are present behaviors to preserve until explicitly replaced, not the final search contract. Difficulty/success values in the seed are illustrative estimates and must not be treated as measured learning analytics.
 
@@ -113,7 +113,7 @@ These are present behaviors to preserve until explicitly replaced, not the final
 
 Categories organize material; Paths guide learners through it. The Phase 3 engine uses independent `Path` documents connected by ordered `PathReference` documents, never a `parentPath` field. A child Path can be referenced by multiple parents while preserving one stable identity. `PathReference` rejects self-references, duplicate parent/child edges, duplicate per-parent positions, Paths with Steps, and indirect cycles. `Step` rejects non-leaf ownership and duplicate positions, so a Path contains ordered child Paths or ordered Steps, never both.
 
-Published Path discovery/detail only exposes structurally valid published Paths. Traversal URLs are contextual: `/rutas/a/b` is valid only when the stored reference `a → b` exists, and the API returns breadcrumbs for that exact chain. Standalone URLs have no fabricated parent breadcrumb. A Step stores typed identity references to existing Problem, Theory, List, or Exam records. Public rendering resolves only publicly visible targets; retained references to draft or archived content render as unavailable without copying or leaking the target content.
+Published Path discovery/detail only exposes structurally valid published Paths. Traversal URLs are contextual: `/rutas/a/b` is valid only when the stored reference `a → b` exists, and the API returns breadcrumbs for that exact chain. Standalone URLs have no fabricated parent breadcrumb. A Step stores typed identity references to existing Problem, Theory, List, or Exam records. Public rendering resolves only publicly visible targets; retained references to draft or archived content render as unavailable without copying or leaking the target content. A `PathReference` may explicitly opt into a planned unavailable preview; that narrow response adds only the child title and coming-soon state, never a slug, link, description, descendants, Steps, or progress contribution.
 
 `Path.tags` reuses the controlled Tag system and supports public Path discovery filtering; tags are descriptive and never alter structural behavior. `RelatedPath` is a separate recommendation-only relation with controlled prerequisite, deeper, and related labels. It is excluded from structural traversal, breadcrumbs, ordering, and progress. `PathReference.order` is the canonical order of every structural child. `PathSection` is optional parent presentation metadata: it annotates positions in that sequence with headings without reordering any child, and the public API returns an ordered presentation stream. A missing or mismatched section falls back to an unsectioned child so presentation metadata cannot hide a valid structural reference. Sections have no identity outside the page and do not affect the graph. `Path.level` is optional `introductorio`, `omm`, or `avanzado` metadata and is descriptive only. None creates a separate Path engine or nesting limit.
 
@@ -123,7 +123,7 @@ Published Path discovery/detail only exposes structurally valid published Paths.
 
 The repository contains a declarative working definition for `Preparación para la OMM` in `server/src/data/ommCurriculum.js`. It uses the generic engine: the root directly references reusable topic Paths in one chronological order, while five root-owned `PathSection` records provide cycle headings. The database-free `npm run curriculum:preview:omm` command validates and prints the proposed tree and inventory. The full provisional sequence, assumptions, and editorial gaps are recorded in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md).
 
-`npm run db:apply:omm-curriculum` is a guarded additive development migration. It only accepts an explicitly confirmed loopback `teacherperi_dev` target, reuses exact Path identities, and creates missing Paths as drafts. It supports recursive references, does not author Steps, and refuses identity or structural conflicts. Draft v2 contains unresolved Groups, so the command currently fails closed before connecting to MongoDB. It does not delete records or overwrite existing Path editorial fields.
+`npm run db:apply:omm-curriculum` is a guarded additive development migration. It only accepts an explicitly confirmed loopback `teacherperi_dev` target, reuses exact Path identities, and creates missing Paths as drafts. It supports recursive references, does not author Steps, and refuses identity or structural conflicts. Explicitly pending Groups may be created as empty draft identities; the migration rejects them if they are public or contain Steps or invented child references. It does not delete records or overwrite existing Path editorial fields.
 
 ### Shared content and metadata
 
@@ -151,4 +151,22 @@ Backend integration tests use Vitest and Supertest against a disposable loopback
 
 The development reset requires an explicit `MONGO_DEV_RESET_URI`, development mode, a loopback target named `teacherperi_dev` or `teacherperi_dev_<suffix>`, and confirmation of the exact database name. It refuses a target containing comments. This reset is not a migration. See README for the exact guarded commands and CI configuration.
 
-Lint and a frontend build provide the non-database baseline. Integration tests cover auth, categories, problems, comments, and contact; there are no frontend/browser interaction tests yet. Rate limits are disabled under test, so integration results do not establish production rate-limit behavior. Future tests should protect real domain invariants and migration safety as those systems are introduced.
+Lint and a frontend build provide the non-database baseline. Integration tests cover auth, categories, content, Paths and transactional imports; Playwright checks desktop/mobile library interactions using explicit API fixtures. Rate limits are disabled under test, so integration results do not establish production rate-limit behavior. Future tests should protect real domain invariants and migration safety as those systems are introduced.
+
+## Final MVP release additions
+
+Problem supports optional original hint and solution text. List and Exam use
+ordered canonical Problem references with contiguous positive integer positions,
+unique targets and referenced-record validation. Public detail population applies
+publication visibility to referenced Problems. Exam supports optional duration
+and instructions; external source links remain optional. No PDFs are imported.
+
+All four libraries share paginated discovery; category filters include
+descendants. Step references provide links to content and content detail pages
+link back to the published leaves that use it. Session failures clear the local
+bearer session; unexpected API failures return safe JSON without driver details.
+
+`mvpManifest.js` separates editorial source from persisted identities. The import
+resolves natural identities first, validates conflicts, and applies the entire
+release within a transaction. It reuses IDs and never resets or deletes records.
+Local tests and production importing have separate database safety contracts.

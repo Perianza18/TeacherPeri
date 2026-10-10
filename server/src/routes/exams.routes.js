@@ -1,12 +1,14 @@
+import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { Router } from 'express'
 import Exam from '../models/Exam.js'
-import { idsOrBadRequest, paginatedResponse, textSearch, validObjectId } from './library.utils.js'
+import { descendantCategoryIds, idsOrBadRequest, paginatedResponse, textSearch, validObjectId } from './library.utils.js'
 
 const router = Router()
 const published = { publicationStatus: 'published' }
 router.get('/', async (req, res) => {
   const tags = idsOrBadRequest(res, req.query.tags, 'tags')
-  const categories = idsOrBadRequest(res, req.query.categories, 'categories')
+  const categoryFilter = idsOrBadRequest(res, req.query.categories, 'categories')
+  const categories = categoryFilter ? await descendantCategoryIds(categoryFilter) : null
   if (!tags || !categories) return
   const filter = { ...published }
   if (tags.length) filter.tags = { $in: tags }
@@ -28,7 +30,7 @@ router.get('/:id', async (req, res) => {
   const item = await Exam.findOne({ _id: req.params.id, ...published })
     .populate('tags', 'name slug label')
     .populate('categories', 'name parent')
-    .populate('problems.problem')
+    .populate({ path: 'problems.problem', match: publishedOrLegacyProblemQuery(), select: 'codigo titulo enunciado difficulty dificultad sourceAttribution' })
     .lean()
   if (!item) return res.status(404).json({ error: 'Ese examen no existe o no está publicado.' })
   item.problems.sort((a, b) => a.position - b.position)

@@ -6,14 +6,14 @@ import Navbar from './Navbar'
 // Cuando llegue el contenido de una página, su archivo deja de usar este
 // componente y construye su propio JSX (como ya hacen HomePage/Problemas/
 // SobreMiPage).
-export default function PagePlaceholder({ title }) {
+export default function PagePlaceholder({ title, description }) {
   return (
     <>
       <Navbar />
       <main className="mx-auto max-w-4xl px-4 py-32 text-center sm:px-6">
         <h1 className="font-display text-3xl text-brand-900 sm:text-4xl">{title}</h1>
         <p className="mt-4 text-brand-600">
-          Contenido pendiente — esta página todavía no tiene contenido definitivo.
+          {description || 'Contenido pendiente — esta página todavía no tiene contenido definitivo.'}
         </p>
       </main>
     </>

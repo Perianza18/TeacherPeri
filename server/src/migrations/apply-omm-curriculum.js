@@ -1,10 +1,10 @@
 // Guarded additive application for a reviewed recursive curriculum.
-// Draft v2 intentionally fails before connecting while group children remain pending.
 import 'dotenv/config'
 import mongoose from 'mongoose'
 import Path from '../models/Path.js'
 import PathReference from '../models/PathReference.js'
 import PathSection from '../models/PathSection.js'
+import Step from '../models/Step.js'
 import { assertVerifiedDatabase, developmentMigrationTarget } from '../database-safety.js'
 import { OMM_CURRICULUM, validateOmmCurriculumDefinition } from '../data/ommCurriculum.js'
 
@@ -29,22 +29,37 @@ async function applyReferences(target, bySlug, sections) {
       if (existing.order !== reference.order || String(existing.section || '') !== String(section?._id || '')) {
         throw new Error(`Existing reference ${reference.parentSlug} → ${reference.childSlug} conflicts with Draft v2; refusing to overwrite it.`)
       }
+      if (reference.previewWhenUnavailable && !existing.previewWhenUnavailable) {
+        assertVerifiedDatabase(mongoose.connection, target)
+        existing.previewWhenUnavailable = true
+        await existing.save()
+      }
       continue
     }
     if (await PathReference.exists({ parentPath: parent._id, order: reference.order })) {
       throw new Error(`Parent ${reference.parentSlug} already has an unrelated reference at order ${reference.order}.`)
     }
     assertVerifiedDatabase(mongoose.connection, target)
-    await PathReference.create({ parentPath: parent._id, childPath: child._id, order: reference.order, section: section?._id || null })
+    await PathReference.create({ parentPath: parent._id, childPath: child._id, order: reference.order, section: section?._id || null, previewWhenUnavailable: reference.previewWhenUnavailable })
+  }
+}
+
+async function validateExistingPendingPaths(bySlug) {
+  const pending = OMM_CURRICULUM.paths.filter((item) => item.childrenPending)
+  for (const specification of pending) {
+    const path = bySlug.get(specification.slug)
+    if (!path) continue
+    if (path.publicationStatus !== 'draft') throw new Error(`Pending Path ${specification.slug} must remain a draft.`)
+    const [step, inventedChild] = await Promise.all([
+      Step.exists({ path: path._id }),
+      PathReference.exists({ parentPath: path._id }),
+    ])
+    if (step || inventedChild) throw new Error(`Pending Path ${specification.slug} cannot contain Steps or invented child references.`)
   }
 }
 
 async function applyOmmCurriculum() {
   validateOmmCurriculumDefinition()
-  const pending = OMM_CURRICULUM.paths.filter((item) => item.childrenPending)
-  if (pending.length) {
-    throw new Error(`Draft v2 has unresolved Group Paths (${pending.map((item) => item.slug).join(', ')}); no database connection or mutation was attempted.`)
-  }
   const target = developmentMigrationTarget()
   await mongoose.connect(target.uri, target.connectionOptions)
   assertVerifiedDatabase(mongoose.connection, target)
@@ -53,6 +68,7 @@ async function applyOmmCurriculum() {
     const existing = await existingPath(specification)
     if (existing) bySlug.set(specification.slug, existing)
   }
+  await validateExistingPendingPaths(bySlug)
   for (const specification of OMM_CURRICULUM.paths) {
     if (bySlug.has(specification.slug)) continue
     assertVerifiedDatabase(mongoose.connection, target)

@@ -16,6 +16,10 @@ const PORT = process.env.PORT || 4000
 // arrancar a medias y fallar más adelante con un error confuso (o peor,
 // conectarse a "undefined" sin darse cuenta). Pensado para cuando un
 // teammate nuevo clona el repo y se le olvida crear su .env.
+if (process.env.NODE_ENV === 'production' && (!process.env.CLIENT_ORIGIN || (process.env.JWT_SECRET || '').length < 32)) {
+  console.error('Production requires CLIENT_ORIGIN and a JWT_SECRET of at least 32 characters.'); process.exit(1)
+}
+
 const VARIABLES_REQUERIDAS = ['MONGO_URI', 'JWT_SECRET']
 const faltantes = VARIABLES_REQUERIDAS.filter((clave) => !process.env[clave])
 if (faltantes.length > 0) {
@@ -29,8 +33,11 @@ if (faltantes.length > 0) {
 async function start() {
   try {
     await mongoose.connect(process.env.MONGO_URI)
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`API escuchando en http://localhost:${PORT}`)
+    })
+    for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => {
+      server.close(async () => { await mongoose.disconnect(); process.exit(0) })
     })
   } catch (err) {
     console.error('No se pudo conectar a MongoDB:', err.message)

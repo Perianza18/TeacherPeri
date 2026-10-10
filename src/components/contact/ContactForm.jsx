@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 
-const GRADIENT = 'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)'
-
 const PERFILES = [
   'Estudiante de Secundaria/Prepa',
   'Exolímpico/Entrenador',
@@ -20,7 +18,7 @@ const MOTIVOS = [
 ]
 
 const selectClass =
-  'rounded-lg border border-brand-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#E57505] focus:ring-2 focus:ring-[#E57505]/30'
+  'rounded-lg border border-brand-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
 
 // El formulario de Contacto, fusionado con la sesión global (ver
 // AuthContext): sin sesión, muestra el prompt para iniciar sesión en vez
@@ -66,8 +64,7 @@ export default function ContactForm() {
         <button
           type="button"
           onClick={abrirModal}
-          className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-md transition-transform active:scale-95"
-          style={{ backgroundImage: GRADIENT }}
+          className="tp-button bg-accent-purple px-5 py-2 text-sm font-black text-white"
         >
           Iniciar sesión
         </button>
@@ -137,8 +134,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-        style={{ backgroundImage: GRADIENT }}
+        className="tp-button bg-accent-purple px-4 py-2 text-sm font-black text-white disabled:opacity-50"
       >
         {enviando ? 'Enviando...' : 'Enviar mensaje'}
       </button>

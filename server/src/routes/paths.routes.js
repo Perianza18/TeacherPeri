@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import PathCompletion from '../models/PathCompletion.js'
 import { requireAuth } from '../middleware/auth.js'
-import { idsOrBadRequest } from './library.utils.js'
+import Step from '../models/Step.js'
+import { idsOrBadRequest, validObjectId } from './library.utils.js'
 import {
   descendantLeafIds,
   progressForUser,
@@ -25,10 +26,15 @@ router.get('/', async (req, res) => {
     })
   }
 
+  let contentPaths = null
+  if (req.query.contentType || req.query.contentId) {
+    if (!['Problem', 'Theory', 'List', 'Exam'].includes(req.query.contentType) || !validObjectId(req.query.contentId)) return res.status(400).json({ error: 'Referencia de contenido inválida.' })
+    contentPaths = new Set((await Step.find({ teacherperiReferences: { $elemMatch: { contentType: req.query.contentType, target: req.query.contentId } } }).select('path').lean()).map((s) => String(s.path)))
+  }
   const tags = idsOrBadRequest(res, req.query.tags, 'tags')
   if (!tags) return
   const items = await publishedPathDiscovery(req.query.q, tags)
-  res.json({ items })
+  res.json({ items: contentPaths ? items.filter((p) => contentPaths.has(String(p._id))) : items })
 })
 
 router.get('/:slug/progress', requireAuth, async (req, res) => {

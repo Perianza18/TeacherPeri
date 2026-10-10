@@ -65,3 +65,13 @@ Remaining product decisions should be resolved when needed for the relevant phas
 - MVP emphasis of the existing Putnam/OMMU corpus alongside OMM preparation, and placement of Más Recursos in the intended navigation.
 
 Do not reopen settled decisions such as unique-leaf progress weighting, canonical folder placement, pinned/normal route organization, shared University/Olympiad Paths, or nonrestrictive progress without an explicit change in product direction.
+
+## Final MVP sprint scope
+
+Original educational content is authorized for the OMM MVP. Preparation and
+Ciclo 1 are implemented as referenced content; later unfinished curriculum
+remains draft. Lists may contain ordered canonical Problem references alongside
+attributed external links. Exams are ordered canonical Problem references with
+metadata and optional external source links; the release includes only original
+TeacherPeri practice, not hosted official PDFs. Phase 4 remains deferred. See
+CURRENT_STATE.md, CONTENT_IMPORT.md and DEPLOYMENT.md for this release.

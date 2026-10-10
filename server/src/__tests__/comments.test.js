@@ -21,7 +21,7 @@ async function crearProblemaDePrueba() {
     category: categoria._id,
     año: '2024',
     tema: 'Álgebra',
-    tipo: 'Interno Axioma',
+    tipo: 'Colección interna',
     dificultad: 'Media',
     exito: 50,
   })

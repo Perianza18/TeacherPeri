@@ -250,6 +250,66 @@ describe('public Paths, traversal, and progress', () => {
     expect((await request(app).get('/api/paths?traversal=padre-publico/hoja-borrador')).status).toBe(404)
   })
 
+  it('reveals only safe metadata for explicitly planned unavailable child references', async () => {
+    const parent = await pathFixture('padre-con-plan')
+    const planned = await pathFixture('ruta-planeada', {
+      title: 'Ruta Planeada',
+      description: 'Descripción editorial que no debe publicarse.',
+      publicationStatus: 'draft',
+    })
+    const nested = await leafFixture('detalle-borrador', {
+      title: 'Detalle Borrador Secreto',
+      publicationStatus: 'draft',
+    })
+    const ordinary = await leafFixture('borrador-ordinario', {
+      title: 'Título Borrador Ordinario',
+      publicationStatus: 'draft',
+    })
+    const section = await PathSection.create({ path: parent._id, title: 'Ciclo futuro' })
+    await PathReference.create({ parentPath: parent._id, childPath: planned._id, order: 1, section: section._id, previewWhenUnavailable: true })
+    await PathReference.create({ parentPath: planned._id, childPath: nested._id, order: 1 })
+    await PathReference.create({ parentPath: parent._id, childPath: ordinary._id, order: 2 })
+
+    const response = await request(app).get('/api/paths/padre-con-plan')
+    expect(response.status).toBe(200)
+    expect(response.body.path.childPaths[0]).toEqual({
+      childPath: planned._id.toString(),
+      order: 1,
+      section: section._id.toString(),
+      available: false,
+      title: 'Ruta Planeada',
+      plannedPreview: true,
+      state: 'coming-soon',
+    })
+    expect(response.body.path.childPaths[0]).not.toHaveProperty('slug')
+    expect(response.body.path.childPaths[0]).not.toHaveProperty('description')
+    expect(response.body.path.childPaths[1]).not.toHaveProperty('title')
+    expect(response.text).not.toContain('Descripción editorial')
+    expect(response.text).not.toContain('Detalle Borrador Secreto')
+    expect(response.text).not.toContain('Título Borrador Ordinario')
+    expect((await request(app).get('/api/paths/ruta-planeada')).status).toBe(404)
+    expect((await request(app).get('/api/paths?traversal=padre-con-plan/ruta-planeada')).status).toBe(404)
+    expect((await request(app).get('/api/paths')).body.items.map((item) => item.slug)).not.toContain('ruta-planeada')
+  })
+
+  it('marks a section under construction only when all of its children are planned previews', async () => {
+    const parent = await pathFixture('padre-secciones-planeadas')
+    const plannedA = await leafFixture('planeada-a', { publicationStatus: 'draft' })
+    const plannedB = await leafFixture('planeada-b', { publicationStatus: 'draft' })
+    const ordinary = await leafFixture('no-planeada', { publicationStatus: 'draft' })
+    const plannedSection = await PathSection.create({ path: parent._id, title: 'Todo planeado' })
+    const mixedSection = await PathSection.create({ path: parent._id, title: 'Mixto' })
+    await PathReference.create({ parentPath: parent._id, childPath: plannedA._id, order: 1, section: plannedSection._id, previewWhenUnavailable: true })
+    await PathReference.create({ parentPath: parent._id, childPath: plannedB._id, order: 2, section: plannedSection._id, previewWhenUnavailable: true })
+    await PathReference.create({ parentPath: parent._id, childPath: ordinary._id, order: 3, section: mixedSection._id })
+
+    const response = await request(app).get('/api/paths/padre-secciones-planeadas')
+    const headings = response.body.path.presentation.filter((item) => item.type === 'section').map((item) => item.section)
+    expect(headings[0]).toMatchObject({ title: 'Todo planeado', state: 'under-construction' })
+    expect(headings[1]).toEqual(expect.objectContaining({ title: 'Mixto' }))
+    expect(headings[1]).not.toHaveProperty('state')
+  })
+
   it('keeps a draft Step target by identity but does not expose its unpublished content', async () => {
     const theory = await Theory.create({ title: 'Borrador interno', summary: 'No publicar.', content: 'No filtrar.', level: 'basico', publicationStatus: 'draft' })
     const leaf = await pathFixture('referencia-no-disponible')
@@ -310,5 +370,17 @@ describe('public Paths, traversal, and progress', () => {
       .send({ completed: false })
     expect(unmark.body.progress).toMatchObject({ percentage: 0 })
     expect(await PathCompletion.countDocuments()).toBe(0)
+  })
+
+  it('excludes coming-soon draft descendants from progress', async () => {
+    const parent = await pathFixture('progreso-sin-borradores')
+    const published = await leafFixture('hoja-publicada-progreso')
+    const draft = await leafFixture('hoja-planeada-progreso', { publicationStatus: 'draft' })
+    await PathReference.create({ parentPath: parent._id, childPath: published._id, order: 1 })
+    await PathReference.create({ parentPath: parent._id, childPath: draft._id, order: 2, previewWhenUnavailable: true })
+    const token = await tokenFixture()
+
+    const progress = await request(app).get('/api/paths/progreso-sin-borradores/progress').set('Authorization', `Bearer ${token}`)
+    expect(progress.body).toEqual({ totalLeaves: 1, completedLeaves: 0, percentage: 0 })
   })
 })

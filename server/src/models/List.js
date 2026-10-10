@@ -1,8 +1,11 @@
 import mongoose from 'mongoose'
 import { DIFFICULTY_LEVELS, publicationFields } from './content.js'
 
+import { orderedProblemSchema, validateOrderedProblems } from './problemReferences.js'
+
 const listSchema = new mongoose.Schema(
   {
+    problems: { type: [orderedProblemSchema], default: [] },
     title: { type: String, required: true, trim: true },
     summary: { type: String, required: true, trim: true },
     authors: [{ type: String, trim: true }],
@@ -20,5 +23,7 @@ const listSchema = new mongoose.Schema(
   },
   { timestamps: true },
 )
+
+listSchema.pre('validate', validateOrderedProblems)
 
 export default mongoose.model('List', listSchema)

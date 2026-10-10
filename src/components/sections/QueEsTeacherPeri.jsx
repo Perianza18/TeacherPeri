@@ -1,7 +1,6 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../motion/FloatingSymbol'
 import FloatingBlob from '../motion/FloatingBlob'
 import { fadeUp, popIn, revealProps, staggerContainer } from '../motion/variants'
@@ -78,16 +77,7 @@ export default function QueEsTeacherPeri() {
       id="mision"
       className="relative overflow-hidden bg-[#120303] px-4 py-24 scroll-mt-16 sm:px-6"
     >
-      <motion.div className="pointer-events-none absolute inset-0" style={{ y: bgY }}>
-        <MeshGradient
-          className="absolute inset-0 h-full w-full"
-          colors={['#B70B0D', '#E57505', '#FFB401', '#120303']}
-          speed={0.22}
-          distortion={0.7}
-          swirl={0.25}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#120303]/80 via-[#120303]/55 to-[#120303]/85" />
-      </motion.div>
+      <motion.div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" style={{ y: bgY }} />
 
       <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[8%] top-[14%] text-3xl text-[#FFB401]/30 sm:text-4xl" delay={0.2} duration={7.5} rotate={-6} depth={0.15} />
       <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[10%] bottom-[18%] text-3xl text-[#E57505]/30 sm:text-4xl" delay={0.8} duration={6.5} rotate={6} depth={0.2} />
