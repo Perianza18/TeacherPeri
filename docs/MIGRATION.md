@@ -58,3 +58,11 @@ Related Paths, presentation sections, tags, and descriptive levels must remain s
 ## Operational rule
 
 A roadmap phase is not authorization to implement later phases automatically. Complete the requested scope, keep canonical documentation aligned, validate safely, and stop.
+
+## Final MVP content import
+
+The additive release importer is separate from all development reset commands.
+It requires an explicit destination, performs a read-only dry-run, detects
+conflicts, and applies canonical content and relationships in one transaction.
+It reuses existing natural identities, retains unrelated records and does not
+import the legacy third-party problem fixture. See CONTENT_IMPORT.md.

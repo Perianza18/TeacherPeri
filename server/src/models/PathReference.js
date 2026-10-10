@@ -9,6 +9,7 @@ const pathReferenceSchema = new mongoose.Schema(
     childPath: { type: mongoose.Schema.Types.ObjectId, ref: 'Path', required: true, index: true },
     order: { type: Number, required: true, min: 1 },
     section: { type: mongoose.Schema.Types.ObjectId, ref: 'PathSection', default: null },
+    previewWhenUnavailable: { type: Boolean, default: false },
   },
   { timestamps: true },
 )

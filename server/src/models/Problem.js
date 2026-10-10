@@ -44,6 +44,8 @@ const problemSchema = new mongoose.Schema(
     topics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }],
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
 
+    hint: { type: String },
+    solution: { type: String },
     sourceAttribution: { type: String, trim: true },
     competition: { type: String, trim: true },
     round: { type: String, trim: true },

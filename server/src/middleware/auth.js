@@ -18,8 +18,10 @@
 // ---------------------------------------------------------------------------
 
 import jwt from 'jsonwebtoken'
+import mongoose from 'mongoose'
+import User from '../models/User.js'
 
-export function requireAuth(req, res, next) {
+export async function requireAuth(req, res, next) {
   // El navegador manda el token en un encabezado HTTP así:
   //   Authorization: Bearer eyJhbGciOiJI...
   // Lo separamos de la palabra "Bearer " para quedarnos solo con el token.
@@ -38,6 +40,7 @@ export function requireAuth(req, res, next) {
 
     // Guardamos el id del usuario en `req` para que la ruta que sigue
     // (ej. crear un comentario) sepa quién está haciendo la petición.
+    if (typeof payload.sub !== 'string' || !mongoose.isObjectIdOrHexString(payload.sub) || !await User.exists({ _id: payload.sub })) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
     req.userId = payload.sub
     next()
   } catch {

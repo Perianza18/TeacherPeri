@@ -1,13 +1,14 @@
 import { Router } from 'express'
 import List from '../models/List.js'
-import { difficultyOrBadRequest, idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
+import { descendantCategoryIds, populatedProblems, difficultyOrBadRequest, idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
 
 const router = Router()
 const published = { publicationStatus: 'published' }
 router.get('/', async (req, res) => {
   const topics = idsOrBadRequest(res, req.query.topics, 'topics')
   const tags = idsOrBadRequest(res, req.query.tags, 'tags')
-  const categories = idsOrBadRequest(res, req.query.categories, 'categories')
+  const categoryFilter = idsOrBadRequest(res, req.query.categories, 'categories')
+  const categories = categoryFilter ? await descendantCategoryIds(categoryFilter) : null
   if (!topics || !tags || !categories) return
   const level = difficultyOrBadRequest(res, req.query.level, 'level')
   if (level === undefined) return
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
 })
 router.get('/:id', async (req, res) => {
   if (!validObjectId(req.params.id)) return res.status(400).json({ error: 'Identificador de lista inválido.' })
-  const item = await populatedContent(List.findOne({ _id: req.params.id, ...published })).lean()
+  const item = await populatedProblems(populatedContent(List.findOne({ _id: req.params.id, ...published }))).lean()
   if (!item) return res.status(404).json({ error: 'Esa lista no existe o no está publicada.' })
   res.json(item)
 })

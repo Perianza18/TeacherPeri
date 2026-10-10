@@ -76,4 +76,12 @@ app.use('/api/lists', listsRoutes)
 app.use('/api/exams', examsRoutes)
 app.use('/api/paths', pathsRoutes)
 
+app.use('/api', (_req, res) => res.status(404).json({ error: 'Ese recurso no existe.' }))
+app.use((error, _req, res, next) => {
+  if (res.headersSent) return next(error)
+  const status = error.status === 400 ? 400 : 500
+  if (status === 500 && process.env.NODE_ENV !== 'test') console.error('API request failed:', error.name)
+  res.status(status).json({ error: status === 400 ? 'La solicitud no es válida.' : 'No fue posible completar la solicitud. Intenta de nuevo.' })
+})
+
 export default app

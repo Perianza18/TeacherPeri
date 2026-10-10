@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import MathText from '../components/math/MathText'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 
@@ -11,7 +12,14 @@ function joinedPath(slugs) {
   return `/rutas/${slugs.map(encodeURIComponent).join('/')}`
 }
 
-function ChildPathCard({ child, slugs }) {
+export function ChildPathCard({ child, slugs }) {
+  if (!child.available && child.plannedPreview) return (
+    <article aria-disabled="true" aria-label={`${child.title} — Próximamente`} className="rounded-xl border-2 border-brand-300 bg-brand-50 p-5">
+      <p className="text-xs font-semibold text-brand-500">Tramo {child.order}</p>
+      <h3 className="mt-2 font-bold text-brand-800">{child.title}</h3>
+      <span className="mt-3 inline-block rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-700">Próximamente</span>
+    </article>
+  )
   if (!child.available) {
     return <div className="rounded-xl border-2 border-brand-300 bg-white p-5 text-sm text-brand-500">Este tramo de la Ruta no está disponible públicamente.</div>
   }
@@ -28,6 +36,13 @@ function ChildPathCard({ child, slugs }) {
       </div>
     </Link>
   )
+}
+
+export function PathSectionHeading({ section }) {
+  return <div className="pt-6 pb-2">
+    <h3 className="text-xl font-black text-brand-900">{section.title}</h3>
+    {section.state === 'under-construction' && <><span className="mt-2 inline-block bg-accent-yellow px-3 py-1 text-xs font-bold">En construcción</span><p className="mt-2 text-sm text-brand-600">Estamos preparando y organizando el contenido de este ciclo.</p></>}
+  </div>
 }
 
 export default function PathPage() {
@@ -164,13 +179,7 @@ export default function PathPage() {
                   <div className="relative space-y-4 border-l-4 border-black pl-5 sm:pl-8">
                     {path.presentation.map((item, index) => (
                       item.type === 'section'
-                        ? (
-                          <div key={`${item.section._id}-${index}`} className="pt-7 first:pt-0">
-                            <div className="relative -ml-8 inline-flex border-2 border-black bg-accent-coral px-4 py-2 shadow-[3px_3px_0_#111] sm:-ml-11">
-                              <h3 className="text-sm font-black uppercase tracking-[0.14em] text-brand-900">{item.section.title}</h3>
-                            </div>
-                          </div>
-                        )
+                        ? <PathSectionHeading key={`${item.section._id}-${index}`} section={item.section} />
                         : <ChildPathCard key={item.child.order} child={item.child} slugs={slugs} />
                     ))}
                   </div>
@@ -188,14 +197,14 @@ export default function PathPage() {
                           <span className="grid h-9 w-9 shrink-0 place-items-center border-2 border-black bg-brand-900 text-xs font-bold text-white">{step.order}</span>
                           <div className="min-w-0 flex-1">
                             <h3 className="text-lg font-semibold text-brand-900">{step.title}</h3>
-                            {step.description && <p className="mt-3 whitespace-pre-wrap leading-7 text-brand-600">{step.description}</p>}
+                            {step.description && <MathText className="mt-3 whitespace-pre-wrap leading-7 text-brand-600" text={step.description} />}
                             {step.teacherperiReferences.length > 0 && (
                               <div className="mt-5">
                                 <h4 className="text-sm font-semibold text-brand-900">Material de TeacherPeri</h4>
                                 <div className="mt-2 space-y-2">
                                   {step.teacherperiReferences.map((reference) => (
                                     reference.available
-                                      ? <Link key={`${reference.contentType}-${reference.targetId}`} className="block rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-800 transition hover:border-violet-300 hover:text-violet-700" to={reference.href}>{reference.title}</Link>
+                                      ? <Link key={`${reference.contentType}-${reference.targetId}`} className="block rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-800 transition hover:border-violet-300 hover:text-violet-700" to={reference.href} state={{ fromPath: location.pathname }}>{reference.title}</Link>
                                       : <div key={`${reference.contentType}-${reference.targetId}`} className="rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-500">Material actualmente no disponible.</div>
                                   ))}
                                 </div>

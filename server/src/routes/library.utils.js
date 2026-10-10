@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+import Category from '../models/Category.js'
+import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { DIFFICULTY_LEVELS } from '../models/content.js'
 
 export function validObjectId(value) {
@@ -48,4 +50,20 @@ export async function paginatedResponse({ req, res, model, filter, sort = { upda
     model.countDocuments(filter),
   ])
   res.json({ items, page, limit, total, totalPages: Math.ceil(total / limit) })
+}
+
+// Include descendants in every library, without depending on the client tree.
+export async function descendantCategoryIds(ids) {
+  const seen = new Set(ids.map(String))
+  let frontier = ids
+  while (frontier.length) {
+    const children = await Category.find({ parent: { $in: frontier } }).select('_id').lean()
+    frontier = children.map((c) => String(c._id)).filter((id) => !seen.has(id))
+    frontier.forEach((id) => seen.add(id))
+  }
+  return [...seen]
+}
+
+export function populatedProblems(query) {
+  return query.populate({ path: 'problems.problem', match: publishedOrLegacyProblemQuery(), select: 'codigo titulo enunciado difficulty dificultad sourceAttribution' })
 }

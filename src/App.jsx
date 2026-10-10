@@ -13,6 +13,7 @@ import LibraryCollection from './components/training/LibraryCollection'
 import LibraryDetailPage from './pages/LibraryDetailPage'
 import RutasPage from './pages/RutasPage'
 import PathPage from './pages/PathPage'
+import PagePlaceholder from './components/PagePlaceholder'
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/contacto" element={<ContactoPage />} />
           <Route path="/sobre-mi" element={<SobreMiPage />} />
           <Route path="/colaboradores" element={<ColaboradoresPage />} />
+          <Route path="*" element={<PagePlaceholder title="Página no encontrada" description="Regresa a Inicio o explora las Rutas y bibliotecas de entrenamiento." />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

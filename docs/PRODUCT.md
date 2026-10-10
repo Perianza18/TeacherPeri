@@ -45,6 +45,8 @@ A Path may also have non-structural Related Path references for discovery: `prer
 
 `PathReference.order` is the canonical structural and presentation order of every child Path within its parent. A parent Path may optionally use lightweight presentation sections to annotate positions in that ordered sequence with headings; they never reorder children. An unsectioned child may appear before, between, or after sectioned children without moving. A section is not a Path: it has no slug, route, completion, progress, breadcrumb, search result, Related Paths, or effect on traversal and descendants. Unsectioned parent Paths retain their existing ordered child presentation.
 
+An unavailable child reference is anonymous by default. An explicit planned-preview flag may show its title and `Próximamente` state in the parent without a link or any draft description, content, descendants, completion, or progress. Sections composed entirely of these previews may display `En construcción` as derived presentation copy.
+
 A Step contains:
 
 - Title.
@@ -127,3 +129,13 @@ Universidad is a major public navbar section. Its main university journey will b
 ## Current foundation-phase boundary
 
 The first implementation phase establishes documentation, database safety, runtime/development configuration, and CI while preserving existing application behavior. It does not implement Paths, independent Threads, Theory, Lists, Exams, the Experiences backend, badges, saved items, or Mi Espacio. It does not redesign the UI or invent educational content. Later phases need their own implementation scope.
+
+## Final MVP sprint scope
+
+Original educational content is authorized for the OMM MVP. Preparation and
+Ciclo 1 are implemented as referenced content; later unfinished curriculum
+remains draft. Lists may contain ordered canonical Problem references alongside
+attributed external links. Exams are ordered canonical Problem references with
+metadata and optional external source links; the release includes only original
+TeacherPeri practice, not hosted official PDFs. Phase 4 remains deferred. See
+CURRENT_STATE.md, CONTENT_IMPORT.md and DEPLOYMENT.md for this release.

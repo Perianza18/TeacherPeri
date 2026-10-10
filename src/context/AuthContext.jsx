@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AuthContext } from './useAuth'
 import AuthModal from '../components/auth/AuthModal'
 
@@ -23,7 +23,8 @@ export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(() => {
     try {
       const guardado = localStorage.getItem(AUTH_STORAGE_KEY)
-      return guardado ? JSON.parse(guardado) : null
+      const data = guardado ? JSON.parse(guardado) : null
+      return data && typeof data.token === 'string' && data.user?.id ? data : null
     } catch {
       return null
     }
@@ -41,6 +42,12 @@ export function AuthProvider({ children }) {
     setAuth(null)
     localStorage.removeItem(AUTH_STORAGE_KEY)
   }
+
+  useEffect(() => {
+    const expire = () => { setAuth(null); localStorage.removeItem(AUTH_STORAGE_KEY) }
+    window.addEventListener('teacherperi:auth-expired', expire)
+    return () => window.removeEventListener('teacherperi:auth-expired', expire)
+  }, [])
 
   const value = {
     auth,

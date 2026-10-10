@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import Theory from '../models/Theory.js'
-import { difficultyOrBadRequest, idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
+import { descendantCategoryIds, difficultyOrBadRequest, idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
 
 const router = Router()
 const published = { publicationStatus: 'published' }
@@ -8,7 +8,8 @@ const published = { publicationStatus: 'published' }
 router.get('/', async (req, res) => {
   const topics = idsOrBadRequest(res, req.query.topics, 'topics')
   const tags = idsOrBadRequest(res, req.query.tags, 'tags')
-  const categories = idsOrBadRequest(res, req.query.categories, 'categories')
+  const categoryFilter = idsOrBadRequest(res, req.query.categories, 'categories')
+  const categories = categoryFilter ? await descendantCategoryIds(categoryFilter) : null
   if (!topics || !tags || !categories) return
   const level = difficultyOrBadRequest(res, req.query.level, 'level')
   if (level === undefined) return

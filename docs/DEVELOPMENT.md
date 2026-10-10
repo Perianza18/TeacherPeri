@@ -5,7 +5,7 @@ This repository contains the active TeacherPeri application and is evolved incre
 - Read [PRODUCT.md](PRODUCT.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before product-level architectural changes. Use [MIGRATION.md](MIGRATION.md) for compatibility and data-migration context and [ROADMAP.md](ROADMAP.md) for phase boundaries.
 - Do not infer TeacherPeri requirements from stale code, comments, assets, or superseded documentation. Distinguish implemented behavior from agreed future requirements.
 - Preserve working functionality unless the current migration task explicitly replaces it. Prefer incremental changes over a framework rewrite.
-- Do not invent educational content or university advice.
+- Original OMM educational drafts are authorized for the MVP; validate mathematics, attribution and strict KaTeX before release. Do not invent university advice.
 - Categories are material folders; Paths are reusable guidance through content. They are different domain concepts.
 - Store TeacherPeri content once and reference its stable identity wherever it is reused.
 - Keep browsing/search public. Login adds persistence, progress, saving, personalization, and participation; Path progress must never lock content.
