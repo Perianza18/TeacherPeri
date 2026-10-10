@@ -3,7 +3,7 @@
 **Status:** Living specification  
 **Purpose:** Preserve the complete agreed product model, design logic, UX rules, domain concepts, and deferred ideas for TeacherPeri.  
 **Relationship to other docs:** `PRODUCT.md` should remain the concise canonical product contract. This file is the detailed companion containing the full reasoning, examples, UX behavior, and implementation-facing product decisions.  
-**Important:** Legacy Axioma code, comments, README content, routes, or assumptions do **not** define TeacherPeri requirements unless explicitly retained here or in `PRODUCT.md`.
+**Important:** Stale code, comments, superseded documentation, routes, or assumptions do **not** define TeacherPeri requirements unless explicitly retained here or in `PRODUCT.md`.
 
 ---
 
@@ -676,7 +676,7 @@ This principle can be summarized as:
 
 > **Folders provide structure. Filters provide precision. Search provides speed.**
 
-Folder navigation is inspired by AoPS and the current Axioma problem-browser behavior.
+Folder navigation is inspired by AoPS and the current TeacherPeri problem-browser behavior.
 
 The exact filter sets can differ by library.
 
@@ -1767,7 +1767,7 @@ Avoid building unnecessary complexity before there is evidence users need it.
 37. Content Creator and Moderator are distinct roles.
 38. Ordinary users cannot freely publish official TeacherPeri educational content.
 39. Sources are a future concept and **not implemented for MVP**.
-40. Legacy Axioma assumptions do not define TeacherPeri.
+40. Stale implementation assumptions do not define TeacherPeri.
 41. Problem difficulty uses only Básico, Intermedio, or Avanzado for MVP.
 42. Legacy estimated success percentages should be removed rather than presented as measured data.
 43. Content Creators submit official-content proposals for Admin review and do not publish directly in the initial model.
@@ -1783,7 +1783,7 @@ Avoid building unnecessary complexity before there is evidence users need it.
 
 1. Incrementally migrate the existing React/Vite + Express + MongoDB/Mongoose application.
 2. Avoid unnecessary framework rewrites.
-3. Preserve useful Axioma infrastructure where it helps TeacherPeri.
+3. Preserve useful existing infrastructure where it helps TeacherPeri.
 4. Do not treat the existing Category model as the Path system.
 5. Extract reusable library/navigation behavior from the current Problem implementation.
 6. Use stable object identities.

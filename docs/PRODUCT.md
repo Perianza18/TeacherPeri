@@ -1,6 +1,6 @@
 # TeacherPeri product model
 
-This is the authoritative agreed product direction. It describes requirements, including systems that are **not implemented yet**. [ARCHITECTURE.md](ARCHITECTURE.md) records the current application; [ROADMAP.md](ROADMAP.md) defines the implementation sequence. Legacy Axioma behavior and old README instructions do not establish TeacherPeri requirements.
+This is the authoritative agreed product direction. It describes requirements, including systems that are **not implemented yet**. [ARCHITECTURE.md](ARCHITECTURE.md) records the current application; [ROADMAP.md](ROADMAP.md) defines the implementation sequence. Stale implementation behavior and superseded documentation do not establish TeacherPeri requirements.
 
 TeacherPeri is a Spanish-language platform for mathematics Olympiad preparation and guidance for applying to highly competitive universities in the United States and selected universities in Canada. University guidance must also serve students without an Olympiad background. These documents define product behavior; they do not supply educational material or admissions advice.
 

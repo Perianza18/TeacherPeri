@@ -72,7 +72,7 @@ function RecursoCard({ recurso }) {
       <h3 className="font-semibold text-brand-900">{recurso.nombre}</h3>
       <p className="mt-1 text-sm text-brand-600">{recurso.descripcion}</p>
       {recurso.href && (
-        <span className="mt-3 inline-block text-sm font-medium text-[#B70B0D] underline underline-offset-4">
+        <span className="mt-3 inline-block text-sm font-medium text-[#7C3AED] underline underline-offset-4">
           Visitar →
         </span>
       )}

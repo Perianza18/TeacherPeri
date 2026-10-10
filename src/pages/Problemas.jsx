@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import FloatingSymbol from '../components/motion/FloatingSymbol'
 import Counter from '../components/motion/Counter'
 import { EASE, fadeUp, staggerContainer, popIn } from '../components/motion/variants'
@@ -14,7 +13,7 @@ import MathText from '../components/math/MathText'
 //
 //   1. Configuración: dirección de la API + helper apiFetch() para hablar
 //      con el backend (fetch + manejo de errores en un solo lugar).
-//   2. Constantes de filtros (AÑOS, TEMAS, TIPOS) + paleta Axioma reutilizada
+//   2. Constantes de filtros (AÑOS, TEMAS, TIPOS) + paleta de TeacherPeri
 //      del Hero (rojo/naranja/dorado) para el rediseño visual.
 //   3. FilterGroup       -> la lista de opciones de un filtro, ahora como
 //                           "chips" de color en vez de checkboxes planos.
@@ -47,11 +46,11 @@ import MathText from '../components/math/MathText'
 // Misma paleta que ya usa Hero.jsx para el fondo animado — reutilizarla
 // aquí hace que Problemas se sienta parte del mismo sitio, no una página
 // aparte con sus propios colores inventados.
-const AXIOMA_RED = '#B70B0D'
-const AXIOMA_ORANGE = '#E57505'
-const AXIOMA_GOLD = '#FFB401'
-const AXIOMA_DARK = '#120303'
-const AXIOMA_GRADIENT = `linear-gradient(135deg, ${AXIOMA_GOLD} 0%, ${AXIOMA_ORANGE} 45%, ${AXIOMA_RED} 100%)`
+const TP_RED = '#7C3AED'
+const TP_ORANGE = '#5B5FE9'
+const TP_GOLD = '#2563EB'
+const TP_DARK = '#0B0B0F'
+const TP_ACCENT = TP_ORANGE
 
 // Un enunciado es texto normal que PUEDE traer fórmulas metidas entre signos
 // de pesos, como en LaTeX de verdad: "Sea $a>0$, demuestra que...". Hay dos
@@ -99,9 +98,9 @@ function buildCategoryTree(categorias) {
   return { raices, byId }
 }
 
-// Si seleccionas la carpeta "Interno Axioma", también quieres ver los
+// Si seleccionas la carpeta "Colección interna", también quieres ver los
 // problemas de "2024" y "2023" adentro — no solo problemas que apunten
-// EXACTAMENTE a "Interno Axioma". Esta función regresa el _id de una
+// EXACTAMENTE a "Colección interna". Esta función regresa el _id de una
 // carpeta MÁS los _id de todas sus subcarpetas (a cualquier profundidad).
 function collectDescendantIds(nodo) {
   return nodo.children.reduce(
@@ -122,20 +121,20 @@ function contarProblemas(nodo, problemas) {
 
 // Colores "estampa" por dificultad — mismo significado de siempre (verde
 // fácil, ámbar media, rojo difícil) pero usando el rojo/dorado de la marca
-// Axioma en vez de un ámbar/rosa genérico.
+// TeacherPeri en vez de un ámbar/rosa genérico.
 const DIFICULTAD_STYLES = {
   Fácil: 'bg-emerald-500 text-white',
   Media: `text-brand-900`,
-  Difícil: 'bg-[#B70B0D] text-white',
+  Difícil: 'bg-[#7C3AED] text-white',
 }
 const DIFICULTAD_BG = {
-  Media: AXIOMA_GOLD,
+  Media: TP_GOLD,
 }
 
 // Colores de acento por profundidad en el árbol de carpetas — ciclan entre
 // los 3 tonos de la marca para que se note visualmente qué tan anidada
 // está cada carpeta, sin depender solo de la indentación.
-const CATEGORY_ACCENTS = [AXIOMA_RED, AXIOMA_ORANGE, AXIOMA_GOLD]
+const CATEGORY_ACCENTS = [TP_RED, TP_ORANGE, TP_GOLD]
 
 // El título que se muestra en pantalla: competencia + año + número de
 // problema (ej. "Putnam 2025 — Problema B6"), en vez de la frase
@@ -171,9 +170,9 @@ function FilterGroup({ title, options, selected, onToggle }) {
                 className={`inline-block select-none rounded-full border px-3 py-1 text-xs font-medium transition-all duration-200 active:scale-95 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-900 peer-focus-visible:ring-offset-1 ${
                   activo
                     ? 'border-transparent text-white shadow-md'
-                    : 'border-brand-300 bg-white text-brand-600 hover:border-[#E57505] hover:text-[#E57505]'
+                    : 'border-brand-300 bg-white text-brand-600 hover:border-[#5B5FE9] hover:text-[#5B5FE9]'
                 }`}
-                style={activo ? { backgroundImage: AXIOMA_GRADIENT } : undefined}
+                style={activo ? { backgroundColor: TP_ACCENT } : undefined}
               >
                 {option}
               </span>
@@ -282,7 +281,7 @@ function AuthInlineForm({ onAuthSuccess }) {
   }
 
   const inputClass =
-    'rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#E57505] focus:ring-2 focus:ring-[#E57505]/30'
+    'rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-brand-200 bg-white p-4 shadow-sm">
@@ -327,14 +326,14 @@ function AuthInlineForm({ onAuthSuccess }) {
           type="submit"
           disabled={enviando}
           className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-          style={{ backgroundImage: AXIOMA_GRADIENT }}
+          style={{ backgroundColor: TP_ACCENT }}
         >
           {enviando ? 'Un momento...' : modo === 'login' ? 'Iniciar sesión' : 'Registrarme'}
         </button>
         <button
           type="button"
           onClick={() => setModo(modo === 'login' ? 'signup' : 'login')}
-          className="text-sm text-brand-600 underline hover:text-[#E57505]"
+          className="text-sm text-brand-600 underline hover:text-[#5B5FE9]"
         >
           {modo === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta'}
         </button>
@@ -358,7 +357,7 @@ function ComentarioItem({ comentario, esPropio, onEliminar }) {
       <div
         aria-hidden="true"
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-        style={{ backgroundImage: `linear-gradient(135deg, ${AXIOMA_ORANGE}, ${AXIOMA_GOLD})` }}
+        style={{ backgroundColor: TP_ORANGE }}
       >
         {username.charAt(0).toUpperCase()}
       </div>
@@ -488,7 +487,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
       >
         {/* Franja de color: mismo gradiente de marca que el resto de la
             página, para que el modal se sienta parte del mismo sistema. */}
-        <div className="h-1.5 w-full shrink-0" style={{ backgroundImage: AXIOMA_GRADIENT }} />
+        <div className="h-1.5 w-full shrink-0" style={{ backgroundColor: TP_ACCENT }} />
 
         <div className="flex min-h-0 flex-1 flex-col p-6">
           <div className="mb-4 flex items-start justify-between gap-4">
@@ -548,7 +547,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
                   placeholder="Escribe un comentario..."
                   rows={3}
                   maxLength={2000}
-                  className="rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#E57505] focus:ring-2 focus:ring-[#E57505]/30"
+                  className="rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30"
                 />
                 {errorComentario && (
                   <p className="text-sm text-rose-600">{errorComentario}</p>
@@ -561,7 +560,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
                     type="submit"
                     disabled={enviandoComentario}
                     className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-                    style={{ backgroundImage: AXIOMA_GRADIENT }}
+                    style={{ backgroundColor: TP_ACCENT }}
                   >
                     {enviandoComentario ? 'Enviando...' : 'Comentar'}
                   </button>
@@ -610,7 +609,7 @@ function ProblemaCard({ problema, tilt, onOpen }) {
         </span>
       </div>
 
-      <h3 className="text-base font-semibold text-brand-900 transition-colors group-hover:text-[#B70B0D]">
+      <h3 className="text-base font-semibold text-brand-900 transition-colors group-hover:text-[#7C3AED]">
         {formatearTitulo(problema)}
       </h3>
     </motion.button>
@@ -652,7 +651,7 @@ function FolderCard({ nodo, count, color, tilt, onOpen }) {
       className="group flex flex-col items-center gap-2 rounded-2xl border border-brand-200 bg-[#FFFBF5] px-5 py-8 text-center shadow-md shadow-black/5 transition-shadow duration-200 hover:shadow-xl hover:shadow-brand-900/10"
     >
       <FolderIcon className="h-12 w-12 transition-transform group-hover:scale-110" style={{ color }} />
-      <h3 className="text-lg font-semibold text-brand-900 transition-colors group-hover:text-[#B70B0D]">
+      <h3 className="text-lg font-semibold text-brand-900 transition-colors group-hover:text-[#7C3AED]">
         {nodo.name}
       </h3>
       <span className="text-xs text-brand-500">
@@ -679,7 +678,7 @@ function Breadcrumb({ ruta, onNavigate }) {
               <button
                 type="button"
                 onClick={() => onNavigate(item._id)}
-                className="text-brand-500 transition-colors hover:text-[#E57505] hover:underline"
+                className="text-brand-500 transition-colors hover:text-[#5B5FE9] hover:underline"
               >
                 {item.name}
               </button>
@@ -698,7 +697,7 @@ function Breadcrumb({ ruta, onNavigate }) {
 // quieto detrás, como un telón de fondo real, en vez de tener que ser tan
 // alto como los 93 problemas de la cuadrícula.
 //
-// Usa SOLO tonos de la paleta Axioma (rojo/naranja/dorado + un café oscuro
+// Usa SOLO tonos de la paleta TeacherPeri (rojo/naranja/dorado + un café oscuro
 // para dar profundidad) — nada de verde: así las "hojas" leen como otoño Y
 // la página se mantiene naranja, tal como se pidió.
 //
@@ -715,15 +714,15 @@ const AUTUMN_BROWN_LIGHT = '#7a2e12'
 // ventana, leen como una línea de copas de árboles vista de lejos.
 const TREE_BLOBS = [
   { left: '-5%', bottom: '-6rem', size: 260, color: AUTUMN_BROWN, opacity: 0.55 },
-  { left: '10%', bottom: '-8rem', size: 320, color: AXIOMA_RED, opacity: 0.45 },
+  { left: '10%', bottom: '-8rem', size: 320, color: TP_RED, opacity: 0.45 },
   { left: '28%', bottom: '-5rem', size: 240, color: AUTUMN_BROWN_LIGHT, opacity: 0.5 },
-  { left: '45%', bottom: '-7rem', size: 300, color: AXIOMA_ORANGE, opacity: 0.4 },
+  { left: '45%', bottom: '-7rem', size: 300, color: TP_ORANGE, opacity: 0.4 },
   { left: '63%', bottom: '-6rem', size: 260, color: AUTUMN_BROWN, opacity: 0.5 },
-  { left: '80%', bottom: '-8rem', size: 320, color: AXIOMA_RED, opacity: 0.45 },
+  { left: '80%', bottom: '-8rem', size: 320, color: TP_RED, opacity: 0.45 },
   { left: '95%', bottom: '-5rem', size: 240, color: AUTUMN_BROWN_LIGHT, opacity: 0.5 },
 ]
 
-const LEAF_COLORS = [AXIOMA_RED, AXIOMA_ORANGE, AXIOMA_GOLD, AUTUMN_BROWN_LIGHT]
+const LEAF_COLORS = [TP_RED, TP_ORANGE, TP_GOLD, AUTUMN_BROWN_LIGHT]
 const LEAVES = [
   { left: '4%', delay: 0, duration: 13, size: 18, drift: 40 },
   { left: '14%', delay: 3, duration: 16, size: 14, drift: 30 },
@@ -775,23 +774,7 @@ function FallingLeaf({ left, delay, duration, size, color, drift }) {
 function AutumnBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      {/* Cielo: crema arriba -> rojo profundo abajo, todo dentro de la
-          paleta de marca de siempre (ver AXIOMA_* arriba) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(180deg, #FFF3E2 0%, #FDD9A0 20%, ${AXIOMA_GOLD} 40%, ${AXIOMA_ORANGE} 58%, ${AXIOMA_RED} 76%, ${AUTUMN_BROWN} 100%)`,
-        }}
-      />
-
-      {/* "Sol" de otoño: un brillo que respira despacio (escala + opacidad
-          en loop) — la parte "dinámica" del cielo, no es una imagen fija */}
-      <motion.div
-        className="absolute -top-40 left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full blur-3xl"
-        style={{ background: 'radial-gradient(circle, #FFF3E2cc 0%, transparent 70%)' }}
-        animate={{ opacity: [0.6, 0.9, 0.6], scale: [1, 1.06, 1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-      />
+      <div className="absolute inset-0 bg-brand-50" />
 
       {/* Copas de árboles: manchas redondeadas y borrosas formando una
           línea de bosque cerca del piso de la ventana */}
@@ -814,10 +797,7 @@ function AutumnBackground() {
 
       {/* Se funde con el crema del contenido: para cuando la vista llega a
           la cuadrícula de problemas, el fondo ya no compite con el texto */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-[50%]"
-        style={{ background: 'linear-gradient(180deg, transparent 0%, #FAF3EA 100%)' }}
-      />
+      <div className="absolute inset-x-0 bottom-0 h-[50%] bg-brand-50/90" />
 
       {LEAVES.map((hoja, i) => (
         <FallingLeaf key={i} {...hoja} />
@@ -980,36 +960,23 @@ export default function Problemas() {
     <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <AutumnBackground />
 
-      {/* Encabezado: mismo fondo shader animado que el Hero (MeshGradient +
-          símbolos flotantes), a menor escala — así la página de Problemas
-          se siente parte del mismo sitio en vez de una página aparte. */}
       <motion.div
         initial="hidden"
         animate="show"
         variants={fadeUp}
-        className="relative mb-12 overflow-hidden rounded-3xl px-6 py-10 text-center shadow-2xl shadow-black/20 sm:px-10"
-        style={{ backgroundColor: AXIOMA_DARK }}
+        className="relative mb-12 overflow-hidden rounded-2xl border-4 border-black px-6 py-10 text-center shadow-[7px_7px_0_#111] sm:px-10"
+        style={{ backgroundColor: TP_DARK }}
       >
-        <div className="pointer-events-none absolute inset-0">
-          <MeshGradient
-            className="absolute inset-0 h-full w-full"
-            colors={[AXIOMA_RED, AXIOMA_ORANGE, AXIOMA_GOLD, AXIOMA_DARK]}
-            speed={0.25}
-            distortion={0.7}
-            swirl={0.25}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#120303]/70 via-[#120303]/40 to-[#120303]/85" />
-        </div>
+        <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
 
-        <FloatingSymbol symbol="∑" className="pointer-events-none absolute left-[8%] top-[18%] text-3xl text-[#FFB401]/40 sm:text-4xl" delay={0} duration={7} rotate={-6} />
-        <FloatingSymbol symbol="π" className="pointer-events-none absolute right-[10%] top-[22%] text-3xl text-[#E57505]/40 sm:text-4xl" delay={0.5} duration={6} rotate={6} />
-        <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[14%] bottom-[16%] text-2xl text-[#FFB401]/30 sm:text-3xl" delay={0.9} duration={8} rotate={4} />
-        <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[16%] bottom-[18%] text-2xl text-[#E57505]/30 sm:text-3xl" delay={1.2} duration={6.5} rotate={-5} />
+        <FloatingSymbol symbol="∑" className="pointer-events-none absolute left-[8%] top-[18%] text-3xl text-[#2563EB]/40 sm:text-4xl" delay={0} duration={7} rotate={-6} />
+        <FloatingSymbol symbol="π" className="pointer-events-none absolute right-[10%] top-[22%] text-3xl text-[#5B5FE9]/40 sm:text-4xl" delay={0.5} duration={6} rotate={6} />
+        <FloatingSymbol symbol="∞" className="pointer-events-none absolute left-[14%] bottom-[16%] text-2xl text-[#2563EB]/30 sm:text-3xl" delay={0.9} duration={8} rotate={4} />
+        <FloatingSymbol symbol="√" className="pointer-events-none absolute right-[16%] bottom-[18%] text-2xl text-[#5B5FE9]/30 sm:text-3xl" delay={1.2} duration={6.5} rotate={-5} />
 
         <div className="relative flex flex-col items-center gap-3">
           <span
-            className="bg-clip-text text-xs font-semibold uppercase tracking-[0.35em] text-transparent"
-            style={{ backgroundImage: AXIOMA_GRADIENT }}
+            className="text-xs font-black uppercase tracking-[0.35em] text-accent-sky"
           >
             Colección de problemas
           </span>
@@ -1062,7 +1029,7 @@ export default function Problemas() {
           className="flex flex-col gap-6 self-start rounded-2xl border border-white/60 bg-[#FFFBF5]/90 p-5 shadow-lg shadow-black/5 backdrop-blur-md md:sticky md:top-28 md:max-h-[calc(100vh-9rem)] md:overflow-y-auto"
         >
           <div className="flex items-center gap-2 border-b border-brand-200 pb-3">
-            <span className="font-serif text-lg italic text-[#E57505]">∫</span>
+            <span className="font-serif text-lg italic text-[#5B5FE9]">∫</span>
             <h2 className="text-sm font-bold uppercase tracking-wide text-brand-900">Explorar</h2>
           </div>
           <FilterGroup

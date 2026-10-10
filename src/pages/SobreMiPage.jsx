@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import Navbar from '../components/Navbar'
 import FloatingSymbol from '../components/motion/FloatingSymbol'
 import { fadeUp, popIn, revealProps, staggerContainer } from '../components/motion/variants'
@@ -64,7 +63,7 @@ function ProyectoCard({ proyecto }) {
       <h3 className="font-semibold text-brand-900">{proyecto.nombre}</h3>
       <p className="text-sm text-brand-700">{proyecto.descripcion}</p>
       {proyecto.link && (
-        <a href={proyecto.link} target="_blank" rel="noreferrer" className="mt-1 text-sm font-medium text-[#B70B0D] underline underline-offset-4">
+        <a href={proyecto.link} target="_blank" rel="noreferrer" className="mt-1 text-sm font-medium text-[#7C3AED] underline underline-offset-4">
           Ver más →
         </a>
       )}
@@ -81,22 +80,10 @@ export default function SobreMiPage() {
     <>
       <Navbar />
       <main>
-        {/* Encabezado: mismo tratamiento que el header de /problemas —
-            fondo oscuro + MeshGradient animado, para que la página se
-            sienta parte del mismo sitio. */}
-        <section className="relative overflow-hidden bg-[#120303] px-4 py-28 text-center sm:px-6">
-          <div className="pointer-events-none absolute inset-0">
-            <MeshGradient
-              className="absolute inset-0 h-full w-full"
-              colors={['#B70B0D', '#E57505', '#FFB401', '#120303']}
-              speed={0.25}
-              distortion={0.7}
-              swirl={0.25}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#120303]/75 via-[#120303]/40 to-[#120303]/85" />
-          </div>
-          <FloatingSymbol symbol="π" className="pointer-events-none absolute left-[10%] top-[20%] text-3xl text-[#FFB401]/30 sm:text-4xl" delay={0} duration={7} rotate={-6} />
-          <FloatingSymbol symbol="∑" className="pointer-events-none absolute right-[12%] bottom-[22%] text-3xl text-[#E57505]/30 sm:text-4xl" delay={0.6} duration={6.5} rotate={6} />
+        <section className="relative overflow-hidden border-b-4 border-black bg-[#111111] px-4 py-28 text-center sm:px-6">
+          <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
+          <FloatingSymbol symbol="π" className="pointer-events-none absolute left-[10%] top-[20%] text-3xl text-[#2563EB]/30 sm:text-4xl" delay={0} duration={7} rotate={-6} />
+          <FloatingSymbol symbol="∑" className="pointer-events-none absolute right-[12%] bottom-[22%] text-3xl text-[#5B5FE9]/30 sm:text-4xl" delay={0.6} duration={6.5} rotate={6} />
 
           <motion.div initial="hidden" animate="show" variants={staggerContainer(0.15)} className="relative flex flex-col items-center gap-3">
             <motion.h1 variants={fadeUp} className="font-display text-4xl text-white sm:text-5xl">
@@ -176,8 +163,7 @@ export default function SobreMiPage() {
             variants={fadeUp}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
-            className="rounded-full px-8 py-3 text-sm font-semibold text-white shadow-lg"
-            style={{ backgroundImage: 'linear-gradient(135deg, #FFB401 0%, #E57505 45%, #B70B0D 100%)' }}
+            className="tp-button bg-accent-purple px-8 py-3 text-sm font-black text-white"
           >
             Contáctame
           </motion.button>

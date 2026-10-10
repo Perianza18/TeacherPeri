@@ -1,9 +1,9 @@
 # TeacherPeri development guidelines
 
-This repository contains legacy Axioma code being migrated incrementally into TeacherPeri.
+This repository contains the active TeacherPeri application and is evolved incrementally.
 
-- Read [PRODUCT.md](PRODUCT.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before product-level architectural changes. Use [MIGRATION.md](MIGRATION.md) for legacy context and [ROADMAP.md](ROADMAP.md) for phase boundaries.
-- Do not infer TeacherPeri requirements from legacy Axioma code, comments, assets, or the old README. Distinguish implemented behavior from agreed future requirements.
+- Read [PRODUCT.md](PRODUCT.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before product-level architectural changes. Use [MIGRATION.md](MIGRATION.md) for compatibility and data-migration context and [ROADMAP.md](ROADMAP.md) for phase boundaries.
+- Do not infer TeacherPeri requirements from stale code, comments, assets, or superseded documentation. Distinguish implemented behavior from agreed future requirements.
 - Preserve working functionality unless the current migration task explicitly replaces it. Prefer incremental changes over a framework rewrite.
 - Do not invent educational content or university advice.
 - Categories are material folders; Paths are reusable guidance through content. They are different domain concepts.

@@ -62,4 +62,4 @@ Phase 4 builds private Mi Espacio on the existing Phase 3 completion/progress fo
 - Badges, public badge selection, Path versioning, and full Mi Espacio Thread views.
 - Final navigation alignment, responsive/accessibility polish, deployment hardening, and operational safeguards.
 
-Do not infer product requirements from legacy Axioma code, comments, routes, or documentation. Preserve working behavior incrementally and use the canonical documents above when planning later phases.
+Do not infer product requirements from stale code, comments, routes, or superseded documentation. Preserve working behavior incrementally and use the canonical documents above when planning later phases.

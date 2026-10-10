@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { MeshGradient } from '@paper-design/shaders-react'
 import Navbar from '../components/Navbar'
 import { fadeUp } from '../components/motion/variants'
 
@@ -26,7 +25,7 @@ function P({ children }) {
 }
 
 function UL({ children }) {
-  return <ul className="mt-3 flex flex-col gap-2 pl-5 text-brand-700 marker:text-[#B70B0D]">{children}</ul>
+  return <ul className="mt-3 flex flex-col gap-2 pl-5 text-brand-700 marker:text-[#7C3AED]">{children}</ul>
 }
 
 export default function EstudiaExtranjeroPage() {
@@ -34,22 +33,13 @@ export default function EstudiaExtranjeroPage() {
     <>
       <Navbar />
       <main>
-        <section className="relative overflow-hidden bg-[#120303] px-4 py-24 text-center sm:px-6">
-          <div className="pointer-events-none absolute inset-0">
-            <MeshGradient
-              className="absolute inset-0 h-full w-full"
-              colors={['#B70B0D', '#E57505', '#FFB401', '#120303']}
-              speed={0.22}
-              distortion={0.7}
-              swirl={0.25}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#120303]/75 via-[#120303]/40 to-[#120303]/85" />
-          </div>
+        <section className="relative overflow-hidden border-b-4 border-black bg-[#111111] px-4 py-24 text-center sm:px-6">
+          <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
           <motion.h1
             initial="hidden"
             animate="show"
             variants={fadeUp}
-            className="font-display relative text-3xl text-white sm:text-4xl"
+            className="font-display relative text-3xl font-black uppercase tracking-[-.04em] text-white sm:text-5xl"
           >
             🎓 Estudia en el Extranjero siendo Olímpico
           </motion.h1>
@@ -115,7 +105,7 @@ export default function EstudiaExtranjeroPage() {
             entorno (crear una app para tu comunidad, coordinar un taller gratuito de
             programación para niños de tu zona, desarrollar un juego educativo, etc.).
           </P>
-          <div className="mt-4 rounded-xl border border-[#E57505]/30 bg-[#FFF3E2] p-4 text-brand-800">
+          <div className="mt-4 rounded-xl border border-[#5B5FE9]/30 bg-[#FFF3E2] p-4 text-brand-800">
             <strong>⚡ El secreto mejor guardado:</strong> ¡Empieza desde 3.º de secundaria!
             Comenzar a explorar e implementar proyectos a esta edad te da un margen increíble de
             2 a 3 años para probar ideas, equivocarte, mejorar y, sobre todo, mostrar un impacto
