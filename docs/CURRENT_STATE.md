@@ -34,6 +34,11 @@ next step: [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Preserved architecture and boundaries
 
+Local recovery: `db:local:start` prepares a separate loopback replica set on port
+27018; `content:check` inspects the application's database read-only. The importer
+explains standalone-server refusal explicitly. See [LOCAL_MVP.md](LOCAL_MVP.md).
+Existing local MongoDB data is not reset or reconfigured.
+
 React/Vite + Express + MongoDB. Independent reusable Paths form a DAG, contain
 children or Steps, and have no permanent parent. Cycles are presentation-only
 PathSections. Content is stored once. Completion is User ↔ leaf Path; parent

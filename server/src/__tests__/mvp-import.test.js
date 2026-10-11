@@ -7,6 +7,18 @@ import { buildMvpManifest } from '../data/mvpManifest.js'
 
 const entry = (model, key) => buildMvpManifest().find((e) => e.model === model && e.key === key)
 describe('MVP atomic import and public journey', () => {
+  it('refuses standalone import before creating collections or writing content', async () => {
+    const admin = vi.spyOn(mongoose.connection.db, 'admin').mockReturnValue({ command: vi.fn().mockResolvedValue({ isWritablePrimary: true }) })
+    const create = vi.spyOn(CONTENT_MODELS.Category, 'createCollection')
+    try {
+      await expect(importMvpContent({ apply: true })).rejects.toMatchObject({ code: 'CONTENT_REPLICA_SET_REQUIRED' })
+      expect(create).not.toHaveBeenCalled()
+      expect(await CONTENT_MODELS.Path.countDocuments()).toBe(0)
+    } finally {
+      admin.mockRestore()
+      create.mockRestore()
+    }
+  })
   it('preflights without writing, applies twice without new identities and rolls back conflicts', async () => {
     const before = await importMvpContent()
     expect(before.create).toBeGreaterThan(500)

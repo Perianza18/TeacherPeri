@@ -75,7 +75,11 @@ export async function importMvpContent({ apply = false } = {}) {
   const summary = (plan) => ({ create: plan.filter((r) => r.action === 'create').length, promote: plan.filter((r) => r.action === 'promote').length, keep: plan.filter((r) => r.action === 'keep').length })
   if (!apply) return summary(await planMvpImport())
   const hello = await mongoose.connection.db.admin().command({ hello: 1 })
-  if (!hello.setName && hello.msg !== 'isdbgrid') throw new Error('Atomic content import requires a replica set (MongoDB Atlas supports this). No content was written.')
+  if (!hello.setName && hello.msg !== 'isdbgrid') {
+    const error = new Error('Atomic content import requires a replica set (MongoDB Atlas supports this). No content was written.')
+    error.code = 'CONTENT_REPLICA_SET_REQUIRED'
+    throw error
+  }
   for (const Model of Object.values(CONTENT_MODELS)) { await Model.createCollection(); await Model.createIndexes() }
   return mongoose.connection.transaction(async () => {
     const plan = await planMvpImport()
