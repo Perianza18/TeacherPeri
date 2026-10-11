@@ -5,6 +5,33 @@ on:
 permissions:
   contents: read
 jobs:
+  local-mongo-macos:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    env:
+      MONGO_URI: mongodb://127.0.0.1:27018/teacherperi_dev?directConnection=true
+      MONGO_CONTENT_IMPORT_URI: mongodb://127.0.0.1:27018/teacherperi_dev?directConnection=true
+      CONTENT_IMPORT_CONFIRM: teacherperi_dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Install native MongoDB
+        run: |
+          archive="mongodb-macos-$(uname -m)-8.0.16"
+          curl --fail --silent --show-error --location "https://fastdl.mongodb.org/osx/$archive.tgz" -o "$RUNNER_TEMP/local-mongo.tgz"
+          tar -xzf "$RUNNER_TEMP/local-mongo.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/$archive/bin" >> "$GITHUB_PATH"
+      - name: Verify macOS startup and content import
+        run: |
+          npm run db:local:start
+          npm run db:local:start
+          npm run content:import -- --dry-run
+          npm run content:import -- --apply
+          npm run content:check
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20

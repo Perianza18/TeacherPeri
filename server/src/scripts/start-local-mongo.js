@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
-import { mkdir } from 'node:fs/promises'
+import { mkdir, open, readFile } from 'node:fs/promises'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { spawnSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
 
 // Dedicated loopback instance: never reconfigure the user's existing MongoDB.
@@ -22,14 +22,33 @@ async function portIsFree() {
 async function start() {
   if (await portIsFree()) {
     await mkdir(directory, { recursive: true })
-    const result = spawnSync('mongod', [
-      '--replSet', replicaSet, '--bind_ip', '127.0.0.1', '--port', String(port),
-      '--dbpath', directory, '--logpath', resolve(directory, 'mongod.log'), '--fork',
-    ], { encoding: 'utf8', timeout: 20000 })
-    if (result.error?.code === 'ENOENT') throw new Error('mongod is not in PATH. Use your existing MongoDB installation (on macOS, open a terminal with Homebrew in PATH).')
-    if (result.error || result.status !== 0) throw new Error('Local MongoDB could not start. Inspect .local/mongodb/mongod.log; the existing instance on port 27017 was not changed.')
+    // macOS MongoDB rejects --fork. Node owns detachment on every platform.
+    // Capture stderr too: argument errors can happen before mongod.log exists.
+    const output = await open(resolve(directory, 'startup.log'), 'w')
+    try {
+      const child = spawn('mongod', [
+        '--replSet', replicaSet, '--bind_ip', '127.0.0.1', '--port', String(port),
+        '--dbpath', directory, '--logpath', resolve(directory, 'mongod.log'),
+      ], { detached: true, stdio: ['ignore', output.fd, output.fd] })
+      await new Promise((accept, reject) => {
+        child.once('error', reject)
+        child.once('spawn', accept)
+      })
+      child.unref()
+    } catch (error) {
+      if (error.code === 'ENOENT') throw new Error('mongod is not in PATH. Use your existing MongoDB installation (on macOS, open a terminal with Homebrew in PATH).', { cause: error })
+      throw error
+    } finally {
+      await output.close()
+    }
   }
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000, autoCreate: false, autoIndex: false })
+  try {
+    await mongoose.connect(uri, { serverSelectionTimeoutMS: 20000, autoCreate: false, autoIndex: false })
+  } catch {
+    const startup = await readFile(resolve(directory, 'startup.log'), 'utf8').catch(() => '')
+    if (startup.trim()) console.error(startup.trim().slice(-4000))
+    throw new Error('Local MongoDB did not become ready. Inspect .local/mongodb/startup.log and .local/mongodb/mongod.log; the existing instance on port 27017 was not changed.')
+  }
   const admin = mongoose.connection.db.admin()
   const config = await admin.command({ getCmdLineOpts: 1 })
   const options = config.parsed
