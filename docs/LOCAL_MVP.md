@@ -20,6 +20,9 @@ persistentes en `.local/mongodb` dentro del repositorio. No toca el proceso ni l
 datos del MongoDB existente en `27017`. Se puede repetir: verifica la configuración
 del proceso antes de inicializarlo. Si otro proceso ocupa `27018`, se detiene sin
 modificarlo. No borres `.local/mongodb`; es la base local de este proyecto.
+El comando usa un proceso separado de Node, sin `mongod --fork`, que MongoDB
+rechaza en macOS. Si falla antes de crear `mongod.log`, el error de arranque queda
+en `.local/mongodb/startup.log` y se muestra en la terminal.
 
 En tu `.env` privado, usa **la misma URI** para API e importador:
 

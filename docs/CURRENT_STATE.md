@@ -38,6 +38,8 @@ Local recovery: `db:local:start` prepares a separate loopback replica set on por
 27018; `content:check` inspects the application's database read-only. The importer
 explains standalone-server refusal explicitly. See [LOCAL_MVP.md](LOCAL_MVP.md).
 Existing local MongoDB data is not reset or reconfigured.
+The launcher detaches through Node rather than MongoDB's unsupported macOS
+`--fork` option, and preserves early startup errors in `.local/mongodb/startup.log`.
 
 React/Vite + Express + MongoDB. Independent reusable Paths form a DAG, contain
 children or Steps, and have no permanent parent. Cycles are presentation-only
