@@ -23,8 +23,9 @@ jobs:
         run: |
           archive="mongodb-macos-$(uname -m)-8.0.16"
           curl --fail --silent --show-error --location "https://fastdl.mongodb.org/osx/$archive.tgz" -o "$RUNNER_TEMP/local-mongo.tgz"
-          tar -xzf "$RUNNER_TEMP/local-mongo.tgz" -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/$archive/bin" >> "$GITHUB_PATH"
+          mkdir -p "$RUNNER_TEMP/local-mongodb"
+          tar -xzf "$RUNNER_TEMP/local-mongo.tgz" --strip-components=1 -C "$RUNNER_TEMP/local-mongodb"
+          echo "$RUNNER_TEMP/local-mongodb/bin" >> "$GITHUB_PATH"
       - name: Verify macOS startup and content import
         run: |
           npm run db:local:start
