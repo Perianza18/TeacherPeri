@@ -26,6 +26,11 @@ reset/backfill commands. It contains no deletes, resets or production URI defaul
 
 ## Commands
 
+For a local standalone MongoDB, first follow [LOCAL_MVP.md](LOCAL_MVP.md) to start
+an isolated replica set without reconfiguring your existing instance. A successful
+dry-run reports planned changes, not imported data. `npm run content:check` checks
+the application's `MONGO_URI` for the published OMM root without writing data.
+
 1. Set `MONGO_CONTENT_IMPORT_URI` privately, with an explicit database path.
    It never falls back to `MONGO_URI`. System database names are rejected.
 2. Run `npm run content:import -- --dry-run`. Review create/promote/keep counts.

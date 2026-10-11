@@ -23,6 +23,8 @@
     "test:integration": "vitest run --config vitest.config.js",
     "content:validate": "node --input-type=module -e \"import {validateMvpContent} from './server/src/data/validateMvpContent.js'; console.log(validateMvpContent())\"",
     "content:import": "node server/src/scripts/import-mvp-content.js",
+    "content:check": "node server/src/scripts/check-local-content.js",
+    "db:local:start": "node server/src/scripts/start-local-mongo.js",
     "test:browser": "playwright test",
     "start": "node server/src/server.js"
   },

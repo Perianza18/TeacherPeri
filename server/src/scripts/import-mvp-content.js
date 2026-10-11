@@ -28,7 +28,11 @@ async function run() {
 }
 
 // Importing the guard for unit tests must not connect or mutate.
-if (process.argv[1]?.endsWith('/scripts/import-mvp-content.js')) run().catch(() => {
-  console.error('Content import failed. Check the explicit target, replica-set support, and content conflicts; credentials are never logged.')
+if (process.argv[1]?.endsWith('/scripts/import-mvp-content.js')) run().catch((error) => {
+  if (error.code === 'CONTENT_REPLICA_SET_REQUIRED') {
+    console.error('Content import requires a MongoDB replica set. No content was written. For an isolated local database, run npm run db:local:start and follow docs/LOCAL_MVP.md. A successful dry-run does not import content.')
+  } else {
+    console.error('Content import failed. Check the explicit target, replica-set support, and content conflicts; credentials are never logged.')
+  }
   process.exitCode = 1
 }).finally(() => mongoose.disconnect())
