@@ -26,7 +26,8 @@
     "content:check": "node server/src/scripts/check-local-content.js",
     "db:local:start": "node server/src/scripts/start-local-mongo.js",
     "test:browser": "playwright test",
-    "start": "node server/src/server.js"
+    "start": "node server/src/server.js",
+    "content:revise:editorial": "node server/src/scripts/revise-editorial-content.js"
   },
   "dependencies": {
     "@paper-design/shaders-react": "^0.0.80",

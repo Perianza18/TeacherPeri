@@ -9,6 +9,7 @@
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
+import { COMPETITIONS, ROUNDS, SCHOOL_STAGES } from './trainingContext.js'
 import { PUBLICATION_STATUSES, publicationFields } from './content.js'
 
 const problemSchema = new mongoose.Schema(
@@ -24,7 +25,7 @@ const problemSchema = new mongoose.Schema(
       trim: true,
     },
 
-    titulo: { type: String, required: true, trim: true },
+    titulo: { type: String, trim: true },
 
     // El enunciado del problema. Puede incluir LaTeX (ej. "$x^2 + 1$") que
     // el frontend renderiza con KaTeX — el texto en sí se guarda tal cual,
@@ -44,6 +45,15 @@ const problemSchema = new mongoose.Schema(
     topics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }],
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
 
+    trainingContexts: [{
+      _id: false,
+      contest: { type: String, enum: COMPETITIONS, required: true },
+      stage: { type: String, enum: ROUNDS, required: true },
+      schoolStage: { type: String, enum: SCHOOL_STAGES, required: true },
+      grade: { type: Number, min: 1, max: 6, validate: Number.isInteger },
+      challenge: { type: Number, min: 1, max: 6, required: true, validate: Number.isInteger },
+      rationale: { type: String, required: true, trim: true },
+    }],
     hint: { type: String },
     solution: { type: String },
     sourceAttribution: { type: String, trim: true },
@@ -89,5 +99,10 @@ problemSchema.path('categories').validate((categories) => {
   const ids = categories.map(String)
   return ids.length === new Set(ids).size
 }, 'A Problem cannot contain duplicate category memberships.')
+
+problemSchema.path('trainingContexts').validate((contexts) => {
+  const keys = contexts.map((c) => `${c.contest}:${c.stage}:${c.schoolStage}:${c.grade || '*'}`)
+  return new Set(keys).size === keys.length && contexts.every((c) => !c.grade || c.grade <= (c.schoolStage === 'primaria' ? 6 : 3))
+}, 'Context assessments must be unique and use a valid school grade.')
 
 export default mongoose.model('Problem', problemSchema)

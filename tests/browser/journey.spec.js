@@ -38,6 +38,10 @@ test.beforeEach(async ({ page }) => {
     if (url.pathname === '/api/problems/facets') body = { years: ['2026'], subjects: ['Geometría', 'Álgebra', 'Combinatoria', 'Teoría de Números'], types: ['TeacherPeri'] }
     else if (parts[3] === 'comments') body = []
     else if (parts[1] === 'paths' && (parts[2] || url.searchParams.has('traversal'))) body = pathDetail(parts[2] ? [parts[2]] : url.searchParams.get('traversal').split('/'))
+    else if (parts[1] === 'paths' && url.searchParams.has('contentId')) {
+      const ids = new Set(dataFor('Step').filter((step) => step.teacherperiReferences.some((ref) => ref.contentType === url.searchParams.get('contentType') && ref.target === url.searchParams.get('contentId'))).map((step) => step.path))
+      body = { items: dataFor('Path').filter((path) => ids.has(path._id)).map((path) => ({ ...path, lessonOnly: true })) }
+    }
     else if (parts[1] === 'paths') body = { items: [{ _id: 'fixture', slug: 'factorizacion-e-identidades', title: 'Factorización e Identidades', kind: 'leaf', lessonOnly: true, level: 'introductorio' }] }
     else if (model) {
       let items = dataFor(model)
@@ -70,8 +74,10 @@ test('problem discovery, pagination, math, solution and comments', async ({ page
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
-  await page.getByRole('link', { name: 'El ángulo exterior', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'El ángulo exterior' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'El ángulo exterior', exact: true })).toHaveCount(0)
+  await page.getByRole('link', { name: 'Resolver →', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Problema TP-G01', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Ideas para abordar este problema' })).toBeVisible()
   await page.getByText('Ver solución razonada', { exact: true }).click()
   await expect(page.locator('details[open] .katex').first()).toBeVisible()
   await expect(page.locator('.katex-error')).toHaveCount(0)
@@ -97,11 +103,11 @@ test('exam and list reuse canonical problem links', async ({ page }, testInfo) =
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Práctica A')
   await expect(page.locator('main ol > li')).toHaveCount(5)
   await page.screenshot({ path: testInfo.outputPath('collection.png'), fullPage: true })
-  await expect(page.getByRole('link', { name: 'La diferencia divisible →' })).toHaveAttribute('href', `/entrenamiento/problemas/${entry('Problem', 'TP-C05')._id}`)
+  await expect(page.getByRole('link', { name: 'Problema TP-C05 →' })).toHaveAttribute('href', `/entrenamiento/problemas/${entry('Problem', 'TP-C05')._id}`)
   await assertFits(page)
   await page.goto(`/entrenamiento/listas/${entry('List', 'mixto-ciclo-1')._id}`)
   await expect(page.locator('main ol > li')).toHaveCount(5)
-  await expect(page.getByRole('link', { name: 'La diferencia divisible →' })).toHaveAttribute('href', `/entrenamiento/problemas/${entry('Problem', 'TP-C05')._id}`)
+  await expect(page.getByRole('link', { name: 'Problema TP-C05 →' })).toHaveAttribute('href', `/entrenamiento/problemas/${entry('Problem', 'TP-C05')._id}`)
   await assertFits(page)
 })
 
@@ -133,4 +139,27 @@ test('lesson wrappers are absent from route discovery', async ({ page }) => {
   await page.goto('/rutas')
   await expect(page.getByText('Todavía no hay Rutas publicadas.')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Factorización e Identidades', exact: true })).toHaveCount(0)
+})
+
+test('training search uses branded controls and context-dependent challenge', async ({ page }, testInfo) => {
+  await page.goto('/entrenamiento/problemas')
+  await page.getByText('Afinar búsqueda · tema, objetivo y colección', { exact: true }).click()
+  await expect(page.locator('select')).toHaveCount(0)
+  await page.getByRole('button', { name: 'OMM', exact: true }).click()
+  await page.getByRole('button', { name: 'Nacional', exact: true }).click()
+  await page.getByRole('button', { name: '2/6', exact: true }).click()
+  await expect(page.getByRole('button', { name: '2/6', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByText('Cargando biblioteca…', { exact: true })).toHaveCount(0)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.screenshot({ path: testInfo.outputPath('search.png'), fullPage: true })
+  await assertFits(page)
+})
+
+test('introductory editorial sample renders its reasoning and practice', async ({ page }, testInfo) => {
+  await page.goto(`/entrenamiento/teoria/${entry('Theory', 'permutaciones-y-combinaciones-guia')._id}`)
+  await expect(page.getByText(/Cuatro robots/)).toBeVisible()
+  await expect(page.getByText('COMPRUEBA TU RAZONAMIENTO', { exact: true })).toBeVisible()
+  await expect(page.locator('.katex-error')).toHaveCount(0)
+  await page.screenshot({ path: testInfo.outputPath('permutations.png'), fullPage: true })
+  await assertFits(page)
 })

@@ -24,7 +24,7 @@ function ArticleText({ text, problems = [], context = '' }) {
 function ProblemPreview({ problem, context }) {
   return <aside className="tp-card-soft my-10 bg-accent-yellow p-5 sm:p-7">
     <p className="text-xs font-black uppercase tracking-widest">Tu turno · Del banco de problemas</p>
-    <h3 className="mt-3 text-xl font-black">{problem.titulo || problem.codigo}</h3>
+    <h3 className="mt-3 text-xl font-black">{`Problema ${problem.codigo}`}</h3>
     <MathText text={problem.enunciado} className="mt-4 whitespace-pre-wrap leading-8" />
     <Link className="tp-button mt-5 bg-white px-4 py-2 font-bold" to={`/entrenamiento/problemas/${problem._id}${context}`}>Resolver problema →</Link>
   </aside>
@@ -54,12 +54,14 @@ export default function LibraryDetailPage({ type }) {
         const problemRefs = belongs ? refs : sourcePaths.flatMap((path) => path?.path?.steps?.flatMap((step) => step.teacherperiReferences) || [])
         const problemIds = [...new Set(problemRefs.filter((ref) => ref.available && ref.contentType === 'Problem').map((ref) => ref.targetId))]
         const problems = type === 'teoria' ? (await Promise.all(problemIds.map((id) => apiFetch(`/api/problems/${id}`).catch(() => null)))).filter(Boolean) : []
-        if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems })
+        const topicIds = (item.topics || []).map((topic) => topic._id || topic)
+        const relatedTheory = type === 'problemas' && topicIds.length ? await apiFetch(`/api/theory?topics=${encodeURIComponent(topicIds.join(','))}&limit=6`).catch(() => ({ items: [], failed: true })) : { items: [] }
+        if (!cancelled) setResult({ key, item, relatedTheory, error: null, paths: paths.items || [], route: belongs ? route : null, problems })
       })
       .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, paths: [] }) })
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
-  const title = type === 'examenes' && item ? `${item.competition} ${item.year} · ${item.round}` : item?.title || item?.titulo || item?.codigo
+  const title = type === 'problemas' ? `Problema ${item?.codigo || ''}` : type === 'examenes' && item ? `${item.competition} ${item.year} · ${item.round}` : item?.title || item?.titulo || item?.codigo
   const route = result.key === key ? result.route : null
   const parentCrumbs = route?.breadcrumbs.slice(0, -1) || []
   const returnPath = parentCrumbs.length ? `/rutas/${parentCrumbs.map((crumb) => encodeURIComponent(crumb.slug)).join('/')}` : '/rutas'
@@ -85,9 +87,10 @@ export default function LibraryDetailPage({ type }) {
         {['listas', 'examenes'].includes(type) && <>
           {safeUrl(item.sourceUrl) && <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="tp-button inline-block bg-brand-900 px-4 py-2 text-sm font-bold text-white">Consultar fuente original ↗</a>}
           {safeUrl(item.pdfUrl) && <a href={item.pdfUrl} target="_blank" rel="noreferrer" className="ml-3 text-sm font-bold underline">PDF en la fuente ↗</a>}
-          <ol className="mt-8 space-y-4">{item.problems?.map(({ position, problem }) => <li key={position} className="rounded-xl border-2 border-brand-300 bg-white p-5"><p className="text-xs font-bold text-violet-600">Problema {position}</p>{problem ? <><Link className="mt-2 block font-bold text-brand-900 hover:text-violet-700" to={`/entrenamiento/problemas/${problem._id}`}>{problem.titulo || problem.codigo} →</Link><MathText text={problem.enunciado} className="mt-3 leading-7 text-brand-700" /></> : <p className="mt-2 text-brand-500">Problema no disponible públicamente.</p>}</li>)}</ol>
+          <ol className="mt-8 space-y-4">{item.problems?.map(({ position, problem }) => <li key={position} className="rounded-xl border-2 border-brand-300 bg-white p-5"><p className="text-xs font-bold text-violet-600">Problema {position}</p>{problem ? <><Link className="mt-2 block font-bold text-brand-900 hover:text-violet-700" to={`/entrenamiento/problemas/${problem._id}`}>{`Problema ${problem.codigo}`} →</Link><MathText text={problem.enunciado} className="mt-3 leading-7 text-brand-700" /></> : <p className="mt-2 text-brand-500">Problema no disponible públicamente.</p>}</li>)}</ol>
         </>}
       </div>
+      {type === 'problemas' && <aside className="tp-card mb-10 bg-accent-sky p-6"><h2 className="text-xl font-black">Ideas para abordar este problema</h2><p className="mt-2 text-sm">Teoría relacionada por tema; explórala si necesitas repasar una herramienta.</p>{result.relatedTheory?.failed ? <p className="mt-4">No pudimos cargar las sugerencias. <Link className="underline" to="/entrenamiento/teoria">Explorar Teoría</Link></p> : result.relatedTheory?.items?.length ? <ul className="mt-4 space-y-3">{result.relatedTheory.items.map((lesson) => <li key={lesson._id}><Link className="font-bold underline" to={`/entrenamiento/teoria/${lesson._id}`}>{lesson.title} →</Link></li>)}</ul> : <p className="mt-4">Todavía no hay guías publicadas para este tema.</p>}</aside>}
       {route && type === 'teoria' && <div className="mb-8"><Link className="tp-button bg-accent-sky px-5 py-3 font-bold" to={returnPath}>← {parentCrumbs.length ? `Volver a ${parentCrumbs.at(-1).title}` : 'Explorar Rutas'}</Link></div>}
       {type === 'teoria' && <aside className="tp-card mb-10 bg-accent-mint p-6 sm:p-8"><p className="text-xs font-black uppercase tracking-widest">De la idea a la práctica</p><h2 className="mt-3 text-2xl font-black">Ahora te toca explorar.</h2><p className="mt-3 leading-7">Prueba lo que aprendiste con los problemas de este tema en la Zona de Entrenamiento.</p><Link className="tp-button mt-5 bg-white px-5 py-3 font-bold" to={`/entrenamiento/problemas?topics=${encodeURIComponent((item.topics || []).map((topic) => topic._id || topic).join(','))}`}>Explorar problemas del tema →</Link></aside>}
       {relatedRoutes.length > 0 && <aside className="border-t-2 border-brand-300 pt-6"><h2 className="font-black text-brand-900">Continúa en una Ruta</h2><div className="mt-3 flex flex-wrap gap-3">{relatedRoutes.map((p) => <Link key={p._id} className="rounded-xl border border-brand-300 bg-white px-4 py-2 text-sm font-bold text-violet-700" to={`/rutas/${p.slug}`}>{p.title} →</Link>)}</div></aside>}

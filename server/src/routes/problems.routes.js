@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { trainingContextFilter } from '../models/trainingContext.js'
 import Problem from '../models/Problem.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { descendantCategoryIds, difficultyOrBadRequest, idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
@@ -13,7 +14,9 @@ async function problemFilter(req, res) {
   if (!topics || !tags || !categories) return null
   const difficulty = difficultyOrBadRequest(res, req.query.difficulty)
   if (difficulty === undefined) return null
-  const filter = publishedOrLegacyProblemQuery()
+  let context
+  try { context = trainingContextFilter(req.query) } catch (error) { res.status(400).json({ error: error.message }); return null }
+  const filter = { ...publishedOrLegacyProblemQuery(), ...context }
   if (topics.length) filter.topics = { $in: topics }
   if (tags.length) filter.tags = { $in: tags }
   if (categories.length) filter.$and = [{ $or: [{ categories: { $in: categories } }, { category: { $in: categories } }] }]
@@ -24,7 +27,7 @@ async function problemFilter(req, res) {
   if (difficulty) filter.difficulty = difficulty
   if (req.query.q) {
     const search = textSearch(req.query.q)
-    filter.$and = [...(filter.$and || []), { $or: [{ codigo: search }, { titulo: search }, { competition: search }, { tema: search }] }]
+    filter.$and = [...(filter.$and || []), { $or: [{ codigo: search }, { titulo: search }, { enunciado: search }, { competition: search }, { tema: search }] }]
   }
   return filter
 }
