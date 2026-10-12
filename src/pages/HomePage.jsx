@@ -7,9 +7,9 @@ import Hero from '../components/sections/Hero'
 import { apiFetch } from '../lib/api'
 
 const journeyCards = [
-  { number: '01', title: 'Prepararme para Olimpiadas', text: 'Sigue una Ruta estructurada y entrena con material reutilizable.', to: '/rutas', color: 'bg-accent-purple text-white', rotate: '-rotate-1' },
-  { number: '02', title: 'Prepararme para Universidad', text: 'Entiende el proceso y construye tu camino paso a paso.', to: '/estudia-en-el-extranjero', color: 'bg-accent-sky text-brand-900', rotate: 'lg:rotate-1' },
-  { number: '03', title: 'Explorar por mi cuenta', text: 'Ve directo a problemas, teoría, listas y exámenes.', to: '/entrenamiento', color: 'bg-accent-coral text-brand-900', rotate: 'lg:-rotate-1' },
+  { number: '01', title: 'Prepararme para Olimpiadas', text: 'Sigue una Ruta estructurada y entrena con material reutilizable.', to: '/rutas', color: 'bg-accent-purple text-white', rotate: 'rotate-0' },
+  { number: '02', title: 'Prepararme para Universidad', text: 'Entiende el proceso y construye tu camino paso a paso.', to: '/estudia-en-el-extranjero', color: 'bg-accent-sky text-brand-900', rotate: 'rotate-0' },
+  { number: '03', title: 'Explorar por mi cuenta', text: 'Ve directo a problemas, teoría, listas y exámenes.', to: '/entrenamiento', color: 'bg-accent-coral text-brand-900', rotate: 'rotate-0' },
 ]
 
 const libraries = [
@@ -84,14 +84,14 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl">
             <Reveal><SectionHeading eyebrow="Empieza por aquí">¿Qué quieres hacer?</SectionHeading></Reveal>
             <div className="mt-10 grid gap-7 lg:grid-cols-3">
-              {journeyCards.map((card) => <Reveal key={card.title}><Link to={card.to} className={`tp-card group block h-full p-7 transition hover:-translate-y-2 hover:rotate-0 ${card.color} ${card.rotate}`}><span className="grid h-11 w-11 place-items-center border-2 border-black bg-white font-black text-brand-900">{card.number}</span><h3 className="mt-10 text-2xl font-black uppercase leading-tight tracking-[-.035em]">{card.title}</h3><p className="mt-4 font-medium leading-7 opacity-80">{card.text}</p><p className="mt-8 font-black">EXPLORAR <span className="inline-block transition group-hover:translate-x-1">→</span></p></Link></Reveal>)}
+              {journeyCards.map((card) => <Reveal key={card.title}><Link to={card.to} className={`tp-card group block h-full p-7 transition hover:-translate-y-2 rotate-0 ${card.color} ${card.rotate}`}><span className="grid h-11 w-11 place-items-center border-2 border-black bg-white font-black text-brand-900">{card.number}</span><h3 className="mt-10 text-2xl font-black uppercase leading-tight tracking-[-.035em]">{card.title}</h3><p className="mt-4 font-medium leading-7 opacity-80">{card.text}</p><p className="mt-8 font-black">EXPLORAR <span className="inline-block transition group-hover:translate-x-1">→</span></p></Link></Reveal>)}
             </div>
           </div>
         </section>
 
         <section className="border-y-4 border-black bg-accent-blue-soft px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <Reveal className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-end"><div className="lg:pb-8"><SectionHeading eyebrow="Rutas">No tienes que descubrir el camino solo.</SectionHeading><p className="mt-5 max-w-xl text-lg leading-8 text-brand-700">Las Rutas organizan qué hacer y en qué orden sin convertir tu aprendizaje en un sistema rígido.</p><Link to="/rutas" className="tp-button mt-7 bg-brand-900 px-5 py-3 text-sm font-black text-white">VER TODAS LAS RUTAS →</Link></div><div className="tp-card relative bg-white p-6 sm:p-8"><span className="absolute -right-3 -top-4 rotate-3 border-2 border-black bg-accent-coral px-3 py-2 text-xs font-black">RUTA DESTACADA</span><p className="text-sm font-black uppercase tracking-[.15em] text-accent-violet">Preparación para la OMM</p><div className="mt-7 grid gap-3 sm:grid-cols-5">{['Primeros Pasos', 'Herramientas Fundamentales', 'Construyendo Técnica', 'Ampliando Herramientas', 'Integración y Estrategia'].map((label, index) => <div key={label} className="relative border-2 border-black bg-brand-50 p-4 sm:min-h-40"><span className="grid h-8 w-8 place-items-center bg-accent-yellow text-sm font-black">{index + 1}</span><p className="mt-5 text-xs font-black uppercase leading-5">{label}</p>{index < 4 && <span className="absolute -right-3 top-1/2 z-10 hidden text-xl font-black sm:block">→</span>}</div>)}</div></div></Reveal>
+            <Reveal className="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-end"><div className="lg:pb-8"><SectionHeading eyebrow="Rutas">No tienes que descubrir el camino solo.</SectionHeading><p className="mt-5 max-w-xl text-lg leading-8 text-brand-700">Las Rutas organizan qué hacer y en qué orden sin convertir tu aprendizaje en un sistema rígido.</p><Link to="/rutas" className="tp-button mt-7 bg-brand-900 px-5 py-3 text-sm font-black text-white">VER TODAS LAS RUTAS →</Link></div><div className="tp-card relative bg-white p-6 sm:p-8"><span className="absolute -right-3 -top-4 rotate-0 border-2 border-black bg-accent-coral px-3 py-2 text-xs font-black">RUTA DESTACADA</span><p className="text-sm font-black uppercase tracking-[.15em] text-accent-violet">Preparación para la OMM</p><div className="mt-7 grid gap-3 sm:grid-cols-5">{['Primeros Pasos', 'Herramientas Fundamentales', 'Construyendo Técnica', 'Ampliando Herramientas', 'Integración y Estrategia'].map((label, index) => <div key={label} className="relative border-2 border-black bg-brand-50 p-4 sm:min-h-40"><span className="grid h-8 w-8 place-items-center bg-accent-yellow text-sm font-black">{index + 1}</span><p className="mt-5 text-xs font-black uppercase leading-5">{label}</p>{index < 4 && <span className="absolute -right-3 top-1/2 z-10 hidden text-xl font-black sm:block">→</span>}</div>)}</div></div></Reveal>
           </div>
         </section>
 
@@ -99,7 +99,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl">
             <Reveal><SectionHeading eyebrow="Zona de Entrenamiento">Todo el material. Una sola búsqueda.</SectionHeading><p className="mt-4 max-w-2xl text-lg leading-8 text-brand-700">Busca en las cuatro bibliotecas o entra directamente a la que necesitas.</p></Reveal>
             <TrainingSearch />
-            <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{libraries.map(([title, text, to, symbol, color], index) => <Link key={title} to={to} className={`tp-card group p-6 transition hover:-translate-y-2 hover:rotate-0 ${color} ${index === 1 ? 'lg:rotate-1' : index === 3 ? 'lg:-rotate-1' : ''}`}><span className="grid h-12 w-12 place-items-center border-2 border-black bg-white text-2xl font-black">{symbol}</span><h3 className="mt-7 text-xl font-black uppercase">{title}</h3><p className="mt-3 text-sm font-medium leading-6 text-brand-700">{text}</p><span className="mt-7 inline-block font-black transition group-hover:translate-x-1">ABRIR →</span></Link>)}</div>
+            <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{libraries.map(([title, text, to, symbol, color], index) => <Link key={title} to={to} className={`tp-card group p-6 transition hover:-translate-y-2 rotate-0 ${color} ${index === 1 ? 'rotate-0' : index === 3 ? 'rotate-0' : ''}`}><span className="grid h-12 w-12 place-items-center border-2 border-black bg-white text-2xl font-black">{symbol}</span><h3 className="mt-7 text-xl font-black uppercase">{title}</h3><p className="mt-3 text-sm font-medium leading-6 text-brand-700">{text}</p><span className="mt-7 inline-block font-black transition group-hover:translate-x-1">ABRIR →</span></Link>)}</div>
           </div>
         </section>
 

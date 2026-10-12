@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import MathText from '../math/MathText'
 import TrainingHeader from './TrainingHeader'
@@ -9,7 +9,8 @@ const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzad
 const titleOf = (type, item) => type === 'exams' ? `${item.competition} ${item.year} · ${item.round}` : item.title || item.titulo
 
 export default function LibraryCollection({ type, title, subtitle, onOpen }) {
-  const [filters, setFilters] = useState({ q: '', topics: '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
+  const location = useLocation()
+  const [filters, setFilters] = useState({ q: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
   const [page, setPage] = useState(1)
   const [folder, setFolder] = useState(null)
   const [metadata, setMetadata] = useState({ categories: [], topics: [], tags: [], facets: {} })

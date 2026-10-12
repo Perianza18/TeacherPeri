@@ -50,3 +50,9 @@ Phase 4, Mi Espacio, independent Threads, community, roles/publishing workflows,
 Experiencias storage and full university guidance remain deferred. Existing
 comments are compatibility behavior, not a new community system. Their existing
 permanent-delete endpoint remains documented migration debt.
+
+## Reading experience — October 2026 feedback
+
+Single-theory leaf Paths containing only Theory/Problem references open the canonical Theory page directly. Existing Path identities and completion APIs remain intact; the optional resources/progress link retains the old step view. Context is carried in the `ruta` query parameter, validated through the traversal API, and persists through reloads and problem previews. Parent Paths remain reusable. This is a presentation flattening, not a destructive database migration.
+
+Theory pages interleave canonical referenced Problem previews with the original article and link to topic-filtered problem discovery. Preview positions are distributed through the article; explicit editorial placement is a future refinement. Straight comic cards, sky-blue reading headers, yellow practice panels, and mint practice links replace tilted cards. Sobre mí, Experiencias and Universidad show branded construction pages.
