@@ -198,6 +198,11 @@ export async function publicPathDetail(path) {
   }
 }
 
+export function isLessonOnly(kind, refs) {
+  const theories = new Set(refs.filter((ref) => ref.contentType === 'Theory').map((ref) => String(ref.target)))
+  return kind === 'leaf' && theories.size === 1 && refs.every((ref) => ['Theory', 'Problem'].includes(ref.contentType))
+}
+
 export async function publishedPathDiscovery(query, tags = []) {
   const filter = { publicationStatus: 'published' }
   if (tags.length) filter.tags = { $in: tags }
@@ -207,8 +212,19 @@ export async function publishedPathDiscovery(query, tags = []) {
   }
   const paths = await Path.find(filter).populate('tags', 'name slug label').sort({ title: 1 }).lean()
   const structures = await pathStructure(paths.map((path) => path._id))
+  const steps = await Step.find({ path: { $in: paths.map((path) => path._id) } }).select('path teacherperiReferences').lean()
+  const references = new Map()
+  for (const step of steps) {
+    const key = String(step.path)
+    references.set(key, [...(references.get(key) || []), ...step.teacherperiReferences])
+  }
   return paths
-    .map((path) => ({ ...path, kind: structureKind(structures.get(path._id.toString())) }))
+    .map((path) => {
+      const kind = structureKind(structures.get(path._id.toString()))
+      const refs = references.get(String(path._id)) || []
+      const lessonOnly = isLessonOnly(kind, refs)
+      return { ...path, kind, lessonOnly }
+    })
     .filter((path) => path.kind !== 'invalid')
 }
 

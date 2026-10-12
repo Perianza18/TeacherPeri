@@ -114,7 +114,7 @@ export default function PathPage() {
 
   const lessonReferences = path?.kind === 'leaf' ? path.steps.flatMap((step) => step.teacherperiReferences).filter((ref) => ref.available) : []
   const theories = [...new Map(lessonReferences.filter((ref) => ref.contentType === 'Theory').map((ref) => [ref.targetId, ref])).values()]
-  if (!new URLSearchParams(location.search).has('pasos') && theories.length === 1 && lessonReferences.every((ref) => ['Theory', 'Problem'].includes(ref.contentType))) {
+  if (theories.length === 1 && lessonReferences.every((ref) => ['Theory', 'Problem'].includes(ref.contentType))) {
     return <Navigate replace to={`${theories[0].href}?ruta=${encodeURIComponent(slugs.join('/'))}`} />
   }
 

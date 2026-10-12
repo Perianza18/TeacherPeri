@@ -22,7 +22,7 @@ export default function RutasPage() {
     if (query.trim()) params.set('q', query.trim())
     if (tag) params.set('tags', tag)
     apiFetch(`/api/paths?${params}`)
-      .then((result) => !cancelled && setResults({ requestKey, items: result.items, error: null }))
+      .then((result) => !cancelled && setResults({ requestKey, items: result.items.filter((path) => !path.lessonOnly), error: null }))
       .catch((requestError) => !cancelled && setResults({ requestKey, items: [], error: requestError.message }))
     return () => { cancelled = true }
   }, [query, requestKey, tag])
@@ -59,7 +59,7 @@ export default function RutasPage() {
             {paths.map((path, index) => (
               <Link key={path._id} to={`/rutas/${path.slug}`} className={`tp-card group relative p-6 transition hover:-translate-y-2 rotate-0 ${index % 3 === 0 ? 'bg-accent-purple text-white rotate-0' : index % 3 === 1 ? 'bg-white rotate-0' : 'bg-accent-mint rotate-0'}`}>
                 <div className="flex items-center justify-between gap-4">
-                  <span className={`text-xs font-black uppercase tracking-[0.14em] ${index % 3 === 0 ? 'text-white/75' : 'text-brand-700'}`}>{path.kind === 'parent' ? 'Ruta' : 'Ruta hoja'}</span>
+                  <span className={`text-xs font-black uppercase tracking-[0.14em] ${index % 3 === 0 ? 'text-white/75' : 'text-brand-700'}`}>Ruta</span>
                   {path.level && <span className="border-2 border-black bg-accent-yellow px-2.5 py-1 text-xs font-bold text-brand-900">{LEVEL_LABELS[path.level]}</span>}
                 </div>
                 <div className="mt-8 flex items-start gap-4">

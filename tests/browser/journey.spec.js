@@ -38,7 +38,7 @@ test.beforeEach(async ({ page }) => {
     if (url.pathname === '/api/problems/facets') body = { years: ['2026'], subjects: ['Geometría', 'Álgebra', 'Combinatoria', 'Teoría de Números'], types: ['TeacherPeri'] }
     else if (parts[3] === 'comments') body = []
     else if (parts[1] === 'paths' && (parts[2] || url.searchParams.has('traversal'))) body = pathDetail(parts[2] ? [parts[2]] : url.searchParams.get('traversal').split('/'))
-    else if (parts[1] === 'paths') body = { items: [{ _id: 'fixture', slug: 'factorizacion-e-identidades', title: 'Factorización e Identidades', kind: 'leaf', level: 'introductorio' }] }
+    else if (parts[1] === 'paths') body = { items: [{ _id: 'fixture', slug: 'factorizacion-e-identidades', title: 'Factorización e Identidades', kind: 'leaf', lessonOnly: true, level: 'introductorio' }] }
     else if (model) {
       let items = dataFor(model)
       if (parts[2]) {
@@ -120,8 +120,17 @@ test('OMM traversal, unfinished cycles and return to the learning Path', async (
   await expect(page.getByRole('link', { name: 'Resolver problema →' }).first()).toBeVisible()
   await page.reload()
   await expect(page.getByRole('navigation', { name: 'Recorrido de aprendizaje' })).toContainText('Álgebra Básica')
+  await expect(page.getByRole('link', { name: '← Volver a Teoría', exact: true })).toHaveCount(0)
+  const returnLink = page.getByRole('link', { name: '← Volver a Álgebra Básica para Olimpiadas', exact: true })
+  await expect(returnLink).toHaveAttribute('href', '/rutas/preparacion-para-la-omm/algebra-basica-para-olimpiadas')
   await page.screenshot({ path: testInfo.outputPath('lesson.png'), fullPage: true })
   await assertFits(page)
   await page.getByRole('link', { name: 'Explorar problemas del tema →' }).click()
   await expect(page).toHaveURL(/problemas\?topics=.+/)
+})
+
+test('lesson wrappers are absent from route discovery', async ({ page }) => {
+  await page.goto('/rutas')
+  await expect(page.getByText('Todavía no hay Rutas publicadas.')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Factorización e Identidades', exact: true })).toHaveCount(0)
 })
