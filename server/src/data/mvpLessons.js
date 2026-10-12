@@ -1,3 +1,4 @@
+import { EDITORIAL_BATCH } from './editorialBatch.js'
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from './ommLaunchContent.js'
 import { defineLesson } from './ommLaunchContent.helpers.js'
 import { MVP_PROBLEMS } from './mvpProblems.js'
@@ -145,3 +146,10 @@ Para $6x\equiv9\pmod{15}$ el MCD es tres y divide a nueve. Se reduce a $2x\equiv
     { title: 'Comprueba en el módulo original', description: 'Sustituye cada representante y explica por qué cambiar el módulo al dividir es indispensable.' },
   ],
 }))
+
+// Exact pre-batch values support a compare-and-set editorial migration.
+export const PREVIOUS_EDITORIAL_THEORY = Object.fromEntries(MVP_LESSONS.map((lesson) => [lesson.theory.key, structuredClone(lesson.theory)]))
+for (const lesson of MVP_LESSONS) {
+  const revision = EDITORIAL_BATCH[lesson.pathSlug]
+  if (revision) Object.assign(lesson.theory, revision)
+}

@@ -8,7 +8,7 @@ import MathText from '../components/math/MathText'
 import LibraryCollection from '../components/training/LibraryCollection'
 const TP_ORANGE = '#5B5FE9'
 const TP_ACCENT = TP_ORANGE
-const formatearTitulo = (p) => p.titulo || p.codigo
+const formatearTitulo = (p) => `Problema ${p.codigo}`
 
 function AuthInlineForm({ onAuthSuccess }) {
   const [modo, setModo] = useState('login') // 'login' | 'signup'
