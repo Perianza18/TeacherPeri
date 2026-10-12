@@ -133,8 +133,20 @@ textarea {
 }
 
 /* Comic workbook: quiet reading surface, strong editorial landmarks. */
-.tp-reading article > div { background: #fffdf9; }
+
 .tp-reading article h2 { border-color: #111; }
 .tp-reading article h3 { letter-spacing: .015em; }
 .tp-reading .katex-display { overflow-x: auto; overflow-y: hidden; padding: .5rem 0; }
 .tp-card, .tp-card-soft, .tp-kicker { rotate: 0deg; }
+
+.tp-lesson-heading { display: flex; align-items: center; gap: .8rem; padding: .75rem 1rem; border: 2px solid #111; border-radius: .5rem; box-shadow: 3px 3px 0 #111; }
+.tp-lesson-heading::before { content: '✦'; font-size: 1.25rem; }
+.tp-lesson-heading-0 { background: #e8ddff; }
+.tp-lesson-heading-1 { background: #d9f1ff; }
+.tp-lesson-heading-2 { background: #ffdfd6; }
+.tp-lesson-heading-3 { background: #d8f5e8; }
+.tp-lesson-ribbon { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1.4rem; margin-top: 2rem; padding: 1rem 0; border-bottom: 2px dashed #c4bcb2; font-size: .7rem; font-weight: 900; letter-spacing: .1em; }
+.tp-lesson-ribbon span:nth-child(1) { color: #6437a8; }
+.tp-lesson-ribbon span:nth-child(2) { color: #126381; }
+.tp-lesson-ribbon span:nth-child(3) { color: #885116; }
+.tp-lesson-symbol { margin-left: auto; font-size: 2rem; color: #6437a8; }

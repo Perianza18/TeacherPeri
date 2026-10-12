@@ -14,7 +14,7 @@ function ArticleText({ text, problems = [], context = '' }) {
     while (lines.length && /^[A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ0-9 —:–,¿?()./-]+$/.test(lines[0]) && lines[0].length < 110) {
       const title = lines.shift()
       headings.push(major.has(title)
-        ? <h2 key={`${i}-h${headings.length}`} className="mt-10 mb-4 border-l-4 border-violet-500 pl-4 text-lg font-black text-brand-900">{title === 'PRACTICA' ? 'PRÁCTICA' : title}</h2>
+        ? <h2 key={`${i}-h${headings.length}`} className={`tp-lesson-heading tp-lesson-heading-${[...major].indexOf(title) % 4} mt-10 mb-4 text-lg font-black text-brand-900`}>{title === 'PRACTICA' ? 'PRÁCTICA' : title}</h2>
         : <h3 key={`${i}-h${headings.length}`} className="mt-6 text-sm font-black text-brand-900">{title}</h3>)
     }
     const practice = problems.filter((_, index) => Math.min(blocks.length - 1, Math.floor((index + 1) * blocks.length / (problems.length + 1))) === i)
@@ -60,9 +60,12 @@ export default function LibraryDetailPage({ type }) {
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
   const title = type === 'examenes' && item ? `${item.competition} ${item.year} · ${item.round}` : item?.title || item?.titulo || item?.codigo
-  const fromPath = location.state?.fromPath
+  const route = result.key === key ? result.route : null
+  const parentCrumbs = route?.breadcrumbs.slice(0, -1) || []
+  const returnPath = parentCrumbs.length ? `/rutas/${parentCrumbs.map((crumb) => encodeURIComponent(crumb.slug)).join('/')}` : '/rutas'
+  const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
   return <section className="tp-reading min-h-[70vh] px-4 pb-24 pt-12 sm:px-6"><div className="mx-auto max-w-4xl">
-    <div className="flex flex-wrap gap-4 text-sm font-semibold"><Link to={`/entrenamiento/${type}`} className="text-violet-700">← Volver a {config.label}</Link>{fromPath && <Link to={fromPath} className="text-brand-700">← Volver a la Ruta</Link>}</div>
+    {!route && (!traversal || item || error) && <Link to={`/entrenamiento/${type}`} className="text-sm font-semibold text-violet-700">← Volver a {config.label}</Link>}
     {result.key === key && result.route && <nav aria-label="Recorrido de aprendizaje" className="mt-6 flex flex-wrap gap-2 text-sm font-bold">{result.route.breadcrumbs.map((crumb, index, crumbs) => <span key={crumb.slug}>{index > 0 && ' › '}{index === crumbs.length - 1 && type === 'teoria' ? <span aria-current="page">{crumb.title}</span> : <Link className="underline underline-offset-4" to={`/rutas/${crumbs.slice(0, index + 1).map((entry) => encodeURIComponent(entry.slug)).join('/')}`}>{crumb.title}</Link>}</span>)}</nav>}
     {error && <p role="alert" className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</p>}
     {!item && !error && <p className="mt-8 text-brand-500">Cargando contenido…</p>}
@@ -72,7 +75,8 @@ export default function LibraryDetailPage({ type }) {
         {item.authors?.length > 0 && <p className="mt-4 text-sm text-brand-600">Autoría: {item.authors.join(', ')}</p>}
         {item.organization && <p className="mt-4 text-sm text-brand-600">{item.organization}{item.country && ` · ${item.country}`}{item.durationMinutes && ` · ${item.durationMinutes} minutos`}</p>}
       </header>
-      <div className="mx-auto max-w-[760px] py-8">
+      {type === 'teoria' && <div className="tp-lesson-ribbon" aria-hidden="true"><span>01 · COMPRENDE</span><span>02 · EXPLORA</span><span>03 · PRACTICA</span><span className="tp-lesson-symbol">✳</span></div>}
+      <div className={`mx-auto py-8 ${type === 'teoria' ? 'tp-lesson-body max-w-[840px]' : 'max-w-[760px]'}`}>
         {item.enunciado && <MathText text={item.enunciado} className="whitespace-pre-wrap text-lg leading-8 text-brand-900" />}
         {item.hint && <details className="mt-8 rounded-xl border border-brand-300 bg-brand-50 p-4"><summary className="cursor-pointer font-bold">Ver pista</summary><MathText text={item.hint} className="mt-4 leading-7" /></details>}
         {item.solution && <details className="mt-4 rounded-xl border border-brand-300 bg-white p-4"><summary className="cursor-pointer font-bold">Ver solución razonada</summary><MathText text={item.solution} className="mt-4 whitespace-pre-wrap leading-8" /></details>}
@@ -84,9 +88,9 @@ export default function LibraryDetailPage({ type }) {
           <ol className="mt-8 space-y-4">{item.problems?.map(({ position, problem }) => <li key={position} className="rounded-xl border-2 border-brand-300 bg-white p-5"><p className="text-xs font-bold text-violet-600">Problema {position}</p>{problem ? <><Link className="mt-2 block font-bold text-brand-900 hover:text-violet-700" to={`/entrenamiento/problemas/${problem._id}`}>{problem.titulo || problem.codigo} →</Link><MathText text={problem.enunciado} className="mt-3 leading-7 text-brand-700" /></> : <p className="mt-2 text-brand-500">Problema no disponible públicamente.</p>}</li>)}</ol>
         </>}
       </div>
-      {result.route && type === 'teoria' && <div className="mb-8"><Link className="text-sm font-bold underline" to={`/rutas/${traversal}?pasos=1`}>Ver recursos y registrar mi progreso →</Link></div>}
+      {route && type === 'teoria' && <div className="mb-8"><Link className="tp-button bg-accent-sky px-5 py-3 font-bold" to={returnPath}>← {parentCrumbs.length ? `Volver a ${parentCrumbs.at(-1).title}` : 'Explorar Rutas'}</Link></div>}
       {type === 'teoria' && <aside className="tp-card mb-10 bg-accent-mint p-6 sm:p-8"><p className="text-xs font-black uppercase tracking-widest">De la idea a la práctica</p><h2 className="mt-3 text-2xl font-black">Ahora te toca explorar.</h2><p className="mt-3 leading-7">Prueba lo que aprendiste con los problemas de este tema en la Zona de Entrenamiento.</p><Link className="tp-button mt-5 bg-white px-5 py-3 font-bold" to={`/entrenamiento/problemas?topics=${encodeURIComponent((item.topics || []).map((topic) => topic._id || topic).join(','))}`}>Explorar problemas del tema →</Link></aside>}
-      {result.paths.length > 0 && <aside className="border-t-2 border-brand-300 pt-6"><h2 className="font-black text-brand-900">Continúa en una Ruta</h2><div className="mt-3 flex flex-wrap gap-3">{result.paths.map((p) => <Link key={p._id} className="rounded-xl border border-brand-300 bg-white px-4 py-2 text-sm font-bold text-violet-700" to={`/rutas/${p.slug}`}>{p.title} →</Link>)}</div></aside>}
+      {relatedRoutes.length > 0 && <aside className="border-t-2 border-brand-300 pt-6"><h2 className="font-black text-brand-900">Continúa en una Ruta</h2><div className="mt-3 flex flex-wrap gap-3">{relatedRoutes.map((p) => <Link key={p._id} className="rounded-xl border border-brand-300 bg-white px-4 py-2 text-sm font-bold text-violet-700" to={`/rutas/${p.slug}`}>{p.title} →</Link>)}</div></aside>}
     </article>}
   </div></section>
 }
