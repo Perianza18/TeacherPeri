@@ -131,3 +131,10 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Comic workbook: quiet reading surface, strong editorial landmarks. */
+.tp-reading article > div { background: #fffdf9; }
+.tp-reading article h2 { border-color: #111; }
+.tp-reading article h3 { letter-spacing: .015em; }
+.tp-reading .katex-display { overflow-x: auto; overflow-y: hidden; padding: .5rem 0; }
+.tp-card, .tp-card-soft, .tp-kicker { rotate: 0deg; }

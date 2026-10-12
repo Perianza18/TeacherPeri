@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MathText from '../components/math/MathText'
@@ -112,6 +112,12 @@ export default function PathPage() {
   const visibleProgress = progressKey === progressState.progressKey ? progressState.progress : null
   const completed = visibleProgress?.percentage === 100
 
+  const lessonReferences = path?.kind === 'leaf' ? path.steps.flatMap((step) => step.teacherperiReferences).filter((ref) => ref.available) : []
+  const theories = [...new Map(lessonReferences.filter((ref) => ref.contentType === 'Theory').map((ref) => [ref.targetId, ref])).values()]
+  if (!new URLSearchParams(location.search).has('pasos') && theories.length === 1 && lessonReferences.every((ref) => ['Theory', 'Problem'].includes(ref.contentType))) {
+    return <Navigate replace to={`${theories[0].href}?ruta=${encodeURIComponent(slugs.join('/'))}`} />
+  }
+
   return (
     <>
       <Navbar />
@@ -172,7 +178,7 @@ export default function PathPage() {
                   <div className="mb-6 flex items-end justify-between gap-4">
                     <div>
                       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-violet-600">Recorrido</p>
-                      <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-900">Siguientes Rutas</h2>
+                      <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-900">Continúa tu recorrido</h2>
                     </div>
                   </div>
 
@@ -204,7 +210,7 @@ export default function PathPage() {
                                 <div className="mt-2 space-y-2">
                                   {step.teacherperiReferences.map((reference) => (
                                     reference.available
-                                      ? <Link key={`${reference.contentType}-${reference.targetId}`} className="block rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-800 transition hover:border-violet-300 hover:text-violet-700" to={reference.href} state={{ fromPath: location.pathname }}>{reference.title}</Link>
+                                      ? <Link key={`${reference.contentType}-${reference.targetId}`} className="block rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm font-medium text-brand-800 transition hover:border-violet-300 hover:text-violet-700" to={`${reference.href}?ruta=${encodeURIComponent(slugs.join('/'))}`}>{reference.title}</Link>
                                       : <div key={`${reference.contentType}-${reference.targetId}`} className="rounded-xl border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-500">Material actualmente no disponible.</div>
                                   ))}
                                 </div>

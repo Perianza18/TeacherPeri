@@ -37,7 +37,7 @@ export default function RutasPage() {
           <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.09]" />
           <div className="mx-auto max-w-7xl">
             <div className="relative">
-            <span className="tp-kicker -rotate-1">Rutas</span>
+            <span className="tp-kicker rotate-0">Rutas</span>
             <h1 className="mt-5 max-w-4xl text-5xl font-black uppercase leading-[.94] tracking-[-0.06em] text-brand-900 sm:text-6xl">Guías para avanzar con dirección.</h1>
             <p className="mt-5 max-w-2xl text-lg font-medium leading-8 text-brand-700">Explora recorridos que conectan contenido, práctica y siguientes pasos. Tú eliges el ritmo.</p>
             <div className="tp-card mt-9 grid gap-3 bg-white p-3 md:grid-cols-[1fr_260px]">
@@ -57,7 +57,7 @@ export default function RutasPage() {
           {!loading && !error && paths.length === 0 && <p className="rounded-2xl border border-brand-200 bg-white p-6 text-brand-600">Todavía no hay Rutas publicadas.</p>}
           <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
             {paths.map((path, index) => (
-              <Link key={path._id} to={`/rutas/${path.slug}`} className={`tp-card group relative p-6 transition hover:-translate-y-2 hover:rotate-0 ${index % 3 === 0 ? 'bg-accent-purple text-white md:-rotate-1' : index % 3 === 1 ? 'bg-white md:rotate-1' : 'bg-accent-mint md:-rotate-1'}`}>
+              <Link key={path._id} to={`/rutas/${path.slug}`} className={`tp-card group relative p-6 transition hover:-translate-y-2 rotate-0 ${index % 3 === 0 ? 'bg-accent-purple text-white rotate-0' : index % 3 === 1 ? 'bg-white rotate-0' : 'bg-accent-mint rotate-0'}`}>
                 <div className="flex items-center justify-between gap-4">
                   <span className={`text-xs font-black uppercase tracking-[0.14em] ${index % 3 === 0 ? 'text-white/75' : 'text-brand-700'}`}>{path.kind === 'parent' ? 'Ruta' : 'Ruta hoja'}</span>
                   {path.level && <span className="border-2 border-black bg-accent-yellow px-2.5 py-1 text-xs font-bold text-brand-900">{LEVEL_LABELS[path.level]}</span>}

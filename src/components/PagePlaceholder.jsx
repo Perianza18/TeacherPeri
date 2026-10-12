@@ -1,21 +1,6 @@
+import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
-
-// Placeholder deliberadamente simple (sin MeshGradient/animaciones) para
-// las páginas nuevas que todavía no tienen contenido real — esto es la
-// fase de ESTRUCTURA, el diseño visual final llega en una fase aparte.
-// Cuando llegue el contenido de una página, su archivo deja de usar este
-// componente y construye su propio JSX (como ya hacen HomePage/Problemas/
-// SobreMiPage).
+import Footer from './Footer'
 export default function PagePlaceholder({ title, description }) {
-  return (
-    <>
-      <Navbar />
-      <main className="mx-auto max-w-4xl px-4 py-32 text-center sm:px-6">
-        <h1 className="font-display text-3xl text-brand-900 sm:text-4xl">{title}</h1>
-        <p className="mt-4 text-brand-600">
-          {description || 'Contenido pendiente — esta página todavía no tiene contenido definitivo.'}
-        </p>
-      </main>
-    </>
-  )
+  return <><Navbar /><main className="min-h-[80vh] bg-brand-50 px-5 pb-24 pt-32"><section className="tp-card mx-auto max-w-3xl overflow-hidden bg-white"><div className="border-b-3 border-black bg-accent-yellow p-6 font-black uppercase tracking-widest">TeacherPeri · En construcción</div><div className="p-7 sm:p-12"><span aria-hidden="true" className="mb-8 inline-block border-3 border-black bg-accent-purple px-5 py-3 text-4xl font-black text-white">…</span><p className="text-sm font-black uppercase text-accent-violet">Estamos trabajando en esto</p><h1 className="mt-3 text-4xl font-black sm:text-6xl">{title}</h1><p className="mt-6 max-w-xl text-lg leading-8 text-brand-700">{description || 'Este espacio está tomando forma. Pronto habrá más ideas para compartir.'}</p><div className="mt-9 flex flex-wrap gap-4"><Link className="tp-button bg-accent-mint px-5 py-3 font-black" to="/rutas">Explorar Rutas →</Link><Link className="tp-button bg-white px-5 py-3 font-black" to="/entrenamiento/problemas">Practicar matemáticas →</Link></div></div></section></main><Footer /></>
 }

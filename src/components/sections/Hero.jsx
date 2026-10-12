@@ -2,9 +2,9 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 const panels = [
-  { className: 'left-2 top-2 -rotate-2 bg-accent-yellow', label: '01 · APRENDE', value: 'Ideas claras' },
-  { className: 'right-0 top-[34%] rotate-2 bg-accent-sky', label: '02 · PRACTICA', value: 'Problemas reales' },
-  { className: 'bottom-2 left-[14%] rotate-1 bg-accent-mint', label: '03 · AVANZA', value: 'Tu propia ruta' },
+  { className: 'left-2 top-2 rotate-0 bg-accent-yellow', label: '01 · APRENDE', value: 'Ideas claras' },
+  { className: 'right-0 top-[34%] rotate-0 bg-accent-sky', label: '02 · PRACTICA', value: 'Problemas reales' },
+  { className: 'bottom-2 left-[14%] rotate-0 bg-accent-mint', label: '03 · AVANZA', value: 'Tu propia ruta' },
 ]
 
 export default function Hero() {
@@ -20,7 +20,7 @@ export default function Hero() {
           transition={{ duration: 0.5 }}
           className="max-w-4xl"
         >
-          <span className="tp-kicker -rotate-1">Matemáticas · Universidad · Comunidad</span>
+          <span className="tp-kicker rotate-0">Matemáticas · Universidad · Comunidad</span>
           <h1 className="mt-7 text-5xl font-black uppercase leading-[.9] tracking-[-0.065em] text-white sm:text-7xl lg:text-[5.8rem]">
             Tu camino para <span className="text-accent-sky">llegar</span> <span className="text-accent-coral">más lejos.</span>
           </h1>
@@ -40,7 +40,7 @@ export default function Hero() {
           className="relative mx-auto h-[350px] w-full max-w-[470px] sm:h-[400px]"
           aria-label="Aprende, practica y avanza"
         >
-          <div className="absolute left-[8%] top-[10%] h-[76%] w-[78%] rotate-3 border-4 border-black bg-accent-purple shadow-[10px_10px_0_#377CF6]" />
+          <div className="absolute left-[8%] top-[10%] h-[76%] w-[78%] rotate-0 border-4 border-black bg-accent-purple shadow-[10px_10px_0_#377CF6]" />
           {panels.map((panel, index) => (
             <div key={panel.label} className={`tp-card absolute w-[78%] p-5 text-brand-900 sm:p-6 ${panel.className}`}>
               <div className="flex items-center justify-between gap-3">
