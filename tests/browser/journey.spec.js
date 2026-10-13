@@ -157,8 +157,12 @@ test('training search uses branded controls and context-dependent challenge', as
 
 test('introductory editorial sample renders its reasoning and practice', async ({ page }, testInfo) => {
   await page.goto(`/entrenamiento/teoria/${entry('Theory', 'permutaciones-y-combinaciones-guia')._id}`)
-  await expect(page.getByText(/Cuatro robots/)).toBeVisible()
-  await expect(page.getByText('COMPRUEBA TU RAZONAMIENTO', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Dos respuestas para una misma selección' })).toBeVisible()
+  await expect(page.getByText('Ver los seis programas', { exact: true })).toBeVisible()
+  await expect(page.locator('details[open]')).toHaveCount(0)
+  await page.getByText('Ver los seis programas', { exact: true }).click()
+  await expect(page.locator('details[open]')).toContainText('ABC, ACB')
+  await expect(page.getByText('[[practice]]', { exact: true })).toHaveCount(0)
   await expect(page.locator('.katex-error')).toHaveCount(0)
   await page.screenshot({ path: testInfo.outputPath('permutations.png'), fullPage: true })
   await assertFits(page)

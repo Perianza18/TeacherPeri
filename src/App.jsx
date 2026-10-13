@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import HomePage from './pages/HomePage'
@@ -15,11 +16,14 @@ import RutasPage from './pages/RutasPage'
 import PathPage from './pages/PathPage'
 import PagePlaceholder from './components/PagePlaceholder'
 
+const TheoryWritingLabPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryWritingLabPage')) : null
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {TheoryWritingLabPage && <Route path="/revision/teoria" element={<Suspense fallback={<p>Cargando revisión…</p>}><TheoryWritingLabPage /></Suspense>} />}
           <Route path="/" element={<HomePage />} />
           <Route path="/rutas" element={<RutasPage />} />
           <Route path="/rutas/*" element={<PathPage />} />
