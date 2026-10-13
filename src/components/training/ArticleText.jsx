@@ -5,12 +5,16 @@ const MAJOR = ['IDEAS CLAVE', 'EJEMPLO TRABAJADO', 'ERRORES FRECUENTES', 'PRACTI
 
 // Deliberately small plain-text format: headings, optional disclosures and a
 // canonical-practice insertion point. No arbitrary HTML or Markdown execution.
-export default function ArticleText({ text, problems = [], context = '' }) {
+export default function ArticleText({ text, problems = [], context = '', renderCollection }) {
   const explicitPractice = String(text).includes('[[practice]]')
-  const chunks = String(text).split(/(:::reveal [^\n]+\n[\s\S]*?\n:::)/g).filter(Boolean)
-  const blocks = chunks.flatMap((chunk) => chunk.startsWith(':::reveal ') ? [chunk] : chunk.split(/\n\n/).filter((block) => block.trim()))
+  const chunks = String(text).split(/(:::(?:reveal|definition) [^\n]+\n[\s\S]*?\n:::)/g).filter(Boolean)
+  const blocks = chunks.flatMap((chunk) => /^:::(reveal|definition) /.test(chunk) ? [chunk] : chunk.split(/\n\n/).filter((block) => block.trim()))
   let headingNumber = 0
   return blocks.flatMap((block, i) => {
+    const definition = block.match(/^:::definition ([^\n]+)\n([\s\S]*?)\n:::$/)
+    if (definition) return <aside key={i} aria-label={`Definición: ${definition[1]}`} className="my-8 border-2 border-brand-900 border-l-8 bg-[#e8ddff] p-5 sm:p-6"><p className="text-xs font-black uppercase tracking-widest">Definición</p><h3 className="mt-2 text-lg font-black">{definition[1]}</h3><MathText text={definition[2]} className="mt-3 whitespace-pre-wrap leading-8" /></aside>
+    const collection = block.trim().match(/^\[\[collection:([a-z-]+):(practice|challenge)\]\]$/)
+    if (collection && renderCollection) return <div key={i}>{renderCollection(collection[1], collection[2])}</div>
     const reveal = block.match(/^:::reveal ([^\n]+)\n([\s\S]*?)\n:::$/)
     if (reveal) return <details key={i} className="my-6 border-2 border-brand-900 bg-accent-sky/20 p-5"><summary className="cursor-pointer font-bold focus-visible:outline-2 focus-visible:outline-offset-4">{reveal[1]}</summary><div className="mt-4"><ArticleText text={reveal[2]} /></div></details>
     if (block.trim() === '[[practice]]') return problems.map((problem) => <ProblemPreview key={`practice-${problem._id}`} problem={problem} context={context} />)

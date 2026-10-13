@@ -70,3 +70,9 @@ explicit headings, optional hints/solutions, and deliberate canonical Problem
 preview placement. See [the editorial review guide](editorial/WRITING_LAB.md).
 Existing database prose is unchanged until a separately reviewed transactional
 revision is applied. Neither feedback batch is authorized for merge yet.
+
+The same branch also contains two newer **review-only** examples (counting and
+pigeonhole): shared section prefixes, topic-only review titles, guided examples,
+definition panels and five-problem collection previews. Their drafts and proposed
+Problems are not part of the database import payload. Review through
+`/revision/teoria`; see the follow-up section of the editorial guide before rollout.

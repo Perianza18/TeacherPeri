@@ -183,3 +183,39 @@ production rollout; local browser checks use fixture data or the API-free lab.
   solutions were subsequently separated into paragraphs for easier mobile reading.
 - The production bundle was checked to exclude the development review page and draft data.
 - No Atlas writes, live database integration run, or deployment was performed.
+
+## Follow-up: two refined review examples
+
+At the owner's request, continue on this same branch without merging. The lab now
+shows new versions of counting and pigeonhole (marked “Actualizada”); the other
+four articles retain their prose. Review titles show the topic name alone.
+
+Both new versions share the prefixes Preámbulo, Teoría, Ejercicios, Agregados
+culturales, Problemas, and Problemas de mayor dificultad. The text after the colon
+varies with the topic. Each counting technique or pigeonhole variant has a guided
+example. Purple definition panels make formal statements easy to locate.
+
+The problem collection component displays at most five entries, with a link to
+its complete review list. Each example has six practice problems and two harder
+problems, with the same layout for both tiers and optional hints/solutions.
+Four existing bank problems are referenced by code; twelve proposed problems are
+stored once in `refinedTheorySamples.js` and referenced from ordered collections.
+They are explicitly marked as drafts and do not pretend to exist in Atlas.
+
+**This follow-up is review-only.** The original six database revision payloads
+remain available unchanged. The new two texts, proposed problems, collection
+references and shorter titles have NOT been added to the importer or applied to
+MongoDB. Their canonical rollout should be designed only after the owner chooses
+this format; do not run the revision command expecting these two new samples to
+appear in the database. Use `/revision/teoria` to evaluate them now.
+
+Checks: lint and production build pass; strict KaTeX validates both new texts and
+all twelve proposed problems; collection references resolve without duplicates.
+The answers 108 (four-digit multiples of five) and 50 (keys containing both symbols)
+were independently enumerated. All 18 desktop/mobile browser checks pass, including
+five-item previews, complete-list navigation, definitions and consistent prefixes.
+Desktop definition panels and mobile problem collections were visually inspected.
+
+The owner's final sentence about harder problems was incomplete. The implementation
+uses the requested neutral label and matching presentation; further behavior awaits
+the missing feedback, rather than inventing an additional requirement.
