@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AuthContext } from './useAuth'
 import AuthModal from '../components/auth/AuthModal'
+import { apiFetch } from '../lib/api'
 
 // Antes, la sesión (login) vivía solo DENTRO de Problemas.jsx, en su
 // propio useState — nadie más en el sitio sabía si había alguien logueado.
@@ -48,6 +49,28 @@ export function AuthProvider({ children }) {
     window.addEventListener('teacherperi:auth-expired', expire)
     return () => window.removeEventListener('teacherperi:auth-expired', expire)
   }, [])
+
+  // Al cargar el sitio, pide la cuenta al servidor para tener el rol al día
+  // (por ejemplo, si te nombraron moderador después de iniciar sesión). Si el
+  // token ya no sirve, apiFetch avisa con 'teacherperi:auth-expired' y la
+  // sesión se cierra arriba; cualquier otro error deja la sesión como estaba.
+  const token = auth?.token
+  useEffect(() => {
+    if (!token) return
+    let vigente = true
+    apiFetch('/api/auth/me', { token })
+      .then((data) => {
+        if (!vigente || !data?.user) return
+        setAuth((actual) => {
+          if (actual?.token !== token) return actual
+          const siguiente = { ...actual, user: data.user }
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(siguiente))
+          return siguiente
+        })
+      })
+      .catch(() => {})
+    return () => { vigente = false }
+  }, [token])
 
   const value = {
     auth,

@@ -147,3 +147,40 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('rol en las respuestas de cuenta', () => {
+  it('registro e inicio de sesión regresan el rol', async () => {
+    const signup = await request(app).post('/api/auth/signup').send({
+      username: 'ana',
+      email: 'ana@test.com',
+      password: 'clave12345',
+    })
+    expect(signup.body.user.role).toBe('usuario')
+
+    await User.updateOne({ email: 'ana@test.com' }, { role: 'moderador' })
+    const login = await request(app).post('/api/auth/login').send({ email: 'ana@test.com', password: 'clave12345' })
+    expect(login.body.user).toMatchObject({ username: 'ana', email: 'ana@test.com', role: 'moderador' })
+    expect(login.body.user.passwordHash).toBeUndefined()
+  })
+})
+
+describe('GET /api/auth/me', () => {
+  it('pide sesión', async () => {
+    const res = await request(app).get('/api/auth/me')
+    expect(res.status).toBe(401)
+  })
+
+  it('regresa la cuenta con el rol actual, aunque haya cambiado después del login', async () => {
+    const signup = await request(app).post('/api/auth/signup').send({
+      username: 'beto',
+      email: 'beto@test.com',
+      password: 'clave12345',
+    })
+    await User.updateOne({ email: 'beto@test.com' }, { role: 'admin' })
+
+    const res = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${signup.body.token}`)
+    expect(res.status).toBe(200)
+    expect(res.body.user).toMatchObject({ username: 'beto', email: 'beto@test.com', role: 'admin' })
+    expect(res.body.user.passwordHash).toBeUndefined()
+  })
+})
