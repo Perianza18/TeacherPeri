@@ -1,6 +1,6 @@
 // GET    /api/problems/:problemId/comments             — list comments as ordered threads.
 // POST   /api/problems/:problemId/comments             — add one or reply with `parent` (needs login).
-// DELETE /api/problems/:problemId/comments/:commentId  — delete your own.
+// DELETE /api/problems/:problemId/comments/:commentId  — soft delete: author, or moderator with a reason.
 //
 // This file doesn't know its own full URL — `:problemId` is filled in by
 // wherever server.js decides to mount this router (see server.js). Router({
@@ -12,7 +12,8 @@ import mongoose from 'mongoose'
 import Comment from '../models/Comment.js'
 import Problem from '../models/Problem.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
-import { MAX_COMMENT_DEPTH } from '../lib/moderation.js'
+import { can } from '../lib/permissions.js'
+import { MAX_COMMENT_DEPTH, parseReason } from '../lib/moderation.js'
 import { orderCommentThread, publicComment } from '../lib/commentThread.js'
 
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
@@ -86,24 +87,37 @@ router.post('/', requireAuth, requirePermission('comments:create'), async (req, 
   }
 })
 
-// Protegido, y además solo el AUTOR del comentario puede borrarlo -- no
-// basta con estar loggeado, requireAuth solo confirma quién eres, esta
-// ruta además confirma que eres tú quien lo escribió.
+// Eliminación SUAVE: el comentario se queda en la base (con quién, cuándo y
+// por qué) y el hilo muestra «eliminado» en su lugar; sus respuestas siguen
+// visibles. Puede eliminarlo su autor (sin motivo) o alguien con permiso de
+// moderar (con motivo obligatorio; «otro» exige una nota).
 router.delete('/:commentId', requireAuth, async (req, res) => {
-  const comment = await Comment.findById(req.params.commentId)
+  const { problemId, commentId } = req.params
+  const comment = isId(commentId) ? await Comment.findById(commentId) : null
 
   // Si no existe, o existe pero es de OTRO problema, tratamos ambos casos
   // igual (404) -- no hay razón para distinguirlos desde afuera.
-  if (!comment || comment.problem.toString() !== req.params.problemId) {
+  if (!comment || comment.problem.toString() !== problemId) {
     return res.status(404).json({ error: 'Ese comentario no existe.' })
   }
-
-  if (comment.author.toString() !== req.userId) {
-    return res.status(403).json({ error: 'Solo puedes borrar tus propios comentarios.' })
+  if (comment.status === 'deleted') {
+    return res.status(409).json({ error: 'Ese comentario ya fue eliminado.' })
   }
 
-  await comment.deleteOne()
-  res.status(204).send() // 204 = "hecho, y no hay nada que regresar"
+  const isAuthor = comment.author.toString() === req.userId
+  if (isAuthor) {
+    comment.set({ deletedAs: 'autor', deletedReason: null, deletedReasonNote: null })
+  } else if (can({ role: req.userRole }, 'comments:moderate')) {
+    const parsed = parseReason(req.body)
+    if (parsed.error) return res.status(400).json({ error: parsed.error })
+    comment.set({ deletedAs: 'moderacion', deletedReason: parsed.reason, deletedReasonNote: parsed.note })
+  } else {
+    return res.status(403).json({ error: 'Solo puedes eliminar tus propios comentarios.' })
+  }
+
+  comment.set({ status: 'deleted', deletedBy: req.userId, deletedAt: new Date() })
+  await comment.save()
+  res.json(publicComment(comment.toObject(), comment.depth))
 })
 
 export default router

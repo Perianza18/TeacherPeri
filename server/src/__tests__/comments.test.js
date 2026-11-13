@@ -10,6 +10,7 @@ import app from '../app.js'
 import Category from '../models/Category.js'
 import Problem from '../models/Problem.js'
 import Comment from '../models/Comment.js'
+import User from '../models/User.js'
 
 // Pequeño helper: crea un problema real en la base de prueba, para tener
 // algo válido sobre lo cual comentar en cada prueba.
@@ -148,7 +149,7 @@ describe('DELETE /api/problems/:id/comments/:commentId', () => {
     expect(res.status).toBe(403)
   })
 
-  it('deja al autor borrar su propio comentario, y desaparece de la lista', async () => {
+  it('deja al autor eliminar su propio comentario: queda su lugar, sin texto ni autor', async () => {
     const problema = await crearProblemaDePrueba()
     const token = await crearUsuarioYObtenerToken()
 
@@ -160,10 +161,16 @@ describe('DELETE /api/problems/:id/comments/:commentId', () => {
     const borrar = await request(app)
       .delete(`/api/problems/${problema._id}/comments/${comentario.body._id}`)
       .set('Authorization', `Bearer ${token}`)
-    expect(borrar.status).toBe(204)
+    expect(borrar.status).toBe(200)
+    expect(borrar.body).toMatchObject({ deleted: true, deletedAs: 'autor', body: null, author: null })
 
     const leer = await request(app).get(`/api/problems/${problema._id}/comments`)
-    expect(leer.body).toHaveLength(0)
+    expect(leer.body).toHaveLength(1)
+    expect(leer.body[0]).toMatchObject({ deleted: true, deletedAs: 'autor', body: null })
+
+    // El texto original se conserva en la base para el historial.
+    const guardado = await Comment.findById(comentario.body._id)
+    expect(guardado.body).toBe('Lo voy a borrar yo mismo.')
   })
 
   it('regresa 404 si el comentario no existe', async () => {
@@ -248,5 +255,68 @@ describe('Respuestas anidadas', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ body: 'Hola' })
     expect(res.status).toBe(404)
+  })
+})
+
+describe('Eliminar con motivo (moderación)', () => {
+  async function setup() {
+    const problema = await crearProblemaDePrueba()
+    const tokenAutor = await crearUsuarioYObtenerToken('autor@test.com', 'autor')
+    const tokenModerador = await crearUsuarioYObtenerToken('mod@test.com', 'moderadora')
+    await User.updateOne({ username: 'moderadora' }, { role: 'moderador' })
+    const comentario = await request(app)
+      .post(`/api/problems/${problema._id}/comments`)
+      .set('Authorization', `Bearer ${tokenAutor}`)
+      .send({ body: 'Comentario con spam.' })
+    const url = `/api/problems/${problema._id}/comments/${comentario.body._id}`
+    return { problema, tokenAutor, tokenModerador, comentario, url }
+  }
+
+  it('un moderador necesita elegir un motivo de la lista', async () => {
+    const { tokenModerador, url } = await setup()
+    const sinMotivo = await request(app).delete(url).set('Authorization', `Bearer ${tokenModerador}`).send({})
+    expect(sinMotivo.status).toBe(400)
+    const inventado = await request(app).delete(url).set('Authorization', `Bearer ${tokenModerador}`).send({ reason: 'me_cae_mal' })
+    expect(inventado.status).toBe(400)
+    const otroSinNota = await request(app).delete(url).set('Authorization', `Bearer ${tokenModerador}`).send({ reason: 'otro' })
+    expect(otroSinNota.status).toBe(400)
+  })
+
+  it('con motivo, el moderador elimina y queda registrado quién, cuándo y por qué', async () => {
+    const { tokenModerador, comentario, url } = await setup()
+    const res = await request(app).delete(url).set('Authorization', `Bearer ${tokenModerador}`).send({ reason: 'otro', note: 'Mensaje duplicado' })
+    expect(res.status).toBe(200)
+    expect(res.body).toMatchObject({ deleted: true, deletedAs: 'moderacion', body: null })
+    expect(res.body.deletedReason).toBeUndefined() // el motivo no es público
+
+    const guardado = await Comment.findById(comentario.body._id)
+    const moderadora = await User.findOne({ username: 'moderadora' })
+    expect(guardado).toMatchObject({ status: 'deleted', deletedAs: 'moderacion', deletedReason: 'otro', deletedReasonNote: 'Mensaje duplicado' })
+    expect(guardado.deletedBy.toString()).toBe(moderadora._id.toString())
+    expect(guardado.deletedAt).toBeInstanceOf(Date)
+  })
+
+  it('un usuario normal no puede eliminar comentarios ajenos, aunque mande un motivo', async () => {
+    const { url } = await setup()
+    const tokenOtro = await crearUsuarioYObtenerToken('otro@test.com', 'otro')
+    const res = await request(app).delete(url).set('Authorization', `Bearer ${tokenOtro}`).send({ reason: 'spam' })
+    expect(res.status).toBe(403)
+  })
+
+  it('no se puede eliminar dos veces, y las respuestas siguen visibles', async () => {
+    const { problema, tokenAutor, tokenModerador, comentario, url } = await setup()
+    await request(app)
+      .post(`/api/problems/${problema._id}/comments`)
+      .set('Authorization', `Bearer ${tokenAutor}`)
+      .send({ body: 'Una respuesta que debe quedarse.', parent: comentario.body._id })
+
+    expect((await request(app).delete(url).set('Authorization', `Bearer ${tokenModerador}`).send({ reason: 'spam' })).status).toBe(200)
+    expect((await request(app).delete(url).set('Authorization', `Bearer ${tokenModerador}`).send({ reason: 'spam' })).status).toBe(409)
+
+    const leer = await request(app).get(`/api/problems/${problema._id}/comments`)
+    expect(leer.body.map((c) => [c.deleted, c.body, c.depth])).toEqual([
+      [true, null, 0],
+      [false, 'Una respuesta que debe quedarse.', 1],
+    ])
   })
 })

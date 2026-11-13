@@ -48,8 +48,9 @@ progress counts unique public leaves and never restricts access.
 
 Phase 4, Mi Espacio, independent Threads, community, roles/publishing workflows,
 Experiencias storage and full university guidance remain deferred. Existing
-comments are compatibility behavior, not a new community system. Their existing
-permanent-delete endpoint remains documented migration debt.
+comments are compatibility behavior, not a new community system. Comments now
+nest up to three reply levels and are soft-deleted (author, or moderator with a
+reason); see [ROLES.md](ROLES.md) for roles.
 
 ## Reading experience — October 2026 feedback
 
