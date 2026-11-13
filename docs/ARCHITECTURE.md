@@ -30,7 +30,8 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | `/entrenamiento` | Redirects to the public Problemas library |
 | `/entrenamiento/problemas`, `/entrenamiento/problemas/:id` | Legacy Problem browser and stable public Problem detail URL |
 | `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Published Theory library and detail URL |
-| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | Published List library and detail URL |
+| `/listas`, `/listas/:id` | Published List library and detail URL, on its own page outside Entrenamiento |
+| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | Redirect to `/listas` (keeps the id and query, so old bookmarks and Step links still work) |
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Published Exam library and detail URL |
 | `/recursos` | Static external-resource directory |
 | `/experiencias` | Empty blog-listing scaffold |
