@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildMvpManifest, contentId, MVP_EXAMS } from '../data/mvpManifest.js'
 import { validateMvpContent } from '../data/validateMvpContent.js'
 import { MVP_PROBLEMS } from '../data/mvpProblems.js'
+import { mongoFailureSummary } from '../mongo-diagnostics.js'
 import { importTarget } from '../scripts/import-mvp-content.js'
 
 const entries = buildMvpManifest()
@@ -62,5 +63,33 @@ describe('Import target guard', () => {
     expect(() => importTarget({ MONGO_CONTENT_IMPORT_URI: 'mongodb://localhost/admin' })).toThrow('non-system')
     expect(() => importTarget({ MONGO_CONTENT_IMPORT_URI: 'mongodb://localhost/teacherperi?dbName=other' })).toThrow('override')
     expect(() => importTarget({ MONGO_CONTENT_IMPORT_URI: 'mongodb://localhost/' })).toThrow('database')
+  })
+})
+describe('MongoDB diagnostics', () => {
+  it('reports a credential-safe target and nested TLS cause', () => {
+    const tlsError = Object.assign(new Error('secret-bearing driver text'), { code: 'ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR' })
+    const error = Object.assign(new Error('selection failed'), {
+      name: 'MongooseServerSelectionError',
+      reason: { servers: new Map([['private-host', { error: tlsError }]]) },
+    })
+    expect(mongoFailureSummary(error, 'mongodb+srv://user:password@cluster.example.test/teacherperi')).toEqual({
+      target: { hostname: 'cluster.example.test', database: 'teacherperi' },
+      category: 'tls-handshake-failed',
+      errorNames: ['Error', 'MongooseServerSelectionError'],
+      errorCodes: ['ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR'],
+      hint: "TLS failed before authentication. Check this Atlas project's IP access list and cluster availability.",
+    })
+    expect(JSON.stringify(mongoFailureSummary(error, 'mongodb+srv://user:password@cluster.example.test/teacherperi'))).not.toContain('password')
+    expect(JSON.stringify(mongoFailureSummary(error, 'mongodb+srv://user:password@cluster.example.test/teacherperi'))).not.toContain('secret-bearing')
+  })
+  it('classifies an Atlas access-list rejection without exposing the raw message', () => {
+    const error = Object.assign(new Error('ip not in whitelist'), { code: 8000, codeName: 'AtlasError' })
+    const summary = mongoFailureSummary(error, 'mongodb+srv://user:password@cluster.example.test/teacherperi')
+    expect(summary).toMatchObject({
+      category: 'atlas-network-access-rejected',
+      errorCodes: ['8000', 'AtlasError'],
+    })
+    expect(JSON.stringify(summary)).not.toContain('ip not in whitelist')
+    expect(JSON.stringify(summary)).not.toContain('password')
   })
 })

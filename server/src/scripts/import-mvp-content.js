@@ -2,6 +2,7 @@ import 'dotenv/config'
 import mongoose from 'mongoose'
 import { importMvpContent } from '../migrations/import-mvp-content.js'
 import { validateMvpContent } from '../data/validateMvpContent.js'
+import { mongoFailureSummary } from '../mongo-diagnostics.js'
 
 // This is an additive transaction, not a reset. No fallback to application URI.
 export function importTarget(env = process.env, apply = false) {
@@ -33,6 +34,7 @@ if (process.argv[1]?.endsWith('/scripts/import-mvp-content.js')) run().catch((er
     console.error('Content import requires a MongoDB replica set. No content was written. For an isolated local database, run npm run db:local:start and follow docs/LOCAL_MVP.md. A successful dry-run does not import content.')
   } else {
     console.error('Content import failed. Check the explicit target, replica-set support, and content conflicts; credentials are never logged.')
+    console.error(JSON.stringify(mongoFailureSummary(error, process.env.MONGO_CONTENT_IMPORT_URI)))
   }
   process.exitCode = 1
 }).finally(() => mongoose.disconnect())
