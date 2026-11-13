@@ -2,7 +2,7 @@ import { useState } from 'react'
 import useDialog from '../../hooks/useDialog'
 import { apiFetch } from '../../lib/api'
 
-const inputClass = 'rounded-xl border border-brand-200 bg-brand-50 px-3 py-2.5 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100'
+const inputClass = 'tp-input'
 
 export default function AuthModal({ onClose, onAuthSuccess }) {
   const dialogRef = useDialog(onClose)
@@ -40,7 +40,7 @@ export default function AuthModal({ onClose, onAuthSuccess }) {
           <input type="email" aria-label="Correo" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
           <input type="password" aria-label="Contraseña" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className={inputClass} />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <button type="submit" disabled={enviando} className="tp-gradient mt-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-lg disabled:opacity-50">{enviando ? 'Un momento…' : modo === 'login' ? 'Iniciar sesión' : 'Registrarme'}</button>
+          <button type="submit" disabled={enviando} className="tp-button mt-2 bg-tp-violet px-4 py-2.5 text-sm font-black text-white disabled:opacity-50">{enviando ? 'Un momento…' : modo === 'login' ? 'Iniciar sesión' : 'Registrarme'}</button>
           <button type="button" onClick={() => setModo(modo === 'login' ? 'signup' : 'login')} className="mt-1 text-sm font-medium text-brand-500 hover:text-violet-700">{modo === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta'}</button>
         </form>
       </div>

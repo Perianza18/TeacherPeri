@@ -204,6 +204,23 @@ textarea {
     font-weight: 700;
     line-height: 1.2;
   }
+
+  /* Text inputs, selects and textareas. Focus uses the global violet ring. */
+  .tp-input {
+    width: 100%;
+    min-height: 44px;
+    border: 2px solid var(--tp-ink);
+    border-radius: 10px;
+    background: var(--tp-surface);
+    padding: .625rem .875rem;
+    color: var(--tp-ink);
+    font-size: 16px; /* 16px also stops iOS from zooming into the field */
+    line-height: 1.5;
+  }
+
+  .tp-input::placeholder {
+    color: var(--tp-ink-muted);
+  }
 }
 
 .tp-dot-grid {

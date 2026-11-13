@@ -17,8 +17,7 @@ const MOTIVOS = [
   'Feedback general',
 ]
 
-const selectClass =
-  'rounded-lg border border-brand-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
+const selectClass = 'tp-input'
 
 // El formulario de Contacto, fusionado con la sesión global (ver
 // AuthContext): sin sesión, muestra el prompt para iniciar sesión en vez
