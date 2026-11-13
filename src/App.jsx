@@ -41,6 +41,7 @@ function App() {
           </Route>
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />
+          <Route path="/equipo" element={<PagePlaceholder title="Equipo" description="Pronto conocerás a las personas detrás de TeacherPeri." />} />
           <Route path="/estudia-en-el-extranjero" element={<EstudiaExtranjeroPage />} />
           <Route path="/contacto" element={<ContactoPage />} />
           <Route path="/sobre-mi" element={<SobreMiPage />} />
