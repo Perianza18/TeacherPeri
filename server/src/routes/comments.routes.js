@@ -1,5 +1,5 @@
-// GET    /api/problems/:problemId/comments             — list comments.
-// POST   /api/problems/:problemId/comments             — add one (needs login).
+// GET    /api/problems/:problemId/comments             — list comments as ordered threads.
+// POST   /api/problems/:problemId/comments             — add one or reply with `parent` (needs login).
 // DELETE /api/problems/:problemId/comments/:commentId  — delete your own.
 //
 // This file doesn't know its own full URL — `:problemId` is filled in by
@@ -8,41 +8,69 @@
 // though the ":problemId" part of the URL is defined one level up.
 
 import { Router } from 'express'
+import mongoose from 'mongoose'
 import Comment from '../models/Comment.js'
-import { requireAuth } from '../middleware/auth.js'
+import Problem from '../models/Problem.js'
+import { requireAuth, requirePermission } from '../middleware/auth.js'
+import { MAX_COMMENT_DEPTH } from '../lib/moderation.js'
+import { orderCommentThread, publicComment } from '../lib/commentThread.js'
+
+const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
 
 const router = Router({ mergeParams: true })
 
 // Público: cualquiera puede LEER los comentarios, con o sin sesión iniciada.
 router.get('/', async (req, res) => {
+  if (!isId(req.params.problemId)) return res.status(404).json({ error: 'Ese problema no existe.' })
   const comments = await Comment.find({ problem: req.params.problemId })
-    .populate('author', 'username') // reemplaza el ObjectId del autor por { _id, username }
-    .sort({ createdAt: 1 }) // los más viejos primero, como en un hilo de foro
+    .populate('author', 'username role') // reemplaza el ObjectId del autor por { _id, username, role }
+    .lean()
 
-  res.json(comments)
+  // Hilos en orden de llegada, cada respuesta debajo de su padre, con la
+  // profundidad lista para sangrar. Los eliminados quedan sin texto ni autor.
+  res.json(orderCommentThread(comments).map(({ comment, depth }) => publicComment(comment, depth)))
 })
 
 // Protegido: requireAuth corre ANTES que esta función. Si no hay sesión
 // válida, requireAuth ya respondió 401 y esta línea nunca se ejecuta.
-router.post('/', requireAuth, async (req, res) => {
-  const body = (req.body.body || '').trim()
+router.post('/', requireAuth, requirePermission('comments:create'), async (req, res) => {
+  const body = (typeof req.body.body === 'string' ? req.body.body : '').trim()
   if (!body) {
     return res.status(400).json({ error: 'El comentario no puede estar vacío.' })
   }
 
+  const { problemId } = req.params
+  if (!isId(problemId) || !await Problem.exists({ _id: problemId })) {
+    return res.status(404).json({ error: 'Ese problema no existe.' })
+  }
+
+  // Respuesta: `parent` es el comentario al que se responde. Debe ser del
+  // mismo problema y no estar eliminado. La profundidad no pasa de
+  // MAX_COMMENT_DEPTH: responder a un comentario de nivel 3 queda en nivel 3.
+  let reply = {}
+  if (req.body.parent != null) {
+    const parent = isId(req.body.parent)
+      ? await Comment.findOne({ _id: req.body.parent, problem: problemId }).select('depth root status').lean()
+      : null
+    if (!parent) return res.status(404).json({ error: 'Ese comentario no existe.' })
+    if (parent.status === 'deleted') return res.status(409).json({ error: 'No puedes responder a un comentario eliminado.' })
+    reply = { parent: parent._id, root: parent.root ?? parent._id, depth: Math.min((parent.depth ?? 0) + 1, MAX_COMMENT_DEPTH) }
+  }
+
   try {
     const comment = await Comment.create({
-      problem: req.params.problemId,
+      problem: problemId,
       author: req.userId, // puesto por requireAuth después de verificar el token
       body,
+      ...reply,
     })
 
     // Antes de responder, llenamos el campo author con { _id, username } en
     // vez de dejarlo como un ObjectId — así el frontend puede mostrar el
     // nombre del autor de inmediato, sin pedirlo aparte.
-    await comment.populate('author', 'username')
+    await comment.populate('author', 'username role')
 
-    res.status(201).json(comment)
+    res.status(201).json(publicComment(comment.toObject(), comment.depth))
   } catch (err) {
     // Mongoose lanza un ValidationError si, por ejemplo, el comentario
     // pasa del límite de 2000 caracteres del modelo. Sin este catch, ese
