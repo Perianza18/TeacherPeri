@@ -6,6 +6,7 @@ import Problemas from './pages/Problemas'
 import SobreMiPage from './pages/SobreMiPage'
 import RecursosPage from './pages/RecursosPage'
 import ExperienciasPage from './pages/ExperienciasPage'
+import EquipoPage from './pages/EquipoPage'
 import EstudiaExtranjeroPage from './pages/EstudiaExtranjeroPage'
 import ContactoPage from './pages/ContactoPage'
 import ColaboradoresPage from './pages/ColaboradoresPage'
@@ -41,12 +42,12 @@ function App() {
           </Route>
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />
-          <Route path="/equipo" element={<PagePlaceholder title="Equipo" description="Pronto conocerás a las personas detrás de TeacherPeri." />} />
+          <Route path="/equipo" element={<EquipoPage />} />
           <Route path="/estudia-en-el-extranjero" element={<EstudiaExtranjeroPage />} />
           <Route path="/contacto" element={<ContactoPage />} />
           <Route path="/sobre-mi" element={<SobreMiPage />} />
           <Route path="/colaboradores" element={<ColaboradoresPage />} />
-          <Route path="*" element={<PagePlaceholder title="Página no encontrada" description="Regresa a Inicio o explora las Rutas y bibliotecas de entrenamiento." />} />
+          <Route path="*" element={<PagePlaceholder title="Página no encontrada" kicker="Error 404" description="Regresa a Inicio o explora las Rutas y bibliotecas de entrenamiento." />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

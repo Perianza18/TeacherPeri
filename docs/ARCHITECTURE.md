@@ -34,8 +34,9 @@ See the root [README](../README.md), [package.json](../package.json), and [.env.
 | `/entrenamiento/listas`, `/entrenamiento/listas/:id` | Redirect to `/listas` (keeps the id and query, so old bookmarks and Step links still work) |
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Published Exam library and detail URL |
 | `/recursos` | Static external-resource directory |
-| `/experiencias` | Empty blog-listing scaffold |
-| `/estudia-en-el-extranjero` | Static university guidance page |
+| `/experiencias` | «Próximamente» page until the first posts are published |
+| `/equipo` | «Próximamente» page until the team cards are ready |
+| `/estudia-en-el-extranjero` | Universidad «Próximamente» page until the application guides are ready |
 | `/contacto` | Authenticated contact form |
 | `/sobre-mi` | Personal presentation, with placeholder material |
 | `/colaboradores` | Placeholder |
