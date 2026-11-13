@@ -27,6 +27,18 @@ import pathsRoutes from './routes/paths.routes.js'
 
 const app = express()
 
+// Detrás de un proxy (como el balanceador de Render), cada petición llega
+// desde la IP del proxy. TRUST_PROXY_HOPS le dice a Express cuántos proxies
+// de confianza hay delante, para que req.ip (y por lo tanto los límites por
+// IP de abajo) use la IP real del visitante. Solo se acepta un entero
+// positivo: sin la variable, o con un valor inválido, no se confía en ningún
+// encabezado X-Forwarded-For. Nunca usamos `true`, que dejaría a cualquiera
+// falsificar su IP.
+const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS)
+if (Number.isInteger(trustProxyHops) && trustProxyHops > 0) {
+  app.set('trust proxy', trustProxyHops)
+}
+
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }))
 app.use(express.json())
 
