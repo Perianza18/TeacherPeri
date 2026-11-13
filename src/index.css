@@ -111,7 +111,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent-purple);
+  outline: 2px solid var(--tp-violet);
   outline-offset: 3px;
 }
 
@@ -127,49 +127,83 @@ textarea {
   background: #faf8f5;
 }
 
+/* Hero card */
 .tp-card {
-  border: 3px solid #111111;
-  border-radius: 1.15rem;
-  box-shadow: 7px 7px 0 #111111;
+  border: 3px solid var(--tp-ink);
+  border-radius: 18px;
+  box-shadow: 7px 7px 0 var(--tp-ink);
 }
 
+/* Standard card / box */
 .tp-card-soft {
-  border: 2px solid #111111;
-  border-radius: 1rem;
-  box-shadow: 4px 4px 0 #111111;
+  border: 2px solid var(--tp-ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--tp-ink);
+}
+
+/* Quiet box: same frame as .tp-card-soft, without the shadow */
+.tp-card-quiet {
+  border: 2px solid var(--tp-ink);
+  border-radius: 14px;
 }
 
 .tp-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #111111;
-  border-radius: .75rem;
-  box-shadow: 4px 4px 0 #111111;
+  min-height: 44px; /* minimum touch target */
+  border: 2px solid var(--tp-ink);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--tp-ink);
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .tp-button:hover {
   transform: translate(-1px, -2px);
-  box-shadow: 6px 6px 0 #111111;
+  box-shadow: 6px 6px 0 var(--tp-ink);
 }
 
 .tp-button:active {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #111111;
+  box-shadow: 2px 2px 0 var(--tp-ink);
+}
+
+/* A disabled button stays put instead of lifting or pressing. */
+.tp-button:disabled {
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 4px 0 var(--tp-ink);
 }
 
 .tp-kicker {
   display: inline-flex;
-  border: 2px solid #111111;
+  border: 2px solid var(--tp-ink);
   border-radius: 999px;
-  background: #ffd65a;
+  background: var(--tp-yellow);
   padding: .35rem .75rem;
-  color: #111111;
-  font-size: .72rem;
-  font-weight: 900;
+  color: var(--tp-ink);
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
+}
+
+/* Newer primitives live in the components layer, so a Tailwind class on the
+   element (for example bg-tp-yellow or text-sm) can still adjust them. */
+@layer components {
+  /* Pill / tag: color comes from a bg-* class where it is used. */
+  .tp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    border: 2px solid var(--tp-ink);
+    border-radius: 999px;
+    padding: .25rem .75rem;
+    color: var(--tp-ink);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
 }
 
 .tp-dot-grid {
@@ -194,7 +228,7 @@ textarea {
 .tp-reading .katex-display { overflow-x: auto; overflow-y: hidden; padding: .5rem 0; }
 .tp-card, .tp-card-soft, .tp-kicker { rotate: 0deg; }
 
-.tp-lesson-heading { display: flex; align-items: center; gap: .8rem; padding: .75rem 1rem; border: 2px solid #111; border-radius: .5rem; box-shadow: 3px 3px 0 #111; }
+.tp-lesson-heading { display: flex; align-items: center; gap: .8rem; padding: .75rem 1rem; border: 2px solid var(--tp-ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--tp-ink); }
 .tp-lesson-heading::before { content: '✦'; font-size: 1.25rem; }
 .tp-lesson-heading-0 { background: #e8ddff; }
 .tp-lesson-heading-1 { background: #d9f1ff; }
