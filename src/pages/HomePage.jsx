@@ -63,7 +63,7 @@ function TrainingSearch() {
       <form onSubmit={submit} className="tp-card flex flex-col gap-3 bg-white p-3 sm:flex-row">
         <label className="sr-only" htmlFor="global-search">Buscar en todas las bibliotecas</label>
         <input id="global-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Busca en todo TeacherPeri…" className="min-w-0 flex-1 rounded-xl border-2 border-black bg-brand-50 px-5 py-4 font-semibold outline-none focus:bg-white" />
-        <button className="tp-button bg-accent-purple px-7 py-4 text-sm font-black text-white">BUSCAR →</button>
+        <button className="tp-button bg-tp-violet px-7 py-4 text-sm font-black text-white">BUSCAR →</button>
       </form>
       {state.loading && <p className="mt-5 font-semibold text-brand-600">Buscando…</p>}
       {state.error && <p className="mt-5 text-red-700">{state.error}</p>}

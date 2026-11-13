@@ -63,7 +63,7 @@ export default function ContactForm() {
         <button
           type="button"
           onClick={abrirModal}
-          className="tp-button bg-accent-purple px-5 py-2 text-sm font-black text-white"
+          className="tp-button bg-tp-violet px-5 py-2 text-sm font-black text-white"
         >
           Iniciar sesión
         </button>
@@ -133,7 +133,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="tp-button bg-accent-purple px-4 py-2 text-sm font-black text-white disabled:opacity-50"
+        className="tp-button bg-tp-violet px-4 py-2 text-sm font-black text-white disabled:opacity-50"
       >
         {enviando ? 'Enviando...' : 'Enviar mensaje'}
       </button>
