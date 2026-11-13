@@ -58,6 +58,8 @@ There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/mater
 | `GET /api/problems/:problemId/comments` | Public comments as ordered threads (display depth ≤ 3); deleted comments keep their place without text or author |
 | `POST /api/problems/:problemId/comments` | Authenticated comment or reply (`parent` from the same problem) |
 | `DELETE /api/problems/:problemId/comments/:commentId` | Soft delete by the author, or by `moderador`+ with a reason (`otro` needs a note) |
+| `POST /api/problems/:problemId/comments/:commentId/reports` | Authenticated report of someone else's comment (one per person, listed reason) |
+| `GET /api/reports`, `POST /api/reports/comments/:commentId/dismiss` | `moderador`+ queue grouped by comment, and dismissal; deleting a comment resolves its reports |
 | `POST /api/contact` | Authenticated private contact submission |
 
 Existing Mongoose models are:

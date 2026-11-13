@@ -1,6 +1,7 @@
 // GET    /api/problems/:problemId/comments             — list comments as ordered threads.
 // POST   /api/problems/:problemId/comments             — add one or reply with `parent` (needs login).
 // DELETE /api/problems/:problemId/comments/:commentId  — soft delete: author, or moderator with a reason.
+// POST   /api/problems/:problemId/comments/:commentId/reports — report someone else's comment (needs login).
 //
 // This file doesn't know its own full URL — `:problemId` is filled in by
 // wherever server.js decides to mount this router (see server.js). Router({
@@ -10,6 +11,7 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import Comment from '../models/Comment.js'
+import Report from '../models/Report.js'
 import Problem from '../models/Problem.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
 import { can } from '../lib/permissions.js'
@@ -115,9 +117,33 @@ router.delete('/:commentId', requireAuth, async (req, res) => {
     return res.status(403).json({ error: 'Solo puedes eliminar tus propios comentarios.' })
   }
 
-  comment.set({ status: 'deleted', deletedBy: req.userId, deletedAt: new Date() })
+  const now = new Date()
+  comment.set({ status: 'deleted', deletedBy: req.userId, deletedAt: now })
   await comment.save()
+  // Los reportes abiertos de este comentario quedan resueltos.
+  await Report.updateMany({ comment: comment._id, status: 'open' }, { status: 'resolved', handledBy: req.userId, handledAt: now })
   res.json(publicComment(comment.toObject(), comment.depth))
+})
+
+// Reportar un comentario ajeno para que la moderación lo revise. Cada persona
+// reporta un comentario una sola vez. La respuesta no revela otros reportes.
+router.post('/:commentId/reports', requireAuth, requirePermission('comments:report'), async (req, res) => {
+  const { problemId, commentId } = req.params
+  const comment = isId(commentId) ? await Comment.findOne({ _id: commentId, problem: problemId }).select('author status').lean() : null
+  if (!comment) return res.status(404).json({ error: 'Ese comentario no existe.' })
+  if (comment.status === 'deleted') return res.status(409).json({ error: 'Ese comentario ya fue eliminado.' })
+  if (comment.author.toString() === req.userId) return res.status(400).json({ error: 'No puedes reportar tu propio comentario.' })
+
+  const parsed = parseReason(req.body)
+  if (parsed.error) return res.status(400).json({ error: parsed.error })
+
+  try {
+    await Report.create({ comment: comment._id, problem: problemId, reporter: req.userId, reason: parsed.reason, note: parsed.note })
+  } catch (err) {
+    if (err.code === 11000) return res.status(409).json({ error: 'Ya reportaste este comentario.' })
+    throw err
+  }
+  res.status(201).json({ ok: true })
 })
 
 export default router
