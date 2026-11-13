@@ -59,3 +59,20 @@ Theory pages interleave canonical referenced Problem previews with the original 
 
 ### Reading refinement
 Theory-only wrappers are excluded from the Rutas discovery UI and related-route suggestions via the API's lessonOnly classification. Mixed training and multi-lesson routes remain visible. Old single-lesson URLs redirect even with the legacy pasos query. Theory return links lead to the contextual parent route; library entry shows only its library back link. The reading column is 840px within the unchanged 896px title container, with a consistent cream canvas and colored editorial section markers. No database migration is required.
+
+### Unmerged editorial comparison batch
+
+`batch/theory-writing-lab` extends the unmerged problem-discovery batch with six
+original article rewrites: three guided-discovery proposals and three following
+specific OMMBC section sequences. The development-only `/revision/teoria` page
+allows review without MongoDB or imports. A shared article renderer supports
+explicit headings, optional hints/solutions, and deliberate canonical Problem
+preview placement. See [the editorial review guide](editorial/WRITING_LAB.md).
+Existing database prose is unchanged until a separately reviewed transactional
+revision is applied. Neither feedback batch is authorized for merge yet.
+
+The same branch also contains two newer **review-only** examples (counting and
+pigeonhole): shared section prefixes, topic-only review titles, guided examples,
+definition panels and five-problem collection previews. Their drafts and proposed
+Problems are not part of the database import payload. Review through
+`/revision/teoria`; see the follow-up section of the editorial guide before rollout.

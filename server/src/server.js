@@ -9,6 +9,7 @@
 import 'dotenv/config'
 import mongoose from 'mongoose'
 import app from './app.js'
+import { mongoFailureSummary } from './mongo-diagnostics.js'
 
 const PORT = process.env.PORT || 4000
 
@@ -40,7 +41,8 @@ async function start() {
       server.close(async () => { await mongoose.disconnect(); process.exit(0) })
     })
   } catch (err) {
-    console.error('No se pudo conectar a MongoDB:', err.message)
+    console.error('No se pudo conectar a MongoDB. Los detalles son seguros para compartir; no incluyen credenciales.')
+    console.error(JSON.stringify(mongoFailureSummary(err, process.env.MONGO_URI)))
     process.exit(1)
   }
 }

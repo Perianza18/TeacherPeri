@@ -2,33 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useLocation } from 'react-router-dom'
 import { apiFetch } from '../lib/api'
 import MathText from '../components/math/MathText'
+import ArticleText from '../components/training/ArticleText'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
-
-function ArticleText({ text, problems = [], context = '' }) {
-  const major = new Set(['IDEAS CLAVE', 'EJEMPLO TRABAJADO', 'ERRORES FRECUENTES', 'PRACTICA', 'EN RESUMEN', 'AMPLIACIÓN Y COMPROBACIONES'])
-  const blocks = String(text).split(/\n\n/)
-  return blocks.flatMap((block, i) => {
-    const lines = block.split('\n')
-    const headings = []
-    while (lines.length && /^[A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ0-9 —:–,¿?()./-]+$/.test(lines[0]) && lines[0].length < 110) {
-      const title = lines.shift()
-      headings.push(major.has(title)
-        ? <h2 key={`${i}-h${headings.length}`} className={`tp-lesson-heading tp-lesson-heading-${[...major].indexOf(title) % 4} mt-10 mb-4 text-lg font-black text-brand-900`}>{title === 'PRACTICA' ? 'PRÁCTICA' : title}</h2>
-        : <h3 key={`${i}-h${headings.length}`} className="mt-6 text-sm font-black text-brand-900">{title}</h3>)
-    }
-    const practice = problems.filter((_, index) => Math.min(blocks.length - 1, Math.floor((index + 1) * blocks.length / (problems.length + 1))) === i)
-    return [...headings, ...(lines.length ? [<MathText key={i} text={lines.join('\n')} className="my-5 whitespace-pre-wrap text-base leading-8 text-brand-900" />] : []), ...practice.map((problem) => <ProblemPreview key={`practice-${problem._id}`} problem={problem} context={context} />)]
-  })
-}
-function ProblemPreview({ problem, context }) {
-  return <aside className="tp-card-soft my-10 bg-accent-yellow p-5 sm:p-7">
-    <p className="text-xs font-black uppercase tracking-widest">Tu turno · Del banco de problemas</p>
-    <h3 className="mt-3 text-xl font-black">{`Problema ${problem.codigo}`}</h3>
-    <MathText text={problem.enunciado} className="mt-4 whitespace-pre-wrap leading-8" />
-    <Link className="tp-button mt-5 bg-white px-4 py-2 font-bold" to={`/entrenamiento/problemas/${problem._id}${context}`}>Resolver problema →</Link>
-  </aside>
-}
 
 const safeUrl = (url) => /^https?:\/\//i.test(url || '')
 

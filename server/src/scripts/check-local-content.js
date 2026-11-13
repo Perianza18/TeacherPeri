@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import mongoose from 'mongoose'
 import { importTarget } from './import-mvp-content.js'
+import { mongoFailureSummary } from '../mongo-diagnostics.js'
 
 async function check() {
   const target = importTarget({ MONGO_CONTENT_IMPORT_URI: process.env.MONGO_URI })
@@ -13,7 +14,7 @@ async function check() {
     console.log('OMM is not published in the database used by the API. A dry-run only previews changes. Follow docs/LOCAL_MVP.md to apply content.')
     process.exitCode = 1
   } else {
-    console.log('Published OMM root found. Restart the API after any .env change and open http://localhost:5173/rutas/preparacion-para-la-omm. Check that the frontend uses your local API on port 4000.')
+    console.log(`Published OMM root found. Restart the API after any .env change and open http://localhost:5173/rutas/preparacion-para-la-omm. Check that the frontend uses your local API on port ${process.env.PORT || 4000}.`)
   }
   if (!hello.setName && hello.msg !== 'isdbgrid') console.log('This MongoDB is standalone. Atomic import needs a replica set; npm run db:local:start prepares an isolated local instance.')
   if (process.env.MONGO_CONTENT_IMPORT_URI && process.env.MONGO_CONTENT_IMPORT_URI !== process.env.MONGO_URI) {
@@ -21,7 +22,8 @@ async function check() {
   }
 }
 
-check().catch(() => {
+check().catch((error) => {
   console.error('Cannot check application content. Set an explicit MONGO_URI in your private .env and ensure MongoDB is running. Credentials are not displayed.')
+  console.error(JSON.stringify(mongoFailureSummary(error, process.env.MONGO_URI)))
   process.exitCode = 1
 }).finally(() => mongoose.disconnect())

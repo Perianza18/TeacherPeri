@@ -2,7 +2,9 @@ import 'dotenv/config'
 import mongoose from 'mongoose'
 import Theory from '../models/Theory.js'
 import { importTarget } from './import-mvp-content.js'
-import { MVP_LESSONS, PREVIOUS_EDITORIAL_THEORY } from '../data/mvpLessons.js'
+import { MVP_LESSONS, PREVIOUS_EDITORIAL_THEORY, PREVIOUS_WRITING_LAB_THEORY } from '../data/mvpLessons.js'
+import { THEORY_WRITING_LAB } from '../data/theoryWritingLab.js'
+import { planEditorialRevision } from '../data/editorialRevisionPlan.js'
 import { validateMvpContent } from '../data/validateMvpContent.js'
 
 // Only exact known article text can be revised. Never overwrites independent edits.
@@ -13,17 +15,15 @@ async function run() {
   const { uri, dbName } = importTarget(process.env, apply)
   validateMvpContent()
   await mongoose.connect(uri, { dbName, autoIndex: false, autoCreate: false, serverSelectionTimeoutMS: 10000 })
-  const revisions = MVP_LESSONS.filter((lesson) => lesson.theory.engagement)
+  const revisions = MVP_LESSONS.filter((lesson) => Object.hasOwn(THEORY_WRITING_LAB, lesson.pathSlug))
   async function plan(session) {
     const changes = []
     for (const { theory } of revisions) {
       const found = await Theory.find({ title: theory.title }).session(session || null).lean()
       if (found.length !== 1) throw new Error('Missing or ambiguous lesson; import the base content first.')
       const current = found[0]
-      if (current.content === theory.content && current.engagement === theory.engagement) continue
-      const previous = PREVIOUS_EDITORIAL_THEORY[theory.key]
-      if (current.content !== previous.content || current.engagement != null) throw new Error('Independent editorial changes detected; no lessons changed.')
-      changes.push({ current, theory })
+      const change = planEditorialRevision(current, theory, [PREVIOUS_EDITORIAL_THEORY[theory.key], PREVIOUS_WRITING_LAB_THEORY[theory.key]])
+      if (change) changes.push(change)
     }
     return changes
   }
@@ -32,8 +32,8 @@ async function run() {
     const hello = await mongoose.connection.db.admin().command({ hello: 1 })
     if (!hello.setName && hello.msg !== 'isdbgrid') throw new Error('Replica set required.')
     await mongoose.connection.transaction(async (session) => {
-      for (const { current, theory } of await plan(session)) {
-        const result = await Theory.updateOne({ _id: current._id, content: current.content, engagement: null }, { $set: { content: theory.content, engagement: theory.engagement } }, { session, runValidators: true })
+      for (const { filter, update } of await plan(session)) {
+        const result = await Theory.updateOne(filter, update, { session, runValidators: true })
         if (result.modifiedCount !== 1) throw new Error('Concurrent edit detected; transaction cancelled.')
       }
     })

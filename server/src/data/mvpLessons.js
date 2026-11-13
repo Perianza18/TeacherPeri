@@ -1,3 +1,4 @@
+import { THEORY_WRITING_LAB } from './theoryWritingLab.js'
 import { EDITORIAL_BATCH } from './editorialBatch.js'
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from './ommLaunchContent.js'
 import { defineLesson } from './ommLaunchContent.helpers.js'
@@ -152,4 +153,11 @@ export const PREVIOUS_EDITORIAL_THEORY = Object.fromEntries(MVP_LESSONS.map((les
 for (const lesson of MVP_LESSONS) {
   const revision = EDITORIAL_BATCH[lesson.pathSlug]
   if (revision) Object.assign(lesson.theory, revision)
+}
+
+// Preserve both known baselines; the review revision refuses any other text.
+export const PREVIOUS_WRITING_LAB_THEORY = Object.fromEntries(MVP_LESSONS.map((lesson) => [lesson.theory.key, structuredClone(lesson.theory)]))
+for (const lesson of MVP_LESSONS) {
+  const revision = THEORY_WRITING_LAB[lesson.pathSlug]
+  if (revision) Object.assign(lesson.theory, { content: revision.content, engagement: revision.engagement })
 }
