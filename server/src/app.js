@@ -51,7 +51,9 @@ app.use(express.json())
 //    ruta, no solo login).
 // 2. Uno más ESTRICTO solo para /api/auth, porque ahí es donde de verdad
 //    importa: sin esto, nada le impide a alguien probar miles de
-//    contraseñas por segundo (fuerza bruta).
+//    contraseñas por segundo (fuerza bruta). Solo cuentan los intentos
+//    fallidos: así un salón entero que entra desde la misma red escolar
+//    (misma IP) no se bloquea, y adivinar contraseñas sigue limitado.
 if (process.env.NODE_ENV !== 'test') {
   app.use(
     '/api',
@@ -69,6 +71,7 @@ if (process.env.NODE_ENV !== 'test') {
     rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 20,
+      skipSuccessfulRequests: true,
       standardHeaders: true,
       legacyHeaders: false,
       message: { error: 'Demasiados intentos. Espera unos minutos e intenta de nuevo.' },
