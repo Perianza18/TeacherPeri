@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { path: '/', label: 'Inicio' },
   { path: '/rutas', label: 'Rutas' },
   { path: '/entrenamiento', label: 'Zona de Entrenamiento' },
+  { path: '/listas', label: 'Listas' },
   { path: '/estudia-en-el-extranjero', label: 'Universidad' },
   { path: '/experiencias', label: 'Experiencias' },
   { path: '/sobre-mi', label: 'Sobre mí' },

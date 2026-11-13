@@ -11,6 +11,7 @@ import ContactoPage from './pages/ContactoPage'
 import ColaboradoresPage from './pages/ColaboradoresPage'
 import LibraryCollection from './components/training/LibraryCollection'
 import LibraryDetailPage from './pages/LibraryDetailPage'
+import ListasPage, { RedirectToListas } from './pages/ListasPage'
 import RutasPage from './pages/RutasPage'
 import PathPage from './pages/PathPage'
 import PagePlaceholder from './components/PagePlaceholder'
@@ -29,10 +30,14 @@ function App() {
             <Route path="problemas/:id" element={<LibraryDetailPage type="problemas" />} />
             <Route path="teoria" element={<LibraryCollection type="theory" title="Teoría" subtitle="Artículos matemáticos nativos con contenido y referencias reutilizables." />} />
             <Route path="teoria/:id" element={<LibraryDetailPage type="teoria" />} />
-            <Route path="listas" element={<LibraryCollection type="lists" title="Listas" subtitle="Recursos externos atribuidos y enlazados a su fuente original." />} />
-            <Route path="listas/:id" element={<LibraryDetailPage type="listas" />} />
             <Route path="examenes" element={<LibraryCollection type="exams" title="Exámenes" subtitle="Exámenes que reutilizan Problemas existentes en su orden original." />} />
             <Route path="examenes/:id" element={<LibraryDetailPage type="examenes" />} />
+          </Route>
+          <Route path="/entrenamiento/listas" element={<RedirectToListas />} />
+          <Route path="/entrenamiento/listas/:id" element={<RedirectToListas />} />
+          <Route path="/listas" element={<ListasPage />}>
+            <Route index element={<LibraryCollection type="lists" eyebrow="Listas" title="Listas" subtitle="Colecciones de problemas para practicar y recursos externos enlazados a su fuente original." />} />
+            <Route path=":id" element={<LibraryDetailPage type="listas" />} />
           </Route>
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />

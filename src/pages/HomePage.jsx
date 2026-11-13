@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Hero from '../components/sections/Hero'
 import { apiFetch } from '../lib/api'
+import { LIBRARY_BASE } from '../lib/libraryPaths'
 
 const journeyCards = [
   { number: '01', title: 'Prepararme para Olimpiadas', text: 'Sigue una Ruta estructurada y entrena con material reutilizable.', to: '/rutas', color: 'bg-accent-purple text-white', rotate: 'rotate-0' },
@@ -15,7 +16,7 @@ const journeyCards = [
 const libraries = [
   ['Problemas', 'Practica con problemas organizados.', '/entrenamiento/problemas', 'π', 'bg-accent-yellow'],
   ['Teoría', 'Lee explicaciones matemáticas reutilizables.', '/entrenamiento/teoria', '∑', 'bg-accent-mint'],
-  ['Listas', 'Encuentra colecciones de distintas fuentes.', '/entrenamiento/listas', '≡', 'bg-accent-sky'],
+  ['Listas', 'Encuentra colecciones de distintas fuentes.', '/listas', '≡', 'bg-accent-sky'],
   ['Exámenes', 'Explora exámenes y sus problemas en orden.', '/entrenamiento/examenes', '√', 'bg-accent-coral'],
 ]
 
@@ -49,7 +50,7 @@ function TrainingSearch() {
     const q = query.trim()
     if (!q) return
     setState({ loading: true, results: [], error: null })
-    const responses = await Promise.all(searchConfig.map(([api, label, path]) => apiFetch(`/api/${api}?q=${encodeURIComponent(q)}&page=1&limit=4`).then((data) => (data.items || []).map((item) => ({ item, label, path }))).catch(() => [])))
+    const responses = await Promise.all(searchConfig.map(([api, label, path]) => apiFetch(`/api/${api}?q=${encodeURIComponent(q)}&page=1&limit=4`).then((data) => (data.items || []).map((item) => ({ item, label, path, api }))).catch(() => [])))
     setState({ loading: false, results: responses.flat(), error: null })
   }
 
@@ -67,7 +68,7 @@ function TrainingSearch() {
       </form>
       {state.loading && <p className="mt-5 font-semibold text-brand-600">Buscando…</p>}
       {state.error && <p className="mt-5 text-red-700">{state.error}</p>}
-      {!state.loading && state.results.length > 0 && <div className="mt-5 grid gap-3 sm:grid-cols-2">{state.results.map((result) => <Link key={`${result.path}-${result.item._id}`} to={`/entrenamiento/${result.path}/${result.item._id}`} className="tp-card-soft bg-white px-4 py-3 transition hover:-translate-y-0.5"><p className="text-xs font-black uppercase tracking-wide text-accent-violet">{result.label}</p><p className="mt-1 font-bold">{titleFor(result)}</p></Link>)}</div>}
+      {!state.loading && state.results.length > 0 && <div className="mt-5 grid gap-3 sm:grid-cols-2">{state.results.map((result) => <Link key={`${result.path}-${result.item._id}`} to={`${LIBRARY_BASE[result.api]}/${result.item._id}`} className="tp-card-soft bg-white px-4 py-3 transition hover:-translate-y-0.5"><p className="text-xs font-black uppercase tracking-wide text-accent-violet">{result.label}</p><p className="mt-1 font-bold">{titleFor(result)}</p></Link>)}</div>}
       {!state.loading && query.trim() && state.results.length === 0 && !state.error && <p className="mt-5 text-brand-600">No encontramos resultados para esa búsqueda.</p>}
     </div>
   )
