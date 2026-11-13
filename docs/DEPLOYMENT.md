@@ -18,7 +18,8 @@ Node API. No production account, data or deployment has been configured here.
 4. **Frontend:** build with `npm run build` and publish `dist/`. Set
    `VITE_API_URL=https://your-api-host.example` at build time (no trailing slash).
    Configure an SPA fallback to `/index.html` for frontend routes so refreshes of
-   `/rutas/...` and `/entrenamiento/...` work. If a same-origin reverse proxy is
+   `/rutas/...` and `/entrenamiento/...` work. On Vercel, the repository's
+   `vercel.json` provides this rewrite; built files are still served first. If a same-origin reverse proxy is
    configured, omit `VITE_API_URL`; production defaults to same-origin requests.
 5. **Verify:** open every library and a contextual Path URL on desktop/mobile;
    register a test account, log in, mark a leaf complete and confirm its parent
