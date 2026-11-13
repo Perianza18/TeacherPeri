@@ -18,6 +18,38 @@
 import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import app from '../app.js'
+import User from '../models/User.js'
+
+describe('User.role', () => {
+  it('una cuenta nueva empieza con el rol usuario', async () => {
+    await request(app).post('/api/auth/signup').send({
+      username: 'ana',
+      email: 'ana@test.com',
+      password: 'clave12345',
+    })
+
+    const user = await User.findOne({ email: 'ana@test.com' })
+    expect(user.role).toBe('usuario')
+  })
+
+  it('ignora un rol enviado en el registro', async () => {
+    const res = await request(app).post('/api/auth/signup').send({
+      username: 'colado',
+      email: 'colado@test.com',
+      password: 'clave12345',
+      role: 'admin',
+    })
+
+    expect(res.status).toBe(201)
+    const user = await User.findOne({ email: 'colado@test.com' })
+    expect(user.role).toBe('usuario')
+  })
+
+  it('rechaza un rol que no existe', async () => {
+    const user = new User({ username: 'x', email: 'x@test.com', passwordHash: 'h', role: 'superusuario' })
+    await expect(user.validate()).rejects.toThrow()
+  })
+})
 
 describe('POST /api/auth/signup', () => {
   it('crea una cuenta nueva y regresa un token', async () => {
