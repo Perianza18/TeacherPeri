@@ -26,6 +26,48 @@
   --color-accent-blue-soft: #e5f1ff;
 }
 
+/* Design guide color tokens ("Cómic refinado" palette).
+   `static` keeps every token in the output even before any screen uses it. */
+@theme static {
+  --tp-paper: #faf8f5;
+  --tp-surface: #ffffff;
+  --tp-ink: #111111;
+  --tp-ink-muted: #5f5c57;
+  --tp-ink-soft: #46433f;
+  --tp-rule: #c4bcb2;
+  --tp-violet: #6d3ee8;
+  --tp-violet-soft: #eee7ff;
+  --tp-sky: #86d7ff;
+  --tp-sky-soft: #e5f1ff;
+  --tp-yellow: #ffd65a;
+  --tp-yellow-soft: #fff4cc;
+  --tp-mint: #8ee8bf;
+  --tp-mint-soft: #d8f5e8;
+  --tp-coral: #ff7f79;
+  --tp-coral-soft: #ffe4e1;
+}
+
+/* Tailwind color classes for the tokens above (bg-tp-violet, text-tp-ink,
+   border-tp-ink, ...). Each class reads the matching --tp-* variable. */
+@theme inline {
+  --color-tp-paper: var(--tp-paper);
+  --color-tp-surface: var(--tp-surface);
+  --color-tp-ink: var(--tp-ink);
+  --color-tp-ink-muted: var(--tp-ink-muted);
+  --color-tp-ink-soft: var(--tp-ink-soft);
+  --color-tp-rule: var(--tp-rule);
+  --color-tp-violet: var(--tp-violet);
+  --color-tp-violet-soft: var(--tp-violet-soft);
+  --color-tp-sky: var(--tp-sky);
+  --color-tp-sky-soft: var(--tp-sky-soft);
+  --color-tp-yellow: var(--tp-yellow);
+  --color-tp-yellow-soft: var(--tp-yellow-soft);
+  --color-tp-mint: var(--tp-mint);
+  --color-tp-mint-soft: var(--tp-mint-soft);
+  --color-tp-coral: var(--tp-coral);
+  --color-tp-coral-soft: var(--tp-coral-soft);
+}
+
 :root {
   color-scheme: light;
   font-family: var(--font-sans);
