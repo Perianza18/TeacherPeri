@@ -14,10 +14,10 @@ const LINKS = [
 export default function Footer() {
   return (
     <footer className="border-t-4 border-black bg-[#111111] text-white">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
+      <div className="tp-container flex flex-col gap-8 py-12 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <Link to="/" className="text-2xl font-extrabold tracking-[-0.04em]">
-            Teacher<span className="text-accent-sky">Peri</span>
+          <Link to="/" className="tp-logo inline-flex min-h-11 items-center">
+            TeacherPeri
           </Link>
           <p className="mt-3 max-w-md text-sm leading-6 text-white/55">
             Matemáticas olímpicas y orientación universitaria, organizadas para que puedas encontrar un camino y seguir explorando por tu cuenta.

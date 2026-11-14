@@ -62,7 +62,7 @@ function AccountMenu({ user, logout }) {
         <span aria-hidden="true">{initial}</span>
       </button>
       {open && (
-        <div id="tp-account-panel" className="absolute right-0 top-full z-50 mt-3 w-64 rounded-[14px] border-2 border-black bg-white p-5 shadow-[4px_4px_0_#111]">
+        <div id="tp-account-panel" className="tp-card-soft absolute right-0 top-full z-50 mt-3 w-64 bg-white p-5">
           <p className="text-xs font-black uppercase tracking-[0.12em] text-brand-600">Sesión iniciada como</p>
           <p className="mt-1 truncate text-base font-bold text-brand-900">{user.username}</p>
           <button
@@ -85,7 +85,7 @@ function AuthControl() {
     <button
       type="button"
       onClick={abrirModal}
-      className="tp-button min-h-11 shrink-0 bg-accent-violet px-5 py-2 text-sm font-black text-white"
+      className="tp-button shrink-0 bg-tp-mint px-4 font-bold text-tp-ink"
     >
       Entrar
     </button>
@@ -106,11 +106,9 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-black bg-white">
       <nav aria-label="Principal">
-        <div className="mx-auto flex h-[69px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="shrink-0">
-            <span className="text-xl font-extrabold tracking-[-0.04em] text-brand-900 sm:text-2xl">
-              Teacher<span className="text-accent-violet">Peri</span>
-            </span>
+        <div className="tp-container flex h-[69px] items-center justify-between gap-4">
+          <Link to="/" className="tp-logo inline-flex min-h-11 shrink-0 items-center text-tp-ink">
+            TeacherPeri
           </Link>
 
           <div className="flex items-center gap-3 lg:gap-7">
