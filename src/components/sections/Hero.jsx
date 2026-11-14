@@ -28,7 +28,7 @@ export default function Hero() {
             Preparación para Olimpiadas de Matemáticas y orientación para universidades competitivas, organizada para que sepas qué hacer después.
           </p>
           <div className="mt-9 flex flex-wrap gap-4">
-            <Link to="/rutas" className="tp-button bg-accent-purple px-6 py-3.5 text-sm font-black text-white">Explorar Rutas →</Link>
+            <Link to="/rutas" className="tp-button bg-tp-violet px-6 py-3.5 text-sm font-black text-white">Explorar Rutas →</Link>
             <Link to="/entrenamiento" className="tp-button bg-white px-6 py-3.5 text-sm font-black text-brand-900">Zona de Entrenamiento</Link>
           </div>
         </motion.div>
