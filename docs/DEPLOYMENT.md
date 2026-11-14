@@ -15,10 +15,17 @@ Node API. No production account, data or deployment has been configured here.
    and the host's assigned `PORT`. Use TLS and configure the host's documented
    proxy behavior before changing Express `trust proxy`; never blindly trust all
    forwarding headers. The included CLI server is not a serverless adapter.
+   Behind a reverse proxy, set `TRUST_PROXY_HOPS` to the number of proxy hops
+   in front of the API (Render: `1`) so per-IP rate limits see the visitor's IP
+   instead of the proxy's. Only a positive integer is accepted; unset or invalid
+   values trust no forwarding header. Confirm it after deploying: send a few
+   requests and watch `RateLimit-Remaining`, then repeat from another network.
+   A fresh count means each visitor is counted separately.
 4. **Frontend:** build with `npm run build` and publish `dist/`. Set
    `VITE_API_URL=https://your-api-host.example` at build time (no trailing slash).
    Configure an SPA fallback to `/index.html` for frontend routes so refreshes of
-   `/rutas/...` and `/entrenamiento/...` work. If a same-origin reverse proxy is
+   `/rutas/...` and `/entrenamiento/...` work. On Vercel, the repository's
+   `vercel.json` provides this rewrite; built files are still served first. If a same-origin reverse proxy is
    configured, omit `VITE_API_URL`; production defaults to same-origin requests.
 5. **Verify:** open every library and a contextual Path URL on desktop/mobile;
    register a test account, log in, mark a leaf complete and confirm its parent
