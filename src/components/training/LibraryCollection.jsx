@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
+import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import MathText from '../math/MathText'
 import TrainingHeader from './TrainingHeader'
 
-const PATHS = { theory: 'teoria', lists: 'listas', exams: 'examenes', problems: 'problemas' }
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 const titleOf = (type, item) => type === 'exams' ? `${item.competition} ${item.year} · ${item.round}` : item.title || item.titulo
 
-export default function LibraryCollection({ type, title, subtitle, onOpen }) {
+export default function LibraryCollection({ type, title, subtitle, onOpen, eyebrow = 'Zona de Entrenamiento' }) {
   const location = useLocation()
   const [filters, setFilters] = useState({ q: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
   const [page, setPage] = useState(1)
@@ -53,7 +53,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen }) {
   const select = (field, label, choices) => <label className="text-sm font-semibold text-brand-700">{label}<select value={filters[field]} onChange={(e) => change(field, e.target.value)} className="mt-1 w-full rounded-xl border border-brand-300 bg-white p-3 font-normal"><option value="">Todos</option>{choices.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
 
   return <section className="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 lg:px-8">
-    <TrainingHeader eyebrow="Zona de Entrenamiento" title={title} subtitle={subtitle} />
+    <TrainingHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
     <div className="tp-card-soft bg-white p-5">
       <label className="text-sm font-bold text-brand-900">Buscar en {title.toLowerCase()}<input type="search" value={filters.q} onChange={(e) => change('q', e.target.value)} placeholder="Título, tema o palabra clave" className="mt-2 w-full rounded-xl border-2 border-black bg-brand-50 px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500" /></label>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -73,11 +73,11 @@ export default function LibraryCollection({ type, title, subtitle, onOpen }) {
     {!loading && !results.error && !results.total && <p className="mt-4 rounded-xl border border-brand-300 bg-white p-6">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p>}
     {!loading && <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{results.items.map((item) => <article key={item._id} className="tp-card-soft flex min-w-0 flex-col bg-white p-5">
       <p className="text-xs font-black uppercase tracking-wider text-accent-violet">{item.codigo || title}{item.level || item.difficulty ? ` · ${LEVELS[item.level || item.difficulty]}` : ''}</p>
-      <h3 className="mt-3 text-lg font-black text-brand-900"><Link to={`/entrenamiento/${PATHS[type]}/${item._id}`} className="hover:text-violet-700">{titleOf(type, item)}</Link></h3>
+      <h3 className="mt-3 text-lg font-black text-brand-900"><Link to={`${LIBRARY_BASE[type]}/${item._id}`} className="hover:text-violet-700">{titleOf(type, item)}</Link></h3>
       {item.enunciado ? <MathText text={item.enunciado} className="mt-3 line-clamp-4 text-sm leading-6 text-brand-600" /> : item.summary && <p className="mt-3 line-clamp-4 text-sm leading-6 text-brand-600">{item.summary}</p>}
       {item.sourceOrganization && <p className="mt-4 text-xs text-brand-500">Fuente: {item.sourceOrganization}</p>}
       {type === 'exams' && <p className="mt-4 text-xs text-brand-500">{item.problems?.length || 0} problemas · {item.durationMinutes || 'Sin límite de'} minutos</p>}
-      <div className="mt-auto flex flex-wrap gap-4 pt-6 text-sm font-bold"><Link to={`/entrenamiento/${PATHS[type]}/${item._id}`} className="text-brand-900 hover:text-violet-700">Abrir →</Link>{onOpen && <button onClick={() => onOpen(item)} className="text-violet-700">Comentarios</button>}</div>
+      <div className="mt-auto flex flex-wrap gap-4 pt-6 text-sm font-bold"><Link to={`${LIBRARY_BASE[type]}/${item._id}`} className="text-brand-900 hover:text-violet-700">Abrir →</Link>{onOpen && <button onClick={() => onOpen(item)} className="text-violet-700">Comentarios</button>}</div>
     </article>)}</div>}
     {!loading && results.totalPages > 1 && <nav aria-label="Paginación" className="mt-8 flex items-center justify-center gap-4"><button disabled={page <= 1} onClick={() => setPage(page - 1)} className="tp-button bg-white px-4 py-2 disabled:opacity-40">Anterior</button><span className="text-sm">{page} / {results.totalPages}</span><button disabled={page >= results.totalPages} onClick={() => setPage(page + 1)} className="tp-button bg-white px-4 py-2 disabled:opacity-40">Siguiente</button></nav>}
   </section>

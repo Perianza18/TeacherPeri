@@ -43,8 +43,8 @@ npm run dev
 ```
 
 Frontend: `http://localhost:5173`; API: `http://localhost:4000`. Las bibliotecas
-están en `/entrenamiento/problemas`, `/teoria`, `/listas` y `/examenes` bajo
-`/entrenamiento`. La API puede arrancar sin contenido; no necesita un reset.
+están en `/entrenamiento/problemas`, `/teoria` y `/examenes` bajo
+`/entrenamiento`; las Listas tienen su propia página en `/listas`. La API puede arrancar sin contenido; no necesita un reset.
 Si la ruta OMM no aparece, sigue [la preparación local del MVP](docs/LOCAL_MVP.md):
 `npm run db:local:start` prepara un replica set separado y `npm run content:check`
 comprueba la base que usa la API. Un dry-run no importa contenido.
