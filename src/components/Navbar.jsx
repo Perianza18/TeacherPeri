@@ -35,7 +35,7 @@ function AuthButton({ dark }) {
     <button
       type="button"
       onClick={abrirModal}
-      className="tp-button shrink-0 bg-accent-purple px-4 py-2 text-sm font-black text-white"
+      className="tp-button shrink-0 bg-tp-violet px-4 py-2 text-sm font-black text-white"
     >
       Iniciar sesión
     </button>
