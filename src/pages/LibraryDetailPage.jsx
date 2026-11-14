@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useLocation } from 'react-router-dom'
 import { apiFetch } from '../lib/api'
 import MathText from '../components/math/MathText'
+import { LIBRARY_BASE } from '../lib/libraryPaths'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -65,7 +66,7 @@ export default function LibraryDetailPage({ type }) {
   const returnPath = parentCrumbs.length ? `/rutas/${parentCrumbs.map((crumb) => encodeURIComponent(crumb.slug)).join('/')}` : '/rutas'
   const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
   return <section className="tp-reading min-h-[70vh] px-4 pb-24 pt-12 sm:px-6"><div className="mx-auto max-w-4xl">
-    {!route && (!traversal || item || error) && <Link to={`/entrenamiento/${type}`} className="text-sm font-semibold text-violet-700">← Volver a {config.label}</Link>}
+    {!route && (!traversal || item || error) && <Link to={LIBRARY_BASE[config.api]} className="text-sm font-semibold text-violet-700">← Volver a {config.label}</Link>}
     {result.key === key && result.route && <nav aria-label="Recorrido de aprendizaje" className="mt-6 flex flex-wrap gap-2 text-sm font-bold">{result.route.breadcrumbs.map((crumb, index, crumbs) => <span key={crumb.slug}>{index > 0 && ' › '}{index === crumbs.length - 1 && type === 'teoria' ? <span aria-current="page">{crumb.title}</span> : <Link className="underline underline-offset-4" to={`/rutas/${crumbs.slice(0, index + 1).map((entry) => encodeURIComponent(entry.slug)).join('/')}`}>{crumb.title}</Link>}</span>)}</nav>}
     {error && <p role="alert" className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</p>}
     {!item && !error && <p className="mt-8 text-brand-500">Cargando contenido…</p>}

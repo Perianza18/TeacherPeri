@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: "Arial", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Arial Black", "Arial", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-brand-50: #faf8f5;
   --color-brand-100: #f2efe9;
@@ -26,6 +26,48 @@
   --color-accent-blue-soft: #e5f1ff;
 }
 
+/* Design guide color tokens ("Cómic refinado" palette).
+   `static` keeps every token in the output even before any screen uses it. */
+@theme static {
+  --tp-paper: #faf8f5;
+  --tp-surface: #ffffff;
+  --tp-ink: #111111;
+  --tp-ink-muted: #5f5c57;
+  --tp-ink-soft: #46433f;
+  --tp-rule: #c4bcb2;
+  --tp-violet: #6d3ee8;
+  --tp-violet-soft: #eee7ff;
+  --tp-sky: #86d7ff;
+  --tp-sky-soft: #e5f1ff;
+  --tp-yellow: #ffd65a;
+  --tp-yellow-soft: #fff4cc;
+  --tp-mint: #8ee8bf;
+  --tp-mint-soft: #d8f5e8;
+  --tp-coral: #ff7f79;
+  --tp-coral-soft: #ffe4e1;
+}
+
+/* Tailwind color classes for the tokens above (bg-tp-violet, text-tp-ink,
+   border-tp-ink, ...). Each class reads the matching --tp-* variable. */
+@theme inline {
+  --color-tp-paper: var(--tp-paper);
+  --color-tp-surface: var(--tp-surface);
+  --color-tp-ink: var(--tp-ink);
+  --color-tp-ink-muted: var(--tp-ink-muted);
+  --color-tp-ink-soft: var(--tp-ink-soft);
+  --color-tp-rule: var(--tp-rule);
+  --color-tp-violet: var(--tp-violet);
+  --color-tp-violet-soft: var(--tp-violet-soft);
+  --color-tp-sky: var(--tp-sky);
+  --color-tp-sky-soft: var(--tp-sky-soft);
+  --color-tp-yellow: var(--tp-yellow);
+  --color-tp-yellow-soft: var(--tp-yellow-soft);
+  --color-tp-mint: var(--tp-mint);
+  --color-tp-mint-soft: var(--tp-mint-soft);
+  --color-tp-coral: var(--tp-coral);
+  --color-tp-coral-soft: var(--tp-coral-soft);
+}
+
 :root {
   color-scheme: light;
   font-family: var(--font-sans);
@@ -42,6 +84,19 @@ body {
   @apply m-0 bg-brand-50 text-brand-900 antialiased;
 }
 
+/* Base layer, so heading utility classes (font-*, tracking-*) still win. */
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  h1 {
+    letter-spacing: -0.02em;
+  }
+}
+
 ::selection {
   background: #ddd2ff;
   color: #17111f;
@@ -56,7 +111,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent-purple);
+  outline: 2px solid var(--tp-violet);
   outline-offset: 3px;
 }
 
@@ -72,49 +127,100 @@ textarea {
   background: #faf8f5;
 }
 
+/* Hero card */
 .tp-card {
-  border: 3px solid #111111;
-  border-radius: 1.15rem;
-  box-shadow: 7px 7px 0 #111111;
+  border: 3px solid var(--tp-ink);
+  border-radius: 18px;
+  box-shadow: 7px 7px 0 var(--tp-ink);
 }
 
+/* Standard card / box */
 .tp-card-soft {
-  border: 2px solid #111111;
-  border-radius: 1rem;
-  box-shadow: 4px 4px 0 #111111;
+  border: 2px solid var(--tp-ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--tp-ink);
+}
+
+/* Quiet box: same frame as .tp-card-soft, without the shadow */
+.tp-card-quiet {
+  border: 2px solid var(--tp-ink);
+  border-radius: 14px;
 }
 
 .tp-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #111111;
-  border-radius: .75rem;
-  box-shadow: 4px 4px 0 #111111;
+  min-height: 44px; /* minimum touch target */
+  border: 2px solid var(--tp-ink);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--tp-ink);
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .tp-button:hover {
   transform: translate(-1px, -2px);
-  box-shadow: 6px 6px 0 #111111;
+  box-shadow: 6px 6px 0 var(--tp-ink);
 }
 
 .tp-button:active {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #111111;
+  box-shadow: 2px 2px 0 var(--tp-ink);
+}
+
+/* A disabled button stays put instead of lifting or pressing. */
+.tp-button:disabled {
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 4px 0 var(--tp-ink);
 }
 
 .tp-kicker {
   display: inline-flex;
-  border: 2px solid #111111;
+  border: 2px solid var(--tp-ink);
   border-radius: 999px;
-  background: #ffd65a;
+  background: var(--tp-yellow);
   padding: .35rem .75rem;
-  color: #111111;
-  font-size: .72rem;
-  font-weight: 900;
+  color: var(--tp-ink);
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
+}
+
+/* Newer primitives live in the components layer, so a Tailwind class on the
+   element (for example bg-tp-yellow or text-sm) can still adjust them. */
+@layer components {
+  /* Pill / tag: color comes from a bg-* class where it is used. */
+  .tp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    border: 2px solid var(--tp-ink);
+    border-radius: 999px;
+    padding: .25rem .75rem;
+    color: var(--tp-ink);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* Text inputs, selects and textareas. Focus uses the global violet ring. */
+  .tp-input {
+    width: 100%;
+    min-height: 44px;
+    border: 2px solid var(--tp-ink);
+    border-radius: 10px;
+    background: var(--tp-surface);
+    padding: .625rem .875rem;
+    color: var(--tp-ink);
+    font-size: 16px; /* 16px also stops iOS from zooming into the field */
+    line-height: 1.5;
+  }
+
+  .tp-input::placeholder {
+    color: var(--tp-ink-muted);
+  }
 }
 
 .tp-dot-grid {
@@ -139,7 +245,7 @@ textarea {
 .tp-reading .katex-display { overflow-x: auto; overflow-y: hidden; padding: .5rem 0; }
 .tp-card, .tp-card-soft, .tp-kicker { rotate: 0deg; }
 
-.tp-lesson-heading { display: flex; align-items: center; gap: .8rem; padding: .75rem 1rem; border: 2px solid #111; border-radius: .5rem; box-shadow: 3px 3px 0 #111; }
+.tp-lesson-heading { display: flex; align-items: center; gap: .8rem; padding: .75rem 1rem; border: 2px solid var(--tp-ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--tp-ink); }
 .tp-lesson-heading::before { content: '✦'; font-size: 1.25rem; }
 .tp-lesson-heading-0 { background: #e8ddff; }
 .tp-lesson-heading-1 { background: #d9f1ff; }

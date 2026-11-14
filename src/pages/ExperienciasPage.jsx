@@ -1,4 +1,6 @@
 import PagePlaceholder from '../components/PagePlaceholder'
+
+// «Próximamente» until the first real posts are published.
 export default function ExperienciasPage() {
-  return <PagePlaceholder title="Experiencias" description="Estamos preparando este espacio con el mismo cuidado que nuestras matemáticas. Mientras tanto, hay mucho por descubrir en las Rutas y la Zona de Entrenamiento." />
+  return <PagePlaceholder title="Experiencias" description="Pronto publicaremos aquí relatos sobre olimpiadas, estudio y el camino a la universidad." />
 }

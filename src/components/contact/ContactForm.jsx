@@ -17,8 +17,7 @@ const MOTIVOS = [
   'Feedback general',
 ]
 
-const selectClass =
-  'rounded-lg border border-brand-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
+const selectClass = 'tp-input'
 
 // El formulario de Contacto, fusionado con la sesión global (ver
 // AuthContext): sin sesión, muestra el prompt para iniciar sesión en vez
@@ -64,7 +63,7 @@ export default function ContactForm() {
         <button
           type="button"
           onClick={abrirModal}
-          className="tp-button bg-accent-purple px-5 py-2 text-sm font-black text-white"
+          className="tp-button bg-tp-violet px-5 py-2 text-sm font-black text-white"
         >
           Iniciar sesión
         </button>
@@ -134,7 +133,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="tp-button bg-accent-purple px-4 py-2 text-sm font-black text-white disabled:opacity-50"
+        className="tp-button bg-tp-violet px-4 py-2 text-sm font-black text-white disabled:opacity-50"
       >
         {enviando ? 'Enviando...' : 'Enviar mensaje'}
       </button>

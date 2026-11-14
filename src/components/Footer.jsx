@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom'
 
 const LINKS = [
   ['Rutas', '/rutas'],
-  ['Zona de Entrenamiento', '/entrenamiento'],
-  ['Universidad', '/estudia-en-el-extranjero'],
+  ['Entrenamiento', '/entrenamiento'],
+  ['Listas', '/listas'],
   ['Experiencias', '/experiencias'],
+  ['Equipo', '/equipo'],
+  ['Universidad', '/estudia-en-el-extranjero'],
   ['Sobre mí', '/sobre-mi'],
   ['Contacto', '/contacto'],
 ]

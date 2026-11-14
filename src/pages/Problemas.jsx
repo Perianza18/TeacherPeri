@@ -36,8 +36,7 @@ function AuthInlineForm({ onAuthSuccess }) {
     }
   }
 
-  const inputClass =
-    'rounded-lg border border-brand-300 px-3 py-2 text-sm outline-none transition-colors focus:border-[#5B5FE9] focus:ring-2 focus:ring-[#5B5FE9]/30'
+  const inputClass = 'tp-input'
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-brand-200 bg-white p-4 shadow-sm">
