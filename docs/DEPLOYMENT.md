@@ -16,11 +16,20 @@ Node API. No production account, data or deployment has been configured here.
    proxy behavior before changing Express `trust proxy`; never blindly trust all
    forwarding headers. The included CLI server is not a serverless adapter.
    Behind a reverse proxy, set `TRUST_PROXY_HOPS` to the number of proxy hops
-   in front of the API (Render: `1`) so per-IP rate limits see the visitor's IP
-   instead of the proxy's. Only a positive integer is accepted; unset or invalid
-   values trust no forwarding header. Confirm it after deploying: send a few
-   requests and watch `RateLimit-Remaining`, then repeat from another network.
-   A fresh count means each visitor is counted separately.
+   in front of the API so per-IP rate limits see the visitor's IP instead of
+   the proxy's. On Render the measured value is `3` (Cloudflare plus two Render
+   relays), not `1`. Only a positive integer is accepted; unset or invalid
+   values trust no forwarding header. Measure it after deploying and after any
+   change of host or plan, instead of guessing:
+   - **Too low?** From one computer, send about ten requests to
+     `/api/problems` and read the `RateLimit-Remaining` response header. It
+     must drop by exactly one per request. If it jumps back up or repeats,
+     the count is being split across proxy addresses: raise the value by one
+     and redeploy.
+   - **Too high?** Send a few more requests with a made-up
+     `X-Forwarded-For: 203.0.113.7` header. The count must keep dropping from
+     where it was. If it starts fresh, visitors could fake their address to
+     skip the limit: lower the value by one and redeploy.
 4. **Frontend:** build with `npm run build` and publish `dist/`. Set
    `VITE_API_URL=https://your-api-host.example` at build time (no trailing slash).
    Configure an SPA fallback to `/index.html` for frontend routes so refreshes of
