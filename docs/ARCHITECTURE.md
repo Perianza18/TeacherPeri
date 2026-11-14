@@ -57,9 +57,11 @@ There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/mater
 | `GET /api/paths?traversal=a/b` | Validated contextual Path traversal and breadcrumbs without reserving a Path slug |
 | `GET /api/paths/:slug/progress` | Authenticated recursively derived Path progress |
 | `PUT /api/paths/:slug/completion` | Authenticated leaf-Path completion toggle/set |
-| `GET /api/problems/:problemId/comments` | Public embedded comments |
-| `POST /api/problems/:problemId/comments` | Authenticated comment creation |
-| `DELETE /api/problems/:problemId/comments/:commentId` | Author-only permanent comment deletion, retained legacy behavior |
+| `GET /api/problems/:problemId/comments` | Public comments as ordered threads (display depth ≤ 3); deleted comments keep their place without text or author |
+| `POST /api/problems/:problemId/comments` | Authenticated comment or reply (`parent` from the same problem) |
+| `DELETE /api/problems/:problemId/comments/:commentId` | Soft delete by the author, or by `moderador`+ with a reason (`otro` needs a note) |
+| `POST /api/problems/:problemId/comments/:commentId/reports` | Authenticated report of someone else's comment (one per person, listed reason) |
+| `GET /api/reports`, `POST /api/reports/comments/:commentId/dismiss` | `moderador`+ queue grouped by comment, and dismissal; deleting a comment resolves its reports |
 | `POST /api/contact` | Authenticated private contact submission |
 
 Existing Mongoose models are:
@@ -74,7 +76,7 @@ Existing Mongoose models are:
 | `Theory` | Native mathematical article with summary, rich text/LaTex source, level, shared metadata, folders, and lifecycle |
 | `List` | Attributed external-resource record with source/PDF links, optional level, shared metadata, folders, and lifecycle |
 | `Exam` | Competition/year/round metadata and ordered references to existing Problems |
-| `Comment` | Problem reference, author reference, flat text body |
+| `Comment` | Problem and author references, text body, optional `parent`/`root`/`depth` (0–3) for replies, and soft-delete fields (`status`, `deletedAs`, `deletedBy`, `deletedReason`, `deletedReasonNote`, `deletedAt`) |
 | `ContactMessage` | Author reference, profile category, contact reason, message |
 | `Path` | Standalone slugged guide with controlled Tags, optional descriptive level, and lifecycle |
 | `PathReference` | Ordered parent-to-child Path reference in an acyclic reusable graph |
@@ -91,7 +93,7 @@ Signup hashes passwords with bcrypt; login/signup issue seven-day JWTs with the 
 
 `requireAuth` verifies bearer-token signature/expiry and attaches the user ID to the request. It checks that the account exists; account status, roles and token revocation remain deferred. There is no refresh, password-recovery, email-verification, or session-validation endpoint. Logout clears the client's stored session. Session-expiry handling is not fully centralized.
 
-The current public comment response projects username and author ID, not private email or password hash. Contact submissions have no public listing endpoint. Public data projections must remain explicit as identity features expand.
+The current public comment response projects username, role and author ID, not private email or password hash. Contact submissions have no public listing endpoint. Public data projections must remain explicit as identity features expand.
 
 ## Reusable folders and Problems
 
@@ -143,7 +145,7 @@ Future authorization must distinguish users, content creators, moderators, and a
 
 Future Threads must retain appropriate edit/deletion/moderation history, including answer-status locks, under a defined retention/access policy. User-facing removal must not erase moderation-relevant history. Preserve original identity and relationships during any eventual comment transition.
 
-**Current comment deletion is still a permanent database delete.** Foundation work does not replace that endpoint, remove the Comment model, or migrate comments to Threads. This discrepancy is documented migration debt, not a pattern to copy into new community systems.
+**Comment deletion is a soft delete.** The document keeps its text plus who deleted it, in which capacity (author or moderation), when and why; the public API hides the text and author but keeps the comment's place so replies stay readable. This does not migrate comments to Threads. Roles and permissions are described in [ROLES.md](ROLES.md).
 
 ## Development, tests, and delivery
 
