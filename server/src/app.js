@@ -28,6 +28,18 @@ import reportsRoutes from './routes/reports.routes.js'
 
 const app = express()
 
+// Detrás de un proxy (como el balanceador de Render), cada petición llega
+// desde la IP del proxy. TRUST_PROXY_HOPS le dice a Express cuántos proxies
+// de confianza hay delante, para que req.ip (y por lo tanto los límites por
+// IP de abajo) use la IP real del visitante. Solo se acepta un entero
+// positivo: sin la variable, o con un valor inválido, no se confía en ningún
+// encabezado X-Forwarded-For. Nunca usamos `true`, que dejaría a cualquiera
+// falsificar su IP.
+const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS)
+if (Number.isInteger(trustProxyHops) && trustProxyHops > 0) {
+  app.set('trust proxy', trustProxyHops)
+}
+
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }))
 app.use(express.json())
 
@@ -40,7 +52,9 @@ app.use(express.json())
 //    ruta, no solo login).
 // 2. Uno más ESTRICTO solo para /api/auth, porque ahí es donde de verdad
 //    importa: sin esto, nada le impide a alguien probar miles de
-//    contraseñas por segundo (fuerza bruta).
+//    contraseñas por segundo (fuerza bruta). Solo cuentan los intentos
+//    fallidos: así un salón entero que entra desde la misma red escolar
+//    (misma IP) no se bloquea, y adivinar contraseñas sigue limitado.
 if (process.env.NODE_ENV !== 'test') {
   app.use(
     '/api',
@@ -58,6 +72,7 @@ if (process.env.NODE_ENV !== 'test') {
     rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 20,
+      skipSuccessfulRequests: true,
       standardHeaders: true,
       legacyHeaders: false,
       message: { error: 'Demasiados intentos. Espera unos minutos e intenta de nuevo.' },
