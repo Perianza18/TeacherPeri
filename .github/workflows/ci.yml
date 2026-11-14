@@ -34,7 +34,9 @@ jobs:
           npm run content:import -- --apply
           npm run content:check
   validate:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to Ubuntu 26 (Oct 2026), where
+    # `playwright install --with-deps` (Playwright 1.56) fails.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       MONGO_TEST_URI: mongodb://127.0.0.1:27017/teacherperi_test_ci
