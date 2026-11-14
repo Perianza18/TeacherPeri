@@ -24,8 +24,16 @@ import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
+import { requireAuth } from '../middleware/auth.js'
+import { roleOf } from '../lib/permissions.js'
 
 const router = Router()
+
+// Lo que el navegador recibe y guarda de la cuenta. El correo solo se manda
+// a su dueño (estas rutas siempre responden sobre la cuenta propia).
+function accountView(user) {
+  return { id: user._id, username: user.username, email: user.email, role: roleOf(user) }
+}
 
 // Crea el token que el navegador va a guardar y reenviar en cada petición
 // futura. `sub` (subject) es el nombre estándar de JWT para "de quién es
@@ -64,7 +72,7 @@ router.post('/signup', async (req, res) => {
     // iniciar sesión por separado.
     res.status(201).json({
       token: issueToken(user),
-      user: { id: user._id, username: user.username, email: user.email },
+      user: accountView(user),
     })
   } catch (err) {
     // Por si dos peticiones llegan al mismo tiempo y ambas pasan el chequeo
@@ -96,8 +104,17 @@ router.post('/login', async (req, res) => {
 
   res.json({
     token: issueToken(user),
-    user: { id: user._id, username: user.username, email: user.email },
+    user: accountView(user),
   })
+})
+
+// Devuelve la cuenta de la sesión actual. El sitio la consulta al cargar para
+// tener el rol al día (por ejemplo, justo después de que alguien te nombre
+// moderador) sin tener que cerrar sesión y volver a entrar.
+router.get('/me', requireAuth, async (req, res) => {
+  const user = await User.findById(req.userId).select('username email role').lean()
+  if (!user) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
+  res.json({ user: accountView(user) })
 })
 
 export default router

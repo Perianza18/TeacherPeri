@@ -20,6 +20,7 @@
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 import User from '../models/User.js'
+import { can, roleOf } from '../lib/permissions.js'
 
 export async function requireAuth(req, res, next) {
   // El navegador manda el token en un encabezado HTTP así:
@@ -38,12 +39,30 @@ export async function requireAuth(req, res, next) {
     // inventó) y que no ha expirado. Si algo falla, lanza un error.
     const payload = jwt.verify(token, process.env.JWT_SECRET)
 
-    // Guardamos el id del usuario en `req` para que la ruta que sigue
-    // (ej. crear un comentario) sepa quién está haciendo la petición.
-    if (typeof payload.sub !== 'string' || !mongoose.isObjectIdOrHexString(payload.sub) || !await User.exists({ _id: payload.sub })) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
+    // Guardamos el id y el rol del usuario en `req` para que la ruta que
+    // sigue (ej. crear un comentario) sepa quién hace la petición y qué puede
+    // hacer. El rol se lee de la base de datos en cada petición, no del token:
+    // si un admin cambia el rol de alguien, el cambio aplica de inmediato.
+    if (typeof payload.sub !== 'string' || !mongoose.isObjectIdOrHexString(payload.sub)) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
+    const user = await User.findById(payload.sub).select('role').lean()
+    if (!user) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
     req.userId = payload.sub
+    req.userRole = roleOf(user)
     next()
   } catch {
     return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
+  }
+}
+
+// Se usa DESPUÉS de requireAuth: corta con 403 si el rol de la persona no
+// incluye el permiso pedido (ver PERMISSIONS en lib/permissions.js).
+//
+//   router.delete('/:id', requireAuth, requirePermission('comments:moderate'), ...)
+export function requirePermission(permission) {
+  return (req, res, next) => {
+    if (!can({ role: req.userRole }, permission)) {
+      return res.status(403).json({ error: 'No tienes permiso para hacer esto.' })
+    }
+    next()
   }
 }

@@ -17,6 +17,7 @@
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
+import { DEFAULT_ROLE, ROLES } from '../lib/permissions.js'
 
 const userSchema = new mongoose.Schema(
   {
@@ -44,6 +45,16 @@ const userSchema = new mongoose.Schema(
     // para dónde se genera este valor.
     passwordHash: {
       type: String,
+      required: true,
+    },
+
+    // Qué puede hacer esta persona en el sitio (ver server/src/lib/permissions.js).
+    // Toda cuenta nueva empieza como `usuario`; el registro nunca acepta un rol
+    // enviado por el navegador. Solo un script o un admin puede cambiarlo.
+    role: {
+      type: String,
+      enum: ROLES,
+      default: DEFAULT_ROLE,
       required: true,
     },
   },
