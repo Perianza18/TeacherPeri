@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import { apiFetch } from '../lib/api'
+import { MY_SUBMISSIONS_PATH, PROPOSE_PATH } from '../lib/submissions'
 
 // Main navigation, in the order set by the design guide (DESIGN §6).
 // Universidad, Sobre mí and Contacto stay reachable from the Footer.
@@ -37,10 +39,34 @@ function useEscape(active, onClose) {
   }, [active, onClose])
 }
 
+// In-site notifications (a submission was approved or rejected). Loaded once
+// per session token and again whenever the menu opens.
+function useNotifications(token, open) {
+  const [data, setData] = useState({ unread: 0, items: [] })
+  useEffect(() => {
+    if (!token) return
+    let cancelled = false
+    apiFetch('/api/notifications', { token })
+      .then((result) => { if (!cancelled) setData(result) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [token, open])
+  const markRead = () => {
+    apiFetch('/api/notifications/read', { method: 'POST', token })
+      .then(() => setData((current) => ({ unread: 0, items: current.items.map((item) => ({ ...item, readAt: item.readAt || new Date().toISOString() })) })))
+      .catch(() => {})
+  }
+  return { ...data, markRead }
+}
+
+const fecha = (value) => new Date(value).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+
 // Logged-in account: a round avatar (first letter of the username until
-// preset avatars exist) that opens a small panel with «Cerrar sesión».
-function AccountMenu({ user, logout }) {
+// preset avatars exist) that opens a small panel with the account links,
+// notifications and «Cerrar sesión».
+function AccountMenu({ user, token, logout }) {
   const [open, setOpen] = useState(false)
+  const notifications = useNotifications(token, open)
   const wrapper = useRef(null)
   const button = useRef(null)
   const initial = (user.username || '?').trim().charAt(0).toUpperCase() || '?'
@@ -66,15 +92,36 @@ function AccountMenu({ user, logout }) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls="tp-account-panel"
-        aria-label={`Cuenta de ${user.username}`}
-        className="grid h-11 w-11 place-items-center rounded-full border-2 border-black bg-accent-purple-soft text-lg font-black text-brand-900"
+        aria-label={`Cuenta de ${user.username}${notifications.unread ? `, ${notifications.unread} ${notifications.unread === 1 ? 'notificación nueva' : 'notificaciones nuevas'}` : ''}`}
+        className="relative grid h-11 w-11 place-items-center rounded-full border-2 border-black bg-accent-purple-soft text-lg font-black text-brand-900"
       >
         <span aria-hidden="true">{initial}</span>
+        {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-black bg-tp-coral px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
       </button>
       {open && (
-        <div id="tp-account-panel" className="tp-card-soft absolute right-0 top-full z-50 mt-3 w-64 bg-white p-5">
+        <div id="tp-account-panel" className="tp-card-soft absolute right-0 top-full z-50 mt-3 w-72 max-w-[calc(100vw-32px)] bg-white p-5">
           <p className="text-xs font-black uppercase tracking-[0.12em] text-brand-600">Sesión iniciada como</p>
           <p className="mt-1 truncate text-base font-bold text-brand-900">{user.username}</p>
+          <nav aria-label="Tu cuenta" className="mt-3 flex flex-col">
+            <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-brand-900 hover:text-violet-700">Mis envíos</Link>
+            <Link to={PROPOSE_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-brand-900 hover:text-violet-700">Proponer un problema</Link>
+          </nav>
+          {notifications.items.length > 0 && (
+            <section aria-labelledby="tp-avisos" className="mt-3 border-t-2 border-dashed border-tp-rule pt-3">
+              <div className="flex items-center justify-between gap-2">
+                <h2 id="tp-avisos" className="text-xs font-black uppercase tracking-[0.12em] text-brand-600">Notificaciones</h2>
+                {notifications.unread > 0 && <button type="button" onClick={notifications.markRead} className="min-h-11 text-xs font-semibold text-violet-700 underline">Marcar como leídas</button>}
+              </div>
+              <ul className="mt-1 flex max-h-56 flex-col gap-2 overflow-y-auto">
+                {notifications.items.slice(0, 5).map((item) => (
+                  <li key={item._id} className={`rounded-lg p-2 text-sm leading-5 ${item.readAt ? 'text-brand-600' : 'bg-tp-yellow-soft text-brand-900'}`}>
+                    <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="hover:underline">{item.message}</Link>
+                    <span className="mt-0.5 block text-xs text-tp-ink-muted">{fecha(item.createdAt)}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           <button
             type="button"
             onClick={() => { setOpen(false); logout() }}
@@ -90,7 +137,7 @@ function AccountMenu({ user, logout }) {
 
 function AuthControl() {
   const { auth, logout, abrirModal } = useAuth()
-  if (auth) return <AccountMenu user={auth.user} logout={logout} />
+  if (auth) return <AccountMenu user={auth.user} token={auth.token} logout={logout} />
   return (
     <button
       type="button"

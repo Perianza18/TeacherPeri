@@ -45,9 +45,9 @@ export function mathFindings(text) {
   for (const { source, display } of formulas) {
     try {
       katex.renderToString(source, { throwOnError: true, displayMode: display })
-    } catch (error) {
-      const detail = String(error?.message || '').replace(/^KaTeX parse error:\s*/, '').slice(0, 160)
-      findings.push({ level: 'error', code: 'math-error', message: `Una fórmula no se puede mostrar: $${source.slice(0, 60)}$ (${detail}).` })
+    } catch {
+      const shown = source.length > 60 ? `${source.slice(0, 60)}…` : source
+      findings.push({ level: 'error', code: 'math-error', message: `Una fórmula no se puede mostrar: $${shown}$. Revisa que cada { tenga su } y que los comandos estén bien escritos.` })
     }
   }
   return findings

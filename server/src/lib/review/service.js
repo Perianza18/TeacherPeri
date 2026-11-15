@@ -194,13 +194,18 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
   const proposal = applyFixes(submission.proposed.toObject(), fixes, ctx)
   if (fixes.difficulty && !DIFFICULTY_LEVELS.includes(fixes.difficulty)) throw new ReviewError(`--difficulty must be one of ${DIFFICULTY_LEVELS.join(', ')}.`)
 
-  const findings = runSubmissionChecks(proposal, ctx)
+  // A pending folder is approved together with the problem (listed in
+  // `changes`), so its «still in review» note does not apply here.
+  const findings = runSubmissionChecks(proposal, ctx).filter((finding) => finding.code !== 'exam-folder-pending')
   if (!proposal.topics.length) findings.push({ level: 'error', code: 'no-topic', message: 'Add at least one área (--topics) before approving.' })
   if (hasErrors(findings)) throw new ReviewError('Fix the errors before approving.', findings)
 
   const author = await User.findById(submission.author).select('username').lean()
   const derived = derivedProblemFields(proposal, { folders: ctx.foldersById, topics: ctx.topics, current: problem.toObject() })
   const path = proposal.isExam ? folderPath(proposal.examFolder, ctx.foldersById).slice(1).join(' › ') : ''
+  // The automatic credit follows the folder; a credit an admin wrote by hand stays.
+  const autoCredit = `${path ? `${path}. ` : ''}Propuesto por ${author?.username ?? 'la comunidad'} en la comunidad de TeacherPeri.`
+  const keepCredit = problem.sourceAttribution && !problem.sourceAttribution.endsWith('en la comunidad de TeacherPeri.')
   const update = {
     enunciado: proposal.enunciado,
     topics: proposal.topics,
@@ -208,7 +213,7 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
     ...derived,
     ...(fixes.title ? { titulo: fixes.title } : {}),
     ...(fixes.difficulty ? { difficulty: fixes.difficulty } : {}),
-    sourceAttribution: fixes.attribution || problem.sourceAttribution || `${path ? `${path}. ` : ''}Propuesto por ${author?.username ?? 'la comunidad'} en la comunidad de TeacherPeri.`,
+    sourceAttribution: fixes.attribution || (keepCredit ? problem.sourceAttribution : autoCredit),
     publicationStatus: 'published',
     approvedAt: problem.approvedAt || new Date(),
   }
