@@ -74,7 +74,7 @@ only `keep`. A fresh database gets everything from `content:import`.
 
 ## Included content and sources
 
-37 Spanish Theory lessons, 36 original Problems, six canonical problem Lists,
+37 Spanish Theory lessons, 56 original Problems (20 of them from the rewritten lessons), six lesson problem collections, six canonical problem Lists,
 three attributed external resources, three original practice Exams and the
 five-cycle curriculum structure. Only preparation/Ciclo 1 and two congruence
 leaves of Ciclo 2 are published. Future cycles retain draft Paths and title-only
