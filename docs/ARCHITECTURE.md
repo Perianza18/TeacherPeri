@@ -52,6 +52,7 @@ There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/mater
 | `GET /api/problems`, `GET /api/problems/:id` | Public Problem listing/detail; query parameters opt into server-side discovery pagination |
 | `GET /api/theory`, `GET /api/theory/:id` | Published Theory listing/detail |
 | `GET /api/lists`, `GET /api/lists/:id` | Published externally authored List listing/detail |
+| `GET /api/collections/:slug` | The published problem boxes of a theory lesson (`ejercicios`, `practice`, `dificiles`) in order, public problems only, with comment counts |
 | `GET /api/exams`, `GET /api/exams/:id` | Published Exam listing/detail with ordered Problem references |
 | `GET /api/paths`, `GET /api/paths/:slug` | Public discovery and standalone detail for structurally valid published Paths |
 | `GET /api/paths?traversal=a/b` | Validated contextual Path traversal and breadcrumbs without reserving a Path slug |
@@ -73,6 +74,7 @@ Existing Mongoose models are:
 | `Tag` | Centrally controlled flat name/slug/label descriptor |
 | `Theory` | Native mathematical article with summary, rich text/LaTex source, level, shared metadata, folders, and lifecycle |
 | `List` | Attributed external-resource record with source/PDF links, optional level, shared metadata, folders, and lifecycle |
+| `ProblemCollection` | Ordered Problem references behind one box of a theory lesson, unique per `slug` + `kind`; lesson text points to it with `[[collection:<slug>:<kind>]]` |
 | `Exam` | Competition/year/round metadata and ordered references to existing Problems |
 | `Comment` | Problem reference, author reference, flat text body |
 | `ContactMessage` | Author reference, profile category, contact reason, message |

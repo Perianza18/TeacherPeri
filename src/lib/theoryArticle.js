@@ -45,6 +45,13 @@ export function figureUrl(src) {
   return /^figuras\/[\w.-]+$/.test(src) && !src.includes('..') ? `/${src}` : null
 }
 
+// Distinct collection slugs the lesson text points to, in order, so the
+// page can load each slug's boxes once.
+export function collectionSlugs(content) {
+  const slugs = String(content || '').split(/\r\n?|\n/).map((line) => COLLECTION.exec(line.trim())?.[1]).filter(Boolean)
+  return [...new Set(slugs)]
+}
+
 export function levelLabel(level) {
   return LEVELS[level] ? `Nivel ${LEVELS[level]}` : ''
 }

@@ -8,7 +8,7 @@ import PracticeBox from '../../../src/components/content/PracticeBox.jsx'
 import { AuthContext } from '../../../src/context/useAuth.js'
 import { buildRutaContext, cicloShortName } from '../../../src/lib/rutaContext.js'
 import { parseInline } from '../../../src/lib/inlineMarkup.js'
-import { figureUrl, isHeadingLine, levelLabel, parseArticle, readingMinutes, sentenceCase } from '../../../src/lib/theoryArticle.js'
+import { collectionSlugs, figureUrl, isHeadingLine, levelLabel, parseArticle, readingMinutes, sentenceCase } from '../../../src/lib/theoryArticle.js'
 
 // Placeholder text in the older stored lesson format (not real lesson content).
 const OLD_CONTENT = `Introducción de la lección.
@@ -340,5 +340,47 @@ describe('Theory page', () => {
 
   it('hides the practice box when the lesson has no problems', () => {
     expect(render({ item: ITEM, route: null, problems: [] })).not.toContain('>Practica<')
+  })
+})
+
+// A lesson in the new markup whose boxes come from /api/collections.
+const BOXES_ITEM = { ...ITEM, content: 'Intro.\n\n## Ejercicios\n\n[[collection:tema:ejercicios]]\n\n## Problemas\n\n[[collection:tema:practice]]\n\n## Problemas de mayor dificultad\n\n[[collection:tema:dificiles]]' }
+const row = (id, extra = {}) => ({ _id: id, titulo: 'TÍTULO OCULTO', enunciado: `Enunciado ${id}.`, difficulty: 'basico', commentCount: 1, ...extra })
+
+describe('Theory page collections', () => {
+  it('lists each collection slug once', () => {
+    expect(collectionSlugs(BOXES_ITEM.content)).toEqual(['tema'])
+    expect(collectionSlugs('[[collection:a:practice]]\n[[collection:b:challenge]]\n[[collection:a:dificiles]]\nTexto [[collection:c:practice]] en línea.')).toEqual(['a', 'b'])
+  })
+
+  it('fills the three boxes from loaded collections, with one toggle per hint', () => {
+    const collections = {
+      'tema:ejercicios': [row('e1', { hint: 'Primera idea.\n\nSegunda idea.' }), row('e2', { hint: 'Una sola pista.' })],
+      'tema:practice': [row('p1'), row('p2')],
+      'tema:dificiles': [row('d1', { hint: 'Nunca se muestra.' })],
+    }
+    const html = render({ item: BOXES_ITEM, route: null, problems: PROBLEMS, collections })
+    expect(html).toContain('tp-kicker-ink font-sans tracking-[0.12em]">Ejercicios<')
+    expect(html).toContain('2 ejercicios para esta lección')
+    expect(html).toContain('Ver pista 1')
+    expect(html).toContain('Ver pista 2')
+    expect(html).toContain('>Ver pista<')
+    expect(html).toContain('tp-kicker-ink font-sans tracking-[0.12em]">Practica<')
+    expect(html).toContain('2 problemas para esta lección')
+    expect(html).toContain('2 problemas de práctica')
+    expect(html).toContain('tp-kicker-ink font-sans tracking-[0.12em]">Reto<')
+    expect(html).toContain('1 problema de reto')
+    expect(html).not.toContain('Nunca se muestra.')
+    expect(html).not.toContain('Enunciado con $y$.')
+    expect(html).not.toContain('TÍTULO OCULTO')
+    expect(html).toContain('href="/entrenamiento/problemas/e1"')
+  })
+
+  it('without collections: practice falls back to the lesson problems, the other boxes stay hidden', () => {
+    const html = render({ item: BOXES_ITEM, route: null, problems: PROBLEMS })
+    expect(html).not.toContain('tp-kicker-ink font-sans tracking-[0.12em]">Ejercicios<')
+    expect(html).not.toContain('tp-kicker-ink font-sans tracking-[0.12em]">Reto<')
+    expect(html).toContain('tp-kicker-ink font-sans tracking-[0.12em]">Practica<')
+    expect(html).toContain('1 problema de práctica')
   })
 })

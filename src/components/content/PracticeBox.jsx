@@ -20,6 +20,12 @@ function commentLabel(count) {
   return count === 0 ? 'Sin comentarios' : plural(count, 'comentario', 'comentarios')
 }
 
+// A hint with blank lines between paragraphs is several hints, each behind
+// its own toggle («Ver pista 1», «Ver pista 2»).
+function hintsOf(hint) {
+  return String(hint || '').split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean)
+}
+
 // `problem.href` overrides the link; null hides «Resolver» (draft problems).
 export default function PracticeBox({ kind = 'practice', problems, context = '' }) {
   const id = useId()
@@ -39,12 +45,12 @@ export default function PracticeBox({ kind = 'practice', problems, context = '' 
               <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-0.5">
                 {meta && <span className="font-sans text-[13px] font-semibold text-tp-ink-muted">{meta}</span>}
                 <RichText as="div" text={problem.enunciado} keepLines={false} className="line-clamp-3" />
-                {config.hints && problem.hint && (
-                  <details className="mt-1">
-                    <summary className="cursor-pointer py-3 font-sans text-sm font-bold">Ver pista</summary>
-                    <RichText text={problem.hint} className="pb-1 text-[17px] text-tp-ink-soft" />
+                {config.hints && hintsOf(problem.hint).map((hint, hintIndex, hints) => (
+                  <details key={hintIndex} className={hintIndex === 0 ? 'mt-1' : ''}>
+                    <summary className="cursor-pointer py-3 font-sans text-sm font-bold">{hints.length > 1 ? `Ver pista ${hintIndex + 1}` : 'Ver pista'}</summary>
+                    <RichText text={hint} className="pb-1 text-[17px] text-tp-ink-soft" />
                   </details>
-                )}
+                ))}
               </div>
               {href && <Link to={href} aria-label={`Resolver ${config.label === 'Ejercicios' ? 'ejercicio' : 'problema'} ${index + 1}`} className="tp-button whitespace-nowrap bg-tp-mint px-4 font-sans text-[15px] font-bold text-tp-ink">Resolver<span aria-hidden="true">{' →'}</span></Link>}
             </li>

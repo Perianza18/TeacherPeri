@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/api'
 import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
+import { collectionSlugs } from '../lib/theoryArticle'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -16,6 +17,13 @@ function loadPracticeProblem(id) {
     apiFetch(`/api/problems/${id}`),
     apiFetch(`/api/problems/${id}/comments`).then((list) => (Array.isArray(list) ? list.filter((comment) => !comment.deleted).length : null)).catch(() => null),
   ]).then(([problem, commentCount]) => ({ ...problem, commentCount })).catch(() => null)
+}
+
+// The problems of every `[[collection:<slug>:<kind>]]` in the lesson, keyed
+// `slug:kind`. A slug that can't be loaded just leaves its boxes out.
+function loadCollections(content) {
+  return Promise.all(collectionSlugs(content).map((slug) => apiFetch(`/api/collections/${encodeURIComponent(slug)}`).catch(() => null)))
+    .then((results) => Object.fromEntries(results.filter(Boolean).flatMap(({ slug, collections }) => Object.entries(collections).map(([kind, problems]) => [`${slug}:${kind}`, problems]))))
 }
 
 // The Path of every breadcrumb above the leaf, root first (null if missing).
@@ -49,13 +57,14 @@ export default function LibraryDetailPage({ type }) {
         const sourcePaths = type === 'teoria' && !belongs ? await Promise.all((paths.items || []).slice(0, 8).map((path) => apiFetch(`/api/paths/${encodeURIComponent(path.slug)}`).catch(() => null))) : []
         const problemRefs = belongs ? refs : sourcePaths.flatMap((path) => path?.path?.steps?.flatMap((step) => step.teacherperiReferences) || [])
         const problemIds = [...new Set(problemRefs.filter((ref) => ref.available && ref.contentType === 'Problem').map((ref) => ref.targetId))]
-        const [problems, ancestors] = type === 'teoria'
+        const [problems, ancestors, collections] = type === 'teoria'
           ? await Promise.all([
             Promise.all(problemIds.map(loadPracticeProblem)).then((list) => list.filter(Boolean)),
             belongs ? loadAncestors(route.breadcrumbs) : [],
+            loadCollections(item.content),
           ])
-          : [[], []]
-        if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems, ancestors })
+          : [[], [], {}]
+        if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems, ancestors, collections })
       })
       .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, paths: [] }) })
     return () => { cancelled = true }
@@ -67,7 +76,7 @@ export default function LibraryDetailPage({ type }) {
   // Theory has its own page (two contexts, see TheoryView). An invalid
   // `?ruta=` leaves `route` null, which falls back to the library version.
   if (type === 'teoria') {
-    return <TheoryView item={item} error={error} route={route} ancestors={result.ancestors} problems={result.problems} relatedRoutes={relatedRoutes} context={route ? context : ''} rutaRequested={Boolean(traversal)} />
+    return <TheoryView item={item} error={error} route={route} ancestors={result.ancestors} problems={result.problems} collections={result.collections} relatedRoutes={relatedRoutes} context={route ? context : ''} rutaRequested={Boolean(traversal)} />
   }
 
   return <section className="tp-reading min-h-[70vh] px-4 pb-24 pt-12 sm:px-6"><div className="mx-auto max-w-4xl">

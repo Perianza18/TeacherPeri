@@ -8,7 +8,7 @@ import RichText from '../content/RichText'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
-import { levelLabel, parseArticle, readingMinutes } from '../../lib/theoryArticle'
+import { collectionSlugs, levelLabel, parseArticle, readingMinutes } from '../../lib/theoryArticle'
 import { buildRutaContext } from '../../lib/rutaContext'
 
 // Theory detail page (spec «Página de teoría»). One page, two contexts:
@@ -147,7 +147,7 @@ function useStepCompletion(strip) {
   return { completed, parentProgress: current.parent, busy, error, toggle }
 }
 
-function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context, renderCollection: renderCollectionProp, resolveFigure }) {
+function TheoryPage({ item, route, ancestors, problems, collections, relatedRoutes, context, renderCollection: renderCollectionProp, resolveFigure }) {
   const article = useMemo(() => parseArticle(item.content), [item.content])
   const ruta = useMemo(() => (route ? buildRutaContext(route, ancestors) : null), [route, ancestors])
   const strip = ruta?.strip || null
@@ -159,16 +159,23 @@ function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context, 
     { label: 'Teoría', href: LIBRARY_BASE.theory },
     { label: item.title, current: true },
   ]
+  // A `[[collection:<slug>:<kind>]]` box shows that collection's problems.
+  // Without a collection, a practice box falls back to the lesson's problems
+  // (from its Ruta steps); the other kinds stay hidden.
+  const practice = problems.length > 0 ? <PracticeBox problems={problems} context={context} /> : null
+  const collectionBox = (slug, kind) => {
+    const list = collections[`${slug}:${kind}`]
+    if (list?.length) return <PracticeBox kind={kind} problems={list} context={context} />
+    return kind === 'practice' ? practice : null
+  }
+  const renderCollection = renderCollectionProp || collectionBox
+  const practiceCount = collectionSlugs(item.content).reduce((count, slug) => count + (collections[`${slug}:practice`]?.length || 0), 0) || problems.length
   const meta = [
     `Lectura · ${readingMinutes(item.content)} min`,
     levelLabel(item.level),
-    problems.length > 0 && plural(problems.length, 'problema de práctica', 'problemas de práctica'),
+    practiceCount > 0 && plural(practiceCount, 'problema de práctica', 'problemas de práctica'),
   ].filter(Boolean)
   const sections = article.sections
-  // Lesson problems fill the practice box and `[[collection:…:practice]]`;
-  // other collection kinds only show when the page has data for them.
-  const practice = problems.length > 0 ? <PracticeBox problems={problems} context={context} /> : null
-  const renderCollection = renderCollectionProp || ((slug, kind) => (kind === 'practice' ? practice : null))
 
   return (
     <>
@@ -212,11 +219,11 @@ function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context, 
   )
 }
 
-// `renderCollection(slug, kind)` lets a page supply collection data (the
-// dev test lesson does); without it, `practice` collections use the lesson's
-// problems and the other kinds stay hidden. `resolveFigure(src)` maps figure
-// paths to URLs (default: public/figuras).
-export default function TheoryView({ item, error, route, ancestors = [], problems = [], relatedRoutes = [], context = '', rutaRequested = false, renderCollection, resolveFigure }) {
+// `collections` holds the loaded boxes, keyed `slug:kind` (from
+// /api/collections). `renderCollection(slug, kind)` replaces that lookup
+// (the dev test lesson uses it). `resolveFigure(src)` maps figure paths to
+// URLs (default: public/figuras).
+export default function TheoryView({ item, error, route, ancestors = [], problems = [], collections = {}, relatedRoutes = [], context = '', rutaRequested = false, renderCollection, resolveFigure }) {
   // «Rutas» is active in Ruta context; while loading, trust the query.
   const inRuta = item ? Boolean(route) : rutaRequested
   return (
@@ -224,7 +231,7 @@ export default function TheoryView({ item, error, route, ancestors = [], problem
       <Navbar activePath={inRuta ? '/rutas' : '/entrenamiento'} />
       <main className="min-h-screen bg-tp-paper pt-[72px] text-tp-ink">
         {item
-          ? <TheoryPage item={item} route={route} ancestors={ancestors} problems={problems} relatedRoutes={relatedRoutes} context={context} renderCollection={renderCollection} resolveFigure={resolveFigure} />
+          ? <TheoryPage item={item} route={route} ancestors={ancestors} problems={problems} collections={collections} relatedRoutes={relatedRoutes} context={context} renderCollection={renderCollection} resolveFigure={resolveFigure} />
           : (
             <div className="tp-container py-12">
               {error
