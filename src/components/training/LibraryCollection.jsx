@@ -4,15 +4,16 @@ import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import MathText from '../math/MathText'
 import PageHero from '../PageHero'
-import { Mark } from '../decor/Decor'
+import { GlyphTile } from '../decor/Decor'
+import { SkeletonGrid } from '../Skeleton'
 
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
-// Header tone and title mark per library, and a strip color per problem area.
+// Header tone and symbol sticker per library, and a strip color per problem area.
 const LOOK = {
-  problems: { tone: 'violet', mark: 'var(--tp-violet)', strip: 'bg-tp-yellow' },
-  theory: { tone: 'sky', mark: 'var(--tp-violet)', strip: 'bg-tp-tint-sky' },
-  exams: { tone: 'coral', mark: 'var(--tp-yellow)', strip: 'bg-tp-coral-soft' },
-  lists: { tone: 'mint', mark: 'var(--tp-violet)', strip: 'bg-tp-mint-soft' },
+  problems: { tone: 'violet', strip: 'bg-tp-yellow', glyph: '?', tile: 'bg-tp-yellow', small: 'x²' },
+  theory: { tone: 'sky', strip: 'bg-tp-tint-sky', glyph: 'π', tile: 'bg-tp-surface', small: '∞' },
+  exams: { tone: 'coral', strip: 'bg-tp-coral-soft', glyph: 'Σ', tile: 'bg-tp-yellow', small: '✓' },
+  lists: { tone: 'mint', strip: 'bg-tp-mint-soft', glyph: '√', tile: 'bg-tp-surface', small: 'n!' },
 }
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-coral', 'Teoría de Números': 'bg-tp-mint' }
 const CHIP = 'cursor-pointer rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1 text-xs font-semibold transition-colors hover:bg-tp-yellow-soft has-[:checked]:bg-tp-yellow'
@@ -64,7 +65,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const look = LOOK[type] || LOOK.problems
 
   return <>
-    <PageHero id="biblioteca-titulo" tone={look.tone} kicker={eyebrow} title={<Mark color={look.mark} delay={300}>{title}</Mark>} lead={subtitle} className="lg:pb-14" />
+    <PageHero id="biblioteca-titulo" tone={look.tone} kicker={eyebrow} title={title} art={<GlyphTile glyph={look.glyph} color={look.tile} small={look.small} />} lead={subtitle} className="lg:pb-14" />
     <section className="tp-container pb-24 pt-10">
     <div className="tp-card-soft bg-tp-surface p-5 sm:p-6">
       <label className="text-sm font-bold text-tp-ink">Buscar en {title.toLowerCase()}<input type="search" value={filters.q} onChange={(e) => change('q', e.target.value)} placeholder="Título, tema o palabra clave" className="tp-input mt-2 bg-tp-paper" /></label>
@@ -82,6 +83,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
       {children.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{children.map((c) => <button key={c._id} onClick={() => navigateFolder(c._id)} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{c.name}<span aria-hidden="true">→</span></button>)}</div>}
     </nav>
     <div aria-live="polite" className="mt-10 font-display text-[22px] font-extrabold tracking-[-0.02em]">{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : `${results.total} resultados`}</div>
+    {loading && <SkeletonGrid count={6} className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3" />}
     {!loading && !results.error && !results.total && <p className="tp-card-quiet mt-4 bg-tp-surface p-6">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p>}
     {!loading && <div className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{results.items.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
       <div className={`flex items-center justify-between gap-2 border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || look.strip}`}>

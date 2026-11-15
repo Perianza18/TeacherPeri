@@ -14,17 +14,26 @@ const NAV_LINKS = [
 ]
 
 // The active item gets a hand-drawn violet squiggle; the rest use muted ink.
-const linkClass = ({ isActive }) =>
-  `font-semibold transition-colors ${isActive ? 'tp-squiggle text-tp-ink' : 'text-tp-ink-muted hover:text-tp-ink'}`
+// `big` is the poster-sized version for the mobile menu panel.
+const linkClass = ({ isActive }, big = false) => big
+  ? `font-display text-[36px] font-extrabold leading-none tracking-[-0.035em] transition-colors ${isActive ? 'tp-squiggle text-tp-ink' : 'text-tp-ink hover:text-tp-violet'}`
+  : `font-semibold transition-colors ${isActive ? 'tp-squiggle text-tp-ink' : 'text-tp-ink-muted hover:text-tp-ink'}`
+
+// Secondary pages, only in the mobile menu (desktop reaches them from the Footer).
+const MORE_LINKS = [
+  { path: '/estudia-en-el-extranjero', label: 'Universidad' },
+  { path: '/sobre-mi', label: 'Sobre mí' },
+  { path: '/contacto', label: 'Contacto' },
+]
 
 // A page can pick the active item when its URL alone can't: a lesson opened
 // from a Ruta lives under /entrenamiento but belongs to Rutas.
-function NavItem({ link, activePath, className, onClick }) {
+function NavItem({ link, activePath, className, onClick, big = false }) {
   if (!activePath) {
-    return <NavLink to={link.path} end={link.path === '/'} onClick={onClick} className={(state) => `${className} ${linkClass(state)}`}>{link.label}</NavLink>
+    return <NavLink to={link.path} end={link.path === '/'} onClick={onClick} className={(state) => `${className} ${linkClass(state, big)}`}>{link.label}</NavLink>
   }
   const isActive = link.path === activePath
-  return <Link to={link.path} onClick={onClick} aria-current={isActive ? 'true' : undefined} className={`${className} ${linkClass({ isActive })}`}>{link.label}</Link>
+  return <Link to={link.path} onClick={onClick} aria-current={isActive ? 'true' : undefined} className={`${className} ${linkClass({ isActive }, big)}`}>{link.label}</Link>
 }
 
 // Calls onClose when Escape is pressed while `active` is true.
@@ -111,10 +120,25 @@ export default function Navbar({ activePath } = {}) {
   }, [])
   useEscape(isOpen, closeMenu)
 
+  // While the full-screen mobile menu is open the page behind it doesn't
+  // scroll; growing the window to desktop width closes the menu.
+  useEffect(() => {
+    if (!isOpen) return undefined
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const onChange = (event) => { if (event.matches) setIsOpen(false) }
+    desktop.addEventListener('change', onChange)
+    return () => {
+      document.body.style.overflow = previous
+      desktop.removeEventListener('change', onChange)
+    }
+  }, [isOpen])
+
   // Fixed height (69px row + 3px border = 72px). EntrenamientoPage's sticky
   // tab bar sits right below it, so keep both values in sync.
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-black bg-white">
+    <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-tp-ink bg-tp-surface">
       <nav aria-label="Principal">
         <div className="tp-container flex h-[69px] items-center justify-between gap-4">
           <Link to="/" className="tp-logo inline-flex min-h-11 shrink-0 items-center text-tp-ink">
@@ -139,7 +163,7 @@ export default function Navbar({ activePath } = {}) {
               aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={isOpen}
               aria-controls="tp-mobile-menu"
-              className="grid h-11 w-11 place-items-center rounded-xl border-2 border-black bg-white text-brand-900 lg:hidden"
+              className={`grid h-11 w-11 place-items-center rounded-xl border-2 border-tp-ink text-tp-ink shadow-[2px_2px_0_var(--tp-ink)] lg:hidden ${isOpen ? 'bg-tp-yellow' : 'bg-tp-surface'}`}
             >
               <span aria-hidden="true" className="text-xl leading-none">{isOpen ? '×' : '☰'}</span>
             </button>
@@ -147,19 +171,30 @@ export default function Navbar({ activePath } = {}) {
         </div>
 
         {isOpen && (
-          <div id="tp-mobile-menu" className="border-t-2 border-black bg-white px-4 pb-3 pt-2 sm:px-6 lg:hidden">
-            <ul className="mx-auto max-w-7xl">
-              {NAV_LINKS.map((link) => (
-                <li key={link.path}>
-                  <NavItem
-                    link={link}
-                    activePath={activePath}
-                    onClick={() => setIsOpen(false)}
-                    className="flex min-h-11 w-fit items-center px-2 text-base"
-                  />
-                </li>
-              ))}
-            </ul>
+          <div id="tp-mobile-menu" className="tp-graph fixed inset-x-0 bottom-0 top-[72px] overflow-y-auto bg-tp-yellow lg:hidden">
+            <div className="tp-container flex min-h-full flex-col gap-8 pb-10 pt-8">
+              <ul className="flex flex-col gap-2">
+                {NAV_LINKS.map((link) => (
+                  <li key={link.path}>
+                    <NavItem
+                      link={link}
+                      activePath={activePath}
+                      big
+                      onClick={() => setIsOpen(false)}
+                      className="inline-flex min-h-14 items-center pb-1.5"
+                    />
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto flex flex-col gap-4 border-t-2 border-dashed border-tp-ink pt-6">
+                <ul className="flex flex-wrap gap-x-6 gap-y-1 text-[15px] font-bold">
+                  {MORE_LINKS.map((link) => (
+                    <li key={link.path}><Link to={link.path} onClick={() => setIsOpen(false)} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">{link.label}</Link></li>
+                  ))}
+                </ul>
+                <p aria-hidden="true" className="tp-hand -rotate-2 text-[26px] text-tp-violet">¡Nos vemos en la olimpiada!</p>
+              </div>
+            </div>
           </div>
         )}
       </nav>

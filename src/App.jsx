@@ -16,7 +16,7 @@ import LibraryDetailPage from './pages/LibraryDetailPage'
 import ListasPage, { RedirectToListas } from './pages/ListasPage'
 import RutasPage from './pages/RutasPage'
 import PathPage from './pages/PathPage'
-import PagePlaceholder from './components/PagePlaceholder'
+import NotFoundPage from './pages/NotFoundPage'
 
 // Dev-only test lesson with every block of the lesson format; the production
 // build drops it because import.meta.env.DEV is false there.
@@ -53,7 +53,7 @@ function App() {
           <Route path="/contacto" element={<ContactoPage />} />
           <Route path="/sobre-mi" element={<SobreMiPage />} />
           <Route path="/colaboradores" element={<ColaboradoresPage />} />
-          <Route path="*" element={<PagePlaceholder title="Página no encontrada" kicker="Error 404" description="Regresa a Inicio o explora las Rutas y bibliotecas de entrenamiento." />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

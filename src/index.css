@@ -445,6 +445,9 @@ textarea {
   .tp-mark-underline .tp-mark-svg { left: -3%; bottom: -.16em; width: 106%; height: .34em; }
   .tp-mark-circle .tp-mark-svg { left: -9%; top: -16%; width: 118%; height: 134%; }
   .tp-mark-scribble .tp-mark-svg { left: -2%; bottom: -.2em; width: 104%; height: .42em; }
+  .tp-mark-arrow .tp-mark-svg { left: -2%; bottom: -.17em; width: 110%; height: .36em; }
+  .tp-mark-lines { margin-right: .42em; }
+  .tp-mark-lines .tp-mark-svg { left: auto; right: -.5em; top: -.34em; width: .52em; height: .52em; }
 
   .tp-mark-svg path {
     fill: none;
@@ -573,6 +576,20 @@ textarea {
   .tp-marquee:hover .tp-marquee-track {
     animation-play-state: paused;
   }
+}
+
+/* Loading bar inside a skeleton card (components/Skeleton.jsx). */
+.tp-skeleton {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ece6dc 25%, #f7f3ec 50%, #ece6dc 75%);
+  background-size: 200% 100%;
+  animation: tp-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes tp-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
 }
 
 @keyframes tp-reveal {

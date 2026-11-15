@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MathText from '../components/math/MathText'
 import PageHero from '../components/PageHero'
-import { Highlight, Mark } from '../components/decor/Decor'
+import { Highlight } from '../components/decor/Decor'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 
@@ -200,7 +200,7 @@ export default function PathPage() {
                 <section aria-labelledby="recorrido-titulo" className="max-w-[880px]">
                   <div className="flex flex-col items-start gap-4">
                     <span className="tp-sticker -rotate-2 bg-tp-surface">Recorrido</span>
-                    <h2 id="recorrido-titulo" className="tp-section-title">Continúa tu <Mark color="var(--tp-violet)">recorrido</Mark></h2>
+                    <h2 id="recorrido-titulo" className="tp-section-title">Continúa tu recorrido</h2>
                   </div>
 
                   <div className="relative mt-10 space-y-4 border-l-3 border-dashed border-tp-ink pl-5 sm:pl-9">
@@ -217,7 +217,7 @@ export default function PathPage() {
                 <section aria-labelledby="pasos-titulo" className="max-w-[880px]">
                   <div className="flex flex-col items-start gap-4">
                     <span className="tp-sticker -rotate-2 bg-tp-surface">Ruta hoja</span>
-                    <h2 id="pasos-titulo" className="tp-section-title"><Mark color="var(--tp-coral)">Pasos</Mark></h2>
+                    <h2 id="pasos-titulo" className="tp-section-title">Pasos</h2>
                   </div>
                   <div className="mt-10 space-y-5">
                     {path.steps.map((step) => (

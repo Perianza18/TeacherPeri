@@ -217,7 +217,7 @@ function RutaDestacada() {
         <div className="flex flex-wrap items-end justify-between gap-8">
           <div className="flex max-w-[680px] flex-col items-start gap-5">
             <span className="tp-sticker rotate-2 bg-tp-yellow">Ruta destacada</span>
-            <h2 id="ruta-destacada" className="tp-section-title">Preparación para la <Mark color="var(--tp-yellow)">OMM</Mark></h2>
+            <h2 id="ruta-destacada" className="tp-section-title">Preparación para la <Mark variant="lines" color="var(--tp-yellow)" width={6}>OMM</Mark></h2>
             <p className="tp-lead max-w-[520px] text-white/85">{ciclos.length} ciclos para entrenar en orden, a tu ritmo.</p>
           </div>
           <Link to={href} className="tp-button min-h-[52px] bg-tp-yellow px-6 text-[17px] font-bold text-tp-ink">Ver la Ruta<Arrow /></Link>
@@ -277,7 +277,7 @@ function SobreTeacherPeri() {
       <div className="tp-container relative grid items-center gap-14 py-20 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:py-28">
         <div className="flex flex-col items-start gap-5">
           <span className="tp-sticker -rotate-2 bg-tp-surface">Sobre TeacherPeri</span>
-          <h2 id="sobre-titulo" className="tp-section-title">Construido desde la experiencia de aprender, competir y <Mark color="var(--tp-violet)">enseñar.</Mark></h2>
+          <h2 id="sobre-titulo" className="tp-section-title">Construido desde la experiencia de aprender, competir y <Highlight color="var(--tp-sky)">enseñar</Highlight>.</h2>
           {/* Mission wording from QueEsTeacherPeri.jsx. */}
           <div className="tp-bubble mt-4 max-w-[640px] bg-tp-surface px-6 py-5 sm:px-7">
             <p className="text-[17px] leading-[1.65]"><strong>Misión:</strong> hacer que el entrenamiento para olimpiadas de matemáticas sea accesible para todos. Inspirados por la experiencia de dar talleres gratuitos a estudiantes y profesores.</p>

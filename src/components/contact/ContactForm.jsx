@@ -58,28 +58,30 @@ export default function ContactForm() {
 
   if (!auth) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-2xl border border-brand-200 bg-white p-8 text-center shadow-sm">
-        <p className="text-brand-700">Crea una cuenta para contactarnos.</p>
-        <button
-          type="button"
-          onClick={abrirModal}
-          className="tp-button bg-tp-violet px-5 py-2 text-sm font-black text-white"
-        >
-          Iniciar sesión
-        </button>
+      <div className="tp-card flex flex-col items-start gap-4 bg-tp-surface p-7">
+        <span className="tp-sticker -rotate-2 bg-tp-yellow">Para escribirme</span>
+        <p className="text-[17px] leading-relaxed">Crea una cuenta para contactarnos.</p>
+        <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={() => abrirModal('signup')} className="tp-button bg-tp-violet px-5 font-bold text-white">
+            Crear cuenta
+          </button>
+          <button type="button" onClick={() => abrirModal('login')} className="tp-button bg-tp-surface px-5 font-bold">
+            Ya tengo cuenta
+          </button>
+        </div>
       </div>
     )
   }
 
   if (enviado) {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center text-emerald-700 shadow-sm">
-        <p className="font-semibold">¡Mensaje enviado!</p>
-        <p className="text-sm">Gracias por escribir — te responderé pronto.</p>
+      <div role="status" className="tp-card flex flex-col items-start gap-3 bg-tp-mint p-7">
+        <p className="font-display text-[28px] font-extrabold leading-none tracking-[-0.03em]">¡Mensaje enviado!</p>
+        <p className="text-[16px]">Gracias por escribir — te responderé pronto.</p>
         <button
           type="button"
           onClick={() => setEnviado(false)}
-          className="mt-2 text-sm text-emerald-700 underline underline-offset-4"
+          className="mt-1 text-sm font-bold underline decoration-wavy decoration-2 underline-offset-4"
         >
           Enviar otro mensaje
         </button>
@@ -90,15 +92,15 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex max-w-md flex-col gap-4 rounded-2xl border border-brand-200 bg-white p-6 shadow-sm"
+      className="tp-card flex flex-col gap-4 bg-tp-surface p-6 sm:p-7"
     >
       {/* Nombre/correo NO se piden: ya vienen de la sesión iniciada. */}
-      <p className="text-sm text-brand-500">
-        Enviando como <strong className="text-brand-900">{auth.user.username}</strong>
+      <p className="text-sm text-tp-ink-muted">
+        Enviando como <strong className="text-tp-ink">{auth.user.username}</strong>
         {auth.user.email ? ` (${auth.user.email})` : ''}
       </p>
 
-      <label className="flex flex-col gap-1 text-sm text-brand-700">
+      <label className="flex flex-col gap-1.5 text-sm font-bold">
         ¿Quién eres?
         <select value={perfil} onChange={(e) => setPerfil(e.target.value)} className={selectClass}>
           {PERFILES.map((p) => (
@@ -107,7 +109,7 @@ export default function ContactForm() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-brand-700">
+      <label className="flex flex-col gap-1.5 text-sm font-bold">
         Motivo del mensaje
         <select value={motivo} onChange={(e) => setMotivo(e.target.value)} className={selectClass}>
           {MOTIVOS.map((m) => (
@@ -116,7 +118,7 @@ export default function ContactForm() {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm text-brand-700">
+      <label className="flex flex-col gap-1.5 text-sm font-bold">
         Mensaje
         <textarea
           value={mensaje}
@@ -128,12 +130,12 @@ export default function ContactForm() {
         />
       </label>
 
-      {error && <p className="text-sm text-rose-600">{error}</p>}
+      {error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft px-3 py-2 text-sm font-semibold">{error}</p>}
 
       <button
         type="submit"
         disabled={enviando}
-        className="tp-button bg-tp-violet px-4 py-2 text-sm font-black text-white disabled:opacity-50"
+        className="tp-button bg-tp-violet px-5 font-bold text-white disabled:opacity-50"
       >
         {enviando ? 'Enviando...' : 'Enviar mensaje'}
       </button>

@@ -58,7 +58,7 @@ export default function CommentSection({ problemId, auth, onAuthExpired, signIn 
 
   return (
     <section aria-labelledby={`comentarios-${problemId}`} className="flex flex-col gap-4">
-      <h4 id={`comentarios-${problemId}`} className="text-lg font-black text-brand-900">
+      <h4 id={`comentarios-${problemId}`} className="font-display text-[22px] font-extrabold tracking-[-0.02em] text-tp-ink">
         Comentarios{comments.length > 0 && <span className="ml-2 text-sm font-semibold text-brand-600">({comments.filter((c) => !c.deleted).length})</span>}
       </h4>
 

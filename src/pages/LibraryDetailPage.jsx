@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/api'
 import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
+import { SkeletonCard } from '../components/Skeleton'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
 import { hintLabel, splitHints } from '../lib/hints'
@@ -44,18 +45,36 @@ function Hints({ hint }) {
   )
 }
 
+// Two steps: opening the card first asks «¿Ya lo intentaste?»; only «Sí, ver
+// la solución» shows it. «Me doy 5 minutos más» closes the card again.
 function Solution({ solution }) {
+  const [stage, setStage] = useState('closed') // closed | asking | shown
+  const toggle = (event) => {
+    event.preventDefault()
+    setStage((current) => (current === 'closed' ? 'asking' : 'closed'))
+  }
+
   return (
-    <details className="group rounded-[16px] border-3 border-tp-ink bg-tp-mint-soft shadow-[5px_5px_0_var(--tp-ink)]">
-      <summary className={`${SUMMARY} flex-wrap gap-y-1 px-5 py-4 sm:px-6`}>
-        <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full border-2 border-tp-ink bg-tp-mint text-base font-extrabold">✓</span>
-        <span className="min-w-0 flex-1 font-display text-[19px] font-extrabold leading-tight tracking-[-0.02em] sm:text-[21px]">Ver solución razonada</span>
+    <details open={stage !== 'closed'} className="group rounded-[14px] border-2 border-tp-ink bg-tp-surface">
+      <summary onClick={toggle} className={`${SUMMARY} px-5 py-3.5 font-bold`}>
+        <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-tp-ink bg-tp-mint-soft text-sm font-extrabold">✓</span>
+        <span className="min-w-0 flex-1">Ver solución razonada</span>
         <Toggle />
-        <span className="tp-hand w-full pl-12 text-[23px] text-tp-ink-soft group-open:hidden">¿Ya lo intentaste? Date 5 minutos más.</span>
       </summary>
-      <div className="rounded-b-[13px] border-t-2 border-dashed border-tp-ink bg-tp-surface px-5 pb-6 pt-5 sm:px-6">
-        <MathText text={solution} className="tp-reading-text whitespace-pre-wrap leading-8" />
-      </div>
+      {stage === 'asking' && (
+        <div className="flex flex-col items-start gap-4 border-t-2 border-dashed border-tp-rule px-5 pb-5 pt-4">
+          <p className="tp-hand -rotate-1 text-[26px] leading-tight">¿Ya lo intentaste? Date 5 minutos más.</p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" autoFocus onClick={() => setStage('shown')} className="tp-button bg-tp-surface px-5 font-bold">Sí, ver la solución</button>
+            <button type="button" onClick={() => setStage('closed')} className="tp-button bg-tp-yellow px-5 font-bold">Me doy 5 minutos más</button>
+          </div>
+        </div>
+      )}
+      {stage === 'shown' && (
+        <div className="border-t-2 border-dashed border-tp-rule px-5 pb-5 pt-4">
+          <MathText text={solution} className="tp-reading-text whitespace-pre-wrap leading-8" />
+        </div>
+      )}
     </details>
   )
 }
@@ -152,7 +171,7 @@ export default function LibraryDetailPage({ type }) {
       {routeNav}
       {error
         ? <p role="alert" className="tp-card-quiet max-w-[760px] bg-tp-coral-soft p-4">{error}</p>
-        : <p className="text-tp-ink-muted">Cargando contenido…</p>}
+        : <><p className="text-tp-ink-muted">Cargando contenido…</p><div className="max-w-[800px]"><SkeletonCard strip={false} strong /></div></>}
     </div></section>
   }
 
