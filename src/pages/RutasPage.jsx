@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import PageHero from '../components/PageHero'
 import { Mark } from '../components/decor/Decor'
 import { SkeletonGrid } from '../components/Skeleton'
+import Penguin from '../components/decor/Penguin'
 import { apiFetch } from '../lib/api'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
@@ -62,7 +63,7 @@ export default function RutasPage() {
         <section aria-label="Rutas publicadas" className="tp-container py-16 lg:py-20">
           {loading && <><p className="sr-only">Cargando Rutas…</p><SkeletonGrid count={3} strip={false} strong className="grid gap-8 md:grid-cols-2 xl:grid-cols-3" /></>}
           {error && <p className="tp-card-quiet bg-tp-coral-soft p-4">No fue posible cargar las Rutas: {error}</p>}
-          {!loading && !error && paths.length === 0 && <p className="tp-card-soft bg-tp-surface p-6 text-[17px] text-tp-ink-soft">Todavía no hay Rutas publicadas.</p>}
+          {!loading && !error && paths.length === 0 && <div className="tp-card-soft flex items-center gap-5 bg-tp-surface p-6"><Penguin flip className="h-20 w-auto shrink-0" /><p className="text-[17px] text-tp-ink-soft">Todavía no hay Rutas publicadas.</p></div>}
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             {paths.map((path, index) => {
               const tone = CARD_TONES[index % CARD_TONES.length]

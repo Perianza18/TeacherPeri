@@ -578,6 +578,33 @@ textarea {
   }
 }
 
+/* «¡Listo!» celebration (decor/Celebration): the burst springs in, holds,
+   then fades; sparks fly out. Reduced motion ends both instantly (global
+   rule), leaving only the screen-reader status. */
+.tp-pop {
+  opacity: 0;
+  animation: tp-pop 1800ms cubic-bezier(.2, .8, .3, 1) forwards;
+}
+
+.tp-spark {
+  opacity: 0;
+  animation: tp-spark 900ms cubic-bezier(.15, .7, .3, 1) forwards;
+}
+
+@keyframes tp-pop {
+  0% { opacity: 0; transform: scale(.2) rotate(-25deg); }
+  16% { opacity: 1; transform: scale(1.14) rotate(8deg); }
+  28% { transform: scale(1) rotate(-4deg); }
+  78% { opacity: 1; transform: scale(1) rotate(-4deg); }
+  100% { opacity: 0; transform: translateY(-14px) scale(.96) rotate(-4deg); }
+}
+
+@keyframes tp-spark {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(45deg) scale(.3); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(200deg) scale(1); }
+}
+
 /* Loading bar inside a skeleton card (components/Skeleton.jsx). */
 .tp-skeleton {
   display: block;

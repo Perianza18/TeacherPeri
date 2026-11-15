@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Burst } from '../components/decor/Decor'
+import Penguin from '../components/decor/Penguin'
 
-// 404: a poster «4✸4» where the zero is a comic starburst, the page title
+// 404: a poster «4✸4» where the zero is a comic starburst and a puzzled
+// penguin stands beside it, the page title
 // for screen readers and search, and three ways back in.
 export default function NotFoundPage() {
   return (
@@ -21,6 +23,7 @@ export default function NotFoundPage() {
                 <span className="text-[0.62em] leading-none">0</span>
               </Burst>
               4
+              <Penguin question className="ml-[0.12em] h-[0.78em] w-auto self-end" />
             </p>
             <h1 id="no-encontrada" className="tp-page-title">Página no encontrada</h1>
             <p className="tp-hand -rotate-2 text-[32px] leading-tight">Este problema no tiene solución… todavía.</p>

@@ -5,6 +5,7 @@ import Footer from '../Footer'
 import ArticleText from '../training/ArticleText'
 import PracticeBox from '../content/PracticeBox'
 import RichText from '../content/RichText'
+import { Celebration } from '../decor/Decor'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
@@ -139,6 +140,7 @@ function useStepCompletion(strip) {
       const result = await apiFetch(`/api/paths/${encodeURIComponent(leafSlug)}/completion`, { method: 'PUT', body: { completed: !completed }, token })
       const parent = await apiFetch(`/api/paths/${encodeURIComponent(parentSlug)}/progress`, { token }).catch(() => null)
       setState({ key, leaf: result.progress, parent })
+      return result.progress?.percentage === 100
     } catch (requestError) {
       setError(requestError.message)
     } finally {
@@ -155,6 +157,9 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
   const strip = ruta?.strip || null
   const completion = useStepCompletion(strip)
   const [notice, setNotice] = useState('')
+  // Bumped each time the reader marks the step complete, to replay «¡Listo!».
+  const [celebration, setCelebration] = useState(0)
+  const markStep = async () => { if (await completion.toggle()) setCelebration((count) => count + 1) }
 
   const crumbs = ruta?.crumbs || [
     { label: 'Entrenamiento', href: '/entrenamiento' },
@@ -191,9 +196,12 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
           <div className="flex flex-col gap-2 pt-2 font-sans text-[15px]">
             <div className="flex flex-wrap items-center gap-3">
               {strip && (
-                <button type="button" onClick={completion.toggle} disabled={completion.busy} aria-pressed={completion.completed} className="tp-button bg-tp-mint px-4 font-bold text-tp-ink disabled:opacity-60">
-                  {completion.completed && <span aria-hidden="true">✓&nbsp;</span>}Marcar paso como completado
-                </button>
+                <span className="relative inline-flex">
+                  {celebration > 0 && <Celebration key={celebration} />}
+                  <button type="button" onClick={markStep} disabled={completion.busy} aria-pressed={completion.completed} className="tp-button bg-tp-mint px-4 font-bold text-tp-ink disabled:opacity-60">
+                    {completion.completed && <span aria-hidden="true">✓&nbsp;</span>}Marcar paso como completado
+                  </button>
+                </span>
               )}
               <button type="button" onClick={() => setNotice('Próximamente podrás guardar lecciones en tus listas.')} className="inline-flex min-h-11 items-center rounded-xl border-2 border-tp-ink bg-tp-surface px-4 font-bold">Guardar en lista</button>
               <Link to="/contacto" className="inline-flex min-h-11 items-center px-1 font-semibold text-tp-ink-muted underline underline-offset-2 hover:text-tp-ink">Sugerir cambio</Link>

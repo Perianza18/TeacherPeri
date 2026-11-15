@@ -86,6 +86,29 @@ export function Burst({ children, className = '', color = 'var(--tp-yellow)' }) 
   )
 }
 
+// «¡Listo!» pop: a starburst that springs out of a button with a few
+// sparks, then fades. Render it with a new `key` each time to replay it;
+// the status text tells screen readers what happened.
+const SPARKS = [[-70, -40, 'var(--tp-violet)'], [70, -46, 'var(--tp-coral)'], [-48, 30, 'var(--tp-sky)'], [56, 34, 'var(--tp-mint)'], [0, -70, 'var(--tp-yellow)'], [-84, 0, 'var(--tp-coral)']]
+
+export function Celebration({ label = '¡Listo!', status = 'Paso completado' }) {
+  return (
+    <span className="pointer-events-none absolute -top-16 left-6 z-10">
+      <span role="status" className="sr-only">{status}</span>
+      <span aria-hidden="true" className="relative block">
+        {SPARKS.map(([dx, dy, color], index) => (
+          <span key={index} className="tp-spark absolute left-1/2 top-1/2 size-3 rotate-45 rounded-[3px] border-2 border-tp-ink" style={{ '--dx': `${dx}px`, '--dy': `${dy}px`, background: color, animationDelay: `${index * 30}ms` }} />
+        ))}
+        <span className="tp-pop block">
+          <Burst className="size-[92px]" color="var(--tp-yellow)">
+            <span className="font-display text-[17px] font-extrabold leading-none">{label}</span>
+          </Burst>
+        </span>
+      </span>
+    </span>
+  )
+}
+
 // Speech-bubble tail. Place it so its top edge overlaps the bubble's bottom
 // border by the border width; its fill hides that piece of border.
 export function BubbleTail({ className = '', fill = 'var(--tp-surface)' }) {

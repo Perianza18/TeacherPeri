@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MathText from '../components/math/MathText'
 import PageHero from '../components/PageHero'
-import { Highlight } from '../components/decor/Decor'
+import { Celebration, Highlight } from '../components/decor/Decor'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 
@@ -62,6 +62,8 @@ export default function PathPage() {
   const [detailState, setDetailState] = useState({ traversalKey: null, detail: null, error: null })
   const [progressState, setProgressState] = useState({ progressKey: null, progress: null })
   const [updating, setUpdating] = useState(false)
+  // Bumped each time the reader marks the Ruta complete, to replay «¡Listo!».
+  const [celebration, setCelebration] = useState(0)
 
   const loading = detailState.traversalKey !== traversalKey
   const detail = loading ? null : detailState.detail
@@ -110,6 +112,7 @@ export default function PathPage() {
         token: auth.token,
       })
       setProgressState({ progressKey, progress: result.progress })
+      if (completed && result.progress?.percentage === 100) setCelebration((count) => count + 1)
     } catch (requestError) {
       setDetailState((current) => current.traversalKey === traversalKey ? { ...current, error: requestError.message } : current)
     } finally {
@@ -184,14 +187,17 @@ export default function PathPage() {
               )}
 
               {path.kind === 'leaf' && (
-                <button
-                  type="button"
-                  onClick={() => setCompletion(!completed)}
-                  disabled={updating}
-                  className="tp-button bg-tp-ink px-5 text-sm font-bold text-white disabled:opacity-50"
-                >
-                  {!auth ? 'Inicia sesión para marcarla completa' : completed ? 'Marcar como pendiente' : 'Marcar Ruta completa'}
-                </button>
+                <span className="relative inline-flex">
+                  {celebration > 0 && <Celebration key={celebration} status="Ruta completada" />}
+                  <button
+                    type="button"
+                    onClick={() => setCompletion(!completed)}
+                    disabled={updating}
+                    className="tp-button bg-tp-ink px-5 text-sm font-bold text-white disabled:opacity-50"
+                  >
+                    {!auth ? 'Inicia sesión para marcarla completa' : completed ? 'Marcar como pendiente' : 'Marcar Ruta completa'}
+                  </button>
+                </span>
               )}
             </PageHero>
 

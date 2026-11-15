@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import MathText from '../components/math/MathText'
+import { useInView } from '../hooks/useInView'
 import { BubbleTail, Burst, HandArrow, Highlight, Mark, Marquee } from '../components/decor/Decor'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
@@ -10,6 +10,10 @@ import { LIBRARY_BASE } from '../lib/libraryPaths'
 import { cicloNames, pickProblemOfTheDay, problemSourceLabel, stripDayPrefix } from '../lib/inicio'
 
 const FEATURED_RUTA_SLUG = 'preparacion-para-la-omm'
+
+// KaTeX is heavy; Inicio only needs it for the problem of the day, so it
+// loads on demand instead of with the first page.
+const MathText = lazy(() => import('../components/math/MathText'))
 
 const STEPS = [
   { title: 'Escoge una Ruta', text: 'Te guía en qué entrenar y en qué orden.', to: '/rutas', card: 'bg-tp-tint-violet', badge: 'bg-tp-violet text-white' },
@@ -82,7 +86,7 @@ function ProblemaDelDia({ problem }) {
         {problem?.tema && <span className="tp-pill bg-tp-surface py-px text-xs font-semibold">{problem.tema}</span>}
       </div>
       {problem
-        ? <MathText text={stripDayPrefix(problem.enunciado)} className="line-clamp-6 whitespace-pre-line text-[19px] leading-[1.6]" />
+        ? <Suspense fallback={<p className="text-[19px] leading-[1.6]">Cargando problema…</p>}><MathText text={stripDayPrefix(problem.enunciado)} className="line-clamp-6 whitespace-pre-line text-[19px] leading-[1.6]" /></Suspense>
         : <p className="text-[19px] leading-[1.6]">Cargando problema…</p>}
       {problem && (
         <div className="flex flex-wrap items-center gap-x-[18px] gap-y-3 pt-1">
@@ -162,6 +166,70 @@ function Ticker() {
   )
 }
 
+// Real totals from the libraries. A total that can't be loaded is left
+// out; with none the band isn't shown.
+const STATS = [
+  { api: 'problems', label: 'problemas para practicar', to: LIBRARY_BASE.problems, bar: 'bg-tp-violet' },
+  { api: 'theory', label: 'lecciones de teoría', to: LIBRARY_BASE.theory, bar: 'bg-tp-sky' },
+  { api: 'lists', label: 'listas de problemas', to: LIBRARY_BASE.lists, bar: 'bg-tp-mint' },
+  { api: 'exams', label: 'exámenes de práctica', to: LIBRARY_BASE.exams, bar: 'bg-tp-coral' },
+]
+
+function useLibraryTotals() {
+  const [totals, setTotals] = useState({})
+  useEffect(() => {
+    let active = true
+    Promise.all(STATS.map(({ api }) => apiFetch(`/api/${api}?page=1&limit=1`).then((data) => [api, data?.total]).catch(() => [api, null])))
+      .then((entries) => { if (active) setTotals(Object.fromEntries(entries.filter(([, total]) => total > 0))) })
+    return () => { active = false }
+  }, [])
+  return totals
+}
+
+// Counts up from 0 once it scrolls into view (instantly with reduced motion).
+function CountUp({ value }) {
+  const [ref, inView] = useInView({ threshold: 0.6 })
+  const output = useRef(null)
+  useEffect(() => {
+    if (!inView || !output.current) return undefined
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { output.current.textContent = value; return undefined }
+    let frame
+    const start = performance.now()
+    const tick = (now) => {
+      const t = Math.min((now - start) / 1200, 1)
+      if (output.current) output.current.textContent = Math.round(value * (1 - (1 - t) ** 3))
+      if (t < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [inView, value])
+  return <span ref={ref}><span ref={output}>0</span></span>
+}
+
+function EnNumeros() {
+  const totals = useLibraryTotals()
+  const stats = STATS.filter(({ api }) => totals[api])
+  if (!stats.length) return null
+  return (
+    <section aria-label="TeacherPeri en números" className="border-b-3 border-tp-ink bg-tp-surface">
+      <ul className="tp-container grid grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <li key={stat.api} className={`border-dashed border-tp-rule ${index % 2 === 1 ? 'border-l-2' : ''} ${index >= 2 ? 'border-t-2 lg:border-t-0' : ''} ${index === 2 ? 'lg:border-l-2' : ''}`}>
+            <Link to={stat.to} className="group flex flex-col items-start gap-2 px-4 py-9 sm:px-8 lg:py-12">
+              <span className="font-display text-[clamp(52px,6vw,84px)] font-extrabold leading-none tracking-[-0.05em]">
+                <span className="sr-only">{totals[stat.api]}</span>
+                <span aria-hidden="true"><CountUp value={totals[stat.api]} /></span>
+              </span>
+              <span aria-hidden="true" className={`h-2 w-12 rounded-full border-2 border-tp-ink transition-[width] duration-300 group-hover:w-20 ${stat.bar}`} />
+              <span className="text-[15px] font-semibold text-tp-ink-soft group-hover:text-tp-ink">{stat.label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 function ComoEmpezar() {
   return (
     <section id="como-empezar" aria-labelledby="como-empezar-titulo" className="scroll-mt-24 bg-tp-paper">
@@ -193,6 +261,23 @@ function ComoEmpezar() {
   )
 }
 
+// Signed-in progress in a Ruta ({ completedLeaves, totalLeaves, percentage }),
+// or null when signed out or when it can't be loaded.
+function useRutaProgress(slug) {
+  const { auth } = useAuth()
+  const token = auth?.token
+  const [state, setState] = useState({ token: null, progress: null })
+  useEffect(() => {
+    if (!token) return undefined
+    let active = true
+    apiFetch(`/api/paths/${encodeURIComponent(slug)}/progress`, { token })
+      .then((progress) => { if (active) setState({ token, progress }) })
+      .catch(() => { if (active) setState({ token, progress: null }) })
+    return () => { active = false }
+  }, [slug, token])
+  return token && state.token === token ? state.progress : null
+}
+
 // Ciclo names and the link come from the Ruta when it loads; until then (or
 // if it fails) the guide's names and the Rutas page are used.
 function RutaDestacada() {
@@ -208,6 +293,7 @@ function RutaDestacada() {
 
   const href = ruta?.slug ? `/rutas/${ruta.slug}` : '/rutas'
   const ciclos = cicloNames(ruta)
+  const progress = useRutaProgress(FEATURED_RUTA_SLUG)
 
   return (
     <section aria-labelledby="ruta-destacada" className="relative overflow-hidden border-y-3 border-tp-ink bg-tp-violet text-white">
@@ -219,6 +305,17 @@ function RutaDestacada() {
             <span className="tp-sticker rotate-2 bg-tp-yellow">Ruta destacada</span>
             <h2 id="ruta-destacada" className="tp-section-title">Preparación para la <Mark variant="lines" color="var(--tp-yellow)" width={6}>OMM</Mark></h2>
             <p className="tp-lead max-w-[520px] text-white/85">{ciclos.length} ciclos para entrenar en orden, a tu ritmo.</p>
+            {progress?.totalLeaves > 0 && (
+              <div className="w-full max-w-[460px] pt-1">
+                <p className="flex items-baseline justify-between gap-4 text-sm font-bold">
+                  <span>Tu avance</span>
+                  <span>{progress.completedLeaves} de {progress.totalLeaves} completados</span>
+                </p>
+                <div aria-hidden="true" className="mt-2 h-4 overflow-hidden rounded-full border-2 border-tp-ink bg-tp-surface">
+                  <div className="h-full border-r-2 border-tp-ink bg-tp-yellow" style={{ width: `${progress.percentage}%` }} />
+                </div>
+              </div>
+            )}
           </div>
           <Link to={href} className="tp-button min-h-[52px] bg-tp-yellow px-6 text-[17px] font-bold text-tp-ink">Ver la Ruta<Arrow /></Link>
         </div>
@@ -307,6 +404,7 @@ export default function HomePage() {
       <main className="bg-tp-paper pt-[72px] text-tp-ink">
         <Hero />
         <Ticker />
+        <EnNumeros />
         <ComoEmpezar />
         <RutaDestacada />
         <Explora />
