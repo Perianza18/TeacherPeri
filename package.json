@@ -26,6 +26,8 @@
     "content:check": "node server/src/scripts/check-local-content.js",
     "content:revise-theory": "node server/src/scripts/revise-theory-lessons.js",
     "users:set-role": "node server/src/scripts/promote-user.js",
+    "review": "node server/src/scripts/review-submissions.js",
+    "db:migrate:roles-users": "node server/src/scripts/migrate-roles-users.js",
     "db:local:start": "node server/src/scripts/start-local-mongo.js",
     "test:browser": "playwright test",
     "start": "node server/src/server.js"
