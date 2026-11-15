@@ -5,6 +5,7 @@ import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
+import { hintLabel, splitHints } from '../lib/hints'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -92,7 +93,7 @@ export default function LibraryDetailPage({ type }) {
       </header>
       <div className="mx-auto max-w-[760px] py-8">
         {item.enunciado && <MathText text={item.enunciado} className="whitespace-pre-wrap text-lg leading-8 text-brand-900" />}
-        {item.hint && <details className="mt-8 rounded-xl border border-brand-300 bg-brand-50 p-4"><summary className="cursor-pointer font-bold">Ver pista</summary><MathText text={item.hint} className="mt-4 leading-7" /></details>}
+        {splitHints(item.hint).map((hint, index, hints) => <details key={index} className={`${index === 0 ? 'mt-8' : 'mt-3'} rounded-xl border border-brand-300 bg-brand-50 p-4`}><summary className="cursor-pointer font-bold">{hintLabel(index, hints.length)}</summary><MathText text={hint} className="mt-4 leading-7" /></details>)}
         {item.solution && <details className="mt-4 rounded-xl border border-brand-300 bg-white p-4"><summary className="cursor-pointer font-bold">Ver solución razonada</summary><MathText text={item.solution} className="mt-4 whitespace-pre-wrap leading-8" /></details>}
         {item.instructions && <p className="mb-6 whitespace-pre-wrap rounded-xl bg-accent-yellow/30 p-5 leading-7">{item.instructions}</p>}
         {['listas', 'examenes'].includes(type) && <>

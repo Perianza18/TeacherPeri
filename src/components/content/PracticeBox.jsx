@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import RichText from './RichText'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import { levelLabel } from '../../lib/theoryArticle'
+import { hintLabel, splitHints } from '../../lib/hints'
 
 // Yellow problem box (DESIGN §5): ink pill, count, then compact white rows
 // (meta, statement, «Resolver →»). Problems have no titles: never `titulo`.
@@ -18,12 +19,6 @@ const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`
 function commentLabel(count) {
   if (count == null) return ''
   return count === 0 ? 'Sin comentarios' : plural(count, 'comentario', 'comentarios')
-}
-
-// A hint with blank lines between paragraphs is several hints, each behind
-// its own toggle («Ver pista 1», «Ver pista 2»).
-function hintsOf(hint) {
-  return String(hint || '').split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean)
 }
 
 // `problem.href` overrides the link; null hides «Resolver» (draft problems).
@@ -45,9 +40,9 @@ export default function PracticeBox({ kind = 'practice', problems, context = '' 
               <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-0.5">
                 {meta && <span className="font-sans text-[13px] font-semibold text-tp-ink-muted">{meta}</span>}
                 <RichText as="div" text={problem.enunciado} keepLines={false} className="line-clamp-3" />
-                {config.hints && hintsOf(problem.hint).map((hint, hintIndex, hints) => (
+                {config.hints && splitHints(problem.hint).map((hint, hintIndex, hints) => (
                   <details key={hintIndex} className={hintIndex === 0 ? 'mt-1' : ''}>
-                    <summary className="cursor-pointer py-3 font-sans text-sm font-bold">{hints.length > 1 ? `Ver pista ${hintIndex + 1}` : 'Ver pista'}</summary>
+                    <summary className="cursor-pointer py-3 font-sans text-sm font-bold">{hintLabel(hintIndex, hints.length)}</summary>
                     <RichText text={hint} className="pb-1 text-[17px] text-tp-ink-soft" />
                   </details>
                 ))}

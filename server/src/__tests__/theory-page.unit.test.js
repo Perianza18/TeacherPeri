@@ -8,6 +8,7 @@ import PracticeBox from '../../../src/components/content/PracticeBox.jsx'
 import { AuthContext } from '../../../src/context/useAuth.js'
 import { buildRutaContext, cicloShortName } from '../../../src/lib/rutaContext.js'
 import { parseInline } from '../../../src/lib/inlineMarkup.js'
+import { hintLabel, splitHints } from '../../../src/lib/hints.js'
 import { collectionSlugs, figureUrl, isHeadingLine, levelLabel, parseArticle, readingMinutes, sentenceCase } from '../../../src/lib/theoryArticle.js'
 
 // Placeholder text in the older stored lesson format (not real lesson content).
@@ -351,6 +352,12 @@ describe('Theory page collections', () => {
   it('lists each collection slug once', () => {
     expect(collectionSlugs(BOXES_ITEM.content)).toEqual(['tema'])
     expect(collectionSlugs('[[collection:a:practice]]\n[[collection:b:challenge]]\n[[collection:a:dificiles]]\nTexto [[collection:c:practice]] en línea.')).toEqual(['a', 'b'])
+  })
+
+  it('splits a hint into one hint per paragraph', () => {
+    expect(splitHints('Primera $x$.\n\n  \nSegunda.\nMisma pista.')).toEqual(['Primera $x$.', 'Segunda.\nMisma pista.'])
+    expect(splitHints(undefined)).toEqual([])
+    expect([hintLabel(0, 1), hintLabel(1, 2)]).toEqual(['Ver pista', 'Ver pista 2'])
   })
 
   it('fills the three boxes from loaded collections, with one toggle per hint', () => {
