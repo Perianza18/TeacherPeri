@@ -17,6 +17,16 @@ const NAV_LINKS = [
 const linkClass = ({ isActive }) =>
   `font-semibold underline-offset-[10px] decoration-[3px] transition-colors ${isActive ? 'text-brand-900 underline decoration-accent-violet' : 'text-brand-600 hover:text-brand-900'}`
 
+// A page can pick the active item when its URL alone can't: a lesson opened
+// from a Ruta lives under /entrenamiento but belongs to Rutas.
+function NavItem({ link, activePath, className, onClick }) {
+  if (!activePath) {
+    return <NavLink to={link.path} end={link.path === '/'} onClick={onClick} className={(state) => `${className} ${linkClass(state)}`}>{link.label}</NavLink>
+  }
+  const isActive = link.path === activePath
+  return <Link to={link.path} onClick={onClick} aria-current={isActive ? 'true' : undefined} className={`${className} ${linkClass({ isActive })}`}>{link.label}</Link>
+}
+
 // Calls onClose when Escape is pressed while `active` is true.
 function useEscape(active, onClose) {
   useEffect(() => {
@@ -92,7 +102,7 @@ function AuthControl() {
   )
 }
 
-export default function Navbar() {
+export default function Navbar({ activePath } = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const menuButton = useRef(null)
   const closeMenu = useCallback(() => {
@@ -115,9 +125,7 @@ export default function Navbar() {
             <ul className="hidden items-center gap-6 text-[15px] lg:flex">
               {NAV_LINKS.map((link) => (
                 <li key={link.path}>
-                  <NavLink to={link.path} end={link.path === '/'} className={(state) => `py-2 ${linkClass(state)}`}>
-                    {link.label}
-                  </NavLink>
+                  <NavItem link={link} activePath={activePath} className="py-2" />
                 </li>
               ))}
             </ul>
@@ -143,14 +151,12 @@ export default function Navbar() {
             <ul className="mx-auto max-w-7xl">
               {NAV_LINKS.map((link) => (
                 <li key={link.path}>
-                  <NavLink
-                    to={link.path}
-                    end={link.path === '/'}
+                  <NavItem
+                    link={link}
+                    activePath={activePath}
                     onClick={() => setIsOpen(false)}
-                    className={(state) => `flex min-h-11 items-center px-2 text-base ${linkClass(state)}`}
-                  >
-                    {link.label}
-                  </NavLink>
+                    className="flex min-h-11 items-center px-2 text-base"
+                  />
                 </li>
               ))}
             </ul>

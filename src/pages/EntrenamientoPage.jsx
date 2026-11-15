@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useMatch } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -9,6 +9,11 @@ const TABS = [
 ]
 
 export default function EntrenamientoPage() {
+  // A lesson page (TheoryView) draws its own Navbar, header band and
+  // Footer: it can be opened from a Ruta, so it has no library tab bar.
+  const lesson = useMatch('/entrenamiento/teoria/:id')
+  if (lesson) return <Outlet />
+
   return (
     <>
       <Navbar />
