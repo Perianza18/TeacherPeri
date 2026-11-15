@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="300" height="220">
+<title>Rectas paralelas r y s con un punto P entre ellas; PA forma 35 grados con r, PB forma 40 grados con s y la paralela ℓ por P parte el ángulo en P en 35 y 40 grados</title>
+<path d="M148.9,50 A30,30 0 0 1 143.5,67.2" fill="none" stroke="#111111" stroke-width="1.8"/>
+<path d="M147.3,170 A30,30 0 0 0 140.3,150.7" fill="none" stroke="#111111" stroke-width="1.8"/>
+<path d="M196,104 L174.7,89.1 A26,26 0 0 0 170,104 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<path d="M196,104 L170,104 A26,26 0 0 0 176.1,120.7 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<line x1="-10" y1="50" x2="310" y2="50" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="-10" y1="170" x2="310" y2="170" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M253,56 L262,50 L253,44" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M253,176 L262,170 L253,164" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="118.9" y1="50" x2="196" y2="104" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="196" y1="104" x2="117.3" y2="170" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<text x="166.6" y="70.3" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="15" fill="#111111">35°</text>
+<text x="164.3" y="158.1" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="15" fill="#111111">40°</text>
+<line x1="22" y1="104" x2="288" y2="104" stroke="#6D3EE8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M253,110 L262,104 L253,98" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="154" y="96" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="15" fill="#111111">35°</text>
+<text x="154.7" y="124.3" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="15" fill="#111111">40°</text>
+<text x="30" y="96" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">ℓ</text>
+<circle cx="118.9" cy="50" r="3.5" fill="#111111"/>
+<circle cx="117.3" cy="170" r="3.5" fill="#111111"/>
+<circle cx="196" cy="104" r="3.5" fill="#111111"/>
+<text x="114.9" y="40" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">A</text>
+<text x="113.3" y="192" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">B</text>
+<text x="210" y="122" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">P</text>
+<text x="22" y="42" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">r</text>
+<text x="22" y="162" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">s</text>
+</svg>
