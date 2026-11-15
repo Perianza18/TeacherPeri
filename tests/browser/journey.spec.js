@@ -59,11 +59,11 @@ const assertFits = async (page) => expect(await page.evaluate(() => document.doc
 
 test('problem discovery, pagination, math, solution and comments', async ({ page }, testInfo) => {
   await page.goto('/entrenamiento/problemas')
-  await expect(page.getByText('36 resultados')).toBeVisible()
+  await expect(page.getByText('56 resultados')).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath('problems.png'), fullPage: true })
   await assertFits(page)
   await page.getByRole('button', { name: 'Siguiente', exact: true }).click()
-  await expect(page.getByText('2 / 3')).toBeVisible()
+  await expect(page.getByText('2 / 5')).toBeVisible()
   await page.getByRole('searchbox').fill('El ángulo exterior')
   await expect(page.getByText('1 resultados')).toBeVisible()
   await page.getByRole('button', { name: 'Comentarios', exact: true }).click()
