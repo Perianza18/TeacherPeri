@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import HomePage from './pages/HomePage'
@@ -17,12 +18,17 @@ import RutasPage from './pages/RutasPage'
 import PathPage from './pages/PathPage'
 import PagePlaceholder from './components/PagePlaceholder'
 
+// Dev-only test lesson with every block of the lesson format; the production
+// build drops it because import.meta.env.DEV is false there.
+const TheoryTestLessonPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryTestLessonPage')) : null
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          {TheoryTestLessonPage && <Route path="/dev/teoria-prueba" element={<Suspense fallback={<p>Cargando…</p>}><TheoryTestLessonPage /></Suspense>} />}
           <Route path="/rutas" element={<RutasPage />} />
           <Route path="/rutas/*" element={<PathPage />} />
           <Route path="/entrenamiento" element={<EntrenamientoPage />}>
