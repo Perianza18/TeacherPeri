@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { OMM_CURRICULUM } from './ommCurriculum.js'
 import { MVP_LESSONS } from './mvpLessons.js'
 import { MVP_PROBLEMS } from './mvpProblems.js'
+import { THEORY_COLLECTIONS, THEORY_PROBLEMS } from './theory/index.js'
 
 export const CONTENT_RELEASE = 'omm-mvp-1'
 export const contentId = (model, key) => createHash('sha256').update(`teacherperi:${model}:${key}`).digest('hex').slice(0, 24)
@@ -37,7 +38,7 @@ export function buildMvpManifest(resolve = (model, key) => contentId(model, key)
   }
   add('Tag', 'original', { name: 'teacherperi-original', slug: 'teacherperi-original', label: 'Original TeacherPeri' }, { slug: 'teacherperi-original' })
   const metadata = (area) => ({ topics: [resolve('Topic', area)], categories: [resolve('Category', area)], tags: [resolve('Tag', 'original')] })
-  for (const problem of MVP_PROBLEMS) {
+  for (const problem of [...MVP_PROBLEMS, ...THEORY_PROBLEMS]) {
     const { pathSlug, ...fields } = problem
     delete fields.answer
     const area = MVP_LESSONS.find((l) => l.pathSlug === pathSlug).area
@@ -55,6 +56,10 @@ export function buildMvpManifest(resolve = (model, key) => contentId(model, key)
     const { key, problemCodes, ...fields } = exam
     const data = { ...fields, competition: 'TeacherPeri', year: '2026', organization: 'TeacherPeri', country: 'México', categories: [resolve('Category', key === 'congruencias' ? 'number-theory' : 'mixed')], tags: [resolve('Tag', 'original')], problems: problemCodes.map((code, i) => ({ problem: resolve('Problem', code), position: i + 1 })), publicationStatus: 'published' }
     add('Exam', key, data, { competition: data.competition, year: data.year, round: data.round })
+  }
+  // The problem boxes of rewritten lessons, after the problems they point to.
+  for (const { slug, kind, problemCodes } of THEORY_COLLECTIONS) {
+    add('ProblemCollection', `${slug}:${kind}`, { slug, kind, problems: problemCodes.map((code, i) => ({ problem: resolve('Problem', code), position: i + 1 })), publicationStatus: 'published' }, { slug, kind })
   }
   const published = new Set(MVP_LESSONS.map((l) => l.pathSlug))
   // Only groups with actual available descendants are published.

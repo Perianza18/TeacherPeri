@@ -1,6 +1,7 @@
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from './ommLaunchContent.js'
 import { defineLesson } from './ommLaunchContent.helpers.js'
 import { MVP_PROBLEMS } from './mvpProblems.js'
+import { THEORY_REWRITES } from './theory/index.js'
 
 // The reviewed algebra, geometry and number theory articles remain intact.
 // These additions deepen the initially shorter counting and digit lessons.
@@ -145,3 +146,15 @@ Para $6x\equiv9\pmod{15}$ el MCD es tres y divide a nueve. Se reduce a $2x\equiv
     { title: 'Comprueba en el módulo original', description: 'Sustituye cada representante y explica por qué cambiar el módulo al dividir es indispensable.' },
   ],
 }))
+
+// Last layer: lessons rewritten in the new lesson format (data/theory)
+// replace the summary and text above. PREVIOUS_THEORY keeps the exact text
+// they replace, so a database revision only changes a record that still
+// holds it (see migrations/revise-theory-lessons.js).
+export const PREVIOUS_THEORY = {}
+for (const lesson of MVP_LESSONS) {
+  const rewrite = THEORY_REWRITES[lesson.pathSlug]
+  if (!rewrite) continue
+  PREVIOUS_THEORY[lesson.pathSlug] = { title: lesson.theory.title, summary: lesson.theory.summary, content: lesson.theory.content }
+  Object.assign(lesson.theory, { summary: rewrite.summary, content: rewrite.content })
+}
