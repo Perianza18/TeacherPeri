@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { MODERATION_REASONS, REASON_NOTE_MAX } from '../../lib/moderation'
 
-// Formulario corto para elegir un motivo (reportar o eliminar como moderador).
+// Formulario corto para elegir un motivo (reportar, o eliminar como editor o admin).
 // «Otro» pide escribir el motivo.
 export default function ReasonForm({ title, confirmLabel, onSubmit, onCancel }) {
   const id = useId()
