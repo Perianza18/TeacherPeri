@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="300" height="220">
+<title>Dos rectas que se cortan en O forman los ángulos α, β, γ y δ; α y γ son opuestos por el vértice</title>
+<path d="M150,112 L174.4,103.1 A26,26 0 0 0 135.1,90.7 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<path d="M150,112 L125.6,120.9 A26,26 0 0 0 164.9,133.3 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<line x1="-10" y1="170.2" x2="310" y2="53.8" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="232.6" y1="230" x2="64.6" y2="-10" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<text x="163.2" y="75.6" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">α</text>
+<text x="108" y="104.4" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">β</text>
+<text x="136.8" y="159.6" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">γ</text>
+<text x="192" y="130.8" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">δ</text>
+<circle cx="150" cy="112" r="3.5" fill="#111111"/>
+<text x="174" y="121" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="17" fill="#111111">O</text>
+</svg>
