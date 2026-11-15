@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
-import MathText from '../math/MathText'
-import { Ejemplo, ErrorComun, RespuestasDeControl } from '../content/Bloques'
+import ArticleText from '../training/ArticleText'
+import PracticeBox from '../content/PracticeBox'
+import RichText from '../content/RichText'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
-import { levelLabel, parseTheoryContent, readingMinutes } from '../../lib/theoryArticle'
+import { levelLabel, parseArticle, readingMinutes } from '../../lib/theoryArticle'
 import { buildRutaContext } from '../../lib/rutaContext'
 
 // Theory detail page (spec «Página de teoría»). One page, two contexts:
@@ -15,11 +16,6 @@ import { buildRutaContext } from '../../lib/rutaContext'
 // from the Teoría library (`route` is null).
 
 const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`
-
-function commentLabel(count) {
-  if (count == null) return ''
-  return count === 0 ? 'Sin comentarios' : plural(count, 'comentario', 'comentarios')
-}
 
 function Arrow({ left = false }) {
   return <span aria-hidden="true">{left ? '← ' : ' →'}</span>
@@ -91,60 +87,10 @@ function LessonNav({ sections }) {
       <span className="tp-eyebrow mr-1 tracking-[0.12em]">En esta lección</span>
       {sections.map((section) => (
         <a key={section.id} href={`#${section.id}`} className="relative rounded-full border-2 border-tp-ink bg-tp-surface px-[13px] py-[5px] text-sm font-semibold leading-normal hover:text-tp-violet before:absolute before:inset-x-0 before:-inset-y-[5px]">
-          {section.number}. {section.title}
+          {section.number}. <RichText as="span" text={section.title} />
         </a>
       ))}
     </nav>
-  )
-}
-
-function ContentBlock({ block }) {
-  switch (block.type) {
-    case 'h2':
-      return <h2 id={block.id} className={`tp-lesson-heading tp-lesson-heading-${(block.number - 1) % 4} mt-4 scroll-mt-24`}>{block.number}. {block.title}</h2>
-    case 'h3':
-      return <MathText as="h3" text={block.title} className="mt-1.5 font-display text-xl font-extrabold leading-[1.3]" />
-    case 'list':
-      return (
-        <ol start={block.start} className="flex list-decimal flex-col gap-1.5 pl-[22px]">
-          {block.items.map((text, index) => <li key={index}><MathText text={text} className="whitespace-pre-line" /></li>)}
-        </ol>
-      )
-    case 'answers':
-      return <RespuestasDeControl text={block.text} />
-    case 'example':
-      return <Ejemplo number={block.number} title={block.title}>{block.children.map((child, index) => <ContentBlock key={index} block={child} />)}</Ejemplo>
-    case 'mistakes':
-      return block.children.length > 0 && <ErrorComun>{block.children.map((child, index) => <ContentBlock key={index} block={child} />)}</ErrorComun>
-    default:
-      return <MathText text={block.text} className="whitespace-pre-line" />
-  }
-}
-
-// One yellow box with compact rows. Problems have no titles: only the
-// meta line, the statement and «Resolver →».
-function PracticeBox({ problems, context }) {
-  return (
-    <section aria-labelledby="practica-titulo" className="tp-box-strong flex flex-col gap-3 bg-tp-yellow px-5 py-[18px]">
-      <div className="flex flex-wrap items-center gap-2.5">
-        <span className="tp-kicker tp-kicker-ink font-sans tracking-[0.12em]">Practica</span>
-        <h3 id="practica-titulo" className="font-sans text-[15px] font-bold">{plural(problems.length, 'problema', 'problemas')} para esta lección</h3>
-      </div>
-      <ol className="flex flex-col gap-2.5">
-        {problems.map((problem, index) => {
-          const meta = [levelLabel(problem.difficulty), commentLabel(problem.commentCount)].filter(Boolean).join(' · ')
-          return (
-            <li key={problem._id} className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-xl border-2 border-tp-ink bg-tp-surface px-4 py-3.5">
-              <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-0.5">
-                {meta && <span className="font-sans text-[13px] font-semibold text-tp-ink-muted">{meta}</span>}
-                <MathText text={problem.enunciado} className="line-clamp-3" />
-              </div>
-              <Link to={`${LIBRARY_BASE.problems}/${problem._id}${context}`} aria-label={`Resolver problema ${index + 1}`} className="tp-button whitespace-nowrap bg-tp-mint px-4 font-sans text-[15px] font-bold text-tp-ink">Resolver<Arrow /></Link>
-            </li>
-          )
-        })}
-      </ol>
-    </section>
   )
 }
 
@@ -201,8 +147,8 @@ function useStepCompletion(strip) {
   return { completed, parentProgress: current.parent, busy, error, toggle }
 }
 
-function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context }) {
-  const article = useMemo(() => parseTheoryContent(item.content), [item.content])
+function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context, renderCollection: renderCollectionProp, resolveFigure }) {
+  const article = useMemo(() => parseArticle(item.content), [item.content])
   const ruta = useMemo(() => (route ? buildRutaContext(route, ancestors) : null), [route, ancestors])
   const strip = ruta?.strip || null
   const completion = useStepCompletion(strip)
@@ -218,22 +164,20 @@ function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context }
     levelLabel(item.level),
     problems.length > 0 && plural(problems.length, 'problema de práctica', 'problemas de práctica'),
   ].filter(Boolean)
-  const sections = article.items.filter((block) => block.type === 'h2')
-  // The practice box sits right before «En resumen», or at the end.
-  const summaryIndex = article.items.findIndex((block) => block.type === 'h2' && block.key === 'EN RESUMEN')
-  const practiceAt = summaryIndex >= 0 ? summaryIndex : article.items.length
-  const practice = problems.length > 0 && <PracticeBox key="practica" problems={problems} context={context} />
+  const sections = article.sections
+  // Lesson problems fill the practice box and `[[collection:…:practice]]`;
+  // other collection kinds only show when the page has data for them.
+  const practice = problems.length > 0 ? <PracticeBox problems={problems} context={context} /> : null
+  const renderCollection = renderCollectionProp || ((slug, kind) => (kind === 'practice' ? practice : null))
 
   return (
     <>
-      <HeaderBand crumbs={crumbs} topic={item.topics?.[0]?.name} title={item.title} summary={item.summary} meta={meta} />
+      <HeaderBand crumbs={crumbs} topic={item.topics?.[0]?.name} title={item.title} summary={item.description || item.summary} meta={meta} />
       {strip && <RutaStrip strip={strip} progress={completion.parentProgress} />}
       <div className="tp-container pb-16 pt-7">
         <article aria-labelledby="teoria-titulo" className="tp-reading-text mx-auto flex max-w-[840px] flex-col gap-[22px]">
           {sections.length > 0 && <LessonNav sections={sections} />}
-          {article.lead && <MathText text={article.lead} className="whitespace-pre-line text-[19px]" />}
-          {article.items.flatMap((block, index) => [index === practiceAt && practice, <ContentBlock key={index} block={block} />])}
-          {practiceAt === article.items.length && practice}
+          <ArticleText article={article} practice={practice} renderCollection={renderCollection} resolveFigure={resolveFigure} />
 
           <div className="flex flex-col gap-2 pt-2 font-sans text-[15px]">
             <div className="flex flex-wrap items-center gap-3">
@@ -268,7 +212,11 @@ function TheoryPage({ item, route, ancestors, problems, relatedRoutes, context }
   )
 }
 
-export default function TheoryView({ item, error, route, ancestors = [], problems = [], relatedRoutes = [], context = '', rutaRequested = false }) {
+// `renderCollection(slug, kind)` lets a page supply collection data (the
+// dev test lesson does); without it, `practice` collections use the lesson's
+// problems and the other kinds stay hidden. `resolveFigure(src)` maps figure
+// paths to URLs (default: public/figuras).
+export default function TheoryView({ item, error, route, ancestors = [], problems = [], relatedRoutes = [], context = '', rutaRequested = false, renderCollection, resolveFigure }) {
   // «Rutas» is active in Ruta context; while loading, trust the query.
   const inRuta = item ? Boolean(route) : rutaRequested
   return (
@@ -276,7 +224,7 @@ export default function TheoryView({ item, error, route, ancestors = [], problem
       <Navbar activePath={inRuta ? '/rutas' : '/entrenamiento'} />
       <main className="min-h-screen bg-tp-paper pt-[72px] text-tp-ink">
         {item
-          ? <TheoryPage item={item} route={route} ancestors={ancestors} problems={problems} relatedRoutes={relatedRoutes} context={context} />
+          ? <TheoryPage item={item} route={route} ancestors={ancestors} problems={problems} relatedRoutes={relatedRoutes} context={context} renderCollection={renderCollection} resolveFigure={resolveFigure} />
           : (
             <div className="tp-container py-12">
               {error

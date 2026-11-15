@@ -1,45 +1,107 @@
-import { Link } from 'react-router-dom'
-import MathText from '../math/MathText'
+import { Fragment, useMemo } from 'react'
+import RichText from '../content/RichText'
+import PracticeBox from '../content/PracticeBox'
+import { AgregadosCulturales, Consejo, Definicion, Demostracion, Ejemplo, Enunciado, ErrorComun, Figuras, Intentalo, RespuestasDeControl, Revelar, Tabla, Teorema } from '../content/Bloques'
+import { figureUrl, parseArticle } from '../../lib/theoryArticle'
 
-const MAJOR = ['IDEAS CLAVE', 'EJEMPLO TRABAJADO', 'ERRORES FRECUENTES', 'PRACTICA', 'EN RESUMEN', 'AMPLIACIÓN Y COMPROBACIONES']
+// Theory renderer: lesson markup (spec «Página de teoría», Part 2) → the
+// DESIGN §5 blocks. Markup names are English; every label the reader sees is
+// Spanish. No raw HTML is ever executed: text stays React text and only
+// KaTeX output is inserted.
 
-// Deliberately small plain-text format: headings, optional disclosures and a
-// canonical-practice insertion point. No arbitrary HTML or Markdown execution.
-export default function ArticleText({ text, problems = [], context = '', renderCollection }) {
-  const explicitPractice = String(text).includes('[[practice]]')
-  const chunks = String(text).split(/(:::(?:reveal|definition) [^\n]+\n[\s\S]*?\n:::)/g).filter(Boolean)
-  const blocks = chunks.flatMap((chunk) => /^:::(reveal|definition) /.test(chunk) ? [chunk] : chunk.split(/\n\n/).filter((block) => block.trim()))
-  let headingNumber = 0
-  return blocks.flatMap((block, i) => {
-    const definition = block.match(/^:::definition ([^\n]+)\n([\s\S]*?)\n:::$/)
-    if (definition) return <aside key={i} aria-label={`Definición: ${definition[1]}`} className="my-8 border-2 border-brand-900 border-l-8 bg-[#e8ddff] p-5 sm:p-6"><p className="text-xs font-black uppercase tracking-widest">Definición</p><h3 className="mt-2 text-lg font-black">{definition[1]}</h3><MathText text={definition[2]} className="mt-3 whitespace-pre-wrap leading-8" /></aside>
-    const collection = block.trim().match(/^\[\[collection:([a-z-]+):(practice|challenge)\]\]$/)
-    if (collection && renderCollection) return <div key={i}>{renderCollection(collection[1], collection[2])}</div>
-    const reveal = block.match(/^:::reveal ([^\n]+)\n([\s\S]*?)\n:::$/)
-    if (reveal) return <details key={i} className="my-6 border-2 border-brand-900 bg-accent-sky/20 p-5"><summary className="cursor-pointer font-bold focus-visible:outline-2 focus-visible:outline-offset-4">{reveal[1]}</summary><div className="mt-4"><ArticleText text={reveal[2]} /></div></details>
-    if (block.trim() === '[[practice]]') return problems.map((problem) => <ProblemPreview key={`practice-${problem._id}`} problem={problem} context={context} />)
-    const source = block.trim().match(/^\[\[source:(https:\/\/[^\s\]]+)\]\]$/)
-    if (source) return <p key={i} className="my-8 border-t border-brand-300 pt-5 text-sm leading-6">Explicaciones y actividades originales de TeacherPeri. Orden de secciones basado en <a className="font-bold underline" href={source[1]} target="_blank" rel="noreferrer">el material de OMMBC ↗</a>.</p>
-    const lines = block.trim().split('\n')
-    const headings = []
-    while (lines.length && (/^#{2,3} /.test(lines[0]) || (/^[A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ0-9 —:–,¿?()./-]+$/.test(lines[0]) && lines[0].length < 110))) {
-      const raw = lines.shift()
-      const title = raw.replace(/^#{2,3} /, '')
-      const major = raw.startsWith('## ') || MAJOR.includes(title)
-      headings.push(major
-        ? <h2 key={`${i}-h${headings.length}`} className={`tp-lesson-heading tp-lesson-heading-${headingNumber++ % 4} mt-10 mb-4 text-lg font-black text-brand-900`}>{title === 'PRACTICA' ? 'PRÁCTICA' : title}</h2>
-        : <h3 key={`${i}-h${headings.length}`} className="mt-6 text-base font-black text-brand-900">{title}</h3>)
-    }
-    const practice = explicitPractice ? [] : problems.filter((_, index) => Math.min(blocks.length - 1, Math.floor((index + 1) * blocks.length / (problems.length + 1))) === i)
-    return [...headings, ...(lines.length ? [<MathText key={i} text={lines.join('\n')} className="my-5 whitespace-pre-wrap text-base leading-8 text-brand-900" />] : []), ...practice.map((problem) => <ProblemPreview key={`practice-${problem._id}`} problem={problem} context={context} />)]
-  })
+function Blocks({ blocks, ctx, inStatement = false }) {
+  return blocks.map((block, index) => <Block key={index} block={block} ctx={ctx} inStatement={inStatement} />)
 }
 
-function ProblemPreview({ problem, context }) {
-  return <aside className="tp-card-soft my-10 bg-accent-yellow p-5 sm:p-7">
-    <p className="text-xs font-black uppercase tracking-widest">Tu turno · Del banco de problemas</p>
-    <h3 className="mt-3 text-xl font-black">{`Problema ${problem.codigo}`}</h3>
-    <MathText text={problem.enunciado} className="mt-4 whitespace-pre-wrap leading-8" />
-    <Link className="tp-button mt-5 bg-white px-4 py-2 font-bold" to={problem.reviewHref || `/entrenamiento/problemas/${problem._id}${context}`}>Resolver problema →</Link>
-  </aside>
+function Block({ block, ctx, inStatement }) {
+  switch (block.type) {
+    case 'heading':
+      if (block.level === 2 && block.id) {
+        return <h2 id={block.id} className={`tp-lesson-heading tp-lesson-heading-${(block.number - 1) % 4} mt-4 scroll-mt-24`}>{block.number}. <RichText as="span" text={block.title} /></h2>
+      }
+      return <RichText as={block.level === 2 ? 'h2' : 'h3'} text={block.title} className="mt-1.5 font-display text-xl font-extrabold leading-[1.3]" />
+    case 'paragraph': {
+      const idea = inStatement && /^Idea:/.test(block.text)
+      return <RichText text={block.text} className={block.lead ? 'text-[19px]' : idea ? 'text-[17px] text-tp-ink-soft' : ''} />
+    }
+    case 'list': {
+      const List = block.ordered ? 'ol' : 'ul'
+      return (
+        <List start={block.ordered ? block.start : undefined} className={`flex flex-col gap-1.5 pl-[22px] ${block.ordered ? 'list-decimal' : 'list-disc'}`}>
+          {block.items.map((item, index) => <li key={index}><RichText as="span" text={item} /></li>)}
+        </List>
+      )
+    }
+    case 'table':
+      return <Tabla {...block} />
+    case 'figures':
+      return <Figuras images={block.images} resolveSrc={ctx.resolveFigure} />
+    case 'answers':
+      return <RespuestasDeControl text={block.text} />
+    case 'cultural':
+      return <AgregadosCulturales items={block.items} />
+    case 'collection':
+      return ctx.renderCollection?.(block.slug, block.kind) ?? null
+    case 'practice':
+      return ctx.practice ?? null
+    case 'source':
+      return (
+        <p className="border-t-2 border-dashed border-tp-rule pt-4 font-sans text-[13px] text-tp-ink-muted">
+          Explicaciones y actividades originales de TeacherPeri. Orden de secciones basado en <a className="font-bold underline" href={block.url} target="_blank" rel="noreferrer">el material de OMMBC ↗</a>.
+        </p>
+      )
+    case 'example':
+      return (
+        <Ejemplo
+          number={block.number}
+          title={block.title}
+          statement={block.statement && <Block block={block.statement} ctx={ctx} />}
+          shown={block.shown.length > 0 && <Blocks blocks={block.shown} ctx={ctx} />}
+          solution={block.hidden.length > 0 && <Blocks blocks={block.hidden} ctx={ctx} />}
+        />
+      )
+    case 'box':
+      return <BoxBlock block={block} ctx={ctx} />
+    default:
+      return null
+  }
+}
+
+function BoxBlock({ block, ctx }) {
+  const inner = <Blocks blocks={block.children} ctx={ctx} inStatement={['lemma', 'corollary', 'proposition'].includes(block.kind)} />
+  switch (block.kind) {
+    case 'definition': return <Definicion title={block.title}>{inner}</Definicion>
+    case 'theorem': return <Teorema title={block.title}>{inner}</Teorema>
+    case 'lemma':
+    case 'corollary':
+    case 'proposition': return <Enunciado kind={block.kind} title={block.title} number={block.number}>{inner}</Enunciado>
+    case 'proof': return <Demostracion title={block.title}>{inner}</Demostracion>
+    case 'try': return <Intentalo question={block.title}>{inner}</Intentalo>
+    case 'tip': return <Consejo title={block.title}>{inner}</Consejo>
+    case 'mistake': return <ErrorComun title={block.title}>{inner}</ErrorComun>
+    default: return <Revelar title={block.title}>{inner}</Revelar>
+  }
+}
+
+// `practice`: the lesson's practice box. It goes where the text puts
+// `[[practice]]`; without a marker, right before «En resumen» (or at the
+// end). `problems` + `context` build that box when `practice` is not given.
+// `renderCollection(slug, kind)` draws `[[collection:…]]`; kind is
+// `ejercicios`, `practice` or `dificiles` (`challenge` is an alias).
+export default function ArticleText({ article, text, practice, problems = [], context = '', renderCollection, resolveFigure = figureUrl }) {
+  const parsed = useMemo(() => article || parseArticle(text), [article, text])
+  const practiceNode = practice !== undefined ? practice : problems.length > 0 ? <PracticeBox problems={problems} context={context} /> : null
+  const ctx = { renderCollection, resolveFigure, practice: practiceNode }
+  const autoAt = !practiceNode || parsed.hasPracticeMarker ? -1 : parsed.summaryIndex >= 0 ? parsed.summaryIndex : parsed.blocks.length
+  return (
+    <>
+      {parsed.blocks.map((block, index) => (
+        <Fragment key={index}>
+          {index === autoAt && practiceNode}
+          <Block block={block} ctx={ctx} />
+        </Fragment>
+      ))}
+      {autoAt === parsed.blocks.length && practiceNode}
+    </>
+  )
 }
