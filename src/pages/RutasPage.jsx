@@ -8,11 +8,12 @@ import { apiFetch } from '../lib/api'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
 
-// Card colors rotate: violet with white text, white, mint.
+// Card colors rotate: violet with white text, white, mint. The list is
+// alphabetical, so cards carry no number: it would suggest a study order.
 const CARD_TONES = [
-  { card: 'bg-tp-violet text-white', muted: 'text-white/80', badge: 'bg-tp-yellow' },
-  { card: 'bg-tp-surface text-tp-ink', muted: 'text-tp-ink-muted', badge: 'bg-tp-sky' },
-  { card: 'bg-tp-mint text-tp-ink', muted: 'text-tp-ink-soft', badge: 'bg-tp-surface' },
+  { card: 'bg-tp-violet text-white', muted: 'text-white/80' },
+  { card: 'bg-tp-surface text-tp-ink', muted: 'text-tp-ink-muted' },
+  { card: 'bg-tp-mint text-tp-ink', muted: 'text-tp-ink-soft' },
 ]
 
 export default function RutasPage() {
@@ -70,8 +71,7 @@ export default function RutasPage() {
                     <span className="tp-sticker -rotate-2 bg-tp-surface">Ruta</span>
                     {path.level && <span className="tp-pill bg-tp-yellow text-xs">{LEVEL_LABELS[path.level]}</span>}
                   </div>
-                  <span aria-hidden="true" className={`tp-num-badge mt-2 text-tp-ink ${tone.badge}`}>{index + 1}</span>
-                  <h2 className="font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.03em]">{path.title}</h2>
+                  <h2 className="pt-5 font-display text-[30px] font-extrabold leading-[1.05] tracking-[-0.03em]">{path.title}</h2>
                   {path.description && <p className={`text-[15px] leading-6 ${tone.muted}`}>{path.description}</p>}
                   {path.tags?.length > 0 && <div className="flex flex-wrap gap-2">{path.tags.map((entry) => <span key={entry._id} className="tp-pill bg-tp-surface text-xs">{entry.label}</span>)}</div>}
                   <span className="mt-auto pt-2 text-[15px] font-extrabold">Explorar<span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">{' →'}</span></span>
