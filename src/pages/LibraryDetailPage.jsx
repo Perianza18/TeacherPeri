@@ -86,11 +86,11 @@ export default function LibraryDetailPage({ type }) {
     {error && <p role="alert" className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</p>}
     {!item && !error && <p className="mt-8 text-brand-500">Cargando contenido…</p>}
     {item && <article className="mt-8 min-w-0">
-      <header className="tp-card bg-accent-sky p-6 sm:p-9"><p className="text-xs font-black uppercase tracking-widest text-accent-violet">{config.label} {item.codigo && `· ${item.codigo}`}</p><h1 className="mt-3 break-words text-3xl font-black tracking-tight text-brand-900 sm:text-5xl">{title}</h1>{item.summary && <p className="mt-5 text-lg leading-8 text-brand-600">{item.summary}</p>}
+      <header className="tp-card relative overflow-hidden bg-tp-sky p-6 sm:p-9"><div aria-hidden="true" className="tp-graph absolute inset-0" /><div className="relative"><p className="tp-sticker -rotate-2 bg-tp-yellow">{config.label} {item.codigo && `· ${item.codigo}`}</p><h1 className="mt-5 break-words font-display text-[clamp(32px,4.6vw,56px)] font-extrabold leading-none tracking-[-0.035em] text-tp-ink">{title}</h1>{item.summary && <p className="mt-5 text-lg leading-8 text-tp-ink-soft">{item.summary}</p>}
         {item.sourceAttribution && <p className="mt-4 text-sm leading-6 text-brand-500">{item.sourceAttribution}</p>}
         {item.authors?.length > 0 && <p className="mt-4 text-sm text-brand-600">Autoría: {item.authors.join(', ')}</p>}
         {item.organization && <p className="mt-4 text-sm text-brand-600">{item.organization}{item.country && ` · ${item.country}`}{item.durationMinutes && ` · ${item.durationMinutes} minutos`}</p>}
-      </header>
+      </div></header>
       <div className="mx-auto max-w-[760px] py-8">
         {item.enunciado && <MathText text={item.enunciado} className="whitespace-pre-wrap text-lg leading-8 text-brand-900" />}
         {splitHints(item.hint).map((hint, index, hints) => <details key={index} className={`${index === 0 ? 'mt-8' : 'mt-3'} rounded-xl border border-brand-300 bg-brand-50 p-4`}><summary className="cursor-pointer font-bold">{hintLabel(index, hints.length)}</summary><MathText text={hint} className="mt-4 leading-7" /></details>)}

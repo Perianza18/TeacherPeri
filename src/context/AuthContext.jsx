@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
     }
   })
 
+  // false (cerrado), 'login' o 'signup': el modo con el que abre el modal.
   const [modalAbierto, setModalAbierto] = useState(false)
 
   const login = (data) => {
@@ -76,14 +77,16 @@ export function AuthProvider({ children }) {
     auth,
     login,
     logout,
-    abrirModal: () => setModalAbierto(true),
+    // abrirModal('signup') abre directo en «Crear cuenta». Cualquier otro
+    // argumento (o el evento de un onClick={abrirModal}) abre en «Iniciar sesión».
+    abrirModal: (modo) => setModalAbierto(modo === 'signup' ? 'signup' : 'login'),
     cerrarModal: () => setModalAbierto(false),
   }
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-      {modalAbierto && <AuthModal onClose={() => setModalAbierto(false)} onAuthSuccess={login} />}
+      {modalAbierto && <AuthModal initialMode={modalAbierto} onClose={() => setModalAbierto(false)} onAuthSuccess={login} />}
     </AuthContext.Provider>
   )
 }

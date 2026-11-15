@@ -4,9 +4,9 @@ import { apiFetch } from '../../lib/api'
 
 const inputClass = 'tp-input'
 
-export default function AuthModal({ onClose, onAuthSuccess }) {
+export default function AuthModal({ onClose, onAuthSuccess, initialMode = 'login' }) {
   const dialogRef = useDialog(onClose)
-  const [modo, setModo] = useState('login')
+  const [modo, setModo] = useState(initialMode === 'signup' ? 'signup' : 'login')
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

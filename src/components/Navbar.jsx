@@ -13,9 +13,9 @@ const NAV_LINKS = [
   { path: '/equipo', label: 'Equipo' },
 ]
 
-// The active item gets a 3px violet underline; the rest use muted ink.
+// The active item gets a hand-drawn violet squiggle; the rest use muted ink.
 const linkClass = ({ isActive }) =>
-  `font-semibold underline-offset-[10px] decoration-[3px] transition-colors ${isActive ? 'text-brand-900 underline decoration-accent-violet' : 'text-brand-600 hover:text-brand-900'}`
+  `font-semibold transition-colors ${isActive ? 'tp-squiggle text-tp-ink' : 'text-tp-ink-muted hover:text-tp-ink'}`
 
 // A page can pick the active item when its URL alone can't: a lesson opened
 // from a Ruta lives under /entrenamiento but belongs to Rutas.
@@ -118,14 +118,14 @@ export default function Navbar({ activePath } = {}) {
       <nav aria-label="Principal">
         <div className="tp-container flex h-[69px] items-center justify-between gap-4">
           <Link to="/" className="tp-logo inline-flex min-h-11 shrink-0 items-center text-tp-ink">
-            TeacherPeri
+            Teacher<span className="text-tp-violet">Peri</span>
           </Link>
 
           <div className="flex items-center gap-3 lg:gap-7">
             <ul className="hidden items-center gap-6 text-[15px] lg:flex">
               {NAV_LINKS.map((link) => (
                 <li key={link.path}>
-                  <NavItem link={link} activePath={activePath} className="py-2" />
+                  <NavItem link={link} activePath={activePath} className="pb-1.5 pt-2" />
                 </li>
               ))}
             </ul>
@@ -155,7 +155,7 @@ export default function Navbar({ activePath } = {}) {
                     link={link}
                     activePath={activePath}
                     onClick={() => setIsOpen(false)}
-                    className="flex min-h-11 items-center px-2 text-base"
+                    className="flex min-h-11 w-fit items-center px-2 text-base"
                   />
                 </li>
               ))}

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Contacto from '../components/sections/Contacto'
 import ContactForm from '../components/contact/ContactForm'
+import { Mark } from '../components/decor/Decor'
 import { fadeUp, revealProps } from '../components/motion/variants'
 
 // Página 6/8: Contacto. Antes esta página solo envolvía Contacto.jsx
@@ -25,7 +26,7 @@ export default function ContactoPage() {
           animate="show"
           className="mx-auto max-w-2xl px-4 pb-8 pt-28 text-center sm:px-6"
         >
-          <h1 className="font-display text-3xl text-brand-900 sm:text-4xl">Contáctame</h1>
+          <h1 className="tp-page-title text-brand-900"><Mark color="var(--tp-coral)" delay={300}>Contáctame</Mark></h1>
           <p className="mt-4 text-brand-700">
             ¡Holaaa! Qué gusto que quieras ponerte en contacto. 🚀
           </p>

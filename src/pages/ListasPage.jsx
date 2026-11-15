@@ -8,7 +8,7 @@ export default function ListasPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-brand-50 pt-20">
+      <main className="min-h-screen bg-tp-paper pt-[72px] text-tp-ink">
         <Outlet />
       </main>
       <Footer />

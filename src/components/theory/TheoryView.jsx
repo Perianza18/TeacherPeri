@@ -40,15 +40,17 @@ function Breadcrumbs({ items }) {
 
 function HeaderBand({ crumbs, topic, title, summary, meta }) {
   return (
-    <section aria-labelledby="teoria-titulo" className="border-b-3 border-tp-ink bg-tp-sky">
-      <div className="tp-container flex flex-col gap-3 pb-9 pt-7">
+    <section aria-labelledby="teoria-titulo" className="relative overflow-hidden border-b-3 border-tp-ink bg-tp-sky">
+      <div aria-hidden="true" className="tp-graph absolute inset-0" />
+      <div aria-hidden="true" className="tp-halftone absolute -right-24 -top-28 size-[440px] opacity-[.15] [mask-image:radial-gradient(circle,black_20%,transparent_68%)]" />
+      <div className="tp-container relative flex flex-col gap-4 pb-12 pt-8 lg:pb-14">
         <Breadcrumbs items={crumbs} />
-        <span className="tp-kicker self-start">{topic ? `Teoría · ${topic}` : 'Teoría'}</span>
-        <h1 id="teoria-titulo" className="tp-h1 max-w-[860px]">{title}</h1>
-        {summary && <p className="tp-lead max-w-[680px]">{summary}</p>}
+        <span className="tp-sticker -rotate-2 self-start bg-tp-yellow">{topic ? `Teoría · ${topic}` : 'Teoría'}</span>
+        <h1 id="teoria-titulo" className="tp-page-title max-w-[900px]">{title}</h1>
+        {summary && <p className="tp-lead max-w-[680px] text-[18px] text-tp-ink-soft">{summary}</p>}
         {meta.length > 0 && (
-          <p className="flex flex-wrap gap-x-5 gap-y-1.5 pt-1 text-xs font-extrabold uppercase tracking-[0.1em]">
-            {meta.map((entry) => <span key={entry}>{entry}</span>)}
+          <p className="flex flex-wrap gap-2 pt-1 text-xs font-extrabold uppercase tracking-[0.1em]">
+            {meta.map((entry) => <span key={entry} className="rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1">{entry}</span>)}
           </p>
         )}
       </div>
