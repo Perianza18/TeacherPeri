@@ -29,8 +29,9 @@ Build with `npm ci`; start with `npm start`.
 
 `TRUST_PROXY_HOPS` tells the API how many proxies sit in front of it, so the
 request limits count each visitor and not the proxy. On Render it must be 3
-(Cloudflare plus two Render relays). It was measured: with 3, the sign-in limit
-counter drops by exactly one per request from one computer, and a fake
+(Cloudflare plus two Render relays). It was measured: with 3, the general
+request limit counter (300 per 15 minutes on `/api`) drops by exactly one per
+request from one computer, and a fake
 `X-Forwarded-For` header does not reset it. With 1 or 2 the counter splits
 across several addresses. If the hosting changes, measure again with the same
 two checks (watch the `RateLimit-Remaining` response header).

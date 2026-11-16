@@ -30,7 +30,8 @@ construye con `npm ci` y arranca con `npm start`.
 `TRUST_PROXY_HOPS` le dice a la API cuántos proxies hay delante de ella, para que
 los límites de peticiones cuenten a cada visitante y no al proxy. En Render debe
 ser 3 (Cloudflare más dos relevos de Render). Se midió: con 3, el contador del
-límite de inicio de sesión baja exactamente uno por petición desde una misma
+límite general de peticiones (300 cada 15 minutos en `/api`) baja exactamente
+uno por petición desde una misma
 computadora, y un encabezado `X-Forwarded-For` falso no lo reinicia. Con 1 o 2,
 el contador se reparte entre varias direcciones. Si cambia el hospedaje, mide de
 nuevo con esas dos pruebas (revisa el encabezado de respuesta
