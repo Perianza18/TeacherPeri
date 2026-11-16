@@ -1,40 +1,42 @@
-# Mostrar el MVP en localhost
+# Run the site locally with real content
 
-El currículo está integrado en `main`, pero la API lee MongoDB, no los archivos
-del currículo. Un dry-run con `create:511` significa que los 511 registros todavía
-no están importados. MongoDB standalone permite el dry-run, pero rechaza `--apply`
-porque el importador usa una transacción. No se debe quitar esa protección.
+English · **[Español](es/LOCAL_MVP.md)**
 
-## Preparación local sin cambiar tu MongoDB existente
+The content lives in files in the repository, but the API reads MongoDB, not
+those files. A dry run that reports `create:537` means none of the 537 records
+are loaded yet. A standalone MongoDB allows the dry run but refuses `--apply`,
+because the importer uses a transaction. Do not remove that protection.
 
-Requiere `mongod` instalado y disponible en PATH (la instalación habitual de
-MongoDB en macOS/Linux). Desde la raíz del repositorio:
+## Local setup without touching your existing MongoDB
+
+You need `mongod` installed and on your PATH (the usual MongoDB install on macOS
+or Linux). From the repository root:
 
 ```sh
 npm ci
 npm run db:local:start
 ```
 
-Esto inicia un replica set dedicado, enlazado solo a `127.0.0.1:27018`, con datos
-persistentes en `.local/mongodb` dentro del repositorio. No toca el proceso ni los
-datos del MongoDB existente en `27017`. Se puede repetir: verifica la configuración
-del proceso antes de inicializarlo. Si otro proceso ocupa `27018`, se detiene sin
-modificarlo. No borres `.local/mongodb`; es la base local de este proyecto.
-El comando usa un proceso separado de Node, sin `mongod --fork`, que MongoDB
-rechaza en macOS. Si falla antes de crear `mongod.log`, el error de arranque queda
-en `.local/mongodb/startup.log` y se muestra en la terminal.
+This starts a dedicated replica set, bound only to `127.0.0.1:27018`, with its
+data in `.local/mongodb` inside the repository (ignored by Git). It does not
+touch a MongoDB already running on `27017`. You can run it again: it checks the
+running process before setting anything up. If another process uses `27018`, it
+stops without changing it. Do not delete `.local/mongodb`; it is this project's
+local database. The command uses a separate Node process instead of
+`mongod --fork`, which MongoDB refuses on macOS. If it fails before creating
+`mongod.log`, the startup error is saved in `.local/mongodb/startup.log` and shown
+in the terminal.
 
-En tu `.env` privado, usa **la misma URI** para API e importador:
+In your private `.env`, use **the same address** for the API and the importer:
 
 ```dotenv
 MONGO_URI=mongodb://127.0.0.1:27018/teacherperi_dev?directConnection=true
 MONGO_CONTENT_IMPORT_URI=mongodb://127.0.0.1:27018/teacherperi_dev?directConnection=true
 ```
 
-Conserva tu `JWT_SECRET`, `PORT=4000`, `CLIENT_ORIGIN=http://localhost:5173` y
-`VITE_API_URL=http://localhost:4000`. Este entorno parte de una base nueva; tus
-cuentas y registros anteriores siguen intactos en la instancia de `27017`.
-No es una migración de esas cuentas.
+Keep your `JWT_SECRET`, `PORT=4000`, `CLIENT_ORIGIN=http://localhost:5173` and
+`VITE_API_URL=http://localhost:4000`. This database starts empty; accounts you
+created in another local database stay there and are not copied.
 
 ```sh
 npm run content:import -- --dry-run
@@ -43,27 +45,27 @@ npm run content:import -- --dry-run
 npm run content:check
 ```
 
-La segunda ejecución del dry-run debe indicar `create:0`, `promote:0` y `keep:511`
-en una importación nueva de este manifiesto. `content:check` consulta **MONGO_URI**,
-la base que usa la aplicación, sin escribir datos. Debe mostrar
-`atomicImportSupported:true` y `ommRoot:"published"`.
+The second dry run must report `create:0`, `promote:0` and `keep:537` for a fresh
+import of the current content. `content:check` reads **MONGO_URI**, the database
+the API uses, without writing. It must show `atomicImportSupported:true` and
+`ommRoot:"published"`.
 
-Reinicia `npm run server` y `npm run dev` después de editar `.env` (en terminales
-separadas). Abre:
+Restart `npm run server` and `npm run dev` after editing `.env` (in separate
+terminals). Then open:
 
 - http://localhost:5173/rutas/preparacion-para-la-omm
 - http://localhost:4000/api/paths/preparacion-para-la-omm
 
-La URL de API debe responder con el currículo. Si la API funciona y la página no,
-revisa `VITE_API_URL` y reinicia Vite. Si `content:check` ve contenido pero la API
-no, reinicia el servidor: puede seguir usando la URI anterior.
+The API address must answer with the Ruta. If the API works and the page does
+not, check `VITE_API_URL` and restart Vite. If `content:check` sees content but
+the API does not, restart the server: it may still use the old address.
 
-El proceso dedicado queda corriendo después del comando. Para detenerlo de forma
-ordenada, desde la raíz del repositorio usa
-`mongod --shutdown --dbpath "$PWD/.local/mongodb"` si tu versión lo admite, o
-envía SIGTERM al PID indicado en `.local/mongodb/mongod.log`. No detengas el servicio
-de `27017`. Vuelve a ejecutar `npm run db:local:start` tras reiniciar tu equipo.
+The database process keeps running after the command ends. To stop it cleanly,
+from the repository root run `mongod --shutdown --dbpath "$PWD/.local/mongodb"`
+if your version supports it, or send SIGTERM to the PID shown in
+`.local/mongodb/mongod.log`. Do not stop the service on `27017`. Run
+`npm run db:local:start` again after restarting your computer.
 
-Para producción se conserva [DEPLOYMENT.md](DEPLOYMENT.md) y el importador
-[CONTENT_IMPORT.md](CONTENT_IMPORT.md). Esta instancia local no debe exponerse
-a Internet ni usarse como infraestructura de producción.
+For the live site, see [DEPLOYMENT.md](DEPLOYMENT.md) and the importer guide
+[CONTENT_IMPORT.md](CONTENT_IMPORT.md). This local database must never be exposed
+to the internet or used as production infrastructure.

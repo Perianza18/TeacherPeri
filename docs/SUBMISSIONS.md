@@ -1,5 +1,7 @@
 # Community submissions, exam folders and error reports
 
+English · **[Español](es/SUBMISSIONS.md)**
+
 Signed-in users (role `user` and up, see [ROLES.md](ROLES.md)) can propose
 problems, propose exam folders and report errors. Nothing they send is public
 until an admin reviews it.
