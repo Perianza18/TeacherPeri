@@ -1,3 +1,5 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # TeacherPeri current state
 
 ## Final MVP sprint — October 2026
@@ -30,13 +32,13 @@ Implemented release:
 
 The release data is prepared in source; this does not claim it has been loaded
 into a production database or deployed. Production setup remains the owner's
-next step: [DEPLOYMENT.md](DEPLOYMENT.md).
+next step: [DEPLOYMENT.md](../DEPLOYMENT.md).
 
 ## Preserved architecture and boundaries
 
 Local recovery: `db:local:start` prepares a separate loopback replica set on port
 27018; `content:check` inspects the application's database read-only. The importer
-explains standalone-server refusal explicitly. See [LOCAL_MVP.md](LOCAL_MVP.md).
+explains standalone-server refusal explicitly. See [LOCAL_MVP.md](../LOCAL_MVP.md).
 Existing local MongoDB data is not reset or reconfigured.
 The launcher detaches through Node rather than MongoDB's unsupported macOS
 `--fork` option, and preserves early startup errors in `.local/mongodb/startup.log`.
@@ -50,7 +52,7 @@ Phase 4, Mi Espacio, independent Threads, community, roles/publishing workflows,
 Experiencias storage and full university guidance remain deferred. Existing
 comments are compatibility behavior, not a new community system. Comments now
 nest up to three reply levels and are soft-deleted (author, or an editor or admin with a
-reason); see [ROLES.md](ROLES.md) for roles.
+reason); see [ROLES.md](../ROLES.md) for roles.
 
 ## Reading experience — October 2026 feedback
 

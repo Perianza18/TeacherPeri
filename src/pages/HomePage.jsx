@@ -173,7 +173,6 @@ function SobreTeacherPeri() {
       <div className="tp-card-quiet flex flex-[999_1_460px] flex-col gap-3 bg-tp-surface p-6">
         <span className="tp-eyebrow">Sobre TeacherPeri</span>
         <h2 id="sobre-titulo" className="tp-h2">Construido desde la experiencia de aprender, competir y enseñar.</h2>
-        {/* Mission wording from QueEsTeacherPeri.jsx. */}
         <p className="leading-[1.65]"><strong>Misión:</strong> hacer que el entrenamiento para olimpiadas de matemáticas sea accesible para todos. Inspirados por la experiencia de dar talleres gratuitos a estudiantes y profesores.</p>
         <div className="flex flex-wrap gap-3">
           <Link to="/sobre-mi" className="inline-flex min-h-11 items-center rounded-xl border-2 border-tp-ink bg-tp-ink px-4 font-bold text-white">Sobre mí</Link>

@@ -1,6 +1,8 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # TeacherPeri migration and compatibility notes
 
-TeacherPeri is evolved incrementally. Existing implementation details are evidence of current behavior, not automatic evidence of product intent. [PRODUCT.md](PRODUCT.md) is the agreed product model, [ARCHITECTURE.md](ARCHITECTURE.md) describes current behavior, and [ROADMAP.md](ROADMAP.md) defines sequencing.
+TeacherPeri is evolved incrementally. Existing implementation details are evidence of current behavior, not automatic evidence of product intent. [PRODUCT.md](PRODUCT.md) is the agreed product model, [ARCHITECTURE.md](../ARCHITECTURE.md) describes current behavior, and [ROADMAP.md](ROADMAP.md) defines sequencing.
 
 ## Preserve and evolve
 

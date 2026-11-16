@@ -33,7 +33,6 @@
     "start": "node server/src/server.js"
   },
   "dependencies": {
-    "@paper-design/shaders-react": "^0.0.80",
     "@tailwindcss/vite": "^4.3.3",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.6",

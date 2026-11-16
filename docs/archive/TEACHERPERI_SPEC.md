@@ -1,3 +1,5 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # TeacherPeri — Complete Product & Design Specification
 
 **Status:** Living specification  
