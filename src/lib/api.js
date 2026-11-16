@@ -27,6 +27,7 @@ export async function apiFetch(path, { method = 'GET', body, token } = {}) {
   if (!res.ok) {
     const error = new Error(data?.error || 'Error de red inesperado.')
     error.status = res.status
+    error.data = data // por ejemplo, la lista de revisiones de un envío rechazado (422)
     if (res.status === 401 && token) window.dispatchEvent(new Event('teacherperi:auth-expired'))
     throw error
   }

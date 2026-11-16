@@ -3,6 +3,7 @@ import Category from '../models/Category.js'
 import Topic from '../models/Topic.js'
 import Tag from '../models/Tag.js'
 import Problem from '../models/Problem.js'
+import ProblemCollection from '../models/ProblemCollection.js'
 import Theory from '../models/Theory.js'
 import List from '../models/List.js'
 import Exam from '../models/Exam.js'
@@ -14,7 +15,7 @@ import { buildMvpManifest, contentId } from '../data/mvpManifest.js'
 import { OMM_CURRICULUM } from '../data/ommCurriculum.js'
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from '../data/ommLaunchContent.js'
 
-export const CONTENT_MODELS = { Category, Topic, Tag, Problem, Theory, List, Exam, Path, PathSection, PathReference, Step }
+export const CONTENT_MODELS = { Category, Topic, Tag, Problem, ProblemCollection, Theory, List, Exam, Path, PathSection, PathReference, Step }
 mongoose.set('transactionAsyncLocalStorage', true)
 
 function normalized(value) {
@@ -23,7 +24,7 @@ function normalized(value) {
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([key]) => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(([key, value]) => [key, normalized(value)]))
   return value
 }
-function matches(existing, expected, keys = Object.keys(expected)) {
+export function matches(existing, expected, keys = Object.keys(expected)) {
   return keys.every((key) => JSON.stringify(normalized(existing[key])) === JSON.stringify(normalized(expected[key])))
 }
 function originalDraft(entry, existing) {

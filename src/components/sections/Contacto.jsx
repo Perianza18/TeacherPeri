@@ -1,7 +1,5 @@
-// Sección Contacto (id="contacto")
-// Fondo animado con shaders (@paper-design/shaders-react), mismo tipo de
-// mesh gradient que el Hero, en la paleta TeacherPeri: rojo #7C3AED,
-// naranja #5B5FE9 y amarillo dorado #2563EB.
+// Sección Contacto (id="contacto"): correo y redes sociales sobre un fondo
+// de tinta con retícula de puntos.
 //
 // TODO: href de mailto y de cada red son placeholders — no son datos
 // inventados sobre vos, son literalmente marcadores de posición que hay

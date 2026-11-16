@@ -110,7 +110,7 @@ router.post('/login', async (req, res) => {
 
 // Devuelve la cuenta de la sesión actual. El sitio la consulta al cargar para
 // tener el rol al día (por ejemplo, justo después de que alguien te nombre
-// moderador) sin tener que cerrar sesión y volver a entrar.
+// editor) sin tener que cerrar sesión y volver a entrar.
 router.get('/me', requireAuth, async (req, res) => {
   const user = await User.findById(req.userId).select('username email role').lean()
   if (!user) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })

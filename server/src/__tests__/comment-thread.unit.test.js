@@ -27,11 +27,11 @@ describe('orderCommentThread', () => {
 })
 
 describe('publicComment', () => {
-  const author = { _id: 'u1', username: 'ana', role: 'moderador', email: 'ana@test.com', passwordHash: 'h' }
+  const author = { _id: 'u1', username: 'ana', role: 'editor', email: 'ana@test.com', passwordHash: 'h' }
 
   it('expone texto, autor y rol, pero nunca el correo ni el hash', () => {
     const out = publicComment({ ...c('a'), body: 'Hola', status: 'visible', author }, 0)
-    expect(out).toMatchObject({ deleted: false, body: 'Hola', depth: 0, author: { username: 'ana', role: 'moderador' } })
+    expect(out).toMatchObject({ deleted: false, body: 'Hola', depth: 0, author: { username: 'ana', role: 'editor' } })
     expect(out.author.email).toBeUndefined()
     expect(out.author.passwordHash).toBeUndefined()
   })

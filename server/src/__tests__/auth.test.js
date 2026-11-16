@@ -21,7 +21,7 @@ import app from '../app.js'
 import User from '../models/User.js'
 
 describe('User.role', () => {
-  it('una cuenta nueva empieza con el rol usuario', async () => {
+  it('una cuenta nueva empieza con el rol user', async () => {
     await request(app).post('/api/auth/signup').send({
       username: 'ana',
       email: 'ana@test.com',
@@ -29,7 +29,7 @@ describe('User.role', () => {
     })
 
     const user = await User.findOne({ email: 'ana@test.com' })
-    expect(user.role).toBe('usuario')
+    expect(user.role).toBe('user')
   })
 
   it('ignora un rol enviado en el registro', async () => {
@@ -42,7 +42,7 @@ describe('User.role', () => {
 
     expect(res.status).toBe(201)
     const user = await User.findOne({ email: 'colado@test.com' })
-    expect(user.role).toBe('usuario')
+    expect(user.role).toBe('user')
   })
 
   it('rechaza un rol que no existe', async () => {
@@ -155,11 +155,11 @@ describe('rol en las respuestas de cuenta', () => {
       email: 'ana@test.com',
       password: 'clave12345',
     })
-    expect(signup.body.user.role).toBe('usuario')
+    expect(signup.body.user.role).toBe('user')
 
-    await User.updateOne({ email: 'ana@test.com' }, { role: 'moderador' })
+    await User.updateOne({ email: 'ana@test.com' }, { role: 'editor' })
     const login = await request(app).post('/api/auth/login').send({ email: 'ana@test.com', password: 'clave12345' })
-    expect(login.body.user).toMatchObject({ username: 'ana', email: 'ana@test.com', role: 'moderador' })
+    expect(login.body.user).toMatchObject({ username: 'ana', email: 'ana@test.com', role: 'editor' })
     expect(login.body.user.passwordHash).toBeUndefined()
   })
 })

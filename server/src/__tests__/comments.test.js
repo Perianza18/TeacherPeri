@@ -223,7 +223,7 @@ describe('Respuestas anidadas', () => {
     expect(leer.body.map((c) => [c.body, c.depth])).toEqual([
       ['Hilo A', 0], ['Respuesta a A', 1], ['Hilo B', 0], ['Respuesta a B', 1],
     ])
-    expect(leer.body[0].author).toMatchObject({ username: 'comentarista', role: 'usuario' })
+    expect(leer.body[0].author).toMatchObject({ username: 'comentarista', role: 'user' })
     expect(leer.body[0].author.email).toBeUndefined()
   })
 
@@ -263,7 +263,7 @@ describe('Eliminar con motivo (moderación)', () => {
     const problema = await crearProblemaDePrueba()
     const tokenAutor = await crearUsuarioYObtenerToken('autor@test.com', 'autor')
     const tokenModerador = await crearUsuarioYObtenerToken('mod@test.com', 'moderadora')
-    await User.updateOne({ username: 'moderadora' }, { role: 'moderador' })
+    await User.updateOne({ username: 'moderadora' }, { role: 'editor' })
     const comentario = await request(app)
       .post(`/api/problems/${problema._id}/comments`)
       .set('Authorization', `Bearer ${tokenAutor}`)

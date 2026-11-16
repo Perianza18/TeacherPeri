@@ -3,6 +3,9 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Reading text in theory articles and problem statements (DESIGN §3).
+     KaTeX_Main comes with the katex CSS that MathText imports: no new font. */
+  --font-reading: "KaTeX_Main", "Times New Roman", serif;
 
   --color-brand-50: #faf8f5;
   --color-brand-100: #f2efe9;
@@ -24,6 +27,10 @@
   --color-accent-yellow: #ffd65a;
   --color-accent-purple-soft: #eee7ff;
   --color-accent-blue-soft: #e5f1ff;
+
+  /* Site-wide content width (DESIGN §4: 1120px). Every existing max-w-7xl
+     container reads this, so pages narrow together instead of one by one. */
+  --container-7xl: 70rem;
 }
 
 /* Design guide color tokens ("Cómic refinado" palette).
@@ -45,6 +52,27 @@
   --tp-mint-soft: #d8f5e8;
   --tp-coral: #ff7f79;
   --tp-coral-soft: #ffe4e1;
+
+  /* Pastel tints for section headings, numbered circles and card header
+     strips, in the guide's rotation order (DESIGN §2). */
+  --tp-tint-violet: #e8ddff;
+  --tp-tint-sky: #d9f1ff;
+  --tp-tint-coral: #ffdfd6;
+  --tp-tint-mint: var(--tp-mint-soft);
+
+  /* Type scale and layout (DESIGN §3–4, reduced ~10% on 2026-11-14). */
+  --tp-content-max: 1120px;
+  --tp-text-ui: 15px;
+  --tp-text-reading: 18px;
+  --tp-text-lead: 17px;
+  --tp-text-h1: 44px;
+  --tp-text-h1-mobile: 34px;
+  --tp-text-h2: 24px;
+  --tp-text-card-title: 19px;
+  --tp-text-kicker: 11px;
+  --tp-text-logo: 22px;
+  --tp-shadow-hero: 6px 6px 0 var(--tp-ink);
+  --tp-shadow-card: 4px 4px 0 var(--tp-ink);
 }
 
 /* Tailwind color classes for the tokens above (bg-tp-violet, text-tp-ink,
@@ -66,6 +94,10 @@
   --color-tp-mint-soft: var(--tp-mint-soft);
   --color-tp-coral: var(--tp-coral);
   --color-tp-coral-soft: var(--tp-coral-soft);
+  --color-tp-tint-violet: var(--tp-tint-violet);
+  --color-tp-tint-sky: var(--tp-tint-sky);
+  --color-tp-tint-coral: var(--tp-tint-coral);
+  --color-tp-tint-mint: var(--tp-tint-mint);
 }
 
 :root {
@@ -82,6 +114,9 @@ html {
 
 body {
   @apply m-0 bg-brand-50 text-brand-900 antialiased;
+  /* Base UI text (DESIGN §3). Reading text sets its own 16px size. */
+  font-size: var(--tp-text-ui);
+  line-height: 1.55;
 }
 
 /* Base layer, so heading utility classes (font-*, tracking-*) still win. */
@@ -131,14 +166,14 @@ textarea {
 .tp-card {
   border: 3px solid var(--tp-ink);
   border-radius: 18px;
-  box-shadow: 7px 7px 0 var(--tp-ink);
+  box-shadow: var(--tp-shadow-hero);
 }
 
 /* Standard card / box */
 .tp-card-soft {
   border: 2px solid var(--tp-ink);
   border-radius: 14px;
-  box-shadow: 4px 4px 0 var(--tp-ink);
+  box-shadow: var(--tp-shadow-card);
 }
 
 /* Quiet box: same frame as .tp-card-soft, without the shadow */
@@ -180,12 +215,18 @@ textarea {
   border: 2px solid var(--tp-ink);
   border-radius: 999px;
   background: var(--tp-yellow);
-  padding: .35rem .75rem;
+  padding: 3px 11px;
   color: var(--tp-ink);
-  font-size: 12px;
+  font-size: var(--tp-text-kicker);
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
+}
+
+/* Ink kicker with white text, e.g. «PROBLEMA DEL DÍA» (DESIGN §5). */
+.tp-kicker-ink {
+  background: var(--tp-ink);
+  color: var(--tp-surface);
 }
 
 /* Newer primitives live in the components layer, so a Tailwind class on the
@@ -221,6 +262,79 @@ textarea {
   .tp-input::placeholder {
     color: var(--tp-ink-muted);
   }
+
+  /* Page container: 1120px of content plus the side padding (DESIGN §4). */
+  .tp-container {
+    box-sizing: content-box;
+    max-width: var(--tp-content-max);
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  /* Text-only logo (DESIGN §6). */
+  .tp-logo {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-logo);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  /* Type scale (DESIGN §3). */
+  .tp-h1 {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-h1-mobile);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .tp-h2 {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-h2);
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .tp-card-title {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-card-title);
+    font-weight: 800;
+    line-height: 1.3;
+  }
+
+  .tp-lead {
+    font-size: var(--tp-text-lead);
+    line-height: 1.65;
+  }
+
+  /* Reading column text: the math font, so words and formulas match. */
+  .tp-reading-text {
+    font-family: var(--font-reading);
+    font-size: var(--tp-text-reading);
+    line-height: 1.7;
+  }
+
+  /* Strongest box: Teorema and the practice box (3px, 16px, 6px shadow). */
+  .tp-box-strong {
+    border: 3px solid var(--tp-ink);
+    border-radius: 16px;
+    box-shadow: var(--tp-shadow-hero);
+  }
+
+  /* Plain kicker: muted uppercase label without the pill. */
+  .tp-eyebrow {
+    color: var(--tp-ink-muted);
+    font-size: var(--tp-text-kicker);
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 640px) {
+    .tp-container { padding-inline: 24px; }
+    .tp-h1 { font-size: var(--tp-text-h1); }
+  }
 }
 
 .tp-dot-grid {
@@ -245,14 +359,14 @@ textarea {
 .tp-reading .katex-display { overflow-x: auto; overflow-y: hidden; padding: .5rem 0; }
 .tp-card, .tp-card-soft, .tp-kicker { rotate: 0deg; }
 
-.tp-lesson-heading { display: flex; align-items: center; gap: .8rem; padding: .75rem 1rem; border: 2px solid var(--tp-ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--tp-ink); }
-.tp-lesson-heading::before { content: '✦'; font-size: 1.25rem; }
-.tp-lesson-heading-0 { background: #e8ddff; }
-.tp-lesson-heading-1 { background: #d9f1ff; }
-.tp-lesson-heading-2 { background: #ffdfd6; }
-.tp-lesson-heading-3 { background: #d8f5e8; }
-.tp-lesson-ribbon { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1.4rem; margin-top: 2rem; padding: 1rem 0; border-bottom: 2px dashed #c4bcb2; font-size: .7rem; font-weight: 900; letter-spacing: .1em; }
-.tp-lesson-ribbon span:nth-child(1) { color: #6437a8; }
-.tp-lesson-ribbon span:nth-child(2) { color: #126381; }
-.tp-lesson-ribbon span:nth-child(3) { color: #885116; }
-.tp-lesson-symbol { margin-left: auto; font-size: 2rem; color: #6437a8; }
+/* KaTeX draws formulas at 1.21em to match sans text. In reading text the
+   words are already KaTeX_Main, so formulas stay at the same size. Unlayered
+   on purpose: it must beat katex.min.css, which is unlayered too. */
+.tp-reading-text .katex { font-size: 1em; }
+
+/* Lesson section heading (h2): one of four tints, no symbol before it. */
+.tp-lesson-heading { padding: 10px 16px; border: 2px solid var(--tp-ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--tp-ink); font-family: var(--font-display); font-size: var(--tp-text-h2); font-weight: 800; line-height: 1.2; }
+.tp-lesson-heading-0 { background: var(--tp-tint-violet); }
+.tp-lesson-heading-1 { background: var(--tp-tint-sky); }
+.tp-lesson-heading-2 { background: var(--tp-tint-coral); }
+.tp-lesson-heading-3 { background: var(--tp-tint-mint); }

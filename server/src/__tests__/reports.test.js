@@ -18,7 +18,7 @@ async function setup() {
   const lector = await signup('lector')
   const otro = await signup('otro')
   const mod = await signup('moder')
-  await User.updateOne({ username: 'moder' }, { role: 'moderador' })
+  await User.updateOne({ username: 'moder' }, { role: 'editor' })
   const c = await request(app).post(`/api/problems/${problema._id}/comments`).set('Authorization', `Bearer ${autor}`).send({ body: 'Comentario reportable' })
   const base = `/api/problems/${problema._id}/comments/${c.body._id}`
   return { problema, autor, lector, otro, mod, commentId: c.body._id, base }
@@ -43,7 +43,7 @@ describe('Reportar comentarios', () => {
 })
 
 describe('Cola de moderación', () => {
-  it('solo moderadores la ven, agrupada por comentario', async () => {
+  it('solo editores en adelante la ven, agrupada por comentario', async () => {
     const { base, lector, otro, mod, commentId } = await setup()
     await reportar(base, lector, { reason: 'spam' })
     await reportar(base, otro, { reason: 'otro', note: 'Publicidad' })

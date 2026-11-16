@@ -35,11 +35,13 @@ describe('roleChangeTarget', () => {
 describe('parseRoleArgs', () => {
   it('lee --user y --role; por defecto solo muestra (dry-run)', () => {
     expect(parseRoleArgs(['--user', 'ana@test.com', '--role', 'admin'])).toEqual({ user: 'ana@test.com', role: 'admin', apply: false })
-    expect(parseRoleArgs(['--user', 'ana', '--role', 'moderador', '--apply']).apply).toBe(true)
+    expect(parseRoleArgs(['--user', 'ana', '--role', 'editor', '--apply']).apply).toBe(true)
   })
 
   it('rechaza roles inventados, argumentos faltantes o desconocidos y modos mezclados', () => {
     expect(() => parseRoleArgs(['--user', 'ana', '--role', 'superusuario'])).toThrow(/--role/)
+    expect(() => parseRoleArgs(['--user', 'ana', '--role', 'teacherperi'])).toThrow(/--role/)
+    expect(() => parseRoleArgs(['--user', 'ana', '--role', 'moderador'])).toThrow(/--role/)
     expect(() => parseRoleArgs(['--role', 'admin'])).toThrow(/--user/)
     expect(() => parseRoleArgs(['--user', '--role', 'admin'])).toThrow(/needs a value/)
     expect(() => parseRoleArgs(['--user', 'ana', '--role', 'admin', '--force'])).toThrow(/Unknown argument/)

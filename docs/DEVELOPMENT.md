@@ -1,15 +1,105 @@
-# TeacherPeri development guidelines
+# Development
 
-This repository contains the active TeacherPeri application and is evolved incrementally.
+English · **[Español](es/DEVELOPMENT.md)**
 
-- Read [PRODUCT.md](PRODUCT.md) and [ARCHITECTURE.md](ARCHITECTURE.md) before product-level architectural changes. Use [MIGRATION.md](MIGRATION.md) for compatibility and data-migration context and [ROADMAP.md](ROADMAP.md) for phase boundaries.
-- Do not infer TeacherPeri requirements from stale code, comments, assets, or superseded documentation. Distinguish implemented behavior from agreed future requirements.
-- Preserve working functionality unless the current migration task explicitly replaces it. Prefer incremental changes over a framework rewrite.
-- Original OMM educational drafts are authorized for the MVP; validate mathematics, attribution and strict KaTeX before release. Do not invent university advice.
-- Categories are material folders; Paths are reusable guidance through content. They are different domain concepts.
-- Store TeacherPeri content once and reference its stable identity wherever it is reused.
-- Keep browsing/search public. Login adds persistence, progress, saving, personalization, and participation; Path progress must never lock content.
-- User-facing deletion of moderation-relevant community content must eventually remain auditable internally. Existing embedded comments are legacy behavior: preserve their records during migration and do not casually delete or convert them.
-- Never run destructive database commands against an unverified database. Use the repository's runtime guards, verify that the target is disposable, and keep development resets separate from migrations. Never treat a seed/reset as a production migration.
-- Run appropriate lint, tests, and build after changes when safe. Database tests require a verified disposable database; do not run destructive seed/reset commands merely for validation. Report checks not run and why.
-- Keep canonical documentation aligned with changes, and do not implement later roadmap systems unless the current task includes them.
+## Setup
+
+You need Node 22.13 or newer (22, 24 or 26+; `.nvmrc` says 22.13.0), npm and
+MongoDB.
+
+```sh
+npm ci
+cp .env.example .env
+# Make a secret and put it in JWT_SECRET inside .env:
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+npm run server     # API on http://localhost:4000
+npm run dev        # website on http://localhost:5173 (in a second terminal)
+```
+
+The API starts with an empty database. To load the real content (Rutas, lessons,
+problems), follow [LOCAL_MVP.md](LOCAL_MVP.md). In short:
+`npm run db:local:start` starts a local MongoDB replica set on port 27018,
+`npm run content:import` loads the content, and `npm run content:check` shows
+what the API sees.
+
+Never point your local `.env` at the live database.
+
+### Settings (`.env`)
+
+| Variable | What it is |
+| --- | --- |
+| `MONGO_URI` | The database the API uses |
+| `JWT_SECRET` | Secret that signs sign-in tokens. Required |
+| `PORT` | API port (4000) |
+| `CLIENT_ORIGIN` | The website address the API accepts requests from (`http://localhost:5173`) |
+| `VITE_API_URL` | The API address the website calls (`http://localhost:4000`). Public: never put a secret in a `VITE_*` variable |
+| `TRUST_PROXY_HOPS` | Only in production behind a proxy (see [DEPLOYMENT.md](DEPLOYMENT.md)). Leave it unset locally |
+
+## Checks before a pull request
+
+```sh
+npm run content:validate   # the official content files are consistent
+npm run lint
+npm run test:unit
+npm run build
+```
+
+Database tests need MongoDB running as a replica set on your own computer and a
+throwaway database named `teacherperi_test` (or `teacherperi_test_<suffix>`).
+They erase that database when they finish:
+
+```sh
+MONGO_TEST_URI=mongodb://127.0.0.1:27017/teacherperi_test npm run test:integration
+```
+
+Browser tests (desktop and phone) use fake API answers, so they need no database:
+
+```sh
+npx playwright install chromium
+npm run test:browser
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs all of these on every push and
+pull request, plus a real content import into a fresh database on Linux and macOS.
+
+## Test lesson
+
+`npm run dev` adds a page that is not in the live site: `/dev/teoria-prueba`.
+It shows every lesson block, so you can check a change to the lesson page
+without touching real content.
+
+## Resetting a local database
+
+`npm run db:reset:dev` **erases** the problems and folders of a local database
+and fills it with old sample problems. You rarely need it: `content:import` is
+the normal way to get content. It only runs with all three settings below, only
+on a database on your own computer named `teacherperi_dev`, and refuses a
+database that holds comments. Accounts are kept.
+
+```sh
+NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_dev RESET_DATABASE_CONFIRM=teacherperi_dev npm run db:reset:dev
+```
+
+## npm scripts
+
+| Script | What it does |
+| --- | --- |
+| `dev`, `build`, `preview` | Website: dev server, production build, preview the build |
+| `server`, `start` | API: with auto-reload, or plain (production) |
+| `lint` | ESLint |
+| `test`, `test:unit`, `test:integration`, `test:browser` | Tests (`test` runs unit and integration) |
+| `content:validate` | Checks the content files without a database |
+| `content:import` | Loads the official content into a database ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
+| `content:revise-theory` | Publishes rewritten lessons ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revising-rewritten-theory-lessons)) |
+| `content:check` | Shows what content the API's database has (read-only) |
+| `users:set-role` | Changes one account's role ([ROLES.md](ROLES.md)) |
+| `review` | Reviews proposals, exam folders and error reports ([SUBMISSIONS.md](SUBMISSIONS.md)) |
+| `db:migrate:roles-users` | One-time migration for the three roles and exam folders ([SUBMISSIONS.md](SUBMISSIONS.md#migration)) |
+| `db:local:start` | Starts a local MongoDB replica set ([LOCAL_MVP.md](LOCAL_MVP.md)) |
+| `db:reset:dev` | **Erases** the problems and folders of a local `teacherperi_dev` database and fills it with old sample problems. Local only |
+| `curriculum:preview:omm`, `curriculum:preview:omm-content` | Print the OMM Ruta and its content without a database |
+| `db:apply:omm-curriculum`, `db:apply:omm-content-batch1`, `db:backfill:problem-categories` | Older one-time local migrations from before `content:import` |
+
+Scripts that write to a database run as a dry run unless you pass `--apply` and
+confirm the database name. See the safety rules in
+[ARCHITECTURE.md](ARCHITECTURE.md#safety-rules-built-into-the-code).

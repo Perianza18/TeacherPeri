@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   // Al cargar el sitio, pide la cuenta al servidor para tener el rol al día
-  // (por ejemplo, si te nombraron moderador después de iniciar sesión). Si el
+  // (por ejemplo, si te nombraron editor después de iniciar sesión). Si el
   // token ya no sirve, apiFetch avisa con 'teacherperi:auth-expired' y la
   // sesión se cierra arriba; cualquier otro error deja la sesión como estaba.
   const token = auth?.token

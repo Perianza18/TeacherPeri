@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import HomePage from './pages/HomePage'
@@ -16,6 +17,12 @@ import ListasPage, { RedirectToListas } from './pages/ListasPage'
 import RutasPage from './pages/RutasPage'
 import PathPage from './pages/PathPage'
 import PagePlaceholder from './components/PagePlaceholder'
+import ProponerProblemaPage from './pages/ProponerProblemaPage'
+import MisEnviosPage, { EditarEnvioPage } from './pages/MisEnviosPage'
+
+// Dev-only test lesson with every block of the lesson format; the production
+// build drops it because import.meta.env.DEV is false there.
+const TheoryTestLessonPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryTestLessonPage')) : null
 
 function App() {
   return (
@@ -23,11 +30,13 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          {TheoryTestLessonPage && <Route path="/dev/teoria-prueba" element={<Suspense fallback={<p>Cargando…</p>}><TheoryTestLessonPage /></Suspense>} />}
           <Route path="/rutas" element={<RutasPage />} />
           <Route path="/rutas/*" element={<PathPage />} />
           <Route path="/entrenamiento" element={<EntrenamientoPage />}>
             <Route index element={<Navigate to="problemas" replace />} />
             <Route path="problemas" element={<Problemas />} />
+            <Route path="problemas/proponer" element={<ProponerProblemaPage />} />
             <Route path="problemas/:id" element={<LibraryDetailPage type="problemas" />} />
             <Route path="teoria" element={<LibraryCollection type="theory" title="Teoría" subtitle="Artículos matemáticos nativos con contenido y referencias reutilizables." />} />
             <Route path="teoria/:id" element={<LibraryDetailPage type="teoria" />} />
@@ -40,6 +49,8 @@ function App() {
             <Route index element={<LibraryCollection type="lists" eyebrow="Listas" title="Listas" subtitle="Colecciones de problemas para practicar y recursos externos enlazados a su fuente original." />} />
             <Route path=":id" element={<LibraryDetailPage type="listas" />} />
           </Route>
+          <Route path="/mis-envios" element={<MisEnviosPage />} />
+          <Route path="/mis-envios/:id" element={<EditarEnvioPage />} />
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />
           <Route path="/equipo" element={<EquipoPage />} />

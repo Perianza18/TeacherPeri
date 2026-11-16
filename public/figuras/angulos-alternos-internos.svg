@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="300" height="220">
+<title>Rectas paralelas r y s cortadas por la transversal t en A y B; los ángulos alternos internos, entre r y s y en lados opuestos de t, están marcados con α</title>
+<path d="M112.2,60 L136.2,60 A24,24 0 0 1 123.9,81 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<path d="M167.8,160 L143.8,160 A24,24 0 0 1 156.1,139 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<line x1="-10" y1="60" x2="310" y2="60" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="-10" y1="160" x2="310" y2="160" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="73.3" y1="-10" x2="206.4" y2="229.5" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M253,66 L262,60 L253,54" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M253,166 L262,160 L253,154" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="145" y="84.9" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">α</text>
+<text x="135" y="146.3" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">α</text>
+<circle cx="112.2" cy="60" r="3.5" fill="#111111"/>
+<circle cx="167.8" cy="160" r="3.5" fill="#111111"/>
+<text x="96.2" y="52" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">A</text>
+<text x="185.8" y="152" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">B</text>
+<text x="22" y="52" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">r</text>
+<text x="22" y="152" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">s</text>
+<text x="208" y="204" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">t</text>
+</svg>

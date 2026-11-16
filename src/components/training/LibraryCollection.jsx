@@ -4,11 +4,12 @@ import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import MathText from '../math/MathText'
 import TrainingHeader from './TrainingHeader'
+import FolderFilter from './FolderFilter'
 
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 const titleOf = (type, item) => type === 'exams' ? `${item.competition} ${item.year} · ${item.round}` : item.title || item.titulo
 
-export default function LibraryCollection({ type, title, subtitle, onOpen, eyebrow = 'Zona de Entrenamiento' }) {
+export default function LibraryCollection({ type, title, subtitle, onOpen, eyebrow = 'Zona de Entrenamiento', headerAction = null }) {
   const location = useLocation()
   const [filters, setFilters] = useState({ q: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
   const [page, setPage] = useState(1)
@@ -40,7 +41,8 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   useEffect(() => {
     let cancelled = false
     Promise.all([apiFetch('/api/categories'), apiFetch('/api/topics'), apiFetch('/api/tags'), type === 'problems' ? apiFetch('/api/problems/facets') : Promise.resolve({})])
-      .then(([categories, topics, tags, facets]) => { if (!cancelled) setMetadata({ categories, topics, tags, facets }) })
+      // Exam folders only hold Problems, so the other libraries leave them out.
+      .then(([categories, topics, tags, facets]) => { if (!cancelled) setMetadata({ categories: type === 'problems' ? categories : categories.filter((c) => c.kind !== 'exam'), topics, tags, facets }) })
       .catch(() => {})
     return () => { cancelled = true }
   }, [type])
@@ -53,7 +55,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const select = (field, label, choices) => <label className="text-sm font-semibold text-brand-700">{label}<select value={filters[field]} onChange={(e) => change(field, e.target.value)} className="mt-1 w-full rounded-xl border border-brand-300 bg-white p-3 font-normal"><option value="">Todos</option>{choices.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
 
   return <section className="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 lg:px-8">
-    <TrainingHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
+    <TrainingHeader eyebrow={eyebrow} title={title} subtitle={subtitle} action={headerAction} />
     <div className="tp-card-soft bg-white p-5">
       <label className="text-sm font-bold text-brand-900">Buscar en {title.toLowerCase()}<input type="search" value={filters.q} onChange={(e) => change('q', e.target.value)} placeholder="Título, tema o palabra clave" className="mt-2 w-full rounded-xl border-2 border-black bg-brand-50 px-4 py-3 outline-none focus:ring-2 focus:ring-violet-500" /></label>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -62,7 +64,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
         {type !== 'exams' && select('level', 'Nivel', Object.entries(LEVELS))}
       </div>
       {type === 'problems' && <div className="mt-4 grid gap-4 sm:grid-cols-3">{[['year', 'Año', 'years'], ['subject', 'Área', 'subjects'], ['type', 'Colección', 'types']].map(([field, label, facet]) => <fieldset key={field}><legend className="text-sm font-bold text-brand-700">{label}</legend><div className="mt-2 flex flex-wrap gap-2">{(metadata.facets[facet] || []).map((value) => <label key={value} className="cursor-pointer rounded-lg border border-brand-300 px-2 py-1 text-xs"><input type="checkbox" checked={filters[field].includes(value)} onChange={(e) => change(field, e.target.checked ? [...filters[field], value] : filters[field].filter((v) => v !== value))} className="mr-1 accent-violet-600" />{value}</label>)}</div></fieldset>)}</div>}
-      {type === 'problems' && <details className="mt-4"><summary className="cursor-pointer text-sm font-bold text-brand-700">Filtrar varias carpetas</summary><div className="mt-2 grid max-h-48 gap-2 overflow-y-auto sm:grid-cols-2">{metadata.categories.map((category) => <label key={category._id} className="text-sm"><input type="checkbox" className="mr-2 accent-violet-600" checked={filters.categories.includes(category._id)} onChange={(e) => change('categories', e.target.checked ? [...filters.categories, category._id] : filters.categories.filter((id) => id !== category._id))} />{metadata.categories.find((c) => c._id === category.parent)?.name ? `${metadata.categories.find((c) => c._id === category.parent).name} / ` : ''}{category.name}</label>)}</div></details>}
+      {type === 'problems' && <FolderFilter categories={metadata.categories} value={filters.categories} onChange={(ids) => change('categories', ids)} />}
       <button onClick={() => { setFilters({ q: '', topics: '', tags: '', level: '', categories: [], year: [], subject: [], type: [] }); navigateFolder(null) }} className="mt-4 text-sm font-semibold text-violet-700 underline">Limpiar filtros</button>
     </div>
     <nav aria-label="Carpetas de la biblioteca" className="mt-6 rounded-xl border-2 border-brand-300 bg-white p-4">

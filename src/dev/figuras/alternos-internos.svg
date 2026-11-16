@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="300" height="220">
+<title>Dos rectas paralelas ℓ y m cortadas por la transversal t; los ángulos alternos internos, entre las paralelas y en lados opuestos de t, están marcados con α</title>
+<path d="M112.2,60.0 L136.2,60.0 A24,24 0 0 1 123.9,81.0 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2">
+</path>
+<path d="M167.8,160.0 L143.8,160.0 A24,24 0 0 1 156.1,139.0 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2">
+</path>
+<line x1="10" y1="60" x2="290" y2="60" stroke="#111111" stroke-width="2.5">
+</line>
+<line x1="10" y1="160" x2="290" y2="160" stroke="#111111" stroke-width="2.5">
+</line>
+<line x1="73.3" y1="-10" x2="206.7" y2="230" stroke="#111111" stroke-width="2.5">
+</line>
+<path d="M232,54 L242,60 L232,66" fill="none" stroke="#111111" stroke-width="2.5">
+</path>
+<path d="M232,154 L242,160 L232,166" fill="none" stroke="#111111" stroke-width="2.5">
+</path>
+<text x="22" y="52" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18">ℓ</text>
+<text x="22" y="152" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18">m</text>
+<text x="196" y="210" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18">t</text>
+<text x="146.7" y="85.3" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">α</text>
+<text x="133.3" y="144.7" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="16" fill="#111111">α</text>
+<circle cx="112.2" cy="60" r="3.5" fill="#111111">
+</circle>
+<circle cx="167.8" cy="160" r="3.5" fill="#111111">
+</circle>
+</svg>

@@ -12,11 +12,12 @@ function inlineMath(text, keyPrefix) {
 
 // Only KaTeX generates inserted HTML. All other content stays in React text
 // nodes, which keeps native Theory and legacy Problem text safely rendered.
-export default function MathText({ text, className = '' }) {
-  return <div className={className}>{String(text || '').split(/(\$\$[\s\S]+?\$\$)/g).map((block, index) => {
+// `as` picks the wrapper element (a heading, for example); default <div>.
+export default function MathText({ text, className = '', as: Tag = 'div' }) {
+  return <Tag className={className}>{String(text || '').split(/(\$\$[\s\S]+?\$\$)/g).map((block, index) => {
     const display = block.startsWith('$$') && block.endsWith('$$') && block.length > 4
     if (!display) return inlineMath(block, index)
     const html = katex.renderToString(block.slice(2, -2), { throwOnError: false, displayMode: true })
     return <div key={index} className="my-2 overflow-x-auto" dangerouslySetInnerHTML={{ __html: html }} />
-  })}</div>
+  })}</Tag>
 }

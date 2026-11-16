@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="300" height="220">
+<title>Cuadrilátero convexo ABCD con 115 grados en A, 65 grados en B y 115 grados en C; AD es paralela a BC y AB es paralela a CD</title>
+<path d="M84.7,63.2 L108.7,63.2 A24,24 0 0 1 74.6,85 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<path d="M34,172 L45,148.4 A26,26 0 0 1 60,172 Z" fill="#EEE7FF" stroke="#6D3EE8" stroke-width="2"/>
+<path d="M174,172 A24,24 0 0 1 208.1,150.2" fill="none" stroke="#111111" stroke-width="1.8"/>
+<line x1="84.7" y1="63.2" x2="34" y2="172" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="34" y1="172" x2="198" y2="172" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="198" y1="172" x2="248.7" y2="63.2" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="248.7" y1="63.2" x2="84.7" y2="63.2" stroke="#111111" stroke-width="2.5" stroke-linecap="round"/>
+<text x="109.4" y="106.9" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="14" fill="#111111">115°</text>
+<text x="72.8" y="152.2" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="14" fill="#111111">65°</text>
+<text x="173.3" y="138.1" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="14" fill="#111111">115°</text>
+<path d="M157.7,69.2 L166.7,63.2 L157.7,57.2" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M107,178 L116,172 L107,166" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M63.5,122.9 L61.9,112.2 L52.7,117.8" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M66.5,116.5 L64.9,105.8 L55.6,111.5" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M227.5,122.9 L225.9,112.2 L216.7,117.8" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M230.5,116.5 L228.9,105.8 L219.6,111.5" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="84.7" cy="63.2" r="3.5" fill="#111111"/>
+<circle cx="34" cy="172" r="3.5" fill="#111111"/>
+<circle cx="198" cy="172" r="3.5" fill="#111111"/>
+<circle cx="248.7" cy="63.2" r="3.5" fill="#111111"/>
+<text x="80.7" y="53.2" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">A</text>
+<text x="30" y="194" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">B</text>
+<text x="202" y="194" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">C</text>
+<text x="252.7" y="53.2" text-anchor="middle" font-family="KaTeX_Main, &apos;Times New Roman&apos;, serif" font-style="italic" font-size="18" fill="#111111">D</text>
+</svg>

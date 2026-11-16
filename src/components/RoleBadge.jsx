@@ -1,7 +1,7 @@
 import { roleLabel } from '../lib/roles'
 
 // Insignia de rol junto al nombre (comentarios, menú de cuenta). Las cuentas
-// con rol `usuario` no muestran nada.
+// con rol `user` no muestran nada.
 export default function RoleBadge({ role, className = '' }) {
   const label = roleLabel(role)
   if (!label) return null
