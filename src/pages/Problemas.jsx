@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EASE } from '../components/motion/variants'
 import { apiFetch } from '../lib/api'
@@ -7,6 +8,7 @@ import { useAuth } from '../context/useAuth'
 import MathText from '../components/math/MathText'
 import LibraryCollection from '../components/training/LibraryCollection'
 import CommentSection from '../components/comments/CommentSection'
+import { PROPOSE_PATH } from '../lib/submissions'
 const TP_ORANGE = '#5B5FE9'
 const TP_ACCENT = TP_ORANGE
 const formatearTitulo = (p) => p.titulo || p.codigo
@@ -171,7 +173,7 @@ export default function Problemas() {
   const [selected, setSelected] = useState(null)
   const { auth, login, logout } = useAuth()
   return <>
-    <LibraryCollection type="problems" title="Problemas" subtitle="Practica, escribe una solución y compara tus ideas. Un mismo problema conserva su identidad en listas, exámenes y Rutas." onOpen={setSelected} />
+    <LibraryCollection type="problems" title="Problemas" subtitle="Practica, escribe una solución y compara tus ideas. Un mismo problema conserva su identidad en listas, exámenes y Rutas." onOpen={setSelected} headerAction={<Link to={PROPOSE_PATH} className="tp-button bg-tp-mint px-5 font-bold text-tp-ink">Proponer un problema</Link>} />
     <AnimatePresence>{selected && <ProblemaModal key={selected._id} problema={selected} onClose={() => setSelected(null)} auth={auth} onAuthSuccess={login} onAuthExpired={logout} />}</AnimatePresence>
   </>
 }

@@ -19,7 +19,7 @@ function formatDate(value) {
 const actionClass = 'inline-flex min-h-11 items-center px-1 text-sm font-semibold text-brand-600 hover:text-brand-900 hover:underline'
 
 // Una fila del hilo. `panel` decide qué se abre debajo: responder, reportar,
-// eliminar (con motivo si eres moderador) o confirmar tu propia eliminación.
+// eliminar (con motivo si eres editor o admin) o confirmar tu propia eliminación.
 export default function CommentRow({ comment, viewer, onReply, onReport, onDelete }) {
   const [panel, setPanel] = useState(null)
   const [notice, setNotice] = useState(null)

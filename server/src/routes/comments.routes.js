@@ -13,6 +13,7 @@ import mongoose from 'mongoose'
 import Comment from '../models/Comment.js'
 import Report from '../models/Report.js'
 import Problem from '../models/Problem.js'
+import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
 import { can } from '../lib/permissions.js'
 import { MAX_COMMENT_DEPTH, parseReason } from '../lib/moderation.js'
@@ -43,7 +44,8 @@ router.post('/', requireAuth, requirePermission('comments:create'), async (req, 
   }
 
   const { problemId } = req.params
-  if (!isId(problemId) || !await Problem.exists({ _id: problemId })) {
+  // Solo problemas públicos: un envío en revisión o borrado no recibe comentarios.
+  if (!isId(problemId) || !await Problem.exists({ _id: problemId, ...publishedOrLegacyProblemQuery() })) {
     return res.status(404).json({ error: 'Ese problema no existe.' })
   }
 

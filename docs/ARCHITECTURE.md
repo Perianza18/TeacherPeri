@@ -60,16 +60,19 @@ There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/mater
 | `PUT /api/paths/:slug/completion` | Authenticated leaf-Path completion toggle/set |
 | `GET /api/problems/:problemId/comments` | Public comments as ordered threads (display depth ≤ 3); deleted comments keep their place without text or author |
 | `POST /api/problems/:problemId/comments` | Authenticated comment or reply (`parent` from the same problem) |
-| `DELETE /api/problems/:problemId/comments/:commentId` | Soft delete by the author, or by `moderador`+ with a reason (`otro` needs a note) |
+| `DELETE /api/problems/:problemId/comments/:commentId` | Soft delete by the author, or by `editor`+ with a reason (`otro` needs a note) |
 | `POST /api/problems/:problemId/comments/:commentId/reports` | Authenticated report of someone else's comment (one per person, listed reason) |
-| `GET /api/reports`, `POST /api/reports/comments/:commentId/dismiss` | `moderador`+ queue grouped by comment, and dismissal; deleting a comment resolves its reports |
+| `GET /api/reports`, `POST /api/reports/comments/:commentId/dismiss` | `editor`+ queue grouped by comment, and dismissal; deleting a comment resolves its reports |
 | `POST /api/contact` | Authenticated private contact submission |
+| `/api/submissions` (`folders`, `mine`, …) | Authenticated problem and exam-folder proposals, «Mis envíos», edits and soft delete; see [SUBMISSIONS.md](SUBMISSIONS.md) |
+| `POST /api/flags`, `GET /api/flags`, `POST /api/flags/:id/status` | Report an error on a public problem or theory page; `editor`+ list and close reports |
+| `GET /api/notifications`, `POST /api/notifications/read` | The account's in-site notifications |
 
 Existing Mongoose models are:
 
 | Model | Current data |
 | --- | --- |
-| `User` | Username, email, password hash |
+| `User` | Username, email, password hash, role (`user`, `editor`, `admin`) |
 | `Category` | Folder name and nullable self-referencing parent |
 | `Problem` | Legacy readable code/title/statement and Category reference, plus additive multi-folder, Topic, Tag, attribution, canonical three-level difficulty, and lifecycle fields |
 | `Topic` | Curated self-referencing mathematical concept hierarchy with slug and cycle prevention |
@@ -86,6 +89,9 @@ Existing Mongoose models are:
 | `PathSection` | Parent-owned presentation heading for grouping Path references |
 | `Step` | Ordered leaf-owned instruction with typed TeacherPeri references and external resources |
 | `PathCompletion` | Unique User-to-leaf-Path completion record |
+| `ProblemSubmission` | A pending/approved/rejected proposal to create or change a community Problem |
+| `Flag` | A signed-in user's error report on a problem or theory page |
+| `Notification` | An in-site message for one account |
 
 All have timestamps. Existing references are not a complete integrity layer: MongoDB does not automatically enforce referenced-record existence or hierarchy acyclicity, so Path and Step model validation explicitly protects their MVP invariants.
 

@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from 'react-router-dom'
 import { apiFetch } from '../lib/api'
 import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
+import FlagButton from '../components/FlagButton'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
 import { hintLabel, splitHints } from '../lib/hints'
@@ -95,6 +96,7 @@ export default function LibraryDetailPage({ type }) {
         {item.enunciado && <MathText text={item.enunciado} className="whitespace-pre-wrap text-lg leading-8 text-brand-900" />}
         {splitHints(item.hint).map((hint, index, hints) => <details key={index} className={`${index === 0 ? 'mt-8' : 'mt-3'} rounded-xl border border-brand-300 bg-brand-50 p-4`}><summary className="cursor-pointer font-bold">{hintLabel(index, hints.length)}</summary><MathText text={hint} className="mt-4 leading-7" /></details>)}
         {item.solution && <details className="mt-4 rounded-xl border border-brand-300 bg-white p-4"><summary className="cursor-pointer font-bold">Ver solución razonada</summary><MathText text={item.solution} className="mt-4 whitespace-pre-wrap leading-8" /></details>}
+        {type === 'problemas' && <div className="mt-8"><FlagButton targetType="problem" targetId={item._id} /></div>}
         {item.instructions && <p className="mb-6 whitespace-pre-wrap rounded-xl bg-accent-yellow/30 p-5 leading-7">{item.instructions}</p>}
         {['listas', 'examenes'].includes(type) && <>
           {safeUrl(item.sourceUrl) && <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="tp-button inline-block bg-brand-900 px-4 py-2 text-sm font-bold text-white">Consultar fuente original ↗</a>}

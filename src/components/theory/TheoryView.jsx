@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
+import FlagButton from '../FlagButton'
 import ArticleText from '../training/ArticleText'
 import PracticeBox from '../content/PracticeBox'
 import RichText from '../content/RichText'
@@ -197,6 +198,7 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
               <Link to="/contacto" className="inline-flex min-h-11 items-center px-1 font-semibold text-tp-ink-muted underline underline-offset-2 hover:text-tp-ink">Sugerir cambio</Link>
             </div>
             <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error || notice}</p>
+            <FlagButton targetType="theory" targetId={item._id} />
           </div>
 
           {strip && (strip.prev || strip.next) && (

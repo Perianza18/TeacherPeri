@@ -2,26 +2,28 @@
 // (server/src/lib/permissions.js); aquí solo se usa el rol para mostrar
 // insignias y esconder botones que de todos modos el servidor rechazaría.
 
-export const ROLES = ['usuario', 'moderador', 'editor_junior', 'editor_senior', 'admin', 'teacherperi']
+export const ROLES = ['user', 'editor', 'admin']
 
-const ROLE_LABELS = {
-  moderador: 'Moderador',
-  editor_junior: 'Editor',
-  editor_senior: 'Editor',
-  admin: 'Admin',
-  teacherperi: 'TeacherPeri',
+// Una sesión guardada antes del cambio de roles puede traer un valor antiguo
+// hasta que /api/auth/me la actualiza; se traduce igual que en el servidor.
+const LEGACY_ROLES = { usuario: 'user', moderador: 'user', editor_junior: 'editor', editor_senior: 'editor', teacherperi: 'admin' }
+
+export function normalizeRole(role) {
+  if (ROLES.includes(role)) return role
+  return LEGACY_ROLES[role] ?? 'user'
 }
 
-// Nombre corto para la insignia, o null para `usuario` (que no lleva insignia).
+const ROLE_LABELS = { editor: 'Editor', admin: 'Admin' }
+
+// Nombre corto para la insignia, o null para `user` (que no lleva insignia).
 export function roleLabel(role) {
-  return ROLE_LABELS[role] ?? null
+  return ROLE_LABELS[normalizeRole(role)] ?? null
 }
 
 export function isAtLeast(role, minimum) {
-  const index = ROLES.indexOf(role)
-  return index !== -1 && index >= ROLES.indexOf(minimum)
+  return ROLES.indexOf(normalizeRole(role)) >= ROLES.indexOf(minimum)
 }
 
 export function canModerate(role) {
-  return isAtLeast(role, 'moderador')
+  return isAtLeast(role, 'editor')
 }

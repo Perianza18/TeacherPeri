@@ -71,6 +71,18 @@ const problemSchema = new mongoose.Schema(
     // Porcentaje de gente que lo resuelve correctamente.
     exito: { type: Number, default: 0, min: 0, max: 100 },
 
+    // Problemas propuestos por la comunidad (ver docs/SUBMISSIONS.md). El
+    // contenido oficial no tiene autor. Un envío nace como `draft` y solo se
+    // publica al aprobarse; los cambios posteriores esperan en
+    // ProblemSubmission mientras la versión aprobada sigue publicada.
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    approvedAt: { type: Date, default: null },
+
+    // Borrado SUAVE: el problema se oculta (publicationStatus 'archived') pero
+    // se conserva, y un admin puede restaurarlo.
+    deletedAt: { type: Date, default: null },
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+
     ...publicationFields,
     // Existing Problem creation paths predate the official-content workflow.
     // Preserve their public behavior while all explicit lifecycle values still

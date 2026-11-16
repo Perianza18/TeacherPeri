@@ -24,6 +24,8 @@ export const publicationFields = {
   },
 }
 
+// Public Problems: published (or legacy records without a lifecycle field)
+// and never soft-deleted. `deletedAt: null` also matches records without it.
 export function publishedOrLegacyProblemQuery() {
-  return { $or: [{ publicationStatus: 'published' }, { publicationStatus: { $exists: false } }] }
+  return { $or: [{ publicationStatus: 'published' }, { publicationStatus: { $exists: false } }], deletedAt: null }
 }

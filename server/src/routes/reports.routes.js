@@ -1,5 +1,5 @@
-// GET  /api/reports?status=open                     — moderation queue, grouped by comment (moderador+).
-// POST /api/reports/comments/:commentId/dismiss     — dismiss a comment's open reports (moderador+).
+// GET  /api/reports?status=open                     — moderation queue, grouped by comment (editor+).
+// POST /api/reports/comments/:commentId/dismiss     — dismiss a comment's open reports (editor+).
 //
 // Reports are created from the comment itself:
 // POST /api/problems/:problemId/comments/:commentId/reports (see comments.routes.js).
@@ -11,6 +11,7 @@ import Report from '../models/Report.js'
 import Comment from '../models/Comment.js'
 import Problem from '../models/Problem.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
+import { roleOf } from '../lib/permissions.js'
 
 const router = Router()
 const STATUSES = ['open', 'resolved', 'dismissed']
@@ -47,7 +48,7 @@ router.get('/', async (req, res) => {
           body: comment.body,
           status: comment.status ?? 'visible',
           createdAt: comment.createdAt,
-          author: comment.author ? { _id: comment.author._id, username: comment.author.username, role: comment.author.role ?? 'usuario' } : null,
+          author: comment.author ? { _id: comment.author._id, username: comment.author.username, role: roleOf(comment.author) } : null,
         },
         problem: problem ? { _id: problem._id, titulo: problem.titulo, codigo: problem.codigo } : { _id: comment.problem },
         reports: [],
