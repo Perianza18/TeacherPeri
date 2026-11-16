@@ -53,7 +53,7 @@ export default function Footer() {
           it), so the visible letters are aria-hidden behind a plain label. */}
       <Link to="/" aria-label="TeacherPeri" className="relative mt-10 block select-none whitespace-nowrap text-center font-display text-[clamp(64px,19vw,290px)] font-extrabold leading-[.8] tracking-[-0.055em] text-tp-paper transition-colors hover:text-white">
         <span aria-hidden="true">
-          Teacher<span className="text-[#9d7cff]">Per<span className="relative">ı<Penguin color="#9d7cff" fill="none" className="pointer-events-none absolute bottom-[0.79em] left-1/2 h-[max(40px,0.36em)] w-auto -translate-x-1/2" /></span></span>
+          Teacher<span className="text-[#9d7cff]">Per<span className="relative">ı<Penguin color="#9d7cff" node="var(--tp-ink)" className="pointer-events-none absolute bottom-[0.79em] left-1/2 h-[max(40px,0.36em)] w-auto -translate-x-1/2" /></span></span>
         </span>
       </Link>
       <div className="relative border-t border-white/10 py-5 text-center text-xs text-white/40">

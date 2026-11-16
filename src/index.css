@@ -482,6 +482,24 @@ textarea {
     animation: tp-highlight 800ms cubic-bezier(.2, .7, .25, 1) var(--mark-delay, 150ms) forwards;
   }
 
+  /* A number inside a title, drawn as the same badge as the numbered steps
+     («Cómo empezar en ③ pasos»). */
+  .tp-inline-num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.12em;
+    height: 1.12em;
+    margin-inline: .06em;
+    border: .065em solid var(--tp-ink);
+    border-radius: 999px;
+    background: var(--tp-yellow);
+    box-shadow: .07em .07em 0 var(--tp-ink);
+    font-size: .92em;
+    line-height: 1;
+    rotate: -6deg;
+    vertical-align: .04em;
+  }
+
   /* Sticker: a tilted label with a hard shadow. Color from a bg-* class. */
   .tp-sticker {
     display: inline-flex;
@@ -605,6 +623,17 @@ textarea {
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(200deg) scale(1); }
 }
 
+/* Lit path of the Rutas graph (decor/RouteGraph): draws itself. */
+.tp-route-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: tp-route 900ms cubic-bezier(.3, .7, .3, 1) forwards;
+}
+
+@keyframes tp-route {
+  to { stroke-dashoffset: 0; }
+}
+
 /* Loading bar inside a skeleton card (components/Skeleton.jsx). */
 .tp-skeleton {
   display: block;
@@ -666,9 +695,62 @@ textarea {
    on purpose: it must beat katex.min.css, which is unlayered too. */
 .tp-reading-text .katex { font-size: 1em; }
 
-/* Lesson section heading (h2): one of four tints, no symbol before it. */
-.tp-lesson-heading { padding: 10px 16px; border: 2px solid var(--tp-ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--tp-ink); font-family: var(--font-display); font-size: var(--tp-text-h2); font-weight: 800; line-height: 1.2; }
-.tp-lesson-heading-0 { background: var(--tp-tint-violet); }
-.tp-lesson-heading-1 { background: var(--tp-tint-sky); }
-.tp-lesson-heading-2 { background: var(--tp-tint-coral); }
-.tp-lesson-heading-3 { background: var(--tp-tint-mint); }
+/* Lesson section heading (h2), 2026-11-16: no box. The number sits in a
+   circle of the section's color, as in the lesson's side index, and the
+   title is big; the boxes stay for definitions, theorems and practice.
+   Each section's color also marks its subheadings (.tp-subheading). */
+.tp-lesson-heading-0 { --section: var(--tp-violet); --section-ink: #fff; }
+.tp-lesson-heading-1 { --section: var(--tp-sky); }
+.tp-lesson-heading-2 { --section: var(--tp-coral); }
+.tp-lesson-heading-3 { --section: var(--tp-mint); }
+
+h2.tp-lesson-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.6vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.tp-lesson-num {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 2.5px solid var(--tp-ink);
+  border-radius: 999px;
+  background: var(--section, var(--tp-yellow));
+  box-shadow: 3px 3px 0 var(--tp-ink);
+  color: var(--section-ink, var(--tp-ink));
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.tp-subheading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tp-subheading::before {
+  content: "";
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--tp-ink);
+  border-radius: 3px;
+  background: var(--section, var(--tp-yellow));
+  rotate: 45deg;
+}
+
+/* Display formulas get room of their own, so they stand out on a re-read. */
+.tp-reading-text .katex-display {
+  margin: 1.1em 0;
+  padding: .35em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

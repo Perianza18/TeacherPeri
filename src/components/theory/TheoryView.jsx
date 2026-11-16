@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
@@ -84,9 +84,10 @@ function RutaStrip({ strip, progress }) {
 
 // «En esta lección»: one pill per section. The pill looks ~34px tall; the
 // invisible ::before extends its tap area to 44px.
+// Below xl only; on wide screens the side index (LessonIndex) takes over.
 function LessonNav({ sections }) {
   return (
-    <nav aria-label="En esta lección" className="flex flex-wrap items-center gap-2 font-sans">
+    <nav aria-label="En esta lección" className="flex flex-wrap items-center gap-2 font-sans xl:hidden">
       <span className="tp-eyebrow mr-1 tracking-[0.12em]">En esta lección</span>
       {sections.map((section) => (
         <a key={section.id} href={`#${section.id}`} className="relative rounded-full border-2 border-tp-ink bg-tp-surface px-[13px] py-[5px] text-sm font-semibold leading-normal hover:text-tp-violet before:absolute before:inset-x-0 before:-inset-y-[5px]">
@@ -103,6 +104,84 @@ function StepCard({ step, label, alignRight = false }) {
       <span className="text-[13px] font-bold text-tp-ink-muted">{label}</span>
       <span className="font-extrabold">{step.title}</span>
     </Link>
+  )
+}
+
+// Where the reader is: the section whose heading last passed under the
+// navbar, and how much of the lesson has been read (0 to 1). Measured on
+// scroll, at most once per frame.
+const READ_LINE = 150
+function useReadingState(articleRef, sections) {
+  const [state, setState] = useState({ active: sections[0]?.id ?? null, progress: 0 })
+  useEffect(() => {
+    let frame = 0
+    const measure = () => {
+      frame = 0
+      const article = articleRef.current
+      if (!article) return
+      const box = article.getBoundingClientRect()
+      const span = Math.max(box.height - window.innerHeight + READ_LINE, 1)
+      const progress = Math.min(1, Math.max(0, (READ_LINE - box.top) / span))
+      let active = sections[0]?.id ?? null
+      for (const section of sections) {
+        const heading = document.getElementById(section.id)
+        if (heading && heading.getBoundingClientRect().top < READ_LINE + 10) active = section.id
+      }
+      setState((current) => (current.active === active && Math.abs(current.progress - progress) < 0.002 ? current : { active, progress }))
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(measure) }
+    schedule()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [articleRef, sections])
+  return state
+}
+
+// Section colors, in the same order as the lesson's section headings.
+const SECTION_DOTS = ['bg-tp-violet text-white', 'bg-tp-sky', 'bg-tp-coral', 'bg-tp-mint']
+
+// Side index on wide screens: stays in view while reading, marks the
+// current section and shows how much of the lesson is read.
+function LessonIndex({ sections, active, progress }) {
+  return (
+    <nav aria-label="En esta lección" className="hidden font-sans xl:block">
+      <div className="sticky top-[104px] flex flex-col gap-4">
+        <p className="tp-eyebrow tracking-[0.12em]">En esta lección</p>
+        <ol className="flex flex-col gap-0.5 border-l-2 border-dashed border-tp-rule">
+          {sections.map((section, index) => {
+            const isActive = section.id === active
+            return (
+              <li key={section.id}>
+                <a href={`#${section.id}`} aria-current={isActive ? 'location' : undefined} className={`-ml-[2px] flex items-start gap-2.5 border-l-[3px] py-1.5 pl-3 text-[14px] leading-snug transition-colors ${isActive ? 'border-tp-ink font-bold text-tp-ink' : 'border-transparent font-medium text-tp-ink-muted hover:text-tp-ink'}`}>
+                  <span aria-hidden="true" className={`grid size-6 shrink-0 place-items-center rounded-full border-2 border-tp-ink text-[11px] font-extrabold text-tp-ink transition-colors ${isActive ? SECTION_DOTS[index % SECTION_DOTS.length] : 'bg-tp-surface'}`}>{section.number}</span>
+                  <span className="pt-0.5"><RichText as="span" text={section.title} /></span>
+                </a>
+              </li>
+            )
+          })}
+        </ol>
+        <div className="flex flex-col gap-1.5 pt-1">
+          <div aria-hidden="true" className="h-2.5 overflow-hidden rounded-full border-2 border-tp-ink bg-tp-surface">
+            <div className="h-full bg-tp-yellow" style={{ width: `${Math.round(progress * 100)}%` }} />
+          </div>
+          <p className="text-[12px] font-bold text-tp-ink-muted">{progress >= 0.99 ? '¡Lección leída!' : `Llevas ${Math.round(progress * 100)}%`}</p>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+// Thin bar under the navbar that fills as the lesson is read.
+function ReadingBar({ progress }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-[72px] z-40 h-[5px]">
+      <div className="h-full origin-left bg-tp-violet" style={{ transform: `scaleX(${progress})` }} />
+    </div>
   )
 }
 
@@ -183,13 +262,18 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
     practiceCount > 0 && plural(practiceCount, 'problema de práctica', 'problemas de práctica'),
   ].filter(Boolean)
   const sections = article.sections
+  const articleRef = useRef(null)
+  const reading = useReadingState(articleRef, sections)
 
   return (
     <>
+      {sections.length > 0 && <ReadingBar progress={reading.progress} />}
       <HeaderBand crumbs={crumbs} topic={item.topics?.[0]?.name} title={item.title} summary={item.description || item.summary} meta={meta} />
       {strip && <RutaStrip strip={strip} progress={completion.parentProgress} />}
       <div className="tp-container pb-16 pt-7">
-        <article aria-labelledby="teoria-titulo" className="tp-reading-text mx-auto flex max-w-[840px] flex-col gap-[22px]">
+        <div className={sections.length > 0 ? 'xl:grid xl:grid-cols-[220px_minmax(0,840px)] xl:justify-center xl:gap-12' : ''}>
+        {sections.length > 0 && <LessonIndex sections={sections} active={reading.active} progress={reading.progress} />}
+        <article ref={articleRef} aria-labelledby="teoria-titulo" className="tp-reading-text mx-auto flex max-w-[840px] flex-col gap-[22px] xl:mx-0 xl:w-full">
           {sections.length > 0 && <LessonNav sections={sections} />}
           <ArticleText article={article} practice={practice} renderCollection={renderCollection} resolveFigure={resolveFigure} />
 
@@ -224,6 +308,7 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
             </nav>
           )}
         </article>
+        </div>
       </div>
     </>
   )

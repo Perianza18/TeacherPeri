@@ -23,7 +23,7 @@ const STEPS = [
 
 const EXPLORE = [
   { kicker: 'Entrenamiento', art: 'bg-tp-sky', glyph: 'π', title: 'Resolver problemas por tema', text: 'Problemas, teoría y exámenes, con filtros por tema.', cta: 'Abrir Entrenamiento', to: '/entrenamiento' },
-  { kicker: 'Exámenes', art: 'bg-tp-coral', glyph: 'Σ', title: 'Practicar con exámenes reales', text: 'OMMU Primera Ronda, OMMU Nacional y Putnam.', cta: 'Ver exámenes', to: LIBRARY_BASE.exams },
+  { kicker: 'Exámenes', art: 'bg-tp-coral', glyph: '≥', title: 'Practicar con exámenes reales', text: 'OMMU Primera Ronda, OMMU Nacional y Putnam.', cta: 'Ver exámenes', to: LIBRARY_BASE.exams },
   { kicker: 'Listas', art: 'bg-tp-mint', glyph: '√', title: 'Practicar con una selección', text: 'Colecciones de problemas elegidas por el equipo.', cta: 'Ver Listas', to: LIBRARY_BASE.lists },
 ]
 
@@ -100,7 +100,7 @@ function ProblemaDelDia({ problem }) {
 
 // Shown in place of the problem when the bank can't be loaded.
 function SymbolCollage() {
-  const tiles = [['π', 'bg-tp-mint', '-rotate-6'], ['√2', 'bg-tp-surface', 'rotate-3'], ['Δ', 'bg-tp-coral', 'rotate-6'], ['Σ', 'bg-tp-sky', '-rotate-3'], ['x²', 'bg-tp-yellow', 'rotate-2'], ['∞', 'bg-tp-tint-violet', '-rotate-6']]
+  const tiles = [['π', 'bg-tp-mint', '-rotate-6'], ['√2', 'bg-tp-surface', 'rotate-3'], ['Δ', 'bg-tp-coral', 'rotate-6'], ['n!', 'bg-tp-sky', '-rotate-3'], ['x²', 'bg-tp-yellow', 'rotate-2'], ['∞', 'bg-tp-tint-violet', '-rotate-6']]
   return (
     <div aria-hidden="true" className="tp-card relative grid grid-cols-3 gap-4 bg-tp-surface p-7">
       {tiles.map(([symbol, color, tilt]) => (
@@ -235,7 +235,7 @@ function ComoEmpezar() {
     <section id="como-empezar" aria-labelledby="como-empezar-titulo" className="scroll-mt-24 bg-tp-paper">
       <div className="tp-container py-20 lg:py-28">
         <SectionHeading id="como-empezar-titulo" kicker="Si es tu primera vez">
-          Cómo empezar en <Mark variant="circle" color="var(--tp-coral)" width={5}>3 pasos</Mark>
+          Cómo empezar en <span className="tp-inline-num">3</span> pasos
         </SectionHeading>
         <ol className="relative mt-16 grid gap-10 md:grid-cols-3 md:gap-6">
           <span aria-hidden="true" className="absolute inset-x-[12%] top-[52px] hidden border-t-3 border-dashed border-tp-ink md:block" />

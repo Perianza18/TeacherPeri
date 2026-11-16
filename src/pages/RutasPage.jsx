@@ -6,6 +6,7 @@ import PageHero from '../components/PageHero'
 import { Mark } from '../components/decor/Decor'
 import { SkeletonGrid } from '../components/Skeleton'
 import Penguin from '../components/decor/Penguin'
+import RouteGraph from '../components/decor/RouteGraph'
 import { apiFetch } from '../lib/api'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
@@ -50,8 +51,10 @@ export default function RutasPage() {
           kicker="Rutas"
           title={<>Guías para avanzar con <Mark variant="arrow" color="var(--tp-violet)" width={6} delay={400}>dirección</Mark>.</>}
           lead="Explora recorridos que conectan contenido, práctica y siguientes pasos. Tú eliges el ritmo."
+          artClassName="absolute right-6 top-1/2 hidden -translate-y-1/2 xl:block xl:right-10"
+          art={<div className="flex flex-col items-end gap-1"><RouteGraph className="w-[min(430px,30vw)]" /><p aria-hidden="true" className="tp-hand -rotate-2 pr-4 text-[24px]">¡pasa el mouse por los puntos!</p></div>}
         >
-          <div className="tp-card mt-3 grid w-full max-w-[860px] gap-3 bg-tp-surface p-3 md:grid-cols-[1fr_260px]">
+          <div className="tp-card mt-3 grid w-full max-w-[860px] gap-3 bg-tp-surface p-3 md:grid-cols-[1fr_260px] xl:max-w-[640px]">
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar Rutas" aria-label="Buscar Rutas" className="tp-input bg-tp-paper" />
             <select value={tag} onChange={(e) => setTag(e.target.value)} aria-label="Etiqueta" className="tp-input bg-tp-yellow font-semibold">
               <option value="">Todas las etiquetas</option>

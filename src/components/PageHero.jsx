@@ -2,7 +2,8 @@
 // a sticker kicker and a poster title. `title` may hold a <Highlight> or a
 // <Mark> (decor/Decor.jsx); `before` goes above the kicker (breadcrumbs),
 // `children` below the lead (search, meta, actions); `art` is decoration
-// pinned to the right side on wider screens (decor/GlyphTile).
+// pinned to the right side on wider screens (decor/GlyphTile); `artClassName`
+// replaces its default placement.
 const TONES = {
   sky: 'bg-tp-sky',
   yellow: 'bg-tp-yellow',
@@ -11,7 +12,7 @@ const TONES = {
   violet: 'bg-tp-tint-violet',
 }
 
-export default function PageHero({ id, kicker, title, lead, tone = 'sky', before, art, children, className = '' }) {
+export default function PageHero({ id, kicker, title, lead, tone = 'sky', before, art, artClassName, children, className = '' }) {
   return (
     <section aria-labelledby={id} className={`relative overflow-hidden border-b-3 border-tp-ink ${TONES[tone] || TONES.sky}`}>
       <div aria-hidden="true" className="tp-graph absolute inset-0" />
@@ -22,7 +23,7 @@ export default function PageHero({ id, kicker, title, lead, tone = 'sky', before
         <h1 id={id} className="tp-page-title max-w-[920px]">{title}</h1>
         {lead && <p className="tp-lead max-w-[640px] text-[18px] text-tp-ink-soft">{lead}</p>}
         {children}
-        {art && <div className="pointer-events-none absolute right-10 top-1/2 hidden -translate-y-1/2 lg:block xl:right-16">{art}</div>}
+        {art && <div className={artClassName || 'pointer-events-none absolute right-10 top-1/2 hidden -translate-y-1/2 lg:block xl:right-16'}>{art}</div>}
       </div>
     </section>
   )

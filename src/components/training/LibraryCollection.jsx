@@ -13,7 +13,7 @@ const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzad
 const LOOK = {
   problems: { tone: 'violet', strip: 'bg-tp-yellow', glyph: '?', tile: 'bg-tp-yellow', small: 'x²' },
   theory: { tone: 'sky', strip: 'bg-tp-tint-sky', glyph: 'π', tile: 'bg-tp-surface', small: '∞' },
-  exams: { tone: 'coral', strip: 'bg-tp-coral-soft', glyph: 'Σ', tile: 'bg-tp-yellow', small: '✓' },
+  exams: { tone: 'coral', strip: 'bg-tp-coral-soft', glyph: '≥', tile: 'bg-tp-yellow', small: '✓' },
   lists: { tone: 'mint', strip: 'bg-tp-mint-soft', glyph: '√', tile: 'bg-tp-surface', small: 'n!' },
 }
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-coral', 'Teoría de Números': 'bg-tp-mint' }
