@@ -1,6 +1,8 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # OMM subject audit — Draft v2
 
-This working aid reorganizes Curriculum Draft v2 for human subject review. Group/child hierarchy, intended roles, and unresolved boundaries come from [ommCurriculum.js](../server/src/data/ommCurriculum.js); it does not change the chronological root order.
+This working aid reorganizes Curriculum Draft v2 for human subject review. Group/child hierarchy, intended roles, and unresolved boundaries come from [ommCurriculum.js](../../server/src/data/ommCurriculum.js); it does not change the chronological root order.
 
 ## Geometry
 

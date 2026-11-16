@@ -1,10 +1,12 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # Preparación para la OMM — Curriculum Draft v2
 
 **Status:** Human-reviewed hierarchical working draft. All Paths remain draft.
 
 This replaces the superseded flat curriculum draft. It uses the generic reusable Path graph: Group Paths contain child Paths; intended leaf Paths remain empty until approved Steps and content are authored. The five cycles are root-owned PathSections only.
 
-The machine-readable definition and recursive preview are in [ommCurriculum.js](../server/src/data/ommCurriculum.js). The subject review view is [OMM_SUBJECT_AUDIT.md](OMM_SUBJECT_AUDIT.md).
+The machine-readable definition and recursive preview are in [ommCurriculum.js](../../server/src/data/ommCurriculum.js). The subject review view is [OMM_SUBJECT_AUDIT.md](OMM_SUBJECT_AUDIT.md).
 
 ## Settled structural decisions
 

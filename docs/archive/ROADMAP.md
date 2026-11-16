@@ -1,6 +1,8 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # TeacherPeri implementation roadmap
 
-This is a phased direction, not a promise that the systems below already exist or authorization to implement every phase in one task. [PRODUCT.md](PRODUCT.md) defines domain requirements; [ARCHITECTURE.md](ARCHITECTURE.md) describes the current application. Complete the currently requested phase and stop.
+This is a phased direction, not a promise that the systems below already exist or authorization to implement every phase in one task. [PRODUCT.md](PRODUCT.md) defines domain requirements; [ARCHITECTURE.md](../ARCHITECTURE.md) describes the current application. Complete the currently requested phase and stop.
 
 ## 1. Foundation and safety — current phase
 

@@ -1,3 +1,5 @@
+> **Archived · Archivado.** Historical document; it does not describe the current site. Documento histórico; no describe el sitio actual. See · Ver [docs/archive/README.md](README.md).
+
 # OMM launch content audit
 
 ## Batch 1 source status — 2026-09-26
