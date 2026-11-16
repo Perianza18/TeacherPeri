@@ -34,6 +34,8 @@ export class ReviewError extends Error {
 }
 
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
+// A credit written by the approval itself (current and earlier wording).
+const AUTO_CREDIT = /(Propuesto por @\S+\.|en la comunidad de TeacherPeri\.)$/
 
 export function assertReviewer(reviewer, permission) {
   if (!reviewer) throw new ReviewError('A reviewer account is required (--as <admin email or username>).')
@@ -203,9 +205,10 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
   const author = await User.findById(submission.author).select('username').lean()
   const derived = derivedProblemFields(proposal, { folders: ctx.foldersById, topics: ctx.topics, current: problem.toObject() })
   const path = proposal.isExam ? folderPath(proposal.examFolder, ctx.foldersById).slice(1).join(' › ') : ''
-  // The automatic credit follows the folder; a credit an admin wrote by hand stays.
-  const autoCredit = `${path ? `${path}. ` : ''}Propuesto por ${author?.username ?? 'la comunidad'} en la comunidad de TeacherPeri.`
-  const keepCredit = problem.sourceAttribution && !problem.sourceAttribution.endsWith('en la comunidad de TeacherPeri.')
+  // The automatic credit («Propuesto por @usuario», after the exam path) follows
+  // the folder; a credit an admin wrote by hand stays.
+  const autoCredit = `${path ? `${path}. ` : ''}Propuesto por @${author?.username ?? 'comunidad'}.`
+  const keepCredit = problem.sourceAttribution && !AUTO_CREDIT.test(problem.sourceAttribution)
   const update = {
     enunciado: proposal.enunciado,
     topics: proposal.topics,

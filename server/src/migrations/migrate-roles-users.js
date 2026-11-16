@@ -5,7 +5,8 @@
 // 1. Rewrites legacy role values (usuario/moderador → user, editor_junior/
 //    editor_senior → editor, teacherperi → admin; no role → user). The site
 //    already reads them this way, so this only tidies the stored values.
-// 2. Creates the «Exámenes» root and the empty «OMM» and «OMM Estatal» folders.
+// 2. Creates the «Exámenes» root and the empty top-level competition folders
+//    (SEED_FOLDERS). Years and states are added as problems arrive.
 // 3. Files the problems of every existing Exam into the tree. The three current
 //    exams are TeacherPeri practice sets, so they go to
 //    «Exámenes › Prácticas TeacherPeri › <round>»; any other exam would go to
@@ -21,7 +22,7 @@ import { LEGACY_ROLES } from '../lib/permissions.js'
 import { normalizeSlug } from '../models/content.js'
 import { EXAM_ROOT_NAME } from '../lib/examFolders.js'
 
-export const SEED_FOLDERS = ['OMM', 'OMM Estatal']
+export const SEED_FOLDERS = ['OMM', 'OMM Estatal', 'OMMEB', 'Centroamericana', 'Iberoamericana', 'IMO']
 export const PRACTICE_FOLDER = 'Prácticas TeacherPeri'
 
 export function examFolderNames(exam) {

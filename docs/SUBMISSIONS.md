@@ -65,12 +65,15 @@ would change. `--apply` writes and needs `REVIEW_DATABASE_CONFIRM` equal to the
 database name. The target comes only from `MONGO_REVIEW_URI`, which must name
 the database; the script never prints it. `--as` must be an admin account in
 that database. Approving a problem in a pending folder approves that folder too.
-The author gets an in-site notification when a submission is approved or rejected.
+An approved problem is credited «Propuesto por @usuario» (after the exam path for
+exam problems); `--attribution` replaces it. The author gets an in-site
+notification when a submission is approved or rejected.
 
 ## Migration
 
 `npm run db:migrate:roles-users` (dry run by default; `--apply` needs
 `MONGO_MIGRATION_TARGET_URI` and `MIGRATION_TARGET_CONFIRM`) rewrites legacy role
-values, creates «Exámenes», «OMM» and «OMM Estatal», and files the problems of
+values, creates «Exámenes» with the empty folders «OMM», «OMM Estatal», «OMMEB»,
+«Centroamericana», «Iberoamericana» and «IMO», and files the problems of
 the existing practice exams into «Exámenes › Prácticas TeacherPeri › <round>».
 It is additive and idempotent.

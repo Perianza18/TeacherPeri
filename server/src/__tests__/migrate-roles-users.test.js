@@ -33,6 +33,10 @@ describe('db:migrate:roles-users', () => {
       'no stored role → user: 1 account(s)',
       'create folder «Exámenes»',
       'create folder «Exámenes › OMM Estatal»',
+      'create folder «Exámenes › OMMEB»',
+      'create folder «Exámenes › Centroamericana»',
+      'create folder «Exámenes › Iberoamericana»',
+      'create folder «Exámenes › IMO»',
       'create folder «Exámenes › Prácticas TeacherPeri › Ciclo 1 · Práctica A»',
       'file 2 problem(s) of «Ciclo 1 · Práctica A» into «Exámenes › Prácticas TeacherPeri › Ciclo 1 · Práctica A»: TP-A01, TP-A02',
     ]))
@@ -46,6 +50,9 @@ describe('db:migrate:roles-users', () => {
     const roles = Object.fromEntries((await User.find().lean()).map((u) => [u.username, u.role]))
     expect(roles).toEqual({ elias: 'admin', mod: 'user', jr: 'editor', ana: 'user', nuevo: 'user', viejo: 'user' })
 
+    const root = await Category.findOne({ name: 'Exámenes', parent: null, kind: 'exam' }).lean()
+    const seeds = (await Category.find({ parent: root._id }).sort({ name: 1 }).lean()).map((f) => f.name)
+    expect(seeds).toEqual(['Centroamericana', 'IMO', 'Iberoamericana', 'OMM', 'OMM Estatal', 'OMMEB', 'Prácticas TeacherPeri'])
     const practice = await Category.findOne({ name: 'Ciclo 1 · Práctica A', kind: 'exam' }).lean()
     const filed = await Problem.findById(problems[0]._id).lean()
     expect(filed.categories.map(String)).toEqual([String(area._id), String(practice._id)])

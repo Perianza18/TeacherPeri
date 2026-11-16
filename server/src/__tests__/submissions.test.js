@@ -130,7 +130,7 @@ describe('Revisión (servicio que usan los scripts)', () => {
 
     const pub = await request(app).get(`/api/problems/${body._id}`)
     expect(pub.status).toBe(200)
-    expect(pub.body.sourceAttribution).toContain('ana')
+    expect(pub.body.sourceAttribution).toBe('Propuesto por @ana.')
     expect(pub.body.difficulty).toBe('basico')
     expect(pub.body.tags.map((t) => t.label)).toEqual([paridad.label])
     expect((await request(app).get('/api/submissions/mine').set(as(ana.token))).body[0].state).toBe('published')
@@ -263,6 +263,7 @@ describe('Carpetas de examen', () => {
 
     const plan = await approveSubmission({ ref: res.body.codigo, reviewer: admin.user, apply: true })
     expect(plan.changes.filter((line) => line.startsWith('approve exam folder'))).toHaveLength(2)
+    expect((await Problem.findById(res.body._id).lean()).sourceAttribution).toBe('OMM Estatal › Jalisco › 2023. Propuesto por @ana.')
     const publicNames = (await request(app).get('/api/categories')).body.map((f) => f.name)
     expect(publicNames).toEqual(expect.arrayContaining(['Exámenes', 'OMM Estatal', 'Jalisco', '2023']))
 
