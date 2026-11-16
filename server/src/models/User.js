@@ -17,7 +17,7 @@
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
-import { DEFAULT_ROLE, ROLES } from '../lib/permissions.js'
+import { DEFAULT_ROLE, LEGACY_ROLES, ROLES } from '../lib/permissions.js'
 
 const userSchema = new mongoose.Schema(
   {
@@ -49,11 +49,13 @@ const userSchema = new mongoose.Schema(
     },
 
     // Qué puede hacer esta persona en el sitio (ver server/src/lib/permissions.js).
-    // Toda cuenta nueva empieza como `usuario`; el registro nunca acepta un rol
+    // Toda cuenta nueva empieza como `user`; el registro nunca acepta un rol
     // enviado por el navegador. Solo un script o un admin puede cambiarlo.
+    // Los valores antiguos (`usuario`, `teacherperi`, …) se aceptan solo para
+    // leer cuentas que aún no se migran; roleOf() los traduce.
     role: {
       type: String,
-      enum: ROLES,
+      enum: [...ROLES, ...Object.keys(LEGACY_ROLES)],
       default: DEFAULT_ROLE,
       required: true,
     },

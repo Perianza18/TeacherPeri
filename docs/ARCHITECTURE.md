@@ -1,178 +1,154 @@
-# TeacherPeri architecture
+# Architecture
 
-This document separates the **implemented application** from **future architectural constraints**. Product requirements live in [PRODUCT.md](PRODUCT.md); migration context and sequencing live in [MIGRATION.md](MIGRATION.md) and [ROADMAP.md](ROADMAP.md). Future constraints below are not implemented models or finalized database schemas.
+English · **[Español](es/ARCHITECTURE.md)**
 
-## Current stack and boundaries
+How the code is organized. For what each feature does, see
+[FEATURES.md](FEATURES.md).
 
-One root npm package and lockfile manage an ECMAScript-module application:
+## The three parts
 
-- React with Vite, React Router, and Tailwind CSS in `src/`.
-- Framer Motion and shader/visual components for presentation.
-- Express in `server/src/`, with MongoDB accessed through Mongoose.
-- bcryptjs and JSON Web Tokens for authentication.
-- KaTeX for mathematical statements.
-- ESLint for lint and Vitest/Supertest for backend tests.
+```
+Browser ──► Website (React, on Vercel) ──► API (Express, on Render) ──► MongoDB Atlas
+```
 
-`src/main.jsx` mounts React. `src/App.jsx` defines BrowserRouter routes and wraps them in the shared authentication provider. Pages usually render their own Navbar. `src/lib/api.js` provides `apiFetch`, JSON body/response handling, bearer-token headers, and errors with HTTP status. `VITE_API_URL` selects the backend origin.
+- **Website** (`src/`): a React 19 single-page app built with Vite and styled
+  with Tailwind CSS v4. It stores no content of its own; every page asks the API.
+- **API** (`server/src/`): an Express 5 server. It checks who you are (JWT),
+  what you may do (roles), and reads and writes the database with Mongoose.
+  Route handlers talk to Mongoose directly; there is no separate service layer,
+  except the review logic in `server/src/lib/review/`.
+- **Database:** MongoDB. On Atlas, `teacherperi_prod` is the live database and
+  `teacherperi` is for testing. Locally you use your own database (see
+  [DEVELOPMENT.md](DEVELOPMENT.md)). Official content is loaded by scripts, never
+  typed in by hand (see [CONTENT.md](CONTENT.md)).
 
-`server/src/app.js` configures Express, CORS, JSON parsing, rate limits, and routes without listening or connecting to MongoDB. `server/src/server.js` checks runtime environment, connects the database, and starts listening. Route handlers currently access Mongoose directly; there is no separate service/controller layer.
+One `package.json` covers both the website and the API.
 
-See the root [README](../README.md), [package.json](../package.json), and [.env.example](../.env.example) for supported runtime, commands, and environment setup.
+## Folder map
 
-## Current frontend routes
+```
+src/                        Website
+  main.jsx, App.jsx         Entry point and every page route
+  pages/                    One file per page (HomePage, Problemas, PathPage, LibraryDetailPage, ...)
+  components/
+    content/                Lesson blocks: Bloques.jsx (Definicion, Teorema, Ejemplo, Figura, ...),
+                            PracticeBox.jsx (problem boxes), RichText.jsx
+    theory/                 TheoryView.jsx: the lesson page
+    training/               Library pieces: LibraryCollection, FolderFilter, TrainingHeader, ArticleText, ...
+    comments/               Comment threads, comment box, delete and report reasons
+    submissions/            «Proponer un problema» form, exam folder picker
+    math/                   MathText: text with KaTeX math
+    auth/, contact/         Sign-in window and contact form
+    motion/, sections/      Animation helpers and the Contacto section
+    Navbar, Footer, FlagButton, RoleBadge, PagePlaceholder
+  context/                  The signed-in user (AuthContext, useAuth)
+  hooks/                    Shared React hooks (useDialog)
+  lib/                      api.js (apiFetch), theoryArticle.js (lesson markup), roles.js, rutaContext.js, ...
+  dev/                      The test lesson for /dev/teoria-prueba (local development only)
+  index.css                 Design tokens (--tp-*) and shared classes (.tp-card, .tp-button, ...)
+server/src/                 API
+  app.js                    Express setup, rate limits and the list of routes
+  server.js                 Checks the settings, connects to MongoDB and starts listening
+  routes/                   One file per resource (problems.routes.js, ...)
+  models/                   Mongoose models
+  middleware/auth.js        requireAuth and requirePermission
+  lib/                      Shared logic: permissions.js, submissions.js, examFolders.js,
+                            commentThread.js, moderation.js, review/
+  data/                     Official content as code: lessons, problems, lists, exams, the OMM Ruta
+  scripts/                  What the npm scripts run (import, revise theory, set role, review, ...)
+  migrations/               The guarded database changes those scripts apply
+  database-safety.js        Guards that stop scripts and tests from writing to the wrong database
+  seed.js                   npm run db:reset:dev (local only)
+  __tests__/                Unit tests (*.unit.test.js) and database tests (*.test.js)
+tests/browser/              Playwright tests (desktop and phone)
+public/                     Static files; public/figuras holds the lesson figures
+docs/                       This documentation
+```
 
-| Route | Implemented page |
+## Website pages
+
+All routes are in `src/App.jsx`. Every visible text is in Spanish.
+
+| Address | Page |
 | --- | --- |
-| `/` | TeacherPeri introduction and home sections |
-| `/rutas` | Public published-Path discovery with text search |
-| `/rutas/:slug` | Standalone public Path page |
-| `/rutas/:parent/.../:slug` | Contextual public Path traversal with validated breadcrumbs |
-| `/entrenamiento` | Redirects to the public Problemas library |
-| `/entrenamiento/problemas`, `/entrenamiento/problemas/:id` | Legacy Problem browser and stable public Problem detail URL |
-| `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Published Theory library and detail URL |
-| `/listas`, `/listas/:id` | Published List library and detail URL, on its own page outside Entrenamiento |
-| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | Redirect to `/listas` (keeps the id and query, so old bookmarks and Step links still work) |
-| `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Published Exam library and detail URL |
-| `/recursos` | Static external-resource directory |
-| `/experiencias` | «Próximamente» page until the first posts are published |
-| `/equipo` | «Próximamente» page until the team cards are ready |
-| `/estudia-en-el-extranjero` | Universidad «Próximamente» page until the application guides are ready |
-| `/contacto` | Authenticated contact form |
-| `/sobre-mi` | Personal presentation, with placeholder material |
-| `/colaboradores` | Placeholder |
+| `/` | Inicio |
+| `/rutas` | Ruta list, with search and a tag filter |
+| `/rutas/...` | A Ruta page. The address follows the path you took, e.g. `/rutas/preparacion-para-la-omm/fundamentos-para-olimpiadas` |
+| `/entrenamiento` | Redirects to `/entrenamiento/problemas` |
+| `/entrenamiento/problemas`, `/entrenamiento/problemas/:id` | Problem library and problem page |
+| `/entrenamiento/problemas/proponer` | Propose a problem |
+| `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Lesson library and lesson page |
+| `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Exam library and exam page |
+| `/listas`, `/listas/:id` | Lists. Old `/entrenamiento/listas` links redirect here |
+| `/mis-envios`, `/mis-envios/:id` | The user's proposals, and the page to edit one |
+| `/recursos` | External resources |
+| `/contacto` | Contact form |
+| `/experiencias`, `/equipo`, `/estudia-en-el-extranjero`, `/sobre-mi`, `/colaboradores` | «Próximamente» pages |
+| `/dev/teoria-prueba` | Test lesson with every lesson block (only in `npm run dev`) |
+| anything else | «Página no encontrada» |
 
-There are no frontend routes for Threads or Mi Espacio. `/problemas` and `/materiales` are not current routes. Training libraries have stable nested URLs; the shared library browser keeps filters and folder selection in component state and provides route-backed detail pages. The intended primary navigation in PRODUCT.md has not yet been applied beyond the Rutas link.
+A lesson or problem opened from a Ruta carries `?ruta=...` in the address. That
+adds the «En la Ruta» strip and the previous and next step.
 
-## Current API and persistence
+## API
 
-| API | Current responsibility |
+Every route starts with `/api`. Reading content is public. Anything that writes
+needs a signed-in user, and the server checks the role on every request (see
+[ROLES.md](ROLES.md)).
+
+| Route | Endpoints |
 | --- | --- |
-| `POST /api/auth/signup`, `POST /api/auth/login` | Registration and authentication |
-| `GET /api/categories`, `GET /api/topics`, `GET /api/tags` | Public folder and controlled-metadata listings |
-| `GET /api/problems`, `GET /api/problems/:id` | Public Problem listing/detail; query parameters opt into server-side discovery pagination |
-| `GET /api/theory`, `GET /api/theory/:id` | Published Theory listing/detail |
-| `GET /api/lists`, `GET /api/lists/:id` | Published externally authored List listing/detail |
-| `GET /api/collections/:slug` | The published problem boxes of a theory lesson (`ejercicios`, `practice`, `dificiles`) in order, public problems only, with comment counts |
-| `GET /api/exams`, `GET /api/exams/:id` | Published Exam listing/detail with ordered Problem references |
-| `GET /api/paths`, `GET /api/paths/:slug` | Public discovery and standalone detail for structurally valid published Paths |
-| `GET /api/paths?traversal=a/b` | Validated contextual Path traversal and breadcrumbs without reserving a Path slug |
-| `GET /api/paths/:slug/progress` | Authenticated recursively derived Path progress |
-| `PUT /api/paths/:slug/completion` | Authenticated leaf-Path completion toggle/set |
-| `GET /api/problems/:problemId/comments` | Public comments as ordered threads (display depth ≤ 3); deleted comments keep their place without text or author |
-| `POST /api/problems/:problemId/comments` | Authenticated comment or reply (`parent` from the same problem) |
-| `DELETE /api/problems/:problemId/comments/:commentId` | Soft delete by the author, or by `moderador`+ with a reason (`otro` needs a note) |
-| `POST /api/problems/:problemId/comments/:commentId/reports` | Authenticated report of someone else's comment (one per person, listed reason) |
-| `GET /api/reports`, `POST /api/reports/comments/:commentId/dismiss` | `moderador`+ queue grouped by comment, and dismissal; deleting a comment resolves its reports |
-| `POST /api/contact` | Authenticated private contact submission |
+| `/api/auth` | `POST /signup`, `POST /login`, `GET /me` |
+| `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id` |
+| `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
+| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id` |
+| `/api/collections` | `GET /:slug`: the problem boxes of one lesson |
+| `/api/paths` | `GET /` (also `?traversal=a/b` for a path through several Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
+| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags |
+| `/api/reports` | Editors and admins: `GET /`, `POST /comments/:commentId/dismiss` |
+| `/api/submissions` | Signed in: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
+| `/api/flags` | Signed in: `POST /`. Editors and admins: `GET /`, `POST /:id/status` |
+| `/api/notifications` | Signed in: `GET /`, `POST /read` |
+| `/api/contact` | Signed in: `POST /` |
 
-Existing Mongoose models are:
+Approving and rejecting proposals are not API endpoints; admins use a script
+(see [SUBMISSIONS.md](SUBMISSIONS.md)).
 
-| Model | Current data |
-| --- | --- |
-| `User` | Username, email, password hash |
-| `Category` | Folder name and nullable self-referencing parent |
-| `Problem` | Legacy readable code/title/statement and Category reference, plus additive multi-folder, Topic, Tag, attribution, canonical three-level difficulty, and lifecycle fields |
-| `Topic` | Curated self-referencing mathematical concept hierarchy with slug and cycle prevention |
-| `Tag` | Centrally controlled flat name/slug/label descriptor |
-| `Theory` | Native mathematical article with summary, rich text/LaTex source, level, shared metadata, folders, and lifecycle |
-| `List` | Attributed external-resource record with source/PDF links, optional level, shared metadata, folders, and lifecycle |
-| `ProblemCollection` | Ordered Problem references behind one box of a theory lesson, unique per `slug` + `kind`; lesson text points to it with `[[collection:<slug>:<kind>]]` |
-| `Exam` | Competition/year/round metadata and ordered references to existing Problems |
-| `Comment` | Problem and author references, text body, optional `parent`/`root`/`depth` (0–3) for replies, and soft-delete fields (`status`, `deletedAs`, `deletedBy`, `deletedReason`, `deletedReasonNote`, `deletedAt`) |
-| `ContactMessage` | Author reference, profile category, contact reason, message |
-| `Path` | Standalone slugged guide with controlled Tags, optional descriptive level, and lifecycle |
-| `PathReference` | Ordered parent-to-child Path reference in an acyclic reusable graph |
-| `RelatedPath` | Non-structural typed Path recommendation reference |
-| `PathSection` | Parent-owned presentation heading for grouping Path references |
-| `Step` | Ordered leaf-owned instruction with typed TeacherPeri references and external resources |
-| `PathCompletion` | Unique User-to-leaf-Path completion record |
+**Limits:** each address may make 300 API requests per 15 minutes, and 20
+failed sign-in attempts per 15 minutes. Both limits are off in tests.
 
-All have timestamps. Existing references are not a complete integrity layer: MongoDB does not automatically enforce referenced-record existence or hierarchy acyclicity, so Path and Step model validation explicitly protects their MVP invariants.
+**Sessions:** signing up or logging in returns a JWT that lasts 7 days. The
+website keeps it in the browser (`localStorage`, key `teacherperi_auth`) and
+sends it with each request through `apiFetch` in `src/lib/api.js`.
+`requireAuth` reads the account and its role from the database on every
+request, so a role change applies at once.
 
-## Authentication foundation
+## Data model in short
 
-Signup hashes passwords with bcrypt; login/signup issue seven-day JWTs with the user ID in `sub`. The client stores the token and returned account data in localStorage under `teacherperi_auth`. `AuthProvider` exposes session state and a global authentication modal. The problem modal also has an inline authentication form.
+Models live in `server/src/models/`.
 
-`requireAuth` verifies bearer-token signature/expiry and attaches the user ID to the request. It checks that the account exists; account status, roles and token revocation remain deferred. There is no refresh, password-recovery, email-verification, or session-validation endpoint. Logout clears the client's stored session. Session-expiry handling is not fully centralized.
+- **Content is stored once and referenced.** A problem lives in `Problem`;
+  `List`, `Exam`, lesson boxes (`ProblemCollection`) and Ruta steps (`Step`)
+  point to it instead of copying it. Lessons are `Theory` records.
+- **Rutas** are `Path` records. A Path holds either child Paths (through
+  `PathReference`) or `Step`s, never both, and the same Path can be reused in
+  several Rutas. `PathSection` adds headings such as the five ciclos.
+  `RelatedPath` adds «También te puede interesar» links. Completion is stored
+  per user and leaf Path (`PathCompletion`).
+- **Folders** are `Category` records in a tree. Exam folders are Categories with
+  `kind: exam` under «Exámenes». **Áreas** are `Topic`s; **tags** are `Tag`s.
+- **Community:** `Comment` (replies up to 3 levels, soft delete), `Report`
+  (a reported comment), `ProblemSubmission` (a proposal or an edit waiting for
+  review), `Flag` («Reportar un error»), `Notification`, `ContactMessage`.
+- **Users** (`User`) have one role: `user`, `editor` or `admin`.
 
-The current public comment response projects username, role and author ID, not private email or password hash. Contact submissions have no public listing endpoint. Public data projections must remain explicit as identity features expand.
+## Safety rules built into the code
 
-## Reusable folders and Problems
-
-`Category.parent` represents a single-parent folder tree and rejects self-referential/cyclic writes. `src/pages/Problemas.jsx` rebuilds that tree, computes descendants/counts, and offers folders and breadcrumbs. The legacy `Problem.category` is retained only for migration/current-UI compatibility; new TeacherPeri content uses `Problem.categories` for multiple curated placements without copied Problems. The guarded `db:backfill:problem-categories` utility copies legacy memberships idempotently on an explicitly confirmed local development database; it never resets or deletes records. The legacy field should be retired only after its consumers and all persisted records have migrated.
-
-Topics, Categories, and Tags remain separate persistence concepts: a Topic says what mathematics a record concerns, a Category says where a visitor browses to it, and a Tag is a controlled flat descriptor for filtering/search/discovery. Their references are intentionally many-to-many where content reuse requires it; none is a substitute for the others.
-
-The same component contains problem loading, filters, cards, a problem modal, KaTeX rendering for inline/display mathematics, authentication UI, comments, and animations. This working implementation is valuable but combines many responsibilities; extract reusable parts incrementally when a task requires it.
-
-The Problem view now shares paginated server discovery, recursive category navigation and controlled metadata filters with the other libraries. New library endpoints use server-side query filters and pagination; the new route-backed Theory, List, and Exam views use those endpoints and provide folder navigation plus local text search. A cross-library search endpoint/UI is still future work.
-
-- OR within a selected metadata dimension; AND between dimensions.
-- Year, topic, contest type, and category filters.
-- A category selection includes its descendants.
-- Any active filter shows matching results across the library, independent of the browsed folder.
-- Dynamic metadata options, text search and pagination.
-
-These are present behaviors to preserve until explicitly replaced, not the final search contract. Difficulty/success values in the seed are illustrative estimates and must not be treated as measured learning analytics.
-
-## Path engine
-
-Categories organize material; Paths guide learners through it. The Phase 3 engine uses independent `Path` documents connected by ordered `PathReference` documents, never a `parentPath` field. A child Path can be referenced by multiple parents while preserving one stable identity. `PathReference` rejects self-references, duplicate parent/child edges, duplicate per-parent positions, Paths with Steps, and indirect cycles. `Step` rejects non-leaf ownership and duplicate positions, so a Path contains ordered child Paths or ordered Steps, never both.
-
-Published Path discovery/detail only exposes structurally valid published Paths. Traversal URLs are contextual: `/rutas/a/b` is valid only when the stored reference `a → b` exists, and the API returns breadcrumbs for that exact chain. Standalone URLs have no fabricated parent breadcrumb. A Step stores typed identity references to existing Problem, Theory, List, or Exam records. Public rendering resolves only publicly visible targets; retained references to draft or archived content render as unavailable without copying or leaking the target content. A `PathReference` may explicitly opt into a planned unavailable preview; that narrow response adds only the child title and coming-soon state, never a slug, link, description, descendants, Steps, or progress contribution.
-
-`Path.tags` reuses the controlled Tag system and supports public Path discovery filtering; tags are descriptive and never alter structural behavior. `RelatedPath` is a separate recommendation-only relation with controlled prerequisite, deeper, and related labels. It is excluded from structural traversal, breadcrumbs, ordering, and progress. `PathReference.order` is the canonical order of every structural child. `PathSection` is optional parent presentation metadata: it annotates positions in that sequence with headings without reordering any child, and the public API returns an ordered presentation stream. A missing or mismatched section falls back to an unsectioned child so presentation metadata cannot hide a valid structural reference. Sections have no identity outside the page and do not affect the graph. `Path.level` is optional `introductorio`, `omm`, or `avanzado` metadata and is descriptive only. None creates a separate Path engine or nesting limit.
-
-`PathCompletion` is unique by User and Path. Only a published leaf may be manually completed. Server-side progress traverses the published graph with visited sets, gathers unique descendant leaves, and counts each once; parent progress is descriptive and cannot lock content. Completion is reused across every traversal that reaches the same leaf. Following, saving, dashboard views, badges, and Path versioning are deliberately not part of this implementation.
-
-### OMM curriculum draft
-
-The repository contains a declarative working definition for `Preparación para la OMM` in `server/src/data/ommCurriculum.js`. It uses the generic engine: the root directly references reusable topic Paths in one chronological order, while five root-owned `PathSection` records provide cycle headings. The database-free `npm run curriculum:preview:omm` command validates and prints the proposed tree and inventory. The full provisional sequence, assumptions, and editorial gaps are recorded in [OMM_CURRICULUM_DRAFT.md](OMM_CURRICULUM_DRAFT.md).
-
-`npm run db:apply:omm-curriculum` is a guarded additive development migration. It only accepts an explicitly confirmed loopback `teacherperi_dev` target, reuses exact Path identities, and creates missing Paths as drafts. It supports recursive references, does not author Steps, and refuses identity or structural conflicts. Explicitly pending Groups may be created as empty draft identities; the migration rejects them if they are public or contain Steps or invented child references. It does not delete records or overwrite existing Path editorial fields.
-
-### Shared content and metadata
-
-Use references to reuse one stored object across Paths and discussions. Different libraries may need different material structures, but share consistent identity, metadata/tagging, discovery, and reference conventions. Initial content organization is one canonical folder placement plus multiple controlled tags. Tags complement folders.
-
-Define common metadata and reference contracts before extending each library independently. Topics should be a curated acyclic hierarchy of mathematical concepts; Tags should be centrally controlled flat descriptors. Content may have multiple Category references for distinct curated navigation views without duplication. Official library records need draft/published/archived visibility semantics, with archived records retaining their identities for references. No universal content collection or final polymorphic-reference schema is prescribed here. Experiences are referenceable narrative content; Thread attachments are separate uploads, not references to existing content.
-
-### Public access, persistence, and authorization
-
-Browsing and searching remain available without login. Completion, followed routes, bookmarks, personal workspace data, and participation require a user session. Progress is descriptive; no prerequisite locks or separate University Path engine should be introduced.
-
-Future authorization must distinguish users, content creators, moderators, and admins on the server. Publishing official educational material and moderating discussion are different powers. Role badges alone cannot authorize actions. Mi Espacio is private; public identity must not expose account information or imply public social-profile pages.
-
-### Community history
-
-Future Threads must retain appropriate edit/deletion/moderation history, including answer-status locks, under a defined retention/access policy. User-facing removal must not erase moderation-relevant history. Preserve original identity and relationships during any eventual comment transition.
-
-**Comment deletion is a soft delete.** The document keeps its text plus who deleted it, in which capacity (author or moderation), when and why; the public API hides the text and author but keeps the comment's place so replies stay readable. This does not migrate comments to Threads. Roles and permissions are described in [ROLES.md](ROLES.md).
-
-## Development, tests, and delivery
-
-Frontend and backend are separate development processes. Generated frontend output belongs in `dist/` and should be rebuilt from source, not used as architectural evidence for current source behavior.
-
-Backend integration tests use Vitest and Supertest against a disposable loopback MongoDB database named `teacherperi_test` or `teacherperi_test_<suffix>`. Cleanup verifies the connected target before deletion. Separate database-safety unit tests do not connect to MongoDB. Test cleanup and development resets are destructive operations and require verified targets plus runtime guards; neither may borrow an application database through a silent fallback.
-
-The development reset requires an explicit `MONGO_DEV_RESET_URI`, development mode, a loopback target named `teacherperi_dev` or `teacherperi_dev_<suffix>`, and confirmation of the exact database name. It refuses a target containing comments. This reset is not a migration. See README for the exact guarded commands and CI configuration.
-
-Lint and a frontend build provide the non-database baseline. Integration tests cover auth, categories, content, Paths and transactional imports; Playwright checks desktop/mobile library interactions using explicit API fixtures. Rate limits are disabled under test, so integration results do not establish production rate-limit behavior. Future tests should protect real domain invariants and migration safety as those systems are introduced.
-
-## Final MVP release additions
-
-Problem supports optional original hint and solution text. List and Exam use
-ordered canonical Problem references with contiguous positive integer positions,
-unique targets and referenced-record validation. Public detail population applies
-publication visibility to referenced Problems. Exam supports optional duration
-and instructions; external source links remain optional. No PDFs are imported.
-
-All four libraries share paginated discovery; category filters include
-descendants. Step references provide links to content and content detail pages
-link back to the published leaves that use it. Session failures clear the local
-bearer session; unexpected API failures return safe JSON without driver details.
-
-`mvpManifest.js` separates editorial source from persisted identities. The import
-resolves natural identities first, validates conflicts, and applies the entire
-release within a transaction. It reuses IDs and never resets or deletes records.
-Local tests and production importing have separate database safety contracts.
+- Scripts that write to a database need their own address variable that names the
+  database (never `MONGO_URI`), run as a dry run by default, and need the database
+  name typed in a second variable to apply. They never print the address.
+- `npm run db:reset:dev` erases a local database. It only accepts a database on
+  your own computer named `teacherperi_dev` (or `teacherperi_dev_<suffix>`), and
+  refuses one that holds comments.
+- Database tests only run against a throwaway database on your own computer named
+  `teacherperi_test` (or `teacherperi_test_<suffix>`).

@@ -1,5 +1,7 @@
 # MVP content import
 
+English · **[Español](es/CONTENT_IMPORT.md)**
+
 `npm run content:validate` validates all source math with strict KaTeX, publication
 structure and canonical references. `content:import` is independent of legacy
 reset/backfill commands. It contains no deletes, resets or production URI defaults.

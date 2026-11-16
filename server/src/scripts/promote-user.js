@@ -1,5 +1,6 @@
 // ---------------------------------------------------------------------------
-// Cambia el rol de UNA cuenta (por ejemplo, nombrar al primer admin).
+// Cambia el rol de UNA cuenta (por ejemplo, nombrar al primer admin o a un
+// editor). Roles válidos: user, editor, admin.
 //
 //   MONGO_ROLE_URI=mongodb+srv://.../teacherperi \
 //     npm run users:set-role -- --user ana@correo.com --role admin           # solo muestra
@@ -60,8 +61,11 @@ export async function setUserRole({ user, role, apply }) {
   if (matches.length > 1) throw fail('That value matches more than one account; use the exact email.')
   const [account] = matches
   const from = roleOf(account)
-  if (apply && from !== role) await User.updateOne({ _id: account._id }, { $set: { role } })
-  return { mode: apply ? 'applied' : 'dry-run', username: account.username, email: account.email, from, to: role, changed: from !== role && apply }
+  // Compara con el valor GUARDADO: una cuenta con un rol antiguo equivalente
+  // (por ejemplo `teacherperi` → admin) también se reescribe al valor nuevo.
+  const differs = account.role !== role
+  if (apply && differs) await User.updateOne({ _id: account._id }, { $set: { role } })
+  return { mode: apply ? 'applied' : 'dry-run', username: account.username, email: account.email, from, stored: account.role ?? null, to: role, changed: differs && apply }
 }
 
 async function run() {

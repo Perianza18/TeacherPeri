@@ -5,6 +5,7 @@ import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
+import FlagButton from '../components/FlagButton'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
 import { hintLabel, splitHints } from '../lib/hints'
@@ -199,6 +200,7 @@ export default function LibraryDetailPage({ type }) {
         </>}
         <Hints hint={item.hint} />
         {item.solution && <Solution solution={item.solution} />}
+        {type === 'problemas' && <div><FlagButton targetType="problem" targetId={item._id} /></div>}
 
         {item.instructions && <p className="tp-card-quiet whitespace-pre-wrap bg-tp-yellow-soft p-5 leading-7">{item.instructions}</p>}
         {['listas', 'examenes'].includes(type) && <>

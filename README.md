@@ -1,109 +1,65 @@
 # TeacherPeri
 
-Plataforma en español para preparar estudiantes en resolución de problemas y
-olimpiadas de matemáticas. El MVP se centra en **Preparación para la OMM**:
-contenido original, práctica graduada y Rutas reutilizables con progreso opcional.
+English · **[Español](README.es.md)**
 
-## Qué puedes explorar
+TeacherPeri is a free, Spanish-language website for students preparing for math
+olympiads, starting with the Mexican Math Olympiad (OMM). It brings theory,
+problems, practice exams and guided study paths together in one place, so anyone
+can train without hunting for material.
 
-- **Problemas:** búsqueda, filtros combinables, carpetas recursivas, pistas,
-  soluciones razonadas y comentarios existentes.
-- **Teoría:** 37 guías originales, con LaTeX, ejemplos y práctica.
-- **Listas:** seis colecciones de problemas originales y tres recursos externos
-  atribuidos, consultados en el sitio del editor.
-- **Exámenes:** tres prácticas originales con problemas ordenados del mismo banco.
-- **Rutas:** preparación inicial y Ciclo 1 completos; un primer bloque de
-  congruencias de Ciclo 2. Los cinco ciclos conservan su estructura; los tramos
-  pendientes muestran «Próximamente» y no se publican como lecciones vacías.
+- **Live site:** https://teacherperi.vercel.app
+- **API:** https://teacherperi-api.onrender.com (for example `/api/problems`)
 
-La lectura es pública. Iniciar sesión permite marcar Rutas hoja como completas;
-el progreso nunca bloquea contenido. Mi Espacio, Threads, comunidad y orientación
-universitaria completa permanecen fuera de este sprint.
+## What's on the site
 
-## Arquitectura
+| Section | What it does | Status |
+| --- | --- | --- |
+| Inicio | Home page with «Problema del día» | Done |
+| Rutas | Ordered study paths with progress. The OMM Ruta has Preparación and 5 ciclos | Partial: Preparación and Ciclo 1 are complete; Ciclo 2 has 2 lessons |
+| Entrenamiento | Libraries: Problemas (56), Teoría (37 lessons), Exámenes (3) | Done. New lesson format and a visual refresh in progress |
+| Listas | 6 problem lists and 3 external resources | Done |
+| Community | Comments, proposing problems, error reports | Partial: moderation and editor screens are planned |
+| Mi Espacio | Profile, saved items, badges | Planned |
+| Experiencias, Equipo, Universidad | Blog, team, university guides | Planned («Próximamente» today) |
 
-React 19 / Vite, Express 5, MongoDB / Mongoose, JWT y KaTeX. El contenido se guarda
-una vez y se referencia desde listas, exámenes y Steps. Los ciclos son
-`PathSections`, no Paths adicionales. El grafo de Paths es acíclico y reutilizable;
-un Path contiene hijos o Steps, nunca ambos.
+Every feature, with what works today and what is planned:
+[docs/FEATURES.md](docs/FEATURES.md).
 
-## Desarrollo
+## Tech in one line
 
-Node 22.13+ compatible con `engines`, npm y MongoDB. Para el importador atómico se
-requiere un replica set de MongoDB (Atlas lo proporciona).
+React 19 + Vite + Tailwind CSS v4 (website) · Express 5 + Mongoose (API) ·
+MongoDB Atlas (database) · KaTeX (math) · hosted on Vercel and Render.
+
+## Run it locally
+
+You need Node 22.13 or newer, npm and MongoDB.
 
 ```sh
 npm ci
-cp .env.example .env
-# Genera una clave y colócala únicamente en JWT_SECRET de tu .env:
-node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
-npm run server
-# En otra terminal:
-npm run dev
+cp .env.example .env          # then set JWT_SECRET (see docs/DEVELOPMENT.md)
+npm run server                # API on http://localhost:4000
+npm run dev                   # website on http://localhost:5173 (second terminal)
 ```
 
-Frontend: `http://localhost:5173`; API: `http://localhost:4000`. Las bibliotecas
-están en `/entrenamiento/problemas`, `/teoria` y `/examenes` bajo
-`/entrenamiento`; las Listas tienen su propia página en `/listas`. La API puede arrancar sin contenido; no necesita un reset.
-Si la ruta OMM no aparece, sigue [la preparación local del MVP](docs/LOCAL_MVP.md):
-`npm run db:local:start` prepara un replica set separado y `npm run content:check`
-comprueba la base que usa la API. Un dry-run no importa contenido.
+To see real content locally, follow [docs/LOCAL_MVP.md](docs/LOCAL_MVP.md).
+Setup, tests and every npm script: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-## Importar el contenido del MVP
+## Documentation
 
-[Guía del importador](docs/CONTENT_IMPORT.md). Valida el manifiesto sin MongoDB:
+| Read this | To learn |
+| --- | --- |
+| [FEATURES.md](docs/FEATURES.md) | Every feature, done or planned, and how the site works today |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the code is split: folders, pages, API, data model |
+| [ROLES.md](docs/ROLES.md) | User, Editor and Admin: who can do what |
+| [SUBMISSIONS.md](docs/SUBMISSIONS.md) | Community problems, exam folders, error reports and their review |
+| [CONTENT.md](docs/CONTENT.md) | How lessons, problems, lists, exams and Rutas are written and published |
+| [CONTENT_IMPORT.md](docs/CONTENT_IMPORT.md) | Loading official content into a database |
+| [DESIGN.md](docs/DESIGN.md) | The design guide every screen follows |
+| [DEVELOPMENT.md](docs/DEVELOPMENT.md) | Local setup, tests, npm scripts |
+| [LOCAL_MVP.md](docs/LOCAL_MVP.md) | A local database with the real content |
+| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | How the live site is hosted and updated |
+| [CONTRIBUTING.md](docs/CONTRIBUTING.md) | Branches, pull requests and the rules every change follows |
 
-```sh
-npm run content:validate
-```
-
-El importador usa una URI **separada**, no toma `MONGO_URI`, y comienza en modo
-solo lectura. No imprime credenciales. Conecta únicamente cuando se proporciona
-un destino explícito.
-
-```sh
-# Define MONGO_CONTENT_IMPORT_URI en tu entorno privado; incluye nombre de base.
-npm run content:import -- --dry-run
-# Solo después de revisar el resultado, confirma el nombre exacto de la base:
-CONTENT_IMPORT_CONFIRM=teacherperi npm run content:import -- --apply
-```
-
-La aplicación completa se ejecuta en una transacción: conserva IDs existentes,
-rechaza contenido o estructura incompatibles, no borra registros y una repetición
-idéntica no modifica datos. No importa los 93 problemas de la antigua fixture ni
-PDFs ajenos. Nunca uses `db:reset:dev` para preparar producción.
-
-## Validación
-
-```sh
-npm run content:validate
-npm run lint
-npm run test:unit
-npm run build
-# Solo una base local desechable teacherperi_test o teacherperi_test_<sufijo>:
-MONGO_TEST_URI=mongodb://127.0.0.1:27017/teacherperi_test npm run test:integration
-npx playwright install chromium
-npm run test:browser
-```
-
-Las pruebas de integración limpian y eliminan su base local verificada. Requieren
-un replica set para comprobar el importador transaccional; el guard de seguridad
-exige conexión directa de loopback. Nunca uses datos reales en esa base.
-GitHub Actions proporciona MongoDB 8.0 efímero, ejecuta estas comprobaciones e
-incluye pruebas de navegación en escritorio y móvil. Las pruebas de navegador
-usan una fixture explícita de API; las relaciones y la importación reales se
-verifican por separado contra MongoDB.
-
-## Producción
-
-Solo resta conectar infraestructura y configurar secretos privados. Sigue
-[DEPLOYMENT.md](docs/DEPLOYMENT.md): Atlas, importación revisada, API con `npm start`,
-frontend con `npm run build`, URL pública de API y fallback de rutas SPA.
-No hay despliegue ni base de producción incluida en este repositorio.
-
-## Documentación
-
-[Estado actual](docs/CURRENT_STATE.md) · [Producto](docs/PRODUCT.md) ·
-[Arquitectura](docs/ARCHITECTURE.md) · [Especificación](docs/TEACHERPERI_SPEC.md) ·
-[Roadmap](docs/ROADMAP.md) · [Migración](docs/MIGRATION.md) ·
-[Desarrollo](docs/DEVELOPMENT.md)
+Each document has a Spanish version in [docs/es/](docs/es/).
+Older planning documents are kept in [docs/archive/](docs/archive/) for history;
+they do not describe the current site.

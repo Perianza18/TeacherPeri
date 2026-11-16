@@ -1,12 +1,13 @@
-import { motion, useReducedMotion } from 'framer-motion'
-
-export default function TrainingHeader({ eyebrow, title, subtitle }) {
-  const reduceMotion = useReducedMotion()
+// Header for pages inside a narrow column (Proponer un problema, Mis
+// envíos): the sticker kicker and poster title of the full-width PageHero,
+// without the colored band.
+export default function TrainingHeader({ eyebrow, title, subtitle, action = null }) {
   return (
-    <motion.div initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-      {eyebrow && <span className="tp-kicker">{eyebrow}</span>}
-      <h1 className="mt-5 text-4xl font-black uppercase tracking-[-0.05em] text-brand-900 sm:text-5xl">{title}</h1>
-      {subtitle && <p className="mt-4 max-w-2xl leading-7 text-brand-600">{subtitle}</p>}
-    </motion.div>
+    <header className="mb-10 flex flex-col items-start gap-4">
+      {eyebrow && <span className="tp-sticker -rotate-2 bg-tp-yellow">{eyebrow}</span>}
+      <h1 className="tp-page-title">{title}</h1>
+      {subtitle && <p className="tp-lead max-w-2xl text-[18px] text-tp-ink-soft">{subtitle}</p>}
+      {action && <div className="pt-2">{action}</div>}
+    </header>
   )
 }
