@@ -23,13 +23,13 @@ export default function FolderFilter({ categories, value, onChange }) {
 
   return (
     <div className="mt-4">
-      <label htmlFor={id} className="text-sm font-bold text-brand-700">Carpeta o examen</label>
+      <label htmlFor={id} className="text-sm font-bold text-tp-ink-soft">Carpeta o examen</label>
       {value.length > 0 && (
         <ul className="mt-2 flex flex-wrap gap-2" aria-label="Carpetas elegidas">
           {value.map((folderId) => (
             <li key={folderId} className="tp-pill bg-tp-yellow-soft text-sm">
               {label(folderId) || 'Carpeta'}
-              <button type="button" onClick={() => onChange(value.filter((item) => item !== folderId))} aria-label={`Quitar ${label(folderId)}`} className="grid h-6 w-6 place-items-center rounded-full hover:bg-white">×</button>
+              <button type="button" onClick={() => onChange(value.filter((item) => item !== folderId))} aria-label={`Quitar ${label(folderId)}`} className="grid h-6 w-6 place-items-center rounded-full hover:bg-tp-surface">×</button>
             </li>
           ))}
         </ul>
@@ -43,18 +43,18 @@ export default function FolderFilter({ categories, value, onChange }) {
         onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); if (suggestions[0]) add(suggestions[0]._id) } }}
         placeholder="Por ejemplo: OMM Estatal o Jalisco"
         autoComplete="off"
-        className="mt-2 w-full rounded-xl border border-brand-300 bg-white p-3"
+        className="tp-input mt-2"
       />
       {suggestions.length > 0 && (
         <ul className="mt-2 flex flex-col gap-1.5" aria-label="Carpetas que coinciden">
           {suggestions.map((folder) => (
             <li key={folder._id}>
-              <button type="button" onClick={() => add(folder._id)} className="min-h-11 w-full rounded-lg border border-brand-300 bg-white px-3 py-2 text-left text-sm hover:bg-accent-yellow">{label(folder._id)}</button>
+              <button type="button" onClick={() => add(folder._id)} className="min-h-11 w-full rounded-lg border-2 border-tp-ink bg-tp-surface px-3 py-2 text-left text-sm hover:bg-tp-yellow">{label(folder._id)}</button>
             </li>
           ))}
         </ul>
       )}
-      {wanted && suggestions.length === 0 && <p className="mt-2 text-sm text-brand-600">No hay carpetas con ese nombre.</p>}
+      {wanted && suggestions.length === 0 && <p className="mt-2 text-sm text-tp-ink-muted">No hay carpetas con ese nombre.</p>}
     </div>
   )
 }

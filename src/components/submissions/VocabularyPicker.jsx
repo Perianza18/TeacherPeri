@@ -22,14 +22,14 @@ export default function VocabularyPicker({ topics, tags, value, onChange }) {
 
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-bold text-brand-900">Áreas y etiquetas</label>
+      <label htmlFor={id} className="text-sm font-bold text-tp-ink">Áreas y etiquetas</label>
       <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">Elige de la lista existente. Para aprobarlo hace falta al menos un área.</p>
       {chosen.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2" aria-label="Elegidas">
           {chosen.map((option) => (
             <li key={`${option.kind}-${option.id}`} className={`tp-pill ${option.kind === 'topics' ? 'bg-tp-sky-soft' : 'bg-tp-violet-soft'}`}>
               <span><span className="sr-only">{option.group}: </span>{option.label}</span>
-              <button type="button" onClick={() => remove(option)} aria-label={`Quitar ${option.label}`} className="grid h-6 w-6 place-items-center rounded-full hover:bg-white">×</button>
+              <button type="button" onClick={() => remove(option)} aria-label={`Quitar ${option.label}`} className="grid h-6 w-6 place-items-center rounded-full hover:bg-tp-surface">×</button>
             </li>
           ))}
         </ul>
@@ -49,7 +49,7 @@ export default function VocabularyPicker({ topics, tags, value, onChange }) {
         <ul className="mt-2 flex flex-wrap gap-2" aria-label="Sugerencias">
           {suggestions.map((option) => (
             <li key={`${option.kind}-${option.id}`}>
-              <button type="button" onClick={() => add(option)} className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-dashed border-tp-ink bg-white px-3 text-sm font-semibold hover:bg-tp-yellow-soft">
+              <button type="button" onClick={() => add(option)} className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-dashed border-tp-ink bg-tp-surface px-3 text-sm font-semibold hover:bg-tp-yellow-soft">
                 <span className="text-xs font-bold uppercase tracking-wider text-tp-ink-muted">{option.group}</span>{option.label}
               </button>
             </li>

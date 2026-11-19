@@ -1,51 +1,45 @@
-import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import PageHero from '../components/PageHero'
 import Contacto from '../components/sections/Contacto'
 import ContactForm from '../components/contact/ContactForm'
-import { fadeUp, revealProps } from '../components/motion/variants'
+import { BubbleTail, Mark } from '../components/decor/Decor'
 
-// Página 6/8: Contacto. Antes esta página solo envolvía Contacto.jsx
-// (correo + redes) — ahora ese componente se queda como una opción de
-// contacto directo AL FINAL de la página, y arriba se agrega la
-// bienvenida (contenido exacto pedido) + el formulario segmentado
-// fusionado con la sesión global (ver ContactForm.jsx).
-//
-// Contacto.jsx ya no es lo PRIMERO en la página (antes tenía pt-28 para
-// no quedar tapado por el navbar fijo; ahora ese padding se le quitó —
-// ver el diff de ese archivo — porque el intro de abajo es lo que
-// necesita esa separación ahora).
+// Página Contacto: la bienvenida (texto exacto pedido) en un globo de
+// diálogo junto al formulario, y al final las formas de contacto directo
+// (Contacto.jsx).
 export default function ContactoPage() {
   return (
     <>
       <Navbar />
-      <main>
-        <motion.section
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          className="mx-auto max-w-2xl px-4 pb-8 pt-28 text-center sm:px-6"
-        >
-          <h1 className="font-display text-3xl text-brand-900 sm:text-4xl">Contáctame</h1>
-          <p className="mt-4 text-brand-700">
-            ¡Holaaa! Qué gusto que quieras ponerte en contacto. 🚀
-          </p>
-          <p className="mt-4 text-brand-700">
-            TeacherPeri es un proyecto hecho con mucho cariño para acompañarte en tu camino
-            olímpico y en tu meta de estudiar en el extranjero. Ya seas un estudiante buscando
-            orientación, un exolímpico con ganas de aportar, o un profesor o papá/mamá buscando
-            material, ¡este espacio es para ti!
-          </p>
-          <p className="mt-4 text-brand-700">
-            No hay pregunta pequeña ni duda tonta. ¡Escríbeme con toda la confianza!
-          </p>
-        </motion.section>
+      <main className="bg-tp-paper pt-[72px] text-tp-ink">
+        <PageHero
+          id="contacto-titulo"
+          tone="mint"
+          kicker="Contacto"
+          title={<Mark variant="lines" color="var(--tp-coral)" width={6} delay={300}>Contáctame</Mark>}
+          lead="¡Holaaa! Qué gusto que quieras ponerte en contacto. 🚀"
+        />
 
-        <motion.section variants={fadeUp} {...revealProps} className="px-4 pb-20 sm:px-6">
+        <section aria-label="Escríbeme" className="tp-container grid items-start gap-12 pb-20 pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:gap-14">
+          <div className="tp-bubble bg-tp-surface px-6 py-6 sm:px-8 sm:py-7">
+            <p className="text-[17px] leading-[1.7]">
+              TeacherPeri es un proyecto hecho con mucho cariño para acompañarte en tu camino
+              olímpico y en tu meta de estudiar en el extranjero. Ya seas un estudiante buscando
+              orientación, un exolímpico con ganas de aportar, o un profesor o papá/mamá buscando
+              material, ¡este espacio es para ti!
+            </p>
+            <p className="tp-hand mt-5 -rotate-1 text-[27px] leading-tight text-tp-violet">
+              No hay pregunta pequeña ni duda tonta. ¡Escríbeme con toda la confianza!
+            </p>
+            <BubbleTail className="left-10 top-[calc(100%-3px)]" />
+          </div>
           <ContactForm />
-        </motion.section>
+        </section>
 
         <Contacto />
       </main>
+      <Footer />
     </>
   )
 }

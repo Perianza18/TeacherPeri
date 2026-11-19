@@ -12,9 +12,10 @@ function Shell({ title, children }) {
   return (
     <>
       <Navbar />
-      <main className="min-h-[80vh] bg-brand-50 px-4 pb-24 pt-32 sm:px-6">
+      <main className="min-h-[80vh] bg-tp-paper px-4 pb-24 pt-32 text-tp-ink sm:px-6">
         <div className="mx-auto max-w-[840px]">
-          <h1 className="text-4xl font-black leading-[1.05] tracking-[-0.02em] text-brand-900 sm:text-[52px]">{title}</h1>
+          <span className="tp-sticker -rotate-2 bg-tp-yellow">Comunidad</span>
+          <h1 className="tp-page-title mt-4">{title}</h1>
           {children}
         </div>
       </main>
@@ -25,9 +26,9 @@ function Shell({ title, children }) {
 
 function SignInCard({ abrirModal }) {
   return (
-    <section className="tp-card-soft mt-8 bg-white p-6">
+    <section className="tp-card-soft mt-8 bg-tp-surface p-6">
       <span className="tp-kicker">Inicia sesión</span>
-      <p className="mt-4 text-lg leading-8 text-brand-700">Entra a tu cuenta para ver los problemas que propusiste y su revisión.</p>
+      <p className="mt-4 text-lg leading-8 text-tp-ink-soft">Entra a tu cuenta para ver los problemas que propusiste y su revisión.</p>
       <button type="button" onClick={abrirModal} className="tp-button mt-5 bg-tp-mint px-5 font-bold text-tp-ink">Entrar</button>
     </section>
   )
@@ -55,25 +56,25 @@ function SubmissionCard({ item, token, onDeleted }) {
     }
   }
   return (
-    <article className="tp-card-soft flex flex-col gap-3 bg-white p-5 sm:p-6" aria-labelledby={`envio-${item._id}`}>
+    <article className="tp-card-soft flex flex-col gap-3 bg-tp-surface p-5 sm:p-6" aria-labelledby={`envio-${item._id}`}>
       <div className="flex flex-wrap items-center gap-2">
-        <h2 id={`envio-${item._id}`} className="text-xs font-black uppercase tracking-wider text-accent-violet">{item.codigo}</h2>
+        <h2 id={`envio-${item._id}`} className="text-xs font-black uppercase tracking-wider text-tp-violet">{item.codigo}</h2>
         <StatePill state={item.state} />
         {item.examFolderPending && <span className="tp-pill bg-tp-yellow-soft text-xs">Carpeta en revisión</span>}
       </div>
-      <MathText text={showProposal ? item.proposal.enunciado : item.enunciado} className="line-clamp-6 whitespace-pre-wrap break-words leading-7 text-brand-900" />
+      <MathText text={showProposal ? item.proposal.enunciado : item.enunciado} className="line-clamp-6 whitespace-pre-wrap break-words leading-7 text-tp-ink" />
       {item.state === 'published-pending' && <p className="text-sm text-tp-ink-muted">Tus cambios están en revisión; mientras tanto se muestra la versión publicada.</p>}
       {(item.state === 'rejected' || item.state === 'published-rejected') && item.latest?.reason && (
         <p className="tp-card-quiet bg-tp-coral-soft p-3 text-sm leading-6"><strong>Motivo: </strong>{item.latest.reason}</p>
       )}
       <div className="flex flex-wrap gap-2 text-sm">
-        {item.examFolderPath.length > 0 && <span className="tp-pill bg-white text-xs">{item.examFolderPath.slice(1).join(' › ')}{item.proposal.problemNumber ? ` · Problema ${item.proposal.problemNumber}` : ''}</span>}
+        {item.examFolderPath.length > 0 && <span className="tp-pill bg-tp-surface text-xs">{item.examFolderPath.slice(1).join(' › ')}{item.proposal.problemNumber ? ` · Problema ${item.proposal.problemNumber}` : ''}</span>}
         {item.topics.map((topic) => <span key={topic._id} className="tp-pill bg-tp-sky-soft text-xs">{topic.name}</span>)}
         {item.tags.map((tag) => <span key={tag._id} className="tp-pill bg-tp-violet-soft text-xs">{tag.label}</span>)}
       </div>
       <div className="mt-1 flex flex-wrap items-center gap-3 border-t-2 border-dashed border-tp-rule pt-4 text-sm font-bold">
-        <Link to={`${MY_SUBMISSIONS_PATH}/${item._id}`} className="tp-button bg-white px-4 text-brand-900">Editar</Link>
-        {item.isPublic && <Link to={`/entrenamiento/problemas/${item._id}`} className="min-h-11 content-center px-1 text-violet-700 underline underline-offset-2">Ver publicado</Link>}
+        <Link to={`${MY_SUBMISSIONS_PATH}/${item._id}`} className="tp-button bg-tp-surface px-4 text-tp-ink">Editar</Link>
+        {item.isPublic && <Link to={`/entrenamiento/problemas/${item._id}`} className="min-h-11 content-center px-1 text-tp-violet underline underline-offset-2">Ver publicado</Link>}
         {!confirming && <button type="button" onClick={() => setConfirming(true)} className="min-h-11 px-1 text-tp-ink-muted underline underline-offset-2">Eliminar</button>}
         {confirming && (
           <span className="flex flex-wrap items-center gap-2" role="group" aria-label="Confirmar eliminación">
@@ -113,7 +114,7 @@ export default function MisEnviosPage() {
 
   return (
     <Shell title="Mis envíos">
-      <p className="mt-4 max-w-2xl leading-7 text-brand-600">Los problemas que propusiste. Se publican cuando se aprueban; puedes editarlos o eliminarlos cuando quieras.</p>
+      <p className="mt-4 max-w-2xl leading-7 text-tp-ink-muted">Los problemas que propusiste. Se publican cuando se aprueban; puedes editarlos o eliminarlos cuando quieras.</p>
       {notice && <p role="status" className="tp-card-quiet mt-6 bg-tp-mint-soft p-4 text-sm font-semibold">{notice}</p>}
       {!auth && <SignInCard abrirModal={abrirModal} />}
       {auth && (
@@ -121,12 +122,12 @@ export default function MisEnviosPage() {
           <Link to={PROPOSE_PATH} className="tp-button bg-tp-mint px-5 font-bold text-tp-ink">Proponer un problema</Link>
         </div>
       )}
-      {auth && loading && <p className="mt-8 text-brand-500" aria-live="polite">Cargando tus envíos…</p>}
-      {auth && !loading && result.error && <p role="alert" className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">No fue posible cargar tus envíos: {result.error}</p>}
+      {auth && loading && <p className="mt-8 text-tp-ink-muted" aria-live="polite">Cargando tus envíos…</p>}
+      {auth && !loading && result.error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-coral-soft p-4">No fue posible cargar tus envíos: {result.error}</p>}
       {auth && !loading && !result.error && result.items.length === 0 && (
-        <section className="tp-card-soft mt-8 bg-white p-6">
+        <section className="tp-card-soft mt-8 bg-tp-surface p-6">
           <span className="tp-kicker">Mis envíos</span>
-          <p className="mt-4 text-lg leading-8 text-brand-700">Todavía no has propuesto problemas.</p>
+          <p className="mt-4 text-lg leading-8 text-tp-ink-soft">Todavía no has propuesto problemas.</p>
         </section>
       )}
       {auth && !loading && result.items.length > 0 && (
@@ -160,12 +161,12 @@ export function EditarEnvioPage() {
   const error = result.key === key ? result.error : null
   return (
     <Shell title={item ? `Editar ${item.codigo}` : 'Editar envío'}>
-      <Link to={MY_SUBMISSIONS_PATH} className="mt-4 inline-block text-sm font-semibold text-violet-700">← Volver a Mis envíos</Link>
+      <Link to={MY_SUBMISSIONS_PATH} className="mt-4 inline-block text-sm font-semibold text-tp-violet">← Volver a Mis envíos</Link>
       {!auth && <SignInCard abrirModal={abrirModal} />}
-      {auth && !item && !error && <p className="mt-8 text-brand-500" aria-live="polite">Cargando…</p>}
-      {auth && error && <p role="alert" className="mt-8 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</p>}
+      {auth && !item && !error && <p className="mt-8 text-tp-ink-muted" aria-live="polite">Cargando…</p>}
+      {auth && error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-coral-soft p-4">{error}</p>}
       {auth && item && (
-        <div className="tp-card-soft mt-6 bg-white p-5 sm:p-7">
+        <div className="tp-card-soft mt-6 bg-tp-surface p-5 sm:p-7">
           <ProblemSubmissionForm
             token={token}
             problemId={item._id}

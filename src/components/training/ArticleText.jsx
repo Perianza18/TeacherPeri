@@ -13,13 +13,21 @@ function Blocks({ blocks, ctx, inStatement = false }) {
   return blocks.map((block, index) => <Block key={index} block={block} ctx={ctx} inStatement={inStatement} />)
 }
 
-function Block({ block, ctx, inStatement }) {
+// Section headings: the number in a circle of the section's color (the same
+// four colors as the side index), the title big and boxless. Subheadings
+// carry a small diamond in their section's color.
+function Block({ block, ctx, inStatement, section = 0 }) {
   switch (block.type) {
     case 'heading':
       if (block.level === 2 && block.id) {
-        return <h2 id={block.id} className={`tp-lesson-heading tp-lesson-heading-${(block.number - 1) % 4} mt-4 scroll-mt-24`}>{block.number}. <RichText as="span" text={block.title} /></h2>
+        return (
+          <h2 id={block.id} className={`tp-lesson-heading tp-lesson-heading-${(block.number - 1) % 4} mt-6 scroll-mt-24`}>
+            <span className="tp-lesson-num">{block.number}<span className="sr-only">.</span></span>
+            <RichText as="span" text={block.title} />
+          </h2>
+        )
       }
-      return <RichText as={block.level === 2 ? 'h2' : 'h3'} text={block.title} className="mt-1.5 font-display text-xl font-extrabold leading-[1.3]" />
+      return <RichText as={block.level === 2 ? 'h2' : 'h3'} text={block.title} className={`tp-subheading ${section ? `tp-lesson-heading-${(section - 1) % 4}` : ''} mt-1.5 font-display text-xl font-extrabold leading-[1.3]`} />
     case 'paragraph': {
       const idea = inStatement && /^Idea:/.test(block.text)
       return <RichText text={block.text} className={block.lead ? 'text-[19px]' : idea ? 'text-[17px] text-tp-ink-soft' : ''} />
@@ -92,13 +100,23 @@ export default function ArticleText({ article, text, practice, problems = [], co
   const parsed = useMemo(() => article || parseArticle(text), [article, text])
   const practiceNode = practice !== undefined ? practice : problems.length > 0 ? <PracticeBox problems={problems} context={context} /> : null
   const ctx = { renderCollection, resolveFigure, practice: practiceNode }
+  // The section each top-level block belongs to, for subheading colors.
+  const sectionOf = useMemo(() => {
+    const result = []
+    let current = 0
+    for (const block of parsed.blocks) {
+      if (block.type === 'heading' && block.level === 2 && block.number) current = block.number
+      result.push(current)
+    }
+    return result
+  }, [parsed])
   const autoAt = !practiceNode || parsed.hasPracticeMarker ? -1 : parsed.summaryIndex >= 0 ? parsed.summaryIndex : parsed.blocks.length
   return (
     <>
       {parsed.blocks.map((block, index) => (
         <Fragment key={index}>
           {index === autoAt && practiceNode}
-          <Block block={block} ctx={ctx} />
+          <Block block={block} ctx={ctx} section={sectionOf[index]} />
         </Fragment>
       ))}
       {autoAt === parsed.blocks.length && practiceNode}

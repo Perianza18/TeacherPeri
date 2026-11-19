@@ -15,18 +15,27 @@ const NAV_LINKS = [
   { path: '/equipo', label: 'Equipo' },
 ]
 
-// The active item gets a 3px violet underline; the rest use muted ink.
-const linkClass = ({ isActive }) =>
-  `font-semibold underline-offset-[10px] decoration-[3px] transition-colors ${isActive ? 'text-brand-900 underline decoration-accent-violet' : 'text-brand-600 hover:text-brand-900'}`
+// The active item gets a hand-drawn violet squiggle; the rest use muted ink.
+// `big` is the poster-sized version for the mobile menu panel.
+const linkClass = ({ isActive }, big = false) => big
+  ? `font-display text-[36px] font-extrabold leading-none tracking-[-0.035em] transition-colors ${isActive ? 'tp-squiggle text-tp-ink' : 'text-tp-ink hover:text-tp-violet'}`
+  : `font-semibold transition-colors ${isActive ? 'tp-squiggle text-tp-ink' : 'text-tp-ink-muted hover:text-tp-ink'}`
+
+// Secondary pages, only in the mobile menu (desktop reaches them from the Footer).
+const MORE_LINKS = [
+  { path: '/estudia-en-el-extranjero', label: 'Universidad' },
+  { path: '/sobre-mi', label: 'Sobre mí' },
+  { path: '/contacto', label: 'Contacto' },
+]
 
 // A page can pick the active item when its URL alone can't: a lesson opened
 // from a Ruta lives under /entrenamiento but belongs to Rutas.
-function NavItem({ link, activePath, className, onClick }) {
+function NavItem({ link, activePath, className, onClick, big = false }) {
   if (!activePath) {
-    return <NavLink to={link.path} end={link.path === '/'} onClick={onClick} className={(state) => `${className} ${linkClass(state)}`}>{link.label}</NavLink>
+    return <NavLink to={link.path} end={link.path === '/'} onClick={onClick} className={(state) => `${className} ${linkClass(state, big)}`}>{link.label}</NavLink>
   }
   const isActive = link.path === activePath
-  return <Link to={link.path} onClick={onClick} aria-current={isActive ? 'true' : undefined} className={`${className} ${linkClass({ isActive })}`}>{link.label}</Link>
+  return <Link to={link.path} onClick={onClick} aria-current={isActive ? 'true' : undefined} className={`${className} ${linkClass({ isActive }, big)}`}>{link.label}</Link>
 }
 
 // Calls onClose when Escape is pressed while `active` is true.
@@ -93,28 +102,28 @@ function AccountMenu({ user, token, logout }) {
         aria-expanded={open}
         aria-controls="tp-account-panel"
         aria-label={`Cuenta de ${user.username}${notifications.unread ? `, ${notifications.unread} ${notifications.unread === 1 ? 'notificación nueva' : 'notificaciones nuevas'}` : ''}`}
-        className="relative grid h-11 w-11 place-items-center rounded-full border-2 border-black bg-accent-purple-soft text-lg font-black text-brand-900"
+        className="relative grid h-11 w-11 place-items-center rounded-full border-2 border-tp-ink bg-tp-violet-soft text-lg font-black text-tp-ink"
       >
         <span aria-hidden="true">{initial}</span>
-        {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-black bg-tp-coral px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
+        {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-tp-ink bg-tp-coral px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
       </button>
       {open && (
-        <div id="tp-account-panel" className="tp-card-soft absolute right-0 top-full z-50 mt-3 w-72 max-w-[calc(100vw-32px)] bg-white p-5">
-          <p className="text-xs font-black uppercase tracking-[0.12em] text-brand-600">Sesión iniciada como</p>
-          <p className="mt-1 truncate text-base font-bold text-brand-900">{user.username}</p>
+        <div id="tp-account-panel" className="tp-card-soft absolute right-0 top-full z-50 mt-3 w-72 max-w-[calc(100vw-32px)] bg-tp-surface p-5">
+          <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Sesión iniciada como</p>
+          <p className="mt-1 truncate text-base font-bold text-tp-ink">{user.username}</p>
           <nav aria-label="Tu cuenta" className="mt-3 flex flex-col">
-            <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-brand-900 hover:text-violet-700">Mis envíos</Link>
-            <Link to={PROPOSE_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-brand-900 hover:text-violet-700">Proponer un problema</Link>
+            <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Mis envíos</Link>
+            <Link to={PROPOSE_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Proponer un problema</Link>
           </nav>
           {notifications.items.length > 0 && (
             <section aria-labelledby="tp-avisos" className="mt-3 border-t-2 border-dashed border-tp-rule pt-3">
               <div className="flex items-center justify-between gap-2">
-                <h2 id="tp-avisos" className="text-xs font-black uppercase tracking-[0.12em] text-brand-600">Notificaciones</h2>
-                {notifications.unread > 0 && <button type="button" onClick={notifications.markRead} className="min-h-11 text-xs font-semibold text-violet-700 underline">Marcar como leídas</button>}
+                <h2 id="tp-avisos" className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Notificaciones</h2>
+                {notifications.unread > 0 && <button type="button" onClick={notifications.markRead} className="min-h-11 text-xs font-semibold text-tp-violet underline">Marcar como leídas</button>}
               </div>
               <ul className="mt-1 flex max-h-56 flex-col gap-2 overflow-y-auto">
                 {notifications.items.slice(0, 5).map((item) => (
-                  <li key={item._id} className={`rounded-lg p-2 text-sm leading-5 ${item.readAt ? 'text-brand-600' : 'bg-tp-yellow-soft text-brand-900'}`}>
+                  <li key={item._id} className={`rounded-lg p-2 text-sm leading-5 ${item.readAt ? 'text-tp-ink-muted' : 'bg-tp-yellow-soft text-tp-ink'}`}>
                     <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="hover:underline">{item.message}</Link>
                     <span className="mt-0.5 block text-xs text-tp-ink-muted">{fecha(item.createdAt)}</span>
                   </li>
@@ -125,7 +134,7 @@ function AccountMenu({ user, token, logout }) {
           <button
             type="button"
             onClick={() => { setOpen(false); logout() }}
-            className="tp-button mt-4 min-h-11 w-full bg-white px-4 py-2 text-sm font-bold text-brand-900"
+            className="tp-button mt-4 min-h-11 w-full bg-tp-surface px-4 py-2 text-sm font-bold text-tp-ink"
           >
             Cerrar sesión
           </button>
@@ -158,21 +167,36 @@ export default function Navbar({ activePath } = {}) {
   }, [])
   useEscape(isOpen, closeMenu)
 
+  // While the full-screen mobile menu is open the page behind it doesn't
+  // scroll; growing the window to desktop width closes the menu.
+  useEffect(() => {
+    if (!isOpen) return undefined
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const onChange = (event) => { if (event.matches) setIsOpen(false) }
+    desktop.addEventListener('change', onChange)
+    return () => {
+      document.body.style.overflow = previous
+      desktop.removeEventListener('change', onChange)
+    }
+  }, [isOpen])
+
   // Fixed height (69px row + 3px border = 72px). EntrenamientoPage's sticky
   // tab bar sits right below it, so keep both values in sync.
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-black bg-white">
+    <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-tp-ink bg-tp-surface">
       <nav aria-label="Principal">
         <div className="tp-container flex h-[69px] items-center justify-between gap-4">
           <Link to="/" className="tp-logo inline-flex min-h-11 shrink-0 items-center text-tp-ink">
-            TeacherPeri
+            Teacher<span className="text-tp-violet">Peri</span>
           </Link>
 
           <div className="flex items-center gap-3 lg:gap-7">
             <ul className="hidden items-center gap-6 text-[15px] lg:flex">
               {NAV_LINKS.map((link) => (
                 <li key={link.path}>
-                  <NavItem link={link} activePath={activePath} className="py-2" />
+                  <NavItem link={link} activePath={activePath} className="pb-1.5 pt-2" />
                 </li>
               ))}
             </ul>
@@ -186,7 +210,7 @@ export default function Navbar({ activePath } = {}) {
               aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={isOpen}
               aria-controls="tp-mobile-menu"
-              className="grid h-11 w-11 place-items-center rounded-xl border-2 border-black bg-white text-brand-900 lg:hidden"
+              className={`grid h-11 w-11 place-items-center rounded-xl border-2 border-tp-ink text-tp-ink shadow-[2px_2px_0_var(--tp-ink)] lg:hidden ${isOpen ? 'bg-tp-yellow' : 'bg-tp-surface'}`}
             >
               <span aria-hidden="true" className="text-xl leading-none">{isOpen ? '×' : '☰'}</span>
             </button>
@@ -194,19 +218,30 @@ export default function Navbar({ activePath } = {}) {
         </div>
 
         {isOpen && (
-          <div id="tp-mobile-menu" className="border-t-2 border-black bg-white px-4 pb-3 pt-2 sm:px-6 lg:hidden">
-            <ul className="mx-auto max-w-7xl">
-              {NAV_LINKS.map((link) => (
-                <li key={link.path}>
-                  <NavItem
-                    link={link}
-                    activePath={activePath}
-                    onClick={() => setIsOpen(false)}
-                    className="flex min-h-11 items-center px-2 text-base"
-                  />
-                </li>
-              ))}
-            </ul>
+          <div id="tp-mobile-menu" className="tp-graph fixed inset-x-0 bottom-0 top-[72px] overflow-y-auto bg-tp-yellow lg:hidden">
+            <div className="tp-container flex min-h-full flex-col gap-8 pb-10 pt-8">
+              <ul className="flex flex-col gap-2">
+                {NAV_LINKS.map((link) => (
+                  <li key={link.path}>
+                    <NavItem
+                      link={link}
+                      activePath={activePath}
+                      big
+                      onClick={() => setIsOpen(false)}
+                      className="inline-flex min-h-14 items-center pb-1.5"
+                    />
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto flex flex-col gap-4 border-t-2 border-dashed border-tp-ink pt-6">
+                <ul className="flex flex-wrap gap-x-6 gap-y-1 text-[15px] font-bold">
+                  {MORE_LINKS.map((link) => (
+                    <li key={link.path}><Link to={link.path} onClick={() => setIsOpen(false)} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">{link.label}</Link></li>
+                  ))}
+                </ul>
+                <p aria-hidden="true" className="tp-hand -rotate-2 text-[26px] text-tp-violet">¡Nos vemos en la olimpiada!</p>
+              </div>
+            </div>
           </div>
         )}
       </nav>

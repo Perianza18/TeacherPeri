@@ -17,11 +17,13 @@ export default function EntrenamientoPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-brand-50 pt-20">
-        <div className="sticky top-[72px] z-30 border-b-2 border-black bg-[#FAF8F5]/95 backdrop-blur-xl">
-          <nav aria-label="Bibliotecas de entrenamiento" className="mx-auto grid max-w-7xl grid-cols-3 gap-1 px-2 sm:flex sm:gap-2 sm:px-4 py-3 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-tp-paper pt-[72px] text-tp-ink">
+        {/* Sticky right below the fixed Navbar (72px). */}
+        <div className="sticky top-[72px] z-30 border-b-3 border-tp-ink bg-tp-surface/95 backdrop-blur-xl">
+          <nav aria-label="Bibliotecas de entrenamiento" className="tp-container flex items-center gap-2 py-2.5 sm:gap-3">
+            <span className="tp-eyebrow mr-2 hidden sm:inline">Entrenamiento</span>
             {TABS.map((tab) => (
-              <NavLink key={tab.path} to={`/entrenamiento/${tab.path}`} className={({ isActive }) => `whitespace-nowrap border-2 border-transparent px-1 py-2 text-center text-xs font-black sm:px-4 sm:text-sm transition ${isActive ? 'border-black bg-accent-yellow text-brand-900 shadow-[3px_3px_0_#111]' : 'text-brand-600 hover:border-black hover:bg-white hover:text-brand-900'}`}>
+              <NavLink key={tab.path} to={`/entrenamiento/${tab.path}`} className={({ isActive }) => `flex min-h-10 flex-1 items-center justify-center whitespace-nowrap rounded-xl border-2 px-3 text-sm font-bold transition-colors sm:flex-none sm:px-5 ${isActive ? 'border-tp-ink bg-tp-yellow text-tp-ink shadow-[3px_3px_0_var(--tp-ink)]' : 'border-transparent text-tp-ink-muted hover:border-tp-ink hover:bg-tp-paper hover:text-tp-ink'}`}>
                 {tab.label}
               </NavLink>
             ))}

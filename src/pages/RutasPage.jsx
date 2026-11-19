@@ -2,9 +2,22 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import PageHero from '../components/PageHero'
+import { Mark } from '../components/decor/Decor'
+import { SkeletonGrid } from '../components/Skeleton'
+import Penguin from '../components/decor/Penguin'
+import RouteGraph from '../components/decor/RouteGraph'
 import { apiFetch } from '../lib/api'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
+
+// Card colors rotate: violet with white text, white, mint. The list is
+// alphabetical, so cards carry no number: it would suggest a study order.
+const CARD_TONES = [
+  { card: 'bg-tp-violet text-white', muted: 'text-white/80' },
+  { card: 'bg-tp-surface text-tp-ink', muted: 'text-tp-ink-muted' },
+  { card: 'bg-tp-mint text-tp-ink', muted: 'text-tp-ink-soft' },
+]
 
 export default function RutasPage() {
   const [query, setQuery] = useState('')
@@ -32,47 +45,44 @@ export default function RutasPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-brand-50">
-        <section className="relative overflow-hidden border-b-4 border-black bg-accent-sky px-4 pb-14 pt-28 sm:px-6 lg:px-8">
-          <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.09]" />
-          <div className="mx-auto max-w-7xl">
-            <div className="relative">
-            <span className="tp-kicker rotate-0">Rutas</span>
-            <h1 className="mt-5 max-w-4xl text-5xl font-black uppercase leading-[.94] tracking-[-0.06em] text-brand-900 sm:text-6xl">Guías para avanzar con dirección.</h1>
-            <p className="mt-5 max-w-2xl text-lg font-medium leading-8 text-brand-700">Explora recorridos que conectan contenido, práctica y siguientes pasos. Tú eliges el ritmo.</p>
-            <div className="tp-card mt-9 grid gap-3 bg-white p-3 md:grid-cols-[1fr_260px]">
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar Rutas" className="rounded-xl border-2 border-black bg-brand-50 px-4 py-3.5 outline-none focus:bg-white" />
-              <select value={tag} onChange={(e) => setTag(e.target.value)} className="rounded-xl border-2 border-black bg-accent-yellow px-4 py-3.5 font-semibold text-brand-900 outline-none">
-                <option value="">Todas las etiquetas</option>
-                {tags.map((entry) => <option key={entry._id} value={entry._id}>{entry.label}</option>)}
-              </select>
-            </div>
-            </div>
+      <main className="min-h-screen bg-tp-paper pt-[72px] text-tp-ink">
+        <PageHero
+          id="rutas-titulo"
+          kicker="Rutas"
+          title={<>Guías para avanzar con <Mark variant="arrow" color="var(--tp-violet)" width={6} delay={400}>dirección</Mark>.</>}
+          lead="Explora recorridos que conectan contenido, práctica y siguientes pasos. Tú eliges el ritmo."
+          artClassName="absolute right-6 top-1/2 hidden -translate-y-1/2 xl:block xl:right-10"
+          art={<div className="flex flex-col items-end gap-1"><RouteGraph className="w-[min(430px,30vw)]" /><p aria-hidden="true" className="tp-hand -rotate-2 pr-4 text-[24px]">¡pasa el mouse por los puntos!</p></div>}
+        >
+          <div className="tp-card mt-3 grid w-full max-w-[860px] gap-3 bg-tp-surface p-3 md:grid-cols-[1fr_260px] xl:max-w-[640px]">
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar Rutas" aria-label="Buscar Rutas" className="tp-input bg-tp-paper" />
+            <select value={tag} onChange={(e) => setTag(e.target.value)} aria-label="Etiqueta" className="tp-input bg-tp-yellow font-semibold">
+              <option value="">Todas las etiquetas</option>
+              {tags.map((entry) => <option key={entry._id} value={entry._id}>{entry.label}</option>)}
+            </select>
           </div>
-        </section>
+        </PageHero>
 
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          {loading && <p className="text-brand-500">Cargando Rutas…</p>}
-          {error && <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">No fue posible cargar las Rutas: {error}</p>}
-          {!loading && !error && paths.length === 0 && <p className="rounded-2xl border border-brand-200 bg-white p-6 text-brand-600">Todavía no hay Rutas publicadas.</p>}
-          <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-            {paths.map((path, index) => (
-              <Link key={path._id} to={`/rutas/${path.slug}`} className={`tp-card group relative p-6 transition hover:-translate-y-2 rotate-0 ${index % 3 === 0 ? 'bg-accent-purple text-white rotate-0' : index % 3 === 1 ? 'bg-white rotate-0' : 'bg-accent-mint rotate-0'}`}>
-                <div className="flex items-center justify-between gap-4">
-                  <span className={`text-xs font-black uppercase tracking-[0.14em] ${index % 3 === 0 ? 'text-white/75' : 'text-brand-700'}`}>Ruta</span>
-                  {path.level && <span className="border-2 border-black bg-accent-yellow px-2.5 py-1 text-xs font-bold text-brand-900">{LEVEL_LABELS[path.level]}</span>}
-                </div>
-                <div className="mt-8 flex items-start gap-4">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center border-2 border-black bg-white text-lg font-black text-brand-900">{String(index + 1).padStart(2, '0')}</span>
-                  <div>
-                    <h2 className={`text-xl font-black uppercase tracking-[-.03em] ${index % 3 === 0 ? 'text-white' : 'text-brand-900'}`}>{path.title}</h2>
-                    {path.description && <p className={`mt-3 text-sm font-medium leading-6 ${index % 3 === 0 ? 'text-white/75' : 'text-brand-700'}`}>{path.description}</p>}
+        <section aria-label="Rutas publicadas" className="tp-container py-16 lg:py-20">
+          {loading && <><p className="sr-only">Cargando Rutas…</p><SkeletonGrid count={3} strip={false} strong className="grid gap-8 md:grid-cols-2 xl:grid-cols-3" /></>}
+          {error && <p className="tp-card-quiet bg-tp-coral-soft p-4">No fue posible cargar las Rutas: {error}</p>}
+          {!loading && !error && paths.length === 0 && <div className="tp-card-soft flex items-center gap-5 bg-tp-surface p-6"><Penguin flip className="h-20 w-auto shrink-0" /><p className="text-[17px] text-tp-ink-soft">Todavía no hay Rutas publicadas.</p></div>}
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {paths.map((path, index) => {
+              const tone = CARD_TONES[index % CARD_TONES.length]
+              return (
+                <Link key={path._id} to={`/rutas/${path.slug}`} className={`tp-card tp-lift group relative flex flex-col gap-4 p-7 ${tone.card}`}>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="tp-sticker -rotate-2 bg-tp-surface">Ruta</span>
+                    {path.level && <span className="tp-pill bg-tp-yellow text-xs">{LEVEL_LABELS[path.level]}</span>}
                   </div>
-                </div>
-                {path.tags?.length > 0 && <div className="mt-6 flex flex-wrap gap-2">{path.tags.map((entry) => <span key={entry._id} className="border border-black bg-white px-2.5 py-1 text-xs font-bold text-brand-900">{entry.label}</span>)}</div>}
-                <span className={`mt-7 inline-block text-sm font-black transition group-hover:translate-x-1 ${index % 3 === 0 ? 'text-white' : 'text-brand-900'}`}>EXPLORAR →</span>
-              </Link>
-            ))}
+                  <h2 className="pt-5 font-display text-[30px] font-extrabold leading-[1.05] tracking-[-0.03em]">{path.title}</h2>
+                  {path.description && <p className={`text-[15px] leading-6 ${tone.muted}`}>{path.description}</p>}
+                  {path.tags?.length > 0 && <div className="flex flex-wrap gap-2">{path.tags.map((entry) => <span key={entry._id} className="tp-pill bg-tp-surface text-xs">{entry.label}</span>)}</div>}
+                  <span className="mt-auto pt-2 text-[15px] font-extrabold">Explorar<span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">{' →'}</span></span>
+                </Link>
+              )
+            })}
           </div>
         </section>
       </main>

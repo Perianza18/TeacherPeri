@@ -2,23 +2,33 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import HomePage from './pages/HomePage'
-import EntrenamientoPage from './pages/EntrenamientoPage'
-import Problemas from './pages/Problemas'
-import SobreMiPage from './pages/SobreMiPage'
-import RecursosPage from './pages/RecursosPage'
-import ExperienciasPage from './pages/ExperienciasPage'
-import EquipoPage from './pages/EquipoPage'
-import EstudiaExtranjeroPage from './pages/EstudiaExtranjeroPage'
-import ContactoPage from './pages/ContactoPage'
-import ColaboradoresPage from './pages/ColaboradoresPage'
-import LibraryCollection from './components/training/LibraryCollection'
-import LibraryDetailPage from './pages/LibraryDetailPage'
 import ListasPage, { RedirectToListas } from './pages/ListasPage'
-import RutasPage from './pages/RutasPage'
-import PathPage from './pages/PathPage'
-import PagePlaceholder from './components/PagePlaceholder'
-import ProponerProblemaPage from './pages/ProponerProblemaPage'
-import MisEnviosPage, { EditarEnvioPage } from './pages/MisEnviosPage'
+
+// Every page but Inicio loads on demand, so the first visit downloads only
+// what Inicio needs; each page's code arrives when someone opens it.
+const EntrenamientoPage = lazy(() => import('./pages/EntrenamientoPage'))
+const Problemas = lazy(() => import('./pages/Problemas'))
+const SobreMiPage = lazy(() => import('./pages/SobreMiPage'))
+const RecursosPage = lazy(() => import('./pages/RecursosPage'))
+const ExperienciasPage = lazy(() => import('./pages/ExperienciasPage'))
+const EquipoPage = lazy(() => import('./pages/EquipoPage'))
+const EstudiaExtranjeroPage = lazy(() => import('./pages/EstudiaExtranjeroPage'))
+const ContactoPage = lazy(() => import('./pages/ContactoPage'))
+const ColaboradoresPage = lazy(() => import('./pages/ColaboradoresPage'))
+const LibraryCollection = lazy(() => import('./components/training/LibraryCollection'))
+const LibraryDetailPage = lazy(() => import('./pages/LibraryDetailPage'))
+const RutasPage = lazy(() => import('./pages/RutasPage'))
+const PathPage = lazy(() => import('./pages/PathPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const ProponerProblemaPage = lazy(() => import('./pages/ProponerProblemaPage'))
+const MisEnviosPage = lazy(() => import('./pages/MisEnviosPage'))
+const EditarEnvioPage = lazy(() => import('./pages/MisEnviosPage').then((module) => ({ default: module.EditarEnvioPage })))
+
+// Shown for the instant a page's code is loading: the paper background, so
+// the screen doesn't flash white.
+function PageLoading() {
+  return <div aria-busy="true" className="min-h-screen bg-tp-paper" />
+}
 
 // Dev-only test lesson with every block of the lesson format; the production
 // build drops it because import.meta.env.DEV is false there.
@@ -28,9 +38,10 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <Suspense fallback={<PageLoading />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          {TheoryTestLessonPage && <Route path="/dev/teoria-prueba" element={<Suspense fallback={<p>Cargando…</p>}><TheoryTestLessonPage /></Suspense>} />}
+          {TheoryTestLessonPage && <Route path="/dev/teoria-prueba" element={<TheoryTestLessonPage />} />}
           <Route path="/rutas" element={<RutasPage />} />
           <Route path="/rutas/*" element={<PathPage />} />
           <Route path="/entrenamiento" element={<EntrenamientoPage />}>
@@ -58,8 +69,9 @@ function App() {
           <Route path="/contacto" element={<ContactoPage />} />
           <Route path="/sobre-mi" element={<SobreMiPage />} />
           <Route path="/colaboradores" element={<ColaboradoresPage />} />
-          <Route path="*" element={<PagePlaceholder title="Página no encontrada" kicker="Error 404" description="Regresa a Inicio o explora las Rutas y bibliotecas de entrenamiento." />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        </Suspense>
       </AuthProvider>
     </BrowserRouter>
   )

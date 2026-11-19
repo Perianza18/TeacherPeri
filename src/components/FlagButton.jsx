@@ -41,8 +41,8 @@ export default function FlagButton({ targetType, targetId }) {
       )}
       {state.done && !open && <p role="status" className="text-sm text-tp-ink-muted">Gracias. Revisaremos tu reporte.</p>}
       {open && (
-        <form onSubmit={submit} className="tp-card-quiet mt-2 flex flex-col gap-2 bg-white p-4">
-          <label htmlFor={id} className="text-sm font-bold text-brand-900">Describe el error</label>
+        <form onSubmit={submit} className="tp-card-quiet mt-2 flex flex-col gap-2 bg-tp-surface p-4">
+          <label htmlFor={id} className="text-sm font-bold text-tp-ink">Describe el error</label>
           <textarea
             id={id}
             value={message}

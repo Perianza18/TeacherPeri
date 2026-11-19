@@ -62,7 +62,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
     }
   }
 
-  if (data.loaded && data.error) return <p role="alert" className="tp-card-soft bg-white p-5 text-red-700">No fue posible cargar el formulario: {data.error}</p>
+  if (data.loaded && data.error) return <p role="alert" className="tp-card-soft bg-tp-surface p-5 text-red-700">No fue posible cargar el formulario: {data.error}</p>
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
@@ -74,7 +74,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
 
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-end justify-between gap-2">
-          <label htmlFor={`${id}-enunciado`} className="text-sm font-bold text-brand-900">Enunciado</label>
+          <label htmlFor={`${id}-enunciado`} className="text-sm font-bold text-tp-ink">Enunciado</label>
           <button type="button" onClick={insertMath} className="min-h-11 rounded-[10px] border-2 border-tp-ink bg-tp-violet-soft px-3 text-sm font-bold">$ LaTeX</button>
         </div>
         <textarea
@@ -91,9 +91,9 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
         />
         <p id={`${id}-enunciado-ayuda`} className="text-sm text-tp-ink-muted">Solo el enunciado: sin pistas ni soluciones. {form.enunciado.length}/{STATEMENT_MAX}</p>
         {form.enunciado.trim() && (
-          <div className="rounded-[10px] border-2 border-dashed border-tp-rule bg-white px-4 py-3">
+          <div className="rounded-[10px] border-2 border-dashed border-tp-rule bg-tp-surface px-4 py-3">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-tp-ink-muted">Vista previa</p>
-            <MathText text={form.enunciado} className="whitespace-pre-wrap break-words leading-7 text-brand-900" />
+            <MathText text={form.enunciado} className="whitespace-pre-wrap break-words leading-7 text-tp-ink" />
           </div>
         )}
       </div>
@@ -101,8 +101,8 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
       <VocabularyPicker topics={data.topics} tags={data.tags} value={{ topics: form.topics, tags: form.tags }} onChange={(next) => setForm((current) => ({ ...current, ...next }))} />
 
       <div className="flex flex-col gap-3">
-        <label className="inline-flex min-h-11 items-center gap-3 text-sm font-bold text-brand-900">
-          <input type="checkbox" checked={form.isExam} onChange={(event) => set('isExam', event.target.checked)} className="h-5 w-5 accent-violet-600" />
+        <label className="inline-flex min-h-11 items-center gap-3 text-sm font-bold text-tp-ink">
+          <input type="checkbox" checked={form.isExam} onChange={(event) => set('isExam', event.target.checked)} className="h-5 w-5 accent-tp-violet" />
           Es un problema de examen
         </label>
         {form.isExam && (
@@ -114,7 +114,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
               onChange={(folderId) => set('examFolder', folderId)}
               onFolderCreated={(folder) => setData((current) => ({ ...current, folders: [...current.folders, folder] }))}
             />
-            <label className="max-w-xs text-sm font-semibold text-brand-800">
+            <label className="max-w-xs text-sm font-semibold text-tp-ink">
               Número de problema (opcional)
               <input type="number" min={1} max={999} inputMode="numeric" value={form.problemNumber} onChange={(event) => set('problemNumber', event.target.value)} className="tp-input mt-1 font-normal" />
             </label>

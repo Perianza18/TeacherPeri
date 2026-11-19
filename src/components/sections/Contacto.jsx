@@ -1,5 +1,4 @@
-// Sección Contacto (id="contacto"): correo y redes sociales sobre un fondo
-// de tinta con retícula de puntos.
+// Sección Contacto (id="contacto"): correo y redes, como tarjetas cómic.
 //
 // TODO: href de mailto y de cada red son placeholders — no son datos
 // inventados sobre vos, son literalmente marcadores de posición que hay
@@ -11,59 +10,53 @@ const REDES = [
     label: 'Instagram',
     href: 'https://instagram.com/tu-usuario',
     icon: '/icons8-instagram-logo-48.png',
+    color: 'bg-tp-coral-soft',
   },
   {
     label: 'LinkedIn',
     href: 'https://linkedin.com/in/tu-usuario',
     icon: '/icons8-linkedin-50.png',
+    color: 'bg-tp-sky-soft',
   },
 ]
 
+const TILE = 'tp-card-soft tp-lift flex items-center gap-4 bg-tp-surface px-5 py-4'
+
 export default function Contacto() {
   return (
-    <section
-      id="contacto"
-      className="relative mx-auto w-full overflow-hidden border-t-4 border-black bg-[#111111] px-6 py-12 sm:px-10"
-    >
-      <div className="tp-dot-grid pointer-events-none absolute inset-0 opacity-[.08]" />
-
-      {/* CONTÁCTANOS */}
-      <div className="relative text-center">
-        <h2 className="text-4xl font-bold uppercase text-white drop-shadow-[0_0_25px_rgba(229,117,5,0.45)] sm:text-5xl">
-          Contáctame
-        </h2>
-
-        <a
-          href={`mailto:${CORREO_CONTACTO}`}
-          className="mt-6 inline-block text-2xl font-medium text-white drop-shadow-[0_0_18px_rgba(255,180,1,0.4)] hover:underline"
-        >
-          Correo
-        </a>
-      </div>
-
-      {/* FOOTER — REDES SOCIALES. Antes era un <p> envolviendo un <div>,
-          HTML inválido (un div no puede vivir dentro de un p) que el
-          navegador "arregla" cerrando el <p> antes de tiempo y rompe el
-          layout de todo lo que sigue. */}
-      <div className="relative text-center text-lg text-white">
-        <div className="mt-6 flex justify-center gap-8">
-          {REDES.map((red) => (
-            <a
-              key={red.label}
-              href={red.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={red.label}
-              className="rounded-full transition-transform hover:scale-110 hover:drop-shadow-[0_0_16px_rgba(183,11,13,0.6)]"
-            >
-              <img
-                src={red.icon}
-                alt={red.label}
-                className="h-12 w-12 object-contain drop-shadow-[0_0_10px_rgba(255,180,1,0.35)]"
-              />
-            </a>
-          ))}
+    <section id="contacto" aria-labelledby="contacto-directo" className="relative overflow-hidden border-t-3 border-tp-ink bg-tp-yellow">
+      <div aria-hidden="true" className="tp-halftone absolute -right-20 -top-20 size-[420px] opacity-[.14] [mask-image:radial-gradient(circle,black_20%,transparent_68%)]" />
+      <div className="tp-container relative flex flex-col items-start gap-8 py-16 lg:py-20">
+        <div className="flex flex-col items-start gap-4">
+          <span className="tp-sticker -rotate-2 bg-tp-surface">Directo</span>
+          <h2 id="contacto-directo" className="tp-section-title">¿Prefieres escribir directo?</h2>
         </div>
+        <ul className="grid w-full gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <li>
+            <a href={`mailto:${CORREO_CONTACTO}`} className={TILE}>
+              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-xl border-2 border-tp-ink bg-tp-mint-soft">
+                <img src="/icons8-email-48.png" alt="" className="size-7 object-contain brightness-0" />
+              </span>
+              <span className="flex flex-col">
+                <span className="font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em]">Correo</span>
+                <span className="text-sm text-tp-ink-muted">Te respondo por mail</span>
+              </span>
+            </a>
+          </li>
+          {REDES.map((red) => (
+            <li key={red.label}>
+              <a href={red.href} target="_blank" rel="noreferrer" className={TILE}>
+                <span aria-hidden="true" className={`grid size-12 shrink-0 place-items-center rounded-xl border-2 border-tp-ink ${red.color}`}>
+                  <img src={red.icon} alt="" className="size-7 object-contain brightness-0" />
+                </span>
+                <span className="flex flex-col">
+                  <span className="font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em]">{red.label}</span>
+                  <span className="text-sm text-tp-ink-muted">Abre en otra pestaña ↗</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

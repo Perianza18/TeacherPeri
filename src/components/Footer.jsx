@@ -1,4 +1,6 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
+import Penguin from './decor/Penguin'
 
 const LINKS = [
   ['Rutas', '/rutas'],
@@ -11,26 +13,51 @@ const LINKS = [
   ['Contacto', '/contacto'],
 ]
 
+// Ink footer that ends in a poster-sized wordmark, cropped by the page edge.
+// With a mouse over it, the grid lights up around the pointer. The pointer
+// position lives in CSS variables on the footer, so moving the mouse never
+// re-renders React.
 export default function Footer() {
+  const footer = useRef(null)
+
+  function trackPointer(event) {
+    if (event.pointerType !== 'mouse' || !footer.current) return
+    const box = footer.current.getBoundingClientRect()
+    const x = event.clientX - box.left
+    const y = event.clientY - box.top
+    const style = footer.current.style
+    style.setProperty('--gx', `${x}px`)
+    style.setProperty('--gy', `${y}px`)
+  }
+
+  const spotlight = 'radial-gradient(240px circle at var(--gx, -999px) var(--gy, -999px), #000 0%, rgb(0 0 0 / .45) 45%, transparent 100%)'
+
   return (
-    <footer className="border-t-4 border-black bg-[#111111] text-white">
-      <div className="tp-container flex flex-col gap-8 py-12 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <Link to="/" className="tp-logo inline-flex min-h-11 items-center">
-            TeacherPeri
-          </Link>
-          <p className="mt-3 max-w-md text-sm leading-6 text-white/55">
+    <footer ref={footer} onPointerMove={trackPointer} className="group/grid relative overflow-hidden border-t-3 border-tp-ink bg-tp-ink text-white">
+      <div aria-hidden="true" className="tp-graph absolute inset-0 [--grid-line:rgb(255_255_255/.045)]" />
+      <div aria-hidden="true" className="tp-graph pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 [--grid-line:rgb(255_255_255/.32)] group-hover/grid:opacity-100" style={{ maskImage: spotlight, WebkitMaskImage: spotlight }} />
+      <div className="tp-container relative grid gap-10 pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+        <div className="flex flex-col items-start gap-4">
+          <p aria-hidden="true" className="tp-hand -rotate-2 text-[32px] text-tp-yellow">¡Nos vemos en la olimpiada!</p>
+          <p className="max-w-md text-[15px] leading-7 text-white/65">
             Matemáticas olímpicas y orientación universitaria, organizadas para que puedas encontrar un camino y seguir explorando por tu cuenta.
           </p>
         </div>
-        <nav className="flex max-w-xl flex-wrap gap-x-5 gap-y-3 text-sm text-white/65">
+        <nav aria-label="Pie de página" className="grid grid-cols-2 gap-x-6 gap-y-1 text-[15px] font-semibold sm:grid-cols-4 lg:justify-self-end">
           {LINKS.map(([label, to]) => (
-            <Link key={to} to={to} className="transition hover:text-white">{label}</Link>
+            <Link key={to} to={to} className="flex min-h-11 items-center text-white/75 transition-colors hover:text-tp-yellow">{label}</Link>
           ))}
         </nav>
       </div>
-      <div className="border-t border-white/10 px-4 py-5 text-center text-xs text-white/35">
-        TeacherPeri
+      {/* The penguin stands on the «i» of Peri as its dot (a dotless ı below
+          it), so the visible letters are aria-hidden behind a plain label. */}
+      <Link to="/" aria-label="TeacherPeri" className="relative mt-10 block select-none whitespace-nowrap text-center font-display text-[clamp(64px,19vw,290px)] font-extrabold leading-[.8] tracking-[-0.055em] text-tp-paper transition-colors hover:text-white">
+        <span aria-hidden="true">
+          Teacher<span className="text-[#9d7cff]">Per<span className="relative">ı<Penguin color="#9d7cff" node="var(--tp-ink)" className="pointer-events-none absolute bottom-[0.79em] left-1/2 h-[max(40px,0.36em)] w-auto -translate-x-1/2" /></span></span>
+        </span>
+      </Link>
+      <div className="relative border-t border-white/10 py-5 text-center text-xs text-white/40">
+        Hecho con cariño para quienes aman resolver problemas.
       </div>
     </footer>
   )

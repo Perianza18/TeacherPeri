@@ -3,6 +3,8 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Handwritten margin notes («¡empieza aquí!»). Decoration only, never body text. */
+  --font-hand: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
   /* Reading text in theory articles and problem statements (DESIGN §3).
      KaTeX_Main comes with the katex CSS that MathText imports: no new font. */
   --font-reading: "KaTeX_Main", "Times New Roman", serif;
@@ -73,6 +75,12 @@
   --tp-text-logo: 22px;
   --tp-shadow-hero: 6px 6px 0 var(--tp-ink);
   --tp-shadow-card: 4px 4px 0 var(--tp-ink);
+
+  /* Display scale (2026-11-15 refresh). Fluid, so a phone gets a big title
+     without overflowing and a desktop gets a poster-sized one. */
+  --tp-text-display: clamp(46px, 7vw, 96px);
+  --tp-text-page: clamp(40px, 5.6vw, 76px);
+  --tp-text-section: clamp(34px, 4.4vw, 58px);
 }
 
 /* Tailwind color classes for the tokens above (bg-tp-violet, text-tp-ink,
@@ -145,6 +153,41 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Comic cursors (2026-11-15): a white arrow and a yellow pointing hand, both
+   with an ink outline and a violet hard shadow. Plain CSS cursors, so the
+   system still draws them with no lag; only for a mouse (pointer: fine).
+   Text fields keep the I-beam. */
+:root {
+  --tp-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M4.5 3.5 L4.5 21 L9 17 L12.2 24 L15.6 22.5 L12.5 15.8 L18.5 15.6 Z' transform='translate(2.2 2.2)' fill='%236d3ee8' stroke='%23111111' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M4.5 3.5 L4.5 21 L9 17 L12.2 24 L15.6 22.5 L12.5 15.8 L18.5 15.6 Z' fill='%23ffffff' stroke='%23111111' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 4 3, auto;
+  --tp-cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M11 17 V4.5 a2 2 0 0 1 4 0 V12 a2 2 0 0 1 4 0 v1 a2 2 0 0 1 4 0 v1 a2 2 0 0 1 4 0 V21 c0 4 -3 7 -7 7 h-5 c-2.5 0 -4 -1 -5.5 -3 L4.3 19 a1.9 1.9 0 0 1 3 -2.3 Z' transform='translate(2 2)' fill='%236d3ee8' stroke='%23111111' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M11 17 V4.5 a2 2 0 0 1 4 0 V12 a2 2 0 0 1 4 0 v1 a2 2 0 0 1 4 0 v1 a2 2 0 0 1 4 0 V21 c0 4 -3 7 -7 7 h-5 c-2.5 0 -4 -1 -5.5 -3 L4.3 19 a1.9 1.9 0 0 1 3 -2.3 Z' fill='%23ffd65a' stroke='%23111111' stroke-width='1.9' stroke-linejoin='round'/%3E%3Cpath d='M15 12 v4.5 M19 13 v4 M23 14 v3.5' fill='none' stroke='%23111111' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 13 2, pointer;
+}
+
+@media (pointer: fine) {
+  html { cursor: var(--tp-cursor); }
+
+  a[href],
+  button:not(:disabled),
+  [role="button"],
+  summary,
+  label:has(> input[type="checkbox"]),
+  label:has(> input[type="radio"]),
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  .cursor-pointer {
+    cursor: var(--tp-cursor-pointer);
+  }
+
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"]),
+  textarea,
+  [contenteditable="true"],
+  .tp-reading-text :is(p, li, td, th, blockquote, figcaption) {
+    cursor: text;
+  }
+
+  button:disabled { cursor: not-allowed; }
+}
+
 :focus-visible {
   outline: 2px solid var(--tp-violet);
   outline-offset: 3px;
@@ -215,12 +258,13 @@ textarea {
   border: 2px solid var(--tp-ink);
   border-radius: 999px;
   background: var(--tp-yellow);
-  padding: 3px 11px;
+  padding: 4px 12px;
   color: var(--tp-ink);
   font-size: var(--tp-text-kicker);
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
+  box-shadow: 2px 2px 0 var(--tp-ink);
 }
 
 /* Ink kicker with white text, e.g. «PROBLEMA DEL DÍA» (DESIGN §5). */
@@ -337,6 +381,292 @@ textarea {
   }
 }
 
+/* ------------------------------------------------------------------------
+   «Cómic refinado» refresh (2026-11-15): poster-sized titles, hand-drawn
+   marks, stickers and printed textures. Components layer, so a Tailwind
+   class on the element can still adjust them.
+   ------------------------------------------------------------------------ */
+@layer components {
+  /* Poster title for page heroes. Bricolage's optical size follows the
+     font size, so big titles get its tighter, more characterful cut. */
+  .tp-display {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-display);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: .94;
+    text-wrap: balance;
+  }
+
+  /* Title of an inner page (Rutas, Problemas, a lesson...). */
+  .tp-page-title {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-page);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: .98;
+    text-wrap: balance;
+  }
+
+  /* Section title inside a page: big, but a step below the page title. */
+  .tp-section-title {
+    font-family: var(--font-display);
+    font-size: var(--tp-text-section);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  /* Handwritten note. Decoration: keep it short and aria-hidden when it
+     only repeats nearby text. */
+  .tp-hand {
+    font-family: var(--font-hand);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* Hand-drawn mark around a word (see components/decor/Mark.jsx). The SVG
+     sits behind the word and draws itself once. */
+  .tp-mark {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    white-space: nowrap;
+  }
+
+  .tp-mark-svg {
+    position: absolute;
+    z-index: -1;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .tp-mark-underline .tp-mark-svg { left: -3%; bottom: -.16em; width: 106%; height: .34em; }
+  .tp-mark-circle .tp-mark-svg { left: -9%; top: -16%; width: 118%; height: 134%; }
+  .tp-mark-scribble .tp-mark-svg { left: -2%; bottom: -.2em; width: 104%; height: .42em; }
+  .tp-mark-arrow .tp-mark-svg { left: -2%; bottom: -.17em; width: 110%; height: .36em; }
+  .tp-mark-lines { margin-right: .42em; }
+  .tp-mark-lines .tp-mark-svg { left: auto; right: -.5em; top: -.34em; width: .52em; height: .52em; }
+
+  .tp-mark-svg path {
+    fill: none;
+    stroke: var(--mark, var(--tp-violet));
+    stroke-width: var(--mark-width, 7px);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .tp-mark-svg {
+    clip-path: inset(-40% 100% -40% -12%);
+    animation: tp-reveal 900ms cubic-bezier(.2, .7, .25, 1) var(--mark-delay, 250ms) forwards;
+  }
+
+  /* Waits until the word scrolls into view (decor/Mark sets data-wait). */
+  .tp-mark[data-wait] .tp-mark-svg,
+  .tp-highlight[data-wait] {
+    animation-play-state: paused;
+  }
+
+  /* Marker highlight behind text; wraps across lines. */
+  .tp-highlight {
+    background-image: linear-gradient(100deg, transparent .1em, var(--hl, var(--tp-yellow)) .1em calc(100% - .1em), transparent calc(100% - .1em));
+    background-position: 0 88%;
+    background-repeat: no-repeat;
+    background-size: 0% .5em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding-inline: .1em;
+    margin-inline: -.1em;
+    animation: tp-highlight 800ms cubic-bezier(.2, .7, .25, 1) var(--mark-delay, 150ms) forwards;
+  }
+
+  /* A number inside a title, drawn as the same badge as the numbered steps
+     («Cómo empezar en ③ pasos»). */
+  .tp-inline-num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.12em;
+    height: 1.12em;
+    margin-inline: .06em;
+    border: .065em solid var(--tp-ink);
+    border-radius: 999px;
+    background: var(--tp-yellow);
+    box-shadow: .07em .07em 0 var(--tp-ink);
+    font-size: .92em;
+    line-height: 1;
+    rotate: -6deg;
+    vertical-align: .04em;
+  }
+
+  /* Sticker: a tilted label with a hard shadow. Color from a bg-* class. */
+  .tp-sticker {
+    display: inline-flex;
+    align-items: center;
+    gap: .45em;
+    border: 2px solid var(--tp-ink);
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: var(--tp-ink);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0 var(--tp-ink);
+  }
+
+  /* Comic speech bubble. Its tail is an SVG (see decor/Bubble). */
+  .tp-bubble {
+    position: relative;
+    border: 3px solid var(--tp-ink);
+    border-radius: 26px;
+    box-shadow: var(--tp-shadow-hero);
+  }
+
+  /* Card that lifts toward the reader on hover, its shadow growing. */
+  .tp-lift {
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .tp-lift:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--tp-ink);
+  }
+
+  .tp-lift:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--tp-ink);
+  }
+
+  /* Numbered circle badge (steps, Ruta cards), the same piece as the ciclo
+     map on Inicio. Fill and text color come from bg-* / text-* classes. */
+  .tp-num-badge {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border: 3px solid var(--tp-ink);
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 var(--tp-ink);
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  /* Math-notebook grid paper. */
+  .tp-graph {
+    background-image:
+      linear-gradient(var(--grid-line, rgb(17 17 17 / .075)) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line, rgb(17 17 17 / .075)) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+  }
+
+  /* Printed comic dots; fade it with a mask where it is used. */
+  .tp-halftone {
+    background-image: radial-gradient(var(--dot, var(--tp-ink)) 1.4px, transparent 1.7px);
+    background-size: 12px 12px;
+  }
+
+  /* Wavy hand-drawn underline for links and the active nav item. */
+  .tp-squiggle {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='6' viewBox='0 0 16 6'%3E%3Cpath d='M0 3 Q4 0 8 3 T16 3' fill='none' stroke='%236d3ee8' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-position: 0 100%;
+    background-repeat: repeat-x;
+    background-size: 16px 6px;
+  }
+
+  /* Breathing room so a circled word doesn't touch its neighbours. */
+  .tp-mark-circle { margin-inline: .14em; }
+
+  /* Endless ticker band (pauses for reduced motion via the global rule). */
+  .tp-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: tp-marquee 38s linear infinite;
+  }
+
+  .tp-marquee:hover .tp-marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* «¡Listo!» celebration (decor/Celebration): the burst springs in, holds,
+   then fades; sparks fly out. Reduced motion ends both instantly (global
+   rule), leaving only the screen-reader status. */
+.tp-pop {
+  opacity: 0;
+  animation: tp-pop 1800ms cubic-bezier(.2, .8, .3, 1) forwards;
+}
+
+.tp-spark {
+  opacity: 0;
+  animation: tp-spark 900ms cubic-bezier(.15, .7, .3, 1) forwards;
+}
+
+@keyframes tp-pop {
+  0% { opacity: 0; transform: scale(.2) rotate(-25deg); }
+  16% { opacity: 1; transform: scale(1.14) rotate(8deg); }
+  28% { transform: scale(1) rotate(-4deg); }
+  78% { opacity: 1; transform: scale(1) rotate(-4deg); }
+  100% { opacity: 0; transform: translateY(-14px) scale(.96) rotate(-4deg); }
+}
+
+@keyframes tp-spark {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(45deg) scale(.3); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(200deg) scale(1); }
+}
+
+/* Lit path of the Rutas graph (decor/RouteGraph): draws itself. */
+.tp-route-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: tp-route 900ms cubic-bezier(.3, .7, .3, 1) forwards;
+}
+
+@keyframes tp-route {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Loading bar inside a skeleton card (components/Skeleton.jsx). */
+.tp-skeleton {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ece6dc 25%, #f7f3ec 50%, #ece6dc 75%);
+  background-size: 200% 100%;
+  animation: tp-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes tp-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@keyframes tp-reveal {
+  to { clip-path: inset(-40% -12% -40% -12%); }
+}
+
+@keyframes tp-highlight {
+  to { background-size: 100% .5em; }
+}
+
+@keyframes tp-marquee {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes tp-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+
+.tp-float { animation: tp-float 6s ease-in-out infinite; }
+
 .tp-dot-grid {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Crect width='2' height='2' fill='%23111111'/%3E%3C/svg%3E");
   background-size: 14px 14px;
@@ -357,16 +687,70 @@ textarea {
 .tp-reading article h2 { border-color: #111; }
 .tp-reading article h3 { letter-spacing: .015em; }
 .tp-reading .katex-display { overflow-x: auto; overflow-y: hidden; padding: .5rem 0; }
-.tp-card, .tp-card-soft, .tp-kicker { rotate: 0deg; }
+/* Content cards stay straight; stickers and decoration may tilt. */
+.tp-card, .tp-card-soft { rotate: 0deg; }
 
 /* KaTeX draws formulas at 1.21em to match sans text. In reading text the
    words are already KaTeX_Main, so formulas stay at the same size. Unlayered
    on purpose: it must beat katex.min.css, which is unlayered too. */
 .tp-reading-text .katex { font-size: 1em; }
 
-/* Lesson section heading (h2): one of four tints, no symbol before it. */
-.tp-lesson-heading { padding: 10px 16px; border: 2px solid var(--tp-ink); border-radius: 10px; box-shadow: 3px 3px 0 var(--tp-ink); font-family: var(--font-display); font-size: var(--tp-text-h2); font-weight: 800; line-height: 1.2; }
-.tp-lesson-heading-0 { background: var(--tp-tint-violet); }
-.tp-lesson-heading-1 { background: var(--tp-tint-sky); }
-.tp-lesson-heading-2 { background: var(--tp-tint-coral); }
-.tp-lesson-heading-3 { background: var(--tp-tint-mint); }
+/* Lesson section heading (h2), 2026-11-16: no box. The number sits in a
+   circle of the section's color, as in the lesson's side index, and the
+   title is big; the boxes stay for definitions, theorems and practice.
+   Each section's color also marks its subheadings (.tp-subheading). */
+.tp-lesson-heading-0 { --section: var(--tp-violet); --section-ink: #fff; }
+.tp-lesson-heading-1 { --section: var(--tp-sky); }
+.tp-lesson-heading-2 { --section: var(--tp-coral); }
+.tp-lesson-heading-3 { --section: var(--tp-mint); }
+
+h2.tp-lesson-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.6vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.tp-lesson-num {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 2.5px solid var(--tp-ink);
+  border-radius: 999px;
+  background: var(--section, var(--tp-yellow));
+  box-shadow: 3px 3px 0 var(--tp-ink);
+  color: var(--section-ink, var(--tp-ink));
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.tp-subheading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tp-subheading::before {
+  content: "";
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--tp-ink);
+  border-radius: 3px;
+  background: var(--section, var(--tp-yellow));
+  rotate: 45deg;
+}
+
+/* Display formulas get room of their own, so they stand out on a re-read. */
+.tp-reading-text .katex-display {
+  margin: 1.1em 0;
+  padding: .35em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

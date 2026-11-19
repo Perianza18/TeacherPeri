@@ -9,8 +9,8 @@ import MathText from '../components/math/MathText'
 import LibraryCollection from '../components/training/LibraryCollection'
 import CommentSection from '../components/comments/CommentSection'
 import { PROPOSE_PATH } from '../lib/submissions'
-const TP_ORANGE = '#5B5FE9'
-const TP_ACCENT = TP_ORANGE
+// Header color per area, the same as the library card strips.
+const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-coral', 'Teoría de Números': 'bg-tp-mint' }
 const formatearTitulo = (p) => p.titulo || p.codigo
 
 function AuthInlineForm({ onAuthSuccess }) {
@@ -41,8 +41,8 @@ function AuthInlineForm({ onAuthSuccess }) {
   const inputClass = 'tp-input'
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-xl border border-brand-200 bg-white p-4 shadow-sm">
-      <p className="text-sm text-brand-700">
+    <form onSubmit={handleSubmit} className="tp-card-quiet flex flex-col gap-3 bg-tp-yellow-soft p-5">
+      <p className="text-[15px] font-semibold">
         {modo === 'login'
           ? 'Inicia sesión para comentar.'
           : 'Crea una cuenta para comentar.'}
@@ -76,21 +76,20 @@ function AuthInlineForm({ onAuthSuccess }) {
         className={inputClass}
       />
 
-      {error && <p className="text-sm text-rose-600">{error}</p>}
+      {error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft px-3 py-2 text-sm font-semibold">{error}</p>}
 
       <div className="flex items-center justify-between gap-3">
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-lg px-4 py-2 text-sm font-medium text-white shadow-md transition-transform active:scale-95 disabled:opacity-50"
-          style={{ backgroundColor: TP_ACCENT }}
+          className="tp-button bg-tp-violet px-4 text-sm font-bold text-white disabled:opacity-50"
         >
           {enviando ? 'Un momento...' : modo === 'login' ? 'Iniciar sesión' : 'Registrarme'}
         </button>
         <button
           type="button"
           onClick={() => setModo(modo === 'login' ? 'signup' : 'login')}
-          className="text-sm text-brand-600 underline hover:text-[#5B5FE9]"
+          className="text-sm font-bold text-tp-violet underline decoration-wavy decoration-2 underline-offset-4"
         >
           {modo === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta'}
         </button>
@@ -107,7 +106,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-brand-900/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-tp-ink/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -119,37 +118,36 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
         role="dialog"
         aria-modal="true"
         aria-labelledby="titulo-modal-problema"
-        className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-[#FFFBF5] shadow-2xl"
+        className="tp-card flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden bg-tp-paper"
         onClick={(event) => event.stopPropagation()}
       >
-        {/* Franja de color: mismo gradiente de marca que el resto de la
-            página, para que el modal se sienta parte del mismo sistema. */}
-        <div className="h-1.5 w-full shrink-0" style={{ backgroundColor: TP_ACCENT }} />
-
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-6">
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <h3 id="titulo-modal-problema" className="text-xl font-semibold text-brand-900">
+        {/* Header strip in the problem's area color, like the library cards. */}
+        <div className={`flex shrink-0 items-start justify-between gap-4 border-b-3 border-tp-ink px-6 py-4 ${AREA_STRIPS[problema.tema] || 'bg-tp-yellow'}`}>
+          <div className="flex min-w-0 flex-col items-start gap-2">
+            <p className="flex flex-wrap items-center gap-2 text-xs font-extrabold uppercase tracking-[0.12em]">
+              {problema.codigo}
+              {problema.tema && <span className="tp-pill bg-tp-surface px-2 py-0 text-[11px] normal-case tracking-normal">{problema.tema}</span>}
+            </p>
+            <h3 id="titulo-modal-problema" className="font-display text-[28px] font-extrabold leading-tight tracking-[-0.03em]">
               {formatearTitulo(problema)}
             </h3>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-brand-400 transition-transform hover:scale-110 hover:text-brand-900"
-              aria-label="Cerrar"
-            >
-              ✕
-            </button>
           </div>
-          {/* codigo/tipo/año ya no se repiten aquí: formatearTitulo() de
-              arriba ya los dice todos — lo único que faltaba es el tema. */}
-          <p className="mb-4">
-            <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs text-brand-500">{problema.tema}</span>
-          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid size-10 shrink-0 place-items-center rounded-xl border-2 border-tp-ink bg-tp-surface text-xl font-bold leading-none shadow-[2px_2px_0_var(--tp-ink)] transition-transform hover:-translate-y-0.5"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-6">
           {/* div, no <p>: una fórmula en "display mode" se renderiza como un
               <div>, y un <div> no puede vivir legalmente dentro de un <p> en
               HTML (el mismo tipo de error que se ve en Contacto.jsx). */}
-          <div className="mb-6 whitespace-pre-line text-brand-700">
-            <MathText text={problema.enunciado} />
+          <div className="tp-card-quiet mb-6 bg-tp-surface p-5">
+            <MathText text={problema.enunciado} className="tp-reading-text whitespace-pre-line" />
           </div>
 
           <CommentSection
