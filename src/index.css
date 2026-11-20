@@ -46,6 +46,8 @@
   --tp-rule: #c4bcb2;
   --tp-violet: #6d3ee8;
   --tp-violet-soft: #eee7ff;
+  /* Royal blue of the logo («Peri» and the penguin seal); 5.9:1 on white. */
+  --tp-blue: #2556e8;
   --tp-sky: #86d7ff;
   --tp-sky-soft: #e5f1ff;
   --tp-yellow: #ffd65a;
@@ -94,6 +96,7 @@
   --color-tp-rule: var(--tp-rule);
   --color-tp-violet: var(--tp-violet);
   --color-tp-violet-soft: var(--tp-violet-soft);
+  --color-tp-blue: var(--tp-blue);
   --color-tp-sky: var(--tp-sky);
   --color-tp-sky-soft: var(--tp-sky-soft);
   --color-tp-yellow: var(--tp-yellow);

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <clipPath id="t"><rect width="64" height="64" rx="14"/></clipPath>
+  <rect width="64" height="64" rx="14" fill="#2556e8"/>
+  <g clip-path="url(#t)"><g transform="translate(55.92 4.40) scale(-0.5200 0.5200)" stroke-linejoin="round" stroke-linecap="round">
+    <polygon points="20,30 24,20 32,10 46,5 60,8 70,18 73,33 77,53 84,77 88,104 87,126 93,142 78,148 60,146 36,148 26,136 18,112 16,86 19,62 23,46 20,39" fill="#ffffff" stroke="#ffffff" stroke-width="12"/>
+    <polygon points="4,36 20,30 20,39" fill="#ffffff" stroke="#ffffff" stroke-width="12"/>
+    <polygon points="4,36 20,30 20,39" fill="#ffd65a" stroke="#111111" stroke-width="2.5"/>
+    <polygon points="20,30 24,20 32,10 46,5 60,8 70,18 73,33 77,53 84,77 88,104 87,126 93,142 78,148 60,146 36,148 26,136 18,112 16,86 19,62 23,46 20,39" fill="#ffffff" stroke="#111111" stroke-width="5"/>
+    <polygon points="24,20 32,10 46,5 60,8 70,18 73,33 77,53 84,77 88,104 87,126 93,142 78,148 63,140 67,115 65,87 59,60 55,41 51,26 38,24 27,31" fill="#111111" stroke="#111111" stroke-width="5"/>
+    <polygon points="59,60 50,82 46,106 56,98 65,87" fill="#111111" stroke="#111111" stroke-width="5"/>
+    <g stroke="#ffffff" stroke-width="2.2" opacity="0.35">
+      <line x1="50" y1="82" x2="65" y2="87"/>
+      <line x1="50" y1="82" x2="56" y2="98"/>
+      <line x1="46" y1="5" x2="38" y2="24"/>
+      <line x1="46" y1="5" x2="51" y2="26"/>
+      <line x1="60" y1="8" x2="51" y2="26"/>
+      <line x1="70" y1="18" x2="51" y2="26"/>
+      <line x1="70" y1="18" x2="55" y2="41"/>
+      <line x1="73" y1="33" x2="55" y2="41"/>
+      <line x1="73" y1="33" x2="59" y2="60"/>
+      <line x1="77" y1="53" x2="59" y2="60"/>
+      <line x1="77" y1="53" x2="65" y2="87"/>
+      <line x1="84" y1="77" x2="65" y2="87"/>
+      <line x1="84" y1="77" x2="67" y2="115"/>
+      <line x1="88" y1="104" x2="67" y2="115"/>
+      <line x1="87" y1="126" x2="67" y2="115"/>
+      <line x1="87" y1="126" x2="63" y2="140"/>
+    </g>
+    <circle cx="38" cy="24" r="7" fill="#ffffff"/>
+    <circle cx="36.25" cy="24" r="3.29" fill="#111111"/>
+  </g></g>
+</svg>
