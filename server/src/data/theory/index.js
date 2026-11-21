@@ -4,12 +4,13 @@ import semejanza from './semejanza-y-congruencia.js'
 import areas from './areas-y-razones.js'
 import factorizacion from './factorizacion-e-identidades.js'
 import pitagoras from './teorema-de-pitagoras.js'
+import manipulaciones from './manipulaciones-y-sustituciones-algebraicas.js'
 
 // Lessons rewritten in the lesson format of the theory page (spec «Página de
 // teoría», Part 2). Each file holds the new summary and text of one lesson,
 // the new banco problems it introduces and the problem collections its boxes
 // point to. mvpLessons.js applies them as the last layer.
-const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras]
+const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones]
 
 export const THEORY_REWRITES = Object.freeze(Object.fromEntries(LESSONS.map((lesson) => [lesson.pathSlug, lesson])))
 
