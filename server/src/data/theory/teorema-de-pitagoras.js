@@ -58,7 +58,7 @@ Aplicar la fórmula a cualquier triángulo o elegir como hipotenusa el lado que 
 
 La igualdad también permite reconocer un triángulo rectángulo a partir de sus lados. Pero esta dirección necesita su propia justificación: una afirmación no demuestra automáticamente su converso.
 
-![Dos triángulos ABC y A prima B prima C prima con lados correspondientes iguales; el segundo tiene ángulo recto en A prima](figuras/teorema-de-pitagoras-converso.svg "Un triángulo dado y otro construido con el mismo par de catetos")
+![Dos triángulos ABC y A prima B prima C prima con lados correspondientes iguales; el segundo tiene ángulo recto en A prima](figuras/teorema-de-pitagoras-converso.svg "Dos triángulos con lados correspondientes iguales")
 
 :::theorem Converso del teorema
 Si un triángulo tiene lados de longitudes positivas $a$, $b$ y $c$ y cumple $a^2+b^2=c^2$, entonces el ángulo opuesto al lado de longitud $c$ es recto.
