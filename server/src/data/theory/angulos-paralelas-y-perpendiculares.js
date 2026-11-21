@@ -21,7 +21,7 @@ Para tener certeza hacen falta relaciones entre ángulos que valgan siempre. Est
 
 ### Ángulos alrededor de un punto
 
-Un ángulo llano, el que forman las dos mitades de una recta, mide $180^\circ$. Cuando dos rectas se cortan en un punto $O$ forman cuatro ángulos, y cada uno forma un ángulo llano con los dos que comparten un lado con él.
+Un punto $O$ de una recta la divide en dos semirrectas con origen en $O$ y sentidos opuestos. El ángulo que forman esas dos semirrectas se llama **ángulo llano** y mide $180^\circ$. Cuando dos rectas se cortan en $O$ forman cuatro ángulos. Si dos de ellos comparten un lado, sus otros dos lados son semirrectas opuestas de una misma recta; por eso, juntos forman un ángulo llano y suman $180^\circ$.
 
 :::definition Suplementarios y opuestos por el vértice
 Dos ángulos son **suplementarios** si suman $180^\circ$. Dos de los cuatro ángulos que forman dos rectas al cortarse son **opuestos por el vértice** si los lados de uno son las prolongaciones de los lados del otro.
@@ -29,14 +29,18 @@ Dos ángulos son **suplementarios** si suman $180^\circ$. Dos de los cuatro áng
 
 ![Dos rectas se cortan en O y forman los ángulos α, β, γ y δ, en ese orden; α y γ están resaltados.](figuras/angulos-opuestos.svg "$\alpha$ y $\gamma$ son opuestos por el vértice, igual que $\beta$ y $\delta$.")
 
-En la figura, $\alpha$ y $\beta$ forman un ángulo llano, igual que $\beta$ y $\gamma$. Eso basta para comparar dos ángulos opuestos.
+En la figura, $\alpha$ y $\beta$ juntos forman un ángulo llano, igual que $\beta$ y $\gamma$. Eso basta para comparar dos ángulos opuestos.
 
 :::proposition Ángulos opuestos por el vértice
 Los ángulos opuestos por el vértice son iguales.
 :::
 
 :::proof
-De $\alpha+\beta=180^\circ$ y $\beta+\gamma=180^\circ$, al restar, se obtiene $\alpha=\gamma$. Con $\gamma$ en el lugar de $\beta$, el mismo argumento da $\beta=\delta$.
+Los ángulos $\alpha$ y $\beta$ comparten un lado, así que juntos forman un ángulo llano: $\alpha+\beta=180^\circ$. Por la misma razón, $\beta$ y $\gamma$ cumplen $\beta+\gamma=180^\circ$. Al restar la segunda igualdad de la primera, $\beta$ se cancela:
+$$(\alpha+\beta)-(\beta+\gamma)=180^\circ-180^\circ,\quad\text{es decir,}\quad \alpha-\gamma=0,$$
+y por lo tanto $\alpha=\gamma$.
+
+Para la otra pareja se repite el argumento, ahora con $\gamma$ como el ángulo común. Los ángulos $\beta$ y $\gamma$ comparten un lado, igual que $\gamma$ y $\delta$, así que $\beta+\gamma=180^\circ$ y $\gamma+\delta=180^\circ$. Al restar la segunda igualdad de la primera, $\gamma$ se cancela y queda $\beta-\delta=0$, es decir, $\beta=\delta$.
 :::
 
 Dos rectas son **perpendiculares** si al cortarse forman un ángulo de $90^\circ$; se escribe $r\perp s$.
@@ -65,9 +69,11 @@ Si $r\parallel s$ y la transversal $t$ las corta, entonces los ángulos correspo
 :::
 
 :::proof
-Lo primero es el hecho aceptado. Si $\alpha$, en $A$, y $\alpha'$, en $B$, son alternos internos, el opuesto por el vértice de $\alpha$ es exterior y está del lado de $t$ donde está $\alpha'$; es correspondiente de $\alpha'$, así que $\alpha=\alpha'$.
+Lo primero es el hecho aceptado.
 
-Si $\alpha$, en $A$, y $\beta$, en $B$, son interiores del mismo lado, el ángulo que forma un ángulo llano con $\alpha$ de ese mismo lado de $t$ es exterior y correspondiente de $\beta$. Mide $180^\circ-\alpha$ y también $\beta$, de modo que $\alpha+\beta=180^\circ$.
+Para los alternos internos, sean $\alpha$, en $A$, y $\alpha'$, en $B$, dos ángulos alternos internos, y sea $\varphi$ el opuesto por el vértice de $\alpha$. Por la proposición anterior, $\varphi=\alpha$. Además, $\varphi$ es exterior y está del mismo lado de $t$ que $\alpha'$, que es interior; por lo tanto, $\varphi$ y $\alpha'$ son correspondientes y, por el hecho aceptado, $\varphi=\alpha'$. De $\varphi=\alpha$ y $\varphi=\alpha'$ se sigue que $\alpha=\alpha'$.
+
+Para los interiores del mismo lado, sean $\alpha$, en $A$, y $\beta$, en $B$, dos ángulos interiores del mismo lado de $t$, y sea $\psi$ el ángulo en $A$ que comparte con $\alpha$ el lado contenido en $r$. Como $\alpha$ y $\psi$ comparten un lado, juntos forman un ángulo llano, así que $\psi=180^\circ-\alpha$. Además, $\psi$ está del mismo lado de $t$ que $\alpha$ (y, por lo tanto, que $\beta$) pero fuera de la franja, así que es exterior; entonces $\psi$ y $\beta$ son correspondientes y $\psi=\beta$. Igualando las dos expresiones de $\psi$ se obtiene $\beta=180^\circ-\alpha$, es decir, $\alpha+\beta=180^\circ$.
 :::
 
 Con este teorema ya se puede responder la pregunta del preámbulo, aunque el ángulo $x$ no forme ningún par de la lista con los datos.
@@ -139,7 +145,11 @@ Sea $t$ una transversal que corta a las rectas $r$ y $s$. Si un par de ángulos 
 :::proof
 Supongamos que dos ángulos correspondientes, con vértices $A$ en $r$ y $B$ en $s$, miden $\theta$. Sea $s'$ la paralela a $r$ por $B$. Por el teorema anterior, $s'$ forma con $t$, en esa misma posición, un ángulo de $\theta$. Como en esa posición solo una recta por $B$ forma con $t$ un ángulo $\theta$, se tiene $s'=s$, y entonces $s\parallel r$.
 
-Las otras dos condiciones producen un par de correspondientes iguales, con los mismos argumentos de la demostración anterior.
+Falta ver que cada una de las otras dos condiciones da un par de correspondientes iguales; con eso, el párrafo anterior concluye.
+
+Si dos alternos internos, $\alpha$ en $A$ y $\alpha'$ en $B$, son iguales, sea $\varphi$ el opuesto por el vértice de $\alpha$. Como en la demostración anterior, $\varphi$ y $\alpha'$ son correspondientes, y $\varphi=\alpha=\alpha'$: la primera igualdad porque son opuestos por el vértice y la segunda por hipótesis.
+
+Si dos interiores del mismo lado, $\alpha$ en $A$ y $\beta$ en $B$, suman $180^\circ$, sea $\psi$ el ángulo en $A$ que comparte con $\alpha$ el lado contenido en $r$. Como en la demostración anterior, $\psi$ y $\beta$ son correspondientes, y $\psi=180^\circ-\alpha=\beta$: la primera igualdad porque $\alpha$ y $\psi$ juntos forman un ángulo llano y la segunda por hipótesis.
 :::
 
 Un caso particular aparece con frecuencia.
