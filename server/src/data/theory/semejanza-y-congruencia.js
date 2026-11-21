@@ -6,7 +6,7 @@ const content = String.raw`## Preámbulo: Una imagen en la pantalla
 
 ![Tres versiones de una carita: la original, una ampliada y otra estirada hacia los lados](figuras/semejanza-y-congruencia-pantalla.svg "Una carita ampliada y otra estirada")
 
-¿Por qué una carita dibujada en la pantalla se ve igual, solo más grande, cuando se amplía, pero parece más ancha si se estira hacia los lados? En ambos casos cambia de tamaño, aunque no parece cambiar de la misma manera. La diferencia se nota en la carita, pero necesitamos algo más preciso que una impresión para explicarla.
+¿Por qué al ampliar una fotografía en el celular las caras no se deforman? Si una imagen se estira solo hacia los lados, en cambio, una cara puede verse más ancha. En los dos casos la imagen crece, pero ¿qué debe pasar con sus partes para que conserve su forma?
 
 ![Un triángulo ABC y otro DEF más grande y girado](figuras/semejanza-y-congruencia-giro.svg "Dos triángulos en posiciones y tamaños distintos")
 
