@@ -46,12 +46,12 @@ export const PERMISSIONS = Object.freeze({
   'folders:propose': 'user', // subcarpetas de examen, en revisión
   'comments:moderate': 'editor', // borrar comentarios ajenos con motivo; ver sus reportes
   'flags:view': 'editor', // ver y atender los reportes de errores
-  'content:edit-any': 'editor', // editar problemas y teoría de cualquiera (aún sin pantalla)
-  'submissions:review': 'admin', // aprobar o rechazar envíos (por ahora con scripts)
+  'content:edit-any': 'editor', // editar problemas y teoría de cualquiera (/api/editor)
+  'submissions:review': 'admin', // aprobar o rechazar envíos (/api/review y npm run review)
   'folders:review': 'admin',
   'content:restore': 'admin',
-  'roles:assign-editor': 'admin',
-  'activity:notified': 'admin', // avisos cuando un editor cambia algo (aún sin construir)
+  'roles:assign-editor': 'admin', // /api/users
+  'activity:notified': 'admin', // avisos e historial de cambios de editores (/api/editor/revisions)
 })
 
 function rank(role) {

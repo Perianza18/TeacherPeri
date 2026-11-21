@@ -1,5 +1,6 @@
 // GET  /api/reports?status=open                     — moderation queue, grouped by comment (editor+).
-// POST /api/reports/comments/:commentId/dismiss     — dismiss a comment's open reports (editor+).
+// POST /api/reports/comments/:commentId/dismiss     — dismiss a comment's open reports (editor+),
+//                                                     with an optional { note }.
 //
 // Reports are created from the comment itself:
 // POST /api/problems/:problemId/comments/:commentId/reports (see comments.routes.js).
@@ -73,9 +74,10 @@ router.get('/', async (req, res) => {
 router.post('/comments/:commentId/dismiss', async (req, res) => {
   const { commentId } = req.params
   if (!mongoose.isObjectIdOrHexString(commentId)) return res.status(404).json({ error: 'No hay reportes abiertos de ese comentario.' })
+  const note = typeof req.body?.note === 'string' ? req.body.note.trim().slice(0, 500) : ''
   const result = await Report.updateMany(
     { comment: commentId, status: 'open' },
-    { status: 'dismissed', handledBy: req.userId, handledAt: new Date() },
+    { status: 'dismissed', handledBy: req.userId, handledAt: new Date(), handledNote: note || null },
   )
   if (result.modifiedCount === 0) return res.status(404).json({ error: 'No hay reportes abiertos de ese comentario.' })
   res.json({ dismissed: result.modifiedCount })

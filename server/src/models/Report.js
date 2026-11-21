@@ -29,6 +29,8 @@ const reportSchema = new mongoose.Schema(
     status: { type: String, enum: ['open', 'resolved', 'dismissed'], default: 'open' },
     handledBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     handledAt: { type: Date, default: null },
+    // Optional note from whoever handled it (Moderación page).
+    handledNote: { type: String, trim: true, maxlength: 500, default: null },
   },
   { timestamps: true },
 )
