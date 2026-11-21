@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import assert from 'node:assert/strict'
 
 const svg = (body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220"><g fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round">${body.lines}</g><g fill="#111111" font-size="17" font-family="KaTeX_Main, 'Times New Roman', serif" font-style="italic">${body.labels}</g></svg>\n`
@@ -18,37 +18,24 @@ const U=[150,30], V=[40,185], W=[260,185], M=point(V,W,0.5)
 assert.equal(length(U,V),length(U,W)); assert.equal(length(V,M),length(M,W))
 save('mediana', [line(U,V),line(V,W),line(W,U),line(U,M,'#6D3EE8')], [label(U,'A',-5,-8),label(V,'B',-17,16),label(W,'C',5,16),label(M,'M',-7,18)])
 
-const picture = (x, y, sx, sy, outline) => {
-  const clip = `landscape-${x}-${y}`
-  return `<g transform="translate(${x} ${y}) scale(${sx} ${sy})">
-    <defs><clipPath id="${clip}"><rect width="80" height="60" rx="3"/></clipPath></defs>
-    <g clip-path="url(#${clip})" fill="none" stroke="#111111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="64" cy="12" r="5"/>
-      <path d="M 7 14 C 7 11 10 9 13 10 C 15 7 19 7 21 10 C 24 9 27 11 27 14 M 30 11 Q 32 9 34 11 Q 36 9 38 11"/>
-      <path d="M -2 47 C 6 42 12 31 19 22 C 23 25 27 31 31 35 C 36 29 42 20 47 14 C 55 20 67 35 82 45"/>
-      <path d="M 14 28 C 16 28 18 27 19 25 C 21 27 23 29 25 30 M 41 22 C 43 23 46 22 47 19 C 49 21 51 23 54 24"/>
-      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48 L 82 62 L -2 62 Z" fill="white" stroke="none"/>
-      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48"/>
-      <path d="M 35 55 C 39 54 43 54 47 55 M 54 56 C 58 55 62 55 66 55"/>
-      <path d="M 3 46 L 9 34 L 15 46 Z M 65 47 L 70 37 L 75 47 Z" fill="white"/>
-      <path d="M 9 46 V 50 M 70 47 V 51"/>
-    </g>
-    <rect width="80" height="60" rx="3" fill="none" stroke="${outline}" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
-  </g>`
-}
-const pictureWidth = (sx) => 80 * sx
-const pictureHeight = (sy) => 60 * sy
-const originalScale = 1.25
-const zoomScale = 1.6875
-const stretchX = 1.9375
-assert.ok(Math.abs(pictureWidth(zoomScale) / pictureWidth(originalScale) - pictureHeight(zoomScale) / pictureHeight(originalScale)) < 1e-12)
-assert.ok(Math.abs(pictureWidth(stretchX) / pictureWidth(originalScale) - 1.55) < 1e-12)
-const originalHeight = pictureHeight(originalScale)
-const stretchedHeight = pictureHeight(originalScale)
-assert.equal(stretchedHeight, originalHeight)
-const arrow = [line([119,105],[134,105],'#6D3EE8'),line([128,99],[134,105],'#6D3EE8'),line([128,111],[134,105],'#6D3EE8')]
-save('pantalla', [picture(15,70,originalScale,originalScale,'#111111'),picture(145,56,zoomScale,zoomScale,'#6D3EE8'),...arrow], [label([35,185],'original'),label([188,185],'ampliada')])
-save('estirada', [picture(15,70,originalScale,originalScale,'#111111'),picture(140,70,stretchX,originalScale,'#6D3EE8'),...arrow], [label([35,178],'original'),label([190,178],'estirada')])
+const sealFile = readFileSync(new URL('../../../../public/logo-seal.svg', import.meta.url), 'utf8')
+const sealContent = sealFile.replace(/^<svg\b[^>]*>/, '').replace(/<\/svg>\s*$/, '')
+assert.notEqual(sealContent, sealFile)
+const sealDefinition = `<defs><symbol id="teacherperi-seal" viewBox="0 0 64 64" stroke="none">${sealContent}</symbol></defs>`
+const seal = (x, y, sx, sy) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})"><use href="#teacherperi-seal" width="64" height="64"/></g>`
+const originalScale = 90 / 64
+const zoomScale = originalScale * 1.35
+const stretchX = originalScale * 1.55
+const size = (sx, sy) => [64 * sx, 64 * sy]
+const originalSize = size(originalScale, originalScale)
+const zoomSize = size(zoomScale, zoomScale)
+const stretchedSize = size(stretchX, originalScale)
+assert.ok(Math.abs(zoomSize[0] / originalSize[0] - zoomSize[1] / originalSize[1]) < 1e-12)
+assert.ok(Math.abs(stretchedSize[0] / originalSize[0] - 1.55) < 1e-12)
+assert.equal(stretchedSize[1], originalSize[1])
+const arrow = [line([116,105],[137,105],'#6D3EE8'),line([130,99],[137,105],'#6D3EE8'),line([130,111],[137,105],'#6D3EE8')]
+save('pantalla', [sealDefinition,seal(15,60,originalScale,originalScale),seal(151,44,zoomScale,zoomScale),...arrow], [label([28,185],'original'),label([180,185],'ampliado')])
+save('estirada', [sealDefinition,seal(15,60,originalScale,originalScale),seal(140,60,stretchX,originalScale),...arrow], [label([28,178],'original'),label([180,178],'estirado')])
 const G=[25,165], H=[95,165], I=[25,113], J=[242,55], K=[137,55], L=[242,133]
 const rotateAndEnlarge = (p) => [J[0]-1.5*(p[0]-G[0]), J[1]-1.5*(p[1]-G[1])]
 assert.deepEqual(rotateAndEnlarge(H), K)

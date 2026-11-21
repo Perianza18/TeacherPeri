@@ -79,7 +79,16 @@ describe('Rewritten theory lessons', () => {
         expect(existsSync(file)).toBe(true)
         const svg = readFileSync(file, 'utf8')
         expect(svg).toMatch(/viewBox="0 0 300 220"/)
-        expect([...svg.matchAll(/#[0-9A-Fa-f]{6}/g)].every(([color]) => ['#111111', '#6D3EE8', '#EEE7FF'].includes(color))).toBe(true)
+        const logoFigures = ['figuras/semejanza-y-congruencia-pantalla.svg', 'figuras/semejanza-y-congruencia-estirada.svg']
+        let drawing = svg
+        if (logoFigures.includes(src)) {
+          const logo = readFileSync(new URL('../../../public/logo-seal.svg', import.meta.url), 'utf8')
+            .replace(/^<svg\b[^>]*>/, '').replace(/<\/svg>\s*$/, '')
+          expect(svg).toContain(logo)
+          expect([...svg.matchAll(/<use href="#teacherperi-seal"/g)]).toHaveLength(2)
+          drawing = svg.replace(logo, '')
+        }
+        expect([...drawing.matchAll(/#[0-9A-Fa-f]{6}/g)].every(([color]) => ['#111111', '#6D3EE8', '#EEE7FF'].includes(color))).toBe(true)
       }
     }
   })
