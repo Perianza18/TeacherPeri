@@ -22,7 +22,7 @@ function commentLabel(count) {
 }
 
 // `problem.href` overrides the link; null hides «Resolver» (draft problems).
-export default function PracticeBox({ kind = 'practice', problems, context = '' }) {
+export default function PracticeBox({ kind = 'practice', problems, context = '', fullStatements = false }) {
   const id = useId()
   const config = KINDS[kind] || KINDS.practice
   return (
@@ -39,7 +39,7 @@ export default function PracticeBox({ kind = 'practice', problems, context = '' 
             <li key={problem._id || problem.codigo} className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-xl border-2 border-tp-ink bg-tp-surface px-4 py-3.5">
               <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-0.5">
                 {meta && <span className="font-sans text-[13px] font-semibold text-tp-ink-muted">{meta}</span>}
-                <RichText as="div" text={problem.enunciado} keepLines={false} className="line-clamp-3" />
+                <RichText as="div" text={problem.enunciado} keepLines={false} className={fullStatements ? undefined : 'line-clamp-3'} />
                 {config.hints && splitHints(problem.hint).map((hint, hintIndex, hints) => (
                   <details key={hintIndex} className={hintIndex === 0 ? 'mt-1' : ''}>
                     <summary className="cursor-pointer py-3 font-sans text-sm font-bold">{hintLabel(hintIndex, hints.length)}</summary>
