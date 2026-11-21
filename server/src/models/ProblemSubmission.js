@@ -28,6 +28,15 @@ const proposalSchema = new mongoose.Schema(
     isExam: { type: Boolean, default: false },
     examFolder: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
     problemNumber: { type: Number, min: 1, max: 999, default: null },
+    // Pictures for the statement (ProblemImage ids with their alt text).
+    images: {
+      type: [new mongoose.Schema({
+        image: { type: mongoose.Schema.Types.ObjectId, ref: 'ProblemImage', required: true },
+        alt: { type: String, required: true, trim: true, minlength: 5, maxlength: 300 },
+        placement: { type: String, enum: ['statement'], default: 'statement' },
+      }, { _id: false })],
+      default: [],
+    },
   },
   { _id: false },
 )

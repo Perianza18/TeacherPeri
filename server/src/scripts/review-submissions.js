@@ -101,6 +101,7 @@ function proposalLines(p) {
   return [
     `    areas: ${p.topics.join(', ') || '(none)'} · tags: ${p.tags.join(', ') || '(none)'}`,
     `    exam: ${p.isExam ? `${p.examFolder ?? '(no folder)'}${p.examFolderStatus && p.examFolderStatus !== 'approved' ? ` [folder ${p.examFolderStatus}]` : ''}${p.problemNumber ? ` · problem ${p.problemNumber}` : ''}` : 'no'}`,
+    ...(p.images?.length ? [`    images: ${p.images.map((image) => `${image.url} («${image.alt}»)`).join(' · ')}`] : []),
     '    statement:',
     indent(p.enunciado),
   ]

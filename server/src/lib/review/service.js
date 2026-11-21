@@ -22,7 +22,8 @@ import User from '../../models/User.js'
 import { DIFFICULTY_LEVELS, normalizeSlug } from '../../models/content.js'
 import { can, roleOf } from '../permissions.js'
 import { folderPath, parseFolderName } from '../examFolders.js'
-import { derivedProblemFields, proposalFromProblem, vocabulary } from '../submissions.js'
+import { derivedProblemFields, proposalFromProblem, statementImages, vocabulary } from '../submissions.js'
+import { imageUrl } from '../images.js'
 import { hasErrors, runSubmissionChecks } from './checks.js'
 
 export class ReviewError extends Error {
@@ -81,6 +82,7 @@ function describeProposal(proposal, ctx) {
     examFolder: proposal.examFolder ? folderPath(proposal.examFolder, ctx.foldersById).join(' › ') : null,
     examFolderStatus: proposal.examFolder ? ctx.foldersById.get(String(proposal.examFolder))?.reviewStatus ?? 'missing' : null,
     problemNumber: proposal.problemNumber ?? null,
+    images: statementImages(proposal.images).map((entry) => ({ ...entry, url: imageUrl(entry.image) })),
   }
 }
 
@@ -222,6 +224,9 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
     enunciado: proposal.enunciado,
     topics: proposal.topics,
     tags: proposal.tags,
+    // The statement pictures come from the proposal; pictures an editor put in
+    // the solution stay.
+    images: [...statementImages(proposal.images), ...(problem.images || []).filter((entry) => entry.placement === 'solution').map((entry) => ({ image: entry.image, alt: entry.alt, placement: 'solution' }))],
     ...derived,
     ...(fixes.title ? { titulo: fixes.title } : {}),
     ...(fixes.difficulty ? { difficulty: fixes.difficulty } : {}),

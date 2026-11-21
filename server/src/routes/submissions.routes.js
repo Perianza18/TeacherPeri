@@ -22,6 +22,7 @@ import ProblemSubmission from '../models/ProblemSubmission.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
 import { ensureExamRoot, examFoldersVisibleTo, folderPath, parseFolderName } from '../lib/examFolders.js'
 import { hasErrors, runSubmissionChecks } from '../lib/review/checks.js'
+import { ImageError, assertUsableImages, deleteIfUnused } from '../lib/images.js'
 import { comparableProblemsFor, derivedProblemFields, nextCommunityCode, ownSubmissionViews, parseProposal, proposalFromProblem, sameProposal, vocabulary } from '../lib/submissions.js'
 
 const router = Router()
@@ -37,6 +38,18 @@ async function folderContext(userId) {
   await ensureExamRoot()
   const [folders, allExam] = await Promise.all([examFoldersVisibleTo(userId), Category.find({ kind: 'exam' }).lean()])
   return { folders, byId: new Map(folders.map((folder) => [String(folder._id), folder])), allById: new Map(allExam.map((folder) => [String(folder._id), folder])) }
+}
+
+// Checks the images a proposal uses; answers and returns false when one is not allowed.
+async function imagesOk(res, proposal, userId, problemId = null) {
+  try {
+    await assertUsableImages(proposal.images, { userId, problemId })
+    return true
+  } catch (error) {
+    if (!(error instanceof ImageError)) throw error
+    res.status(error.status).json({ error: error.message })
+    return false
+  }
 }
 
 function invalid(res, checks) {
@@ -80,6 +93,7 @@ router.post('/', requirePermission('problems:submit'), async (req, res) => {
   const parsed = parseProposal(req.body)
   if (parsed.error) return res.status(400).json({ error: parsed.error })
   const { proposal } = parsed
+  if (!await imagesOk(res, proposal, req.userId)) return
   if (await ProblemSubmission.countDocuments({ author: req.userId, status: 'pending' }) >= MAX_PENDING_PROBLEMS) {
     return res.status(429).json({ error: 'Tienes muchos problemas en revisión. Espera a que se revisen antes de enviar más.' })
   }
@@ -96,6 +110,7 @@ router.post('/', requirePermission('problems:submit'), async (req, res) => {
         enunciado: proposal.enunciado,
         topics: proposal.topics,
         tags: proposal.tags,
+        ...(proposal.images.length ? { images: proposal.images } : {}),
         ...fields,
         dificultad: 'Media', // campo antiguo obligatorio; no se muestra
         author: req.userId,
@@ -128,6 +143,8 @@ router.put('/mine/:id', requirePermission('problems:edit-own'), async (req, res)
   const parsed = parseProposal(req.body)
   if (parsed.error) return res.status(400).json({ error: parsed.error })
   const { proposal } = parsed
+  if (!await imagesOk(res, proposal, req.userId, problem._id)) return
+  const before = [...(problem.images || []).map((entry) => String(entry.image))]
   const [{ folders, allById }, { topics, tags }, problems] = await Promise.all([folderContext(req.userId), vocabulary(), comparableProblemsFor(req.userId, problem._id)])
   const checks = runSubmissionChecks(proposal, { topics, tags, folders, problems })
   if (hasErrors(checks)) return invalid(res, checks)
@@ -140,7 +157,7 @@ router.put('/mine/:id', requirePermission('problems:edit-own'), async (req, res)
 
   if (!isLive) {
     // Nunca aprobado: el borrador se actualiza en su lugar.
-    problem.set({ enunciado: proposal.enunciado, topics: proposal.topics, tags: proposal.tags, ...derivedProblemFields(proposal, { folders: allById, topics, current: problem.toObject() }) })
+    problem.set({ enunciado: proposal.enunciado, topics: proposal.topics, tags: proposal.tags, images: proposal.images.length ? proposal.images : undefined, ...derivedProblemFields(proposal, { folders: allById, topics, current: problem.toObject() }) })
     await problem.save()
   }
   if (pending) {
@@ -150,6 +167,8 @@ router.put('/mine/:id', requirePermission('problems:edit-own'), async (req, res)
     // Publicado → cambio en revisión; rechazado → se vuelve a enviar.
     await ProblemSubmission.create({ problem: problem._id, author: req.userId, kind: isLive ? 'edit' : 'create', proposed: proposal, checks })
   }
+  // A picture taken out of a draft that nothing else uses is deleted.
+  if (!isLive) await deleteIfUnused(before.filter((id) => !proposal.images.some((entry) => entry.image === id)))
   const [view] = await ownSubmissionViews(req.userId, [problem._id])
   res.json(view)
 })
