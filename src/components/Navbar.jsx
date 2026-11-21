@@ -188,9 +188,9 @@ export default function Navbar({ activePath } = {}) {
     <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-tp-ink bg-tp-surface">
       <nav aria-label="Principal">
         <div className="tp-container flex h-[69px] items-center justify-between gap-4">
-          {/* The graph penguin stands in as the logo mark until the official
-              penguin logo exists. public/logo-seal.svg is the same penguin as
-              the favicon, on the blue seal. */}
+          {/* The logo mark is the penguin drawing with the graph on its back,
+              traced to SVG. public/logo-seal.svg is the same penguin as the
+              favicon, on the blue seal. */}
           <Link to="/" className="tp-logo group inline-flex min-h-11 shrink-0 items-center gap-2.5 text-tp-ink">
             <span aria-hidden="true" className="block size-11 shrink-0 -rotate-3 overflow-hidden rounded-[12px] border-[2.5px] border-tp-ink bg-tp-blue shadow-[2.5px_2.5px_0_var(--tp-ink)] transition-transform duration-200 group-hover:rotate-3 motion-reduce:transition-none">
               <img src="/logo-seal.svg" alt="" width="44" height="44" className="block size-full" />
