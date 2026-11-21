@@ -45,7 +45,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Problemas: búsqueda, filtros (área, etiqueta, nivel, año, carpeta), páginas | Hecho | 56 problemas. Un problema se abre en una ventana con sus comentarios |
 | Problemas: pistas (cada una con su propio botón) y soluciones | Hecho | |
 | Página de problema con enlace estable | Hecho | `/entrenamiento/problemas/:id` |
-| Árbol de carpetas de examen (p. ej. Exámenes › OMM Estatal › Jalisco › 2023), usable como filtro | Parcial | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. Las carpetas iniciales (OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO) y las de los exámenes de práctica las crea `npm run db:migrate:roles-users`, que todavía no se ha corrido en la base de datos del sitio |
+| Árbol de carpetas de examen (p. ej. Exámenes › OMM Estatal › Jalisco › 2023), usable como filtro | Hecho | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. «Exámenes» tiene OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO y «Prácticas TeacherPeri» con los 3 exámenes de práctica (14 problemas); se agregaron a la base del sitio el 2026-11-21 |
 | Teoría: 37 lecciones con matemáticas, ejemplos y práctica | Hecho | |
 | Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Parcial | El formato ya funciona y 2 lecciones lo usan («Ángulos, paralelas y perpendiculares», «Principio de casillas»). Las otras 35 siguen con el formato anterior |
 | «Reportar un error» y «Sugerir cambio» en las lecciones | Hecho | «Sugerir cambio» abre Contacto |

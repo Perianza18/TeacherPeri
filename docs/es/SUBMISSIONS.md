@@ -86,9 +86,9 @@ sitio cuando su envío se aprueba o se rechaza.
 
 ## Migración
 
-Se aplicó a la base de prueba `teacherperi` el 2026-11-21 con
-`npm run atlas:migrate:test -- --apply`; la base del sitio usa
-`npm run atlas:migrate:prod -- --apply`.
+Se aplicó el 2026-11-21 a la base de prueba `teacherperi`
+(`npm run atlas:migrate:test -- --apply`) y a la base del sitio `teacherperi_prod`
+(`npm run atlas:migrate:prod -- --apply`); correrla otra vez no cambia nada.
 
 `npm run db:migrate:roles-users` (simulación por defecto; `--apply` necesita
 `MONGO_MIGRATION_TARGET_URI` y `MIGRATION_TARGET_CONFIRM`) reescribe los valores

@@ -45,7 +45,7 @@ A Ruta is an ordered path through existing material. See
 | Problemas: search, filters (área, tag, level, year, folder), pagination | Done | 56 problems. A problem opens in a window with its comments |
 | Problemas: hints (each behind its own toggle) and solutions | Done | |
 | Problem page with a stable link | Done | `/entrenamiento/problemas/:id` |
-| Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Partial | The tree, the «Carpeta o examen» filter and new folders proposed by users work. The starting folders (OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO) and the practice exams' folders are added by `npm run db:migrate:roles-users`, which has not been run on the live database yet |
+| Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |
 | Teoría: 37 lessons with math, examples and practice | Done | |
 | Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Partial | The renderer is live and 2 lessons use it («Ángulos, paralelas y perpendiculares», «Principio de casillas»). The other 35 still use the older format |
 | «Reportar un error» and «Sugerir cambio» on lessons | Done | «Sugerir cambio» opens Contacto |
