@@ -84,9 +84,10 @@ notification when a submission is approved or rejected.
 
 ## Migration
 
-Applied to the `teacherperi` test database on 2026-11-21 with
-`npm run atlas:migrate:test -- --apply`; the live database runs
-`npm run atlas:migrate:prod -- --apply`.
+Applied on 2026-11-21 to the `teacherperi` test database
+(`npm run atlas:migrate:test -- --apply`) and to the live `teacherperi_prod`
+database (`npm run atlas:migrate:prod -- --apply`); a second run on each changes
+nothing.
 
 `npm run db:migrate:roles-users` (dry run by default; `--apply` needs
 `MONGO_MIGRATION_TARGET_URI` and `MIGRATION_TARGET_CONFIRM`) rewrites legacy role
