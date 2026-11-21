@@ -79,16 +79,13 @@ describe('Rewritten theory lessons', () => {
         expect(existsSync(file)).toBe(true)
         const svg = readFileSync(file, 'utf8')
         expect(svg).toMatch(/viewBox="0 0 300 220"/)
-        const logoFigures = ['figuras/semejanza-y-congruencia-pantalla.svg', 'figuras/semejanza-y-congruencia-estirada.svg']
-        let drawing = svg
-        if (logoFigures.includes(src)) {
-          const logo = readFileSync(new URL('../../../public/logo-seal.svg', import.meta.url), 'utf8')
-            .replace(/^<svg\b[^>]*>/, '').replace(/<\/svg>\s*$/, '')
-          expect(svg).toContain(logo)
-          expect([...svg.matchAll(/<use href="#teacherperi-seal"/g)]).toHaveLength(2)
-          drawing = svg.replace(logo, '')
+        const landscapeFigures = ['figuras/semejanza-y-congruencia-pantalla.svg', 'figuras/semejanza-y-congruencia-estirada.svg']
+        if (landscapeFigures.includes(src)) {
+          const landscape = readFileSync(new URL('../../../public/figuras/semejanza-y-congruencia-paisaje.webp', import.meta.url)).toString('base64')
+          expect(svg).toContain(`data:image/webp;base64,${landscape}`)
+          expect([...svg.matchAll(/<use href="#paisaje"/g)]).toHaveLength(2)
         }
-        expect([...drawing.matchAll(/#[0-9A-Fa-f]{6}/g)].every(([color]) => ['#111111', '#6D3EE8', '#EEE7FF'].includes(color))).toBe(true)
+        expect([...svg.matchAll(/#[0-9A-Fa-f]{6}/g)].every(([color]) => ['#111111', '#6D3EE8', '#EEE7FF'].includes(color))).toBe(true)
       }
     }
   })

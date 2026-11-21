@@ -4,9 +4,9 @@ const summary = 'Comparar triángulos mediante correspondencias entre sus vérti
 
 const content = String.raw`## Preámbulo: Una imagen en la pantalla
 
-![El logo de TeacherPeri con su pingüino, junto al mismo logo ampliado sin deformación](figuras/semejanza-y-congruencia-pantalla.svg "El logo se amplía") ![El logo original de TeacherPeri junto a una versión estirada horizontalmente](figuras/semejanza-y-congruencia-estirada.svg "El logo se estira hacia los lados")
+![Un paisaje de montañas y un lago, junto al mismo paisaje ampliado sin deformación](figuras/semejanza-y-congruencia-pantalla.svg "La imagen se amplía") ![El mismo paisaje original junto a una versión estirada horizontalmente](figuras/semejanza-y-congruencia-estirada.svg "La imagen se estira hacia los lados")
 
-¿Por qué al ampliar el logo de TeacherPeri en la pantalla el pingüino conserva su forma? Si la imagen se estira solo hacia los lados, en cambio, el mismo pingüino puede verse más ancho. En los dos casos la imagen crece, pero ¿qué debe pasar con sus partes para que conserve su forma?
+¿Por qué al ampliar una imagen en el celular las montañas conservan su forma? Si la imagen se estira solo hacia los lados, en cambio, esas mismas montañas pueden verse más anchas. En los dos casos la imagen crece, pero ¿qué debe pasar con sus partes para que conserve su forma?
 
 ![Un triángulo ABC y otro DEF más grande y girado](figuras/semejanza-y-congruencia-giro.svg "Dos triángulos en posiciones y tamaños distintos")
 
