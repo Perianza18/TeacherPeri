@@ -18,14 +18,14 @@ const U=[150,30], V=[40,185], W=[260,185], M=point(V,W,0.5)
 assert.equal(length(U,V),length(U,W)); assert.equal(length(V,M),length(M,W))
 save('mediana', [line(U,V),line(V,W),line(W,U),line(U,M,'#6D3EE8')], [label(U,'A',-5,-8),label(V,'B',-17,16),label(W,'C',5,16),label(M,'M',-7,18)])
 
-const face = (x, y, sx, sy, outline) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})" vector-effect="non-scaling-stroke"><circle cx="0" cy="0" r="30" fill="none" stroke="${outline}" stroke-width="2.5" vector-effect="non-scaling-stroke"/><circle cx="-10" cy="-6" r="2.3" fill="#111111" stroke="none"/><circle cx="10" cy="-6" r="2.3" fill="#111111" stroke="none"/><path d="M -12 8 Q 0 19 12 8" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g>`
-const faceLabels = [label([42,125], 'original'), label([183,135], 'ampliada'), label([117,215], 'estirada')]
-const faceWidth = (sx) => 60 * sx
-const faceHeight = (sy) => 60 * sy
-assert.equal(faceWidth(1.4) / faceWidth(1), faceHeight(1.4) / faceHeight(1))
-assert.equal(faceWidth(1.7) / faceWidth(1), 1.7)
-assert.equal(faceHeight(1) / faceHeight(1), 1)
-save('pantalla', [face(65,75,1,1,'#111111'),face(215,75,1.4,1.4,'#6D3EE8'),face(150,170,1.7,1,'#6D3EE8')], faceLabels)
+const house = (x, y, sx, sy, outline) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})"><path d="M -27 0 L 0 -24 L 27 0 L 21 0 L 21 24 L -21 24 L -21 0 Z" fill="none" stroke="${outline}" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M -12 24 V 8 H -3 V 24 M 5 3 H 14 V 12 H 5 Z" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></g>`
+const houseLabels = [label([42,125], 'original'), label([183,135], 'ampliada'), label([117,215], 'estirada')]
+const houseWidth = (sx) => 54 * sx
+const houseHeight = (sy) => 48 * sy
+assert.ok(Math.abs(houseWidth(1.4) / houseWidth(1) - houseHeight(1.4) / houseHeight(1)) < 1e-12)
+assert.equal(houseWidth(1.7) / houseWidth(1), 1.7)
+assert.equal(houseHeight(1) / houseHeight(1), 1)
+save('pantalla', [house(65,75,1,1,'#111111'),house(215,75,1.4,1.4,'#6D3EE8'),house(150,170,1.7,1,'#6D3EE8')], houseLabels)
 const G=[25,165], H=[95,165], I=[25,113], J=[242,55], K=[137,55], L=[242,133]
 const rotateAndEnlarge = (p) => [J[0]-1.5*(p[0]-G[0]), J[1]-1.5*(p[1]-G[1])]
 assert.deepEqual(rotateAndEnlarge(H), K)

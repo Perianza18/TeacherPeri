@@ -4,9 +4,9 @@ const summary = 'Comparar triángulos mediante correspondencias entre sus vérti
 
 const content = String.raw`## Preámbulo: Una imagen en la pantalla
 
-![Tres versiones de una carita: la original, una ampliada y otra estirada hacia los lados](figuras/semejanza-y-congruencia-pantalla.svg "Una carita ampliada y otra estirada")
+![Tres dibujos de una casa: el original, uno ampliado y otro estirado hacia los lados](figuras/semejanza-y-congruencia-pantalla.svg "Una casa ampliada y otra estirada")
 
-¿Por qué al ampliar una fotografía en el celular las caras no se deforman? Si una imagen se estira solo hacia los lados, en cambio, una cara puede verse más ancha. En los dos casos la imagen crece, pero ¿qué debe pasar con sus partes para que conserve su forma?
+¿Por qué al ampliar una fotografía en el celular una casa conserva su forma? Si una imagen se estira solo hacia los lados, en cambio, la casa puede verse más ancha. En los dos casos la imagen crece, pero ¿qué debe pasar con sus partes para que conserve su forma?
 
 ![Un triángulo ABC y otro DEF más grande y girado](figuras/semejanza-y-congruencia-giro.svg "Dos triángulos en posiciones y tamaños distintos")
 
