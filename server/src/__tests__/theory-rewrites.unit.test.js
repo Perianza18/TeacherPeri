@@ -4,7 +4,8 @@ import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/th
 import { MVP_LESSONS, PREVIOUS_THEORY } from '../data/mvpLessons.js'
 import { MVP_PROBLEMS } from '../data/mvpProblems.js'
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from '../data/ommLaunchContent.js'
-import { decide } from '../migrations/revise-theory-lessons.js'
+import { decide, heldPrevious } from '../migrations/revise-theory-lessons.js'
+import { EARLIER_THEORY } from '../data/theory/earlier.js'
 import { revisionTarget } from '../scripts/revise-theory-lessons.js'
 import { parseArticle } from '../../../src/lib/theoryArticle.js'
 
@@ -111,5 +112,27 @@ describe('Theory revision guard', () => {
     expect(decide({ content: 'nuevo' }, desired, previous)).toBe('keep')
     expect(decide({ content: 'viejo' }, desired, previous)).toBe('revise')
     expect(decide({ content: 'viejo con un cambio' }, desired, previous)).toBeNull()
+  })
+
+  it('also accepts an earlier published rewrite, and filters on the version it found', () => {
+    const desired = [['content', 'nuevo']]
+    const original = [['content', 'viejo']]
+    const published = [['content', 'piloto']]
+    expect(decide({ content: 'piloto' }, desired, original, published)).toBe('revise')
+    expect(heldPrevious({ content: 'piloto' }, original, published)).toBe(published)
+    expect(heldPrevious({ content: 'viejo' }, original, published)).toBe(original)
+    expect(decide({ content: 'piloto con un cambio' }, desired, original, published)).toBeNull()
+  })
+
+  it('lists earlier published versions only for rewritten lessons, each different from the current text', () => {
+    for (const [slug, versions] of Object.entries(EARLIER_THEORY)) {
+      expect(THEORY_REWRITES[slug]).toBeDefined()
+      for (const version of versions) {
+        expect(version.published).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+        expect(typeof version.summary).toBe('string')
+        expect(version.content).not.toBe(THEORY_REWRITES[slug].content)
+        expect(version.content).not.toBe(PREVIOUS_THEORY[slug].content)
+      }
+    }
   })
 })

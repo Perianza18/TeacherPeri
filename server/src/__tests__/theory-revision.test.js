@@ -5,6 +5,7 @@ import { importMvpContent, CONTENT_MODELS } from '../migrations/import-mvp-conte
 import { reviseTheoryLessons } from '../migrations/revise-theory-lessons.js'
 import { PREVIOUS_THEORY } from '../data/mvpLessons.js'
 import { THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
+import { EARLIER_THEORY } from '../data/theory/earlier.js'
 
 const { Theory, Path, Problem, ProblemCollection } = CONTENT_MODELS
 const slugs = Object.keys(THEORY_REWRITES)
@@ -47,6 +48,21 @@ describe('Theory lesson revision', () => {
     expect(again.collectionsCreated).toEqual([])
     // The content import now agrees with the database.
     expect(await importMvpContent()).toMatchObject({ create: 0, promote: 0 })
+  }, 120000)
+
+  it('replaces an earlier published rewrite with the corrected one', async () => {
+    await previousRelease()
+    await reviseTheoryLessons({ apply: true })
+    const slug = 'angulos-paralelas-y-perpendiculares'
+    const [pilot] = EARLIER_THEORY[slug]
+    const { title } = PREVIOUS_THEORY[slug]
+    await Theory.updateOne({ title }, { $set: { content: pilot.content, summary: pilot.summary } })
+
+    const preview = await reviseTheoryLessons()
+    const casillasTitle = PREVIOUS_THEORY['principio-de-casillas'].title
+    expect(Object.fromEntries(preview.lessons.map((lesson) => [lesson.title, lesson.text]))).toEqual({ [title]: 'revise', [casillasTitle]: 'keep' })
+    await reviseTheoryLessons({ apply: true })
+    expect((await Theory.findOne({ title }).lean()).content).toBe(THEORY_REWRITES[slug].content)
   }, 120000)
 
   it('stops without writing when a lesson holds independent text', async () => {
