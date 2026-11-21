@@ -97,6 +97,7 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 | `users:set-role` | Cambia el rol de una cuenta ([ROLES.md](ROLES.md)) |
 | `review` | Revisa propuestas, carpetas de examen y reportes de errores ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 | `db:migrate:roles-users` | Migración única para los tres roles y las carpetas de examen ([SUBMISSIONS.md](SUBMISSIONS.md#migración)) |
+| `atlas:<herramienta>:test`, `atlas:<herramienta>:prod` | Corren `migrate`, `review`, `set-role`, `revise-theory` o `import` contra Atlas con el archivo privado de Atlas ([abajo](#scripts-de-atlas)) |
 | `db:local:start` | Inicia un replica set de MongoDB local ([LOCAL_MVP.md](LOCAL_MVP.md)) |
 | `db:reset:dev` | **Borra** los problemas y carpetas de una base local `teacherperi_dev` y la llena con problemas de ejemplo antiguos. Solo local |
 | `curriculum:preview:omm`, `curriculum:preview:omm-content` | Imprimen la Ruta OMM y su contenido sin base de datos |
@@ -105,3 +106,32 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 Los scripts que escriben en una base corren como simulación a menos que pases
 `--apply` y confirmes el nombre de la base. Ve las reglas de seguridad en
 [ARCHITECTURE.md](ARCHITECTURE.md#reglas-de-seguridad-dentro-del-código).
+
+## Scripts de Atlas
+
+Los scripts `atlas:*` corren un script protegido contra una base de Atlas sin
+escribir su dirección. Leen un archivo privado que vive fuera del repositorio y
+de OneDrive, `~/.config/teacherperi/atlas.env` (`chmod 600`), con dos líneas:
+
+```sh
+ATLAS_TEST_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>/teacherperi?<opciones>
+ATLAS_PROD_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>/teacherperi_prod?<opciones>
+```
+
+Un archivo anterior con una sola línea `ATLAS_URI=` también funciona: los scripts
+lo apuntan a la base correcta. El envoltorio (`server/src/scripts/atlas.js`)
+rechaza una dirección cuya base no coincide con su destino, nunca imprime una
+dirección y se la pasa a la herramienta por la variable propia de esa herramienta.
+
+| Script | Herramienta |
+| --- | --- |
+| `atlas:migrate:test`, `atlas:migrate:prod` | `db:migrate:roles-users` |
+| `atlas:review:test`, `atlas:review:prod` | `review` |
+| `atlas:set-role:test`, `atlas:set-role:prod` | `users:set-role` |
+| `atlas:revise-theory:test`, `atlas:revise-theory:prod` | `content:revise-theory` |
+| `atlas:import:test`, `atlas:import:prod` | `content:import` |
+
+Cada uno es simulación (o solo lectura) salvo que `--apply` vaya después de `--`,
+por ejemplo `npm run atlas:migrate:test -- --apply`. Con `--apply` el envoltorio
+confirma el nombre de la base a la herramienta. Escribir en `teacherperi_prod`
+necesita primero el visto bueno del dueño.

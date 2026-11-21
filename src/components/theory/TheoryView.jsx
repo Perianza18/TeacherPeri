@@ -12,6 +12,7 @@ import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import { collectionSlugs, levelLabel, parseArticle, readingMinutes } from '../../lib/theoryArticle'
 import { buildRutaContext } from '../../lib/rutaContext'
+import { canEdit, editLessonPath } from '../../lib/panel'
 
 // Theory detail page (spec «Página de teoría»). One page, two contexts:
 // opened from a Ruta step (`route` is the validated `?ruta=` traversal) or
@@ -233,6 +234,7 @@ function useStepCompletion(strip) {
 
 function TheoryPage({ item, route, ancestors, problems, collections, relatedRoutes, context, renderCollection: renderCollectionProp, resolveFigure }) {
   const article = useMemo(() => parseArticle(item.content), [item.content])
+  const { auth } = useAuth()
   const ruta = useMemo(() => (route ? buildRutaContext(route, ancestors) : null), [route, ancestors])
   const strip = ruta?.strip || null
   const completion = useStepCompletion(strip)
@@ -293,6 +295,7 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
             </div>
             <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error || notice}</p>
             <FlagButton targetType="theory" targetId={item._id} />
+            {canEdit(auth) && item._id && <div><Link to={editLessonPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar lección</Link></div>}
           </div>
 
           {strip && (strip.prev || strip.next) && (

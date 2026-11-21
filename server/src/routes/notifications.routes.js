@@ -10,7 +10,7 @@ router.use(requireAuth)
 
 router.get('/', async (req, res) => {
   const [items, unread] = await Promise.all([
-    Notification.find({ user: req.userId }).sort({ createdAt: -1 }).limit(30).select('type problem message readAt createdAt').lean(),
+    Notification.find({ user: req.userId }).sort({ createdAt: -1 }).limit(30).select('type problem link message readAt createdAt').lean(),
     Notification.countDocuments({ user: req.userId, readAt: null }),
   ])
   res.json({ unread, items })

@@ -12,7 +12,7 @@ Todo lo que TeacherPeri hace hoy o quiere hacer. Cada función tiene un estado:
 Actualiza este archivo, y [../FEATURES.md](../FEATURES.md), en el mismo pull
 request que cambia la función (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-_Última actualización: 2026-11-16._
+_Última actualización: 2026-11-21._
 
 ## Inicio
 
@@ -45,14 +45,14 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Problemas: búsqueda, filtros (área, etiqueta, nivel, año, carpeta), páginas | Hecho | 56 problemas. Un problema se abre en una ventana con sus comentarios |
 | Problemas: pistas (cada una con su propio botón) y soluciones | Hecho | |
 | Página de problema con enlace estable | Hecho | `/entrenamiento/problemas/:id` |
-| Árbol de carpetas de examen (p. ej. Exámenes › OMM Estatal › Jalisco › 2023), usable como filtro | Parcial | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. Las carpetas iniciales (OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO) y las de los exámenes de práctica las crea `npm run db:migrate:roles-users`, que todavía no se ha corrido en la base de datos del sitio |
+| Árbol de carpetas de examen (p. ej. Exámenes › OMM Estatal › Jalisco › 2023), usable como filtro | Hecho | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. «Exámenes» tiene OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO y «Prácticas TeacherPeri» con los 3 exámenes de práctica (14 problemas); se agregaron a la base del sitio el 2026-11-21 |
 | Teoría: 37 lecciones con matemáticas, ejemplos y práctica | Hecho | |
 | Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Parcial | El formato ya funciona y 2 lecciones lo usan («Ángulos, paralelas y perpendiculares», «Principio de casillas»). Las otras 35 siguen con el formato anterior |
 | «Reportar un error» y «Sugerir cambio» en las lecciones | Hecho | «Sugerir cambio» abre Contacto |
 | Exámenes: 3 exámenes de práctica | Hecho | Práctica original de TeacherPeri, no exámenes oficiales de la OMM |
 | Imágenes en los problemas (geometría) | Planeado | **Hoy:** los problemas son solo texto y matemáticas; las figuras existen solo en las lecciones |
 | Búsqueda global en todas las bibliotecas | Planeado | **Hoy:** cada biblioteca tiene su propia búsqueda |
-| Renovación visual de Inicio, Rutas, Entrenamiento, Listas, Contacto y lecciones | En curso | Pull request #18, rama `design/comic-refresh` |
+| Renovación visual de Inicio, Rutas, Entrenamiento, Listas, Contacto y lecciones (estilo «cómic», logo del pingüino) | Hecho | Pull requests #18, #20 y #21 |
 
 ## Listas
 
@@ -75,8 +75,8 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Crédito en los problemas aprobados («Propuesto por @usuario») | Hecho | |
 | «Reportar un error» en problemas y lecciones | Hecho | |
 | Notificaciones en el sitio (propuesta aprobada o rechazada) | Hecho | En el menú del avatar |
-| Revisión automática al proponer un problema | Planeado | **Hoy:** al guardar corren revisiones automáticas; un admin aprueba o rechaza con `npm run review` |
-| Página de moderación para reportes de comentarios y de errores | Planeado | **Hoy:** no hay pantalla. La API se los muestra a editores y admins (`GET /api/reports`, `GET /api/flags`), y los admins atienden los reportes de errores con `npm run review` |
+| Revisión automática al proponer un problema | Planeado | **Hoy:** al guardar corren revisiones automáticas; un admin aprueba o rechaza en `/panel/revision` (o con `npm run review`) |
+| Página de moderación para reportes de comentarios y de errores | Hecho | `/panel/moderacion`, editores y admins. Los reportes de errores enlazan al problema o la lección (y a «Editar»); cada uno se marca como resuelto o descartado con una nota opcional. Los comentarios reportados se descartan con nota o se eliminan con motivo. Filtros: abiertos, resueltos, descartados |
 | Sugerir cambios a problemas y lecciones oficiales | Planeado | **Hoy:** «Reportar un error», o «Sugerir cambio» en las lecciones, que abre Contacto |
 | Seguir a otros usuarios | Planeado | |
 | Hilos (un foro aparte de los comentarios de los problemas) | Planeado | **Hoy:** la conversación ocurre solo en los comentarios de cada problema |
@@ -87,9 +87,9 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | --- | --- | --- |
 | Registro e inicio de sesión con correo y contraseña | Hecho | |
 | Tres roles: Usuario, Editor, Admin | Hecho | Ver [ROLES.md](ROLES.md). Las cuentas guardadas con los seis roles anteriores se leen como los nuevos |
-| Pantallas de editor: ver todos los reportes, editar cualquier problema o lección | Planeado | **Hoy:** los editores pueden borrar comentarios ajenos; sus otros permisos existen solo en el servidor |
-| Pantallas de admin: revisar propuestas, nombrar editores | Planeado | **Hoy:** `npm run review` y `npm run users:set-role` |
-| Aviso a los admins cuando un editor cambia algo | Planeado | |
+| Pantallas de editor: ver todos los reportes, editar cualquier problema o lección | Hecho | «Panel del equipo» en el menú del avatar (`/panel`). «Editar problema» en la página de un problema abre `/panel/problemas/:id/editar` (título, enunciado, pistas, solución, áreas, etiquetas, carpeta y número de examen, con vista previa de las fórmulas). «Editar lección» en una lección abre `/panel/teoria/:id/editar` (título, resumen y texto, con el mismo renderizador de lecciones como vista previa). Los cambios se publican al guardar; cada guardado registra quién, cuándo y cada campo antes y después |
+| Pantallas de admin: revisar propuestas, nombrar editores | Hecho | `/panel/revision`: aprobar (corrigiendo antes título, áreas, etiquetas, carpeta o número) o rechazar con motivo; aprobar, renombrar o rechazar carpetas de examen propuestas. Misma lógica que `npm run review`, que sigue funcionando. `/panel/usuarios`: dar o quitar el rol de Editor; nadie se vuelve admin desde el sitio y la última cuenta admin conserva su rol |
+| Aviso a los admins cuando un editor cambia algo | Hecho | Notificación en el sitio para cada otro admin («@edith editó TP-M03 «…»: pistas»), con enlace a `/panel/cambios/:id` y el antes y después de cada campo. `/panel/cambios` lista todos los cambios |
 | Iniciar sesión con Google | Planeado | |
 | Verificación de correo | Planeado | Requiere un servicio de correo y dominio propio |
 

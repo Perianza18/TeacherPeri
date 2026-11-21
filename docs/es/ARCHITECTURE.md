@@ -82,6 +82,8 @@ Todas las rutas están en `src/App.jsx`. Todo el texto visible está en español
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Biblioteca de exámenes y página de un examen |
 | `/listas`, `/listas/:id` | Listas. Los enlaces viejos `/entrenamiento/listas` redirigen aquí |
 | `/mis-envios`, `/mis-envios/:id` | Las propuestas del usuario y la página para editar una |
+| `/panel`, `/panel/moderacion`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Páginas del equipo para editores y admins (ver [ROLES.md](ROLES.md#dónde-están-las-páginas-del-equipo)) |
+| `/panel/revision`, `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Páginas del equipo solo para admins |
 | `/recursos` | Recursos externos |
 | `/contacto` | Formulario de contacto |
 | `/experiencias`, `/equipo`, `/estudia-en-el-extranjero`, `/sobre-mi`, `/colaboradores` | Páginas «Próximamente» |
@@ -106,14 +108,18 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/collections` | `GET /:slug`: las cajas de problemas de una lección |
 | `/api/paths` | `GET /` (también `?traversal=a/b` para un camino a través de varias Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
 | `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: carpetas, áreas y etiquetas |
-| `/api/reports` | Editores y admins: `GET /`, `POST /comments/:commentId/dismiss` |
+| `/api/reports` | Editores y admins: `GET /`, `POST /comments/:commentId/dismiss` (con `note` opcional) |
 | `/api/submissions` | Con sesión: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
 | `/api/flags` | Con sesión: `POST /`. Editores y admins: `GET /`, `POST /:id/status` |
 | `/api/notifications` | Con sesión: `GET /`, `POST /read` |
+| `/api/editor` | Editores y admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
+| `/api/review` | Admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
+| `/api/users` | Admins: `GET /` (`?q=` para buscar), `PUT /:id/role` (solo `user` o `editor`) |
 | `/api/contact` | Con sesión: `POST /` |
 
-Aprobar y rechazar propuestas no son endpoints de la API; los admins usan un
-script (ver [SUBMISSIONS.md](SUBMISSIONS.md)).
+Los admins aprueban y rechazan propuestas en `/panel/revision` (`/api/review`) o
+con `npm run review`; los dos usan `server/src/lib/review/service.js` (ver
+[SUBMISSIONS.md](SUBMISSIONS.md)).
 
 **Límites:** cada dirección IP puede hacer 300 peticiones a la API cada 15
 minutos, y 20 intentos fallidos de inicio de sesión cada 15 minutos. Ambos
@@ -144,7 +150,8 @@ Los modelos están en `server/src/models/`.
 - **Comunidad:** `Comment` (respuestas hasta 3 niveles, borrado suave), `Report`
   (un comentario reportado), `ProblemSubmission` (una propuesta o una edición
   esperando revisión), `Flag` («Reportar un error»), `Notification`,
-  `ContactMessage`.
+  `ContentRevision` (un cambio directo de un editor o admin, con cada campo antes
+  y después), `ContactMessage`.
 - **Los usuarios** (`User`) tienen un rol: `user`, `editor` o `admin`.
 
 ## Reglas de seguridad dentro del código

@@ -41,16 +41,25 @@ in the Problemas filter includes everything below it.
 ## Error reports (flags)
 
 «Reportar un error» on a problem or a theory page stores a `Flag` (page, person,
-message). One open flag per person per page. Editors and admins list them with
-`GET /api/flags` and close them with `POST /api/flags/:id/status`, or with the
-review script.
+message). One open flag per person per page. Editors and admins handle them on
+`/panel/moderacion` (resolve or dismiss, with an optional note), which uses
+`GET /api/flags` and `POST /api/flags/:id/status`; the review script works too.
 
 ## Review (admins)
 
-Approving and rejecting are not API endpoints. They run through
-`npm run review` (`server/src/scripts/review-submissions.js`), which uses the
-functions in `server/src/lib/review/service.js` (they can later run
-automatically after an upload):
+**On the site:** `/panel/revision` («Revisión» in «Panel del equipo»). Each
+proposal shows its automatic checks; «Revisar» opens it, where the admin can fix
+the title, áreas, tags, exam folder and number before «Aprobar y publicar», or
+write a reason and «Rechazar». Proposed exam folders can be approved, renamed or
+rejected. The page calls `/api/review` (admins only), which runs the same
+functions in `server/src/lib/review/service.js` as the script, always applied,
+with the signed-in admin as reviewer.
+
+**From a terminal:** `npm run review` (`server/src/scripts/review-submissions.js`)
+uses the same functions (they can later run automatically after an upload).
+With the private Atlas file, `npm run atlas:review:test -- <command>` and
+`npm run atlas:review:prod -- <command>` run it without typing the address
+(see [DEVELOPMENT.md](DEVELOPMENT.md#atlas-scripts)):
 
 ```sh
 npm run review -- list                                   # pending problems and folders, open flags
@@ -72,6 +81,11 @@ exam problems); `--attribution` replaces it. The author gets an in-site
 notification when a submission is approved or rejected.
 
 ## Migration
+
+Applied on 2026-11-21 to the `teacherperi` test database
+(`npm run atlas:migrate:test -- --apply`) and to the live `teacherperi_prod`
+database (`npm run atlas:migrate:prod -- --apply`); a second run on each changes
+nothing.
 
 `npm run db:migrate:roles-users` (dry run by default; `--apply` needs
 `MONGO_MIGRATION_TARGET_URI` and `MIGRATION_TARGET_CONFIRM`) rewrites legacy role

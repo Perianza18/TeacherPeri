@@ -5,7 +5,9 @@ import { folderPathNames, normalize } from '../../lib/submissions'
 // Browse the exam folder tree («Exámenes › OMM Estatal › Jalisco › 2023»),
 // pick a folder, or create a subfolder that stays «En revisión» until an
 // admin approves it. `folders` comes from GET /api/submissions/folders.
-export default function ExamFolderPicker({ folders, value, onChange, onFolderCreated, token }) {
+// `allowCreate={false}` hides «Crear carpeta» (the editor screen only moves
+// problems into approved folders).
+export default function ExamFolderPicker({ folders, value, onChange, onFolderCreated, token, allowCreate = true }) {
   const id = useId()
   const root = folders.find((folder) => !folder.parent)
   const selected = folders.find((folder) => String(folder._id) === String(value)) || null
@@ -87,6 +89,7 @@ export default function ExamFolderPicker({ folders, value, onChange, onFolderCre
         </ul>
       ) : <p className="mt-2 text-sm text-tp-ink-muted">«{current.name}» no tiene subcarpetas.</p>}
 
+      {allowCreate && <>
       <div className="mt-4 flex flex-col gap-2 border-t-2 border-dashed border-tp-rule pt-4 sm:flex-row sm:items-end">
         <label className="flex-1 text-sm font-semibold text-tp-ink">
           ¿No está tu carpeta? Crea una dentro de «{current.name}»
@@ -95,6 +98,7 @@ export default function ExamFolderPicker({ folders, value, onChange, onFolderCre
         <button type="button" onClick={create} disabled={creating || !newName.trim()} className="tp-button bg-tp-surface px-4 text-sm font-bold disabled:opacity-50">{creating ? 'Creando…' : 'Crear carpeta'}</button>
       </div>
       <p className="mt-2 text-xs text-tp-ink-muted">Las carpetas nuevas quedan en revisión; solo tú las ves hasta que se aprueben.</p>
+      </>}
       {error && <p role="alert" className="mt-2 text-sm font-semibold text-red-700">{error}</p>}
     </div>
   )

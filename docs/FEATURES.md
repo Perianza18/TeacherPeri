@@ -12,7 +12,7 @@ Everything TeacherPeri does today or aims to do. Each feature has a status:
 Update this file, and [es/FEATURES.md](es/FEATURES.md), in the same pull request
 that changes a feature (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-_Last updated: 2026-11-16._
+_Last updated: 2026-11-21._
 
 ## Inicio (home)
 
@@ -45,14 +45,14 @@ A Ruta is an ordered path through existing material. See
 | Problemas: search, filters (área, tag, level, year, folder), pagination | Done | 56 problems. A problem opens in a window with its comments |
 | Problemas: hints (each behind its own toggle) and solutions | Done | |
 | Problem page with a stable link | Done | `/entrenamiento/problemas/:id` |
-| Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Partial | The tree, the «Carpeta o examen» filter and new folders proposed by users work. The starting folders (OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO) and the practice exams' folders are added by `npm run db:migrate:roles-users`, which has not been run on the live database yet |
+| Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |
 | Teoría: 37 lessons with math, examples and practice | Done | |
 | Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Partial | The renderer is live and 2 lessons use it («Ángulos, paralelas y perpendiculares», «Principio de casillas»). The other 35 still use the older format |
 | «Reportar un error» and «Sugerir cambio» on lessons | Done | «Sugerir cambio» opens Contacto |
 | Exámenes: 3 practice exams | Done | Original TeacherPeri practice, not official OMM papers |
 | Images in problems (geometry) | Planned | **Today:** problems are text and math only; figures exist only in lessons |
 | Global search across all libraries | Planned | **Today:** each library has its own search |
-| Visual refresh of Inicio, Rutas, Entrenamiento, Listas, Contacto and lessons | In progress | Pull request #18, branch `design/comic-refresh` |
+| Visual refresh of Inicio, Rutas, Entrenamiento, Listas, Contacto and lessons («cómic» style, penguin logo) | Done | Pull requests #18, #20 and #21 |
 
 ## Listas
 
@@ -75,8 +75,8 @@ A Ruta is an ordered path through existing material. See
 | Credit on approved problems («Propuesto por @usuario») | Done | |
 | «Reportar un error» on problems and lessons | Done | |
 | In-site notifications (proposal approved or rejected) | Done | In the avatar menu |
-| Automatic review when a problem is proposed | Planned | **Today:** automatic checks run when saving; an admin approves or rejects with `npm run review` |
-| Moderation page for comment reports and error reports | Planned | **Today:** no screen. The API lists them for editors and admins (`GET /api/reports`, `GET /api/flags`), and admins handle error reports with `npm run review` |
+| Automatic review when a problem is proposed | Planned | **Today:** automatic checks run when saving; an admin approves or rejects on `/panel/revision` (or with `npm run review`) |
+| Moderation page for comment reports and error reports | Done | `/panel/moderacion`, editors and admins. Error reports link to the problem or lesson (and to «Editar»); each one is marked resolved or dismissed with an optional note. Reported comments are dismissed with a note, or deleted with a reason. Filters: open, resolved, dismissed |
 | Suggest changes to official problems and lessons | Planned | **Today:** «Reportar un error», or «Sugerir cambio» on lessons, which opens Contacto |
 | Follow other users | Planned | |
 | Threads (a forum separate from problem comments) | Planned | **Today:** discussion happens only in the comments under each problem |
@@ -87,9 +87,9 @@ A Ruta is an ordered path through existing material. See
 | --- | --- | --- |
 | Sign up and log in with email and password | Done | |
 | Three roles: User, Editor, Admin | Done | See [ROLES.md](ROLES.md). Accounts saved with the old six roles are read as the new ones |
-| Editor screens: see every report, edit any problem or lesson | Planned | **Today:** editors can delete other people's comments; their other permissions exist only on the server |
-| Admin screens: review proposals, name editors | Planned | **Today:** `npm run review` and `npm run users:set-role` |
-| Admins notified when an editor changes something | Planned | |
+| Editor screens: see every report, edit any problem or lesson | Done | «Panel del equipo» in the avatar menu (`/panel`). «Editar problema» on a problem page opens `/panel/problemas/:id/editar` (title, statement, hints, solution, áreas, tags, exam folder and number, with live math preview). «Editar lección» on a lesson opens `/panel/teoria/:id/editar` (title, summary and lesson text, with the real lesson renderer as preview). Changes publish at once; each save records who, when and every field before and after |
+| Admin screens: review proposals, name editors | Done | `/panel/revision`: approve (fixing title, áreas, tags, exam folder or number first) or reject with a reason; approve, rename or reject proposed exam folders. Same logic as `npm run review`, which still works. `/panel/usuarios`: give or remove the Editor role; nobody becomes admin from the site and the last admin keeps the role |
+| Admins notified when an editor changes something | Done | In-site notification to every other admin («@edith editó TP-M03 «…»: pistas»), linking to `/panel/cambios/:id` with the before and after of each field. `/panel/cambios` lists every change |
 | Sign in with Google | Planned | |
 | Email verification | Planned | Needs an email service and our own domain |
 

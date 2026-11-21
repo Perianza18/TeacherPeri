@@ -8,8 +8,8 @@ servidor revisa el rol en cada petición; el sitio solo esconde botones.
 | Rol | Puede | Estado |
 | --- | --- | --- |
 | **Usuario** (todos al registrarse) | Leer; comentar; reportar comentarios; reportar errores en problemas y lecciones; proponer problemas y carpetas de examen; editar y borrar sus propias propuestas | Hecho |
-| **Editor** | + borrar cualquier comentario, con motivo; ver todos los reportes de comentarios y de errores; editar cualquier problema o lección | Parcial. Borrar comentarios funciona en el sitio. Los reportes solo se pueden leer con la API (`GET /api/reports`, `GET /api/flags`). Editar cualquier contenido todavía no tiene pantalla ni endpoint |
-| **Admin** | + aprobar o rechazar propuestas y carpetas de examen; restaurar problemas borrados; nombrar editores; recibir aviso cuando un editor cambia algo | Parcial. Revisar y restaurar funcionan con `npm run review` ([SUBMISSIONS.md](SUBMISSIONS.md)). Los roles se cambian con `npm run users:set-role`. Todavía no hay pantallas de admin ni avisos sobre editores |
+| **Editor** | + borrar cualquier comentario, con motivo; ver todos los reportes de comentarios y de errores; editar cualquier problema o lección | Hecho. «Panel del equipo» (`/panel`): Moderación, y «Editar problema» y «Editar lección» en cada problema y lección. Ver [FEATURES.md](FEATURES.md#cuentas-y-roles) |
+| **Admin** | + aprobar o rechazar propuestas y carpetas de examen; restaurar problemas borrados; nombrar editores; recibir aviso cuando un editor cambia algo | Hecho, salvo restaurar: Revisión (`/panel/revision`), Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) y un aviso por cada cambio de un editor. Restaurar problemas borrados sigue siendo solo `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
 Insignias de rol: los comentarios muestran «Editor» o «Admin» junto al nombre de
 usuario. Los usuarios normales no llevan insignia.
@@ -42,7 +42,12 @@ se traducen cada vez que se leen, así que esas cuentas siguen funcionando:
 
 ## Cambiar el rol de alguien
 
-Todavía no hay pantalla para esto. Usa el script protegido: cambia el rol de una
+**En el sitio (admins):** `/panel/usuarios` («Usuarios» en «Panel del equipo»).
+Busca la cuenta y usa «Nombrar editor» o «Quitar rol de editor». Un admin también
+puede pasar a otro admin a Editor, pero nunca a la última cuenta admin. El servidor
+revisa todo esto (`PUT /api/users/:id/role`); nadie se vuelve admin desde el sitio.
+
+**Desde una terminal:** usa el script protegido: cambia el rol de una
 cuenta, primero muestra el cambio, y solo escribe con `--apply` y el nombre de la
 base escrito para confirmar. Roles válidos: `user`, `editor`, `admin`.
 
@@ -53,7 +58,22 @@ MONGO_ROLE_URI='<dirección que termina en /teacherperi>' npm run users:set-role
 MONGO_ROLE_URI='<dirección que termina en /teacherperi>' ROLE_CHANGE_CONFIRM=teacherperi npm run users:set-role -- --user <correo o usuario> --role editor --apply
 ```
 
-Guarda la dirección solo en tu terminal; el script nunca la imprime. El rol nuevo
+Guarda la dirección solo en tu terminal; el script nunca la imprime.
+Con el archivo privado de Atlas (ver [DEVELOPMENT.md](DEVELOPMENT.md#scripts-de-atlas)),
+`npm run atlas:set-role:test -- --user <correo o usuario> --role editor` hace lo
+mismo sin escribir la dirección (`atlas:set-role:prod` para el sitio; agrega
+`--apply` para escribir). El rol nuevo
 aplica de inmediato; la persona solo tiene que recargar el sitio.
 
 Nadie puede crear un admin desde el sitio. Solo este script puede.
+
+## Dónde están las páginas del equipo
+
+| Página | Quién | Qué |
+| --- | --- | --- |
+| `/panel` | Editor, Admin | Inicio («Panel del equipo» en el menú del avatar) |
+| `/panel/moderacion` | Editor, Admin | Reportes de comentarios y de errores |
+| `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Editor, Admin | Editar un problema o una lección; se publica al guardar |
+| `/panel/revision` | Admin | Revisar problemas y carpetas de examen propuestos |
+| `/panel/usuarios` | Admin | Nombrar o quitar editores |
+| `/panel/cambios`, `/panel/cambios/:id` | Admin | Cada cambio de un editor, con el antes y el después |

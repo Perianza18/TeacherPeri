@@ -89,6 +89,17 @@ de escribir; las escrituras ocurren en una sola transacción. Después de una
 revisión, `content:import -- --dry-run` solo reporta `keep`. Una base nueva
 recibe todo con `content:import`.
 
+Con el archivo privado de Atlas, `npm run atlas:revise-theory:test` y
+`npm run atlas:revise-theory:prod` (agrega `-- --apply` para escribir) hacen los
+pasos 1 y 3 por ti (ver [DEVELOPMENT.md](DEVELOPMENT.md#scripts-de-atlas)).
+
+**Cambios hechos en el sitio.** Los editores pueden cambiar una lección en
+`/panel/teoria/:id/editar`. Una lección cambiada ahí ya no tiene exactamente el
+texto anterior, así que una corrida posterior de `content:revise-theory` se
+detiene en ella en vez de borrar el trabajo del editor. Primero copia el cambio
+del sitio al archivo de la lección (`/panel/cambios` muestra el antes y el
+después) y vuelve a correrlo.
+
 ## Qué incluye y de dónde viene
 
 37 lecciones de teoría en español, 56 problemas originales (20 de ellos de las
