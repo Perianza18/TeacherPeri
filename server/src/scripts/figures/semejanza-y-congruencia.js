@@ -18,14 +18,20 @@ const U=[150,30], V=[40,185], W=[260,185], M=point(V,W,0.5)
 assert.equal(length(U,V),length(U,W)); assert.equal(length(V,M),length(M,W))
 save('mediana', [line(U,V),line(V,W),line(W,U),line(U,M,'#6D3EE8')], [label(U,'A',-5,-8),label(V,'B',-17,16),label(W,'C',5,16),label(M,'M',-7,18)])
 
-const house = (x, y, sx, sy, outline) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})"><path d="M -27 0 L 0 -24 L 27 0 L 21 0 L 21 24 L -21 24 L -21 0 Z" fill="none" stroke="${outline}" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M -12 24 V 8 H -3 V 24 M 5 3 H 14 V 12 H 5 Z" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></g>`
-const houseLabels = [label([42,125], 'original'), label([183,135], 'ampliada'), label([117,215], 'estirada')]
-const houseWidth = (sx) => 54 * sx
-const houseHeight = (sy) => 48 * sy
-assert.ok(Math.abs(houseWidth(1.4) / houseWidth(1) - houseHeight(1.4) / houseHeight(1)) < 1e-12)
-assert.equal(houseWidth(1.7) / houseWidth(1), 1.7)
-assert.equal(houseHeight(1) / houseHeight(1), 1)
-save('pantalla', [house(65,75,1,1,'#111111'),house(215,75,1.4,1.4,'#6D3EE8'),house(150,170,1.7,1,'#6D3EE8')], houseLabels)
+const picture = (x, y, sx, sy, outline) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="0" y="0" width="80" height="60" rx="3" stroke="${outline}" vector-effect="non-scaling-stroke"/><circle cx="63" cy="12" r="5" vector-effect="non-scaling-stroke"/><path d="M 7 14 C 7 11 10 10 12 11 C 14 7 19 8 20 11 C 23 10 25 12 25 14" vector-effect="non-scaling-stroke"/><path d="M 1 48 L 18 24 L 29 36 L 43 14 L 79 48 M 13 31 L 18 30 L 21 27 L 25 32 M 36 24 L 41 26 L 44 22 L 49 29" vector-effect="non-scaling-stroke"/><path d="M 1 50 Q 18 45 36 51 T 79 49 M 37 55 H 48 M 54 54 H 65" vector-effect="non-scaling-stroke"/><path d="M 8 49 V 44 H 4 L 10 34 L 16 44 H 12 V 49 Z" fill="white" vector-effect="non-scaling-stroke"/></g>`
+const pictureWidth = (sx) => 80 * sx
+const pictureHeight = (sy) => 60 * sy
+const originalScale = 1.25
+const zoomScale = 1.6875
+const stretchX = 1.9375
+assert.ok(Math.abs(pictureWidth(zoomScale) / pictureWidth(originalScale) - pictureHeight(zoomScale) / pictureHeight(originalScale)) < 1e-12)
+assert.ok(Math.abs(pictureWidth(stretchX) / pictureWidth(originalScale) - 1.55) < 1e-12)
+const originalHeight = pictureHeight(originalScale)
+const stretchedHeight = pictureHeight(originalScale)
+assert.equal(stretchedHeight, originalHeight)
+const arrow = [line([119,105],[134,105],'#6D3EE8'),line([128,99],[134,105],'#6D3EE8'),line([128,111],[134,105],'#6D3EE8')]
+save('pantalla', [picture(15,70,originalScale,originalScale,'#111111'),picture(145,56,zoomScale,zoomScale,'#6D3EE8'),...arrow], [label([35,185],'original'),label([188,185],'ampliada')])
+save('estirada', [picture(15,70,originalScale,originalScale,'#111111'),picture(140,70,stretchX,originalScale,'#6D3EE8'),...arrow], [label([35,178],'original'),label([190,178],'estirada')])
 const G=[25,165], H=[95,165], I=[25,113], J=[242,55], K=[137,55], L=[242,133]
 const rotateAndEnlarge = (p) => [J[0]-1.5*(p[0]-G[0]), J[1]-1.5*(p[1]-G[1])]
 assert.deepEqual(rotateAndEnlarge(H), K)
