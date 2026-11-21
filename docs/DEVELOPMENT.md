@@ -95,6 +95,7 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 | `users:set-role` | Changes one account's role ([ROLES.md](ROLES.md)) |
 | `review` | Reviews proposals, exam folders and error reports ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 | `db:migrate:roles-users` | One-time migration for the three roles and exam folders ([SUBMISSIONS.md](SUBMISSIONS.md#migration)) |
+| `atlas:<tool>:test`, `atlas:<tool>:prod` | Run `migrate`, `review`, `set-role`, `revise-theory` or `import` against Atlas using the private Atlas file ([below](#atlas-scripts)) |
 | `db:local:start` | Starts a local MongoDB replica set ([LOCAL_MVP.md](LOCAL_MVP.md)) |
 | `db:reset:dev` | **Erases** the problems and folders of a local `teacherperi_dev` database and fills it with old sample problems. Local only |
 | `curriculum:preview:omm`, `curriculum:preview:omm-content` | Print the OMM Ruta and its content without a database |
@@ -103,3 +104,32 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 Scripts that write to a database run as a dry run unless you pass `--apply` and
 confirm the database name. See the safety rules in
 [ARCHITECTURE.md](ARCHITECTURE.md#safety-rules-built-into-the-code).
+
+## Atlas scripts
+
+The `atlas:*` scripts run a guarded database script against one Atlas database
+without typing its address. They read a private file that lives outside the
+repository and OneDrive, `~/.config/teacherperi/atlas.env` (`chmod 600`), with
+two lines:
+
+```sh
+ATLAS_TEST_URI=mongodb+srv://<user>:<password>@<cluster>/teacherperi?<options>
+ATLAS_PROD_URI=mongodb+srv://<user>:<password>@<cluster>/teacherperi_prod?<options>
+```
+
+An older file with a single `ATLAS_URI=` line also works: the scripts point it at
+the right database. The wrapper (`server/src/scripts/atlas.js`) refuses a string
+whose database name does not match its target, never prints a string, and hands
+it to the tool through the tool's own variable.
+
+| Script | Tool |
+| --- | --- |
+| `atlas:migrate:test`, `atlas:migrate:prod` | `db:migrate:roles-users` |
+| `atlas:review:test`, `atlas:review:prod` | `review` |
+| `atlas:set-role:test`, `atlas:set-role:prod` | `users:set-role` |
+| `atlas:revise-theory:test`, `atlas:revise-theory:prod` | `content:revise-theory` |
+| `atlas:import:test`, `atlas:import:prod` | `content:import` |
+
+Each one is a dry run (or read only) unless `--apply` follows `--`, for example
+`npm run atlas:migrate:test -- --apply`. With `--apply` the wrapper confirms the
+database name for the tool. Writes to `teacherperi_prod` need the owner's OK first.

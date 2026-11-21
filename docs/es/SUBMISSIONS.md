@@ -44,15 +44,25 @@ filtro de Problemas incluye todo lo que está dentro.
 
 «Reportar un error» en un problema o en una lección guarda un `Flag` (página,
 persona, mensaje). Hay un solo reporte abierto por persona y página. Editores y
-admins los listan con `GET /api/flags` y los cierran con
-`POST /api/flags/:id/status`, o con el script de revisión.
+admins los atienden en `/panel/moderacion` (resolver o descartar, con nota
+opcional), que usa `GET /api/flags` y `POST /api/flags/:id/status`; el script de
+revisión también sirve.
 
 ## Revisión (admins)
 
-Aprobar y rechazar no son endpoints de la API. Se hacen con `npm run review`
-(`server/src/scripts/review-submissions.js`), que usa las funciones de
-`server/src/lib/review/service.js` (más adelante podrán correr solas después de
-cada envío):
+**En el sitio:** `/panel/revision` («Revisión» en «Panel del equipo»). Cada
+propuesta muestra sus revisiones automáticas; «Revisar» la abre, y ahí el admin
+puede corregir título, áreas, etiquetas, carpeta y número antes de «Aprobar y
+publicar», o escribir un motivo y «Rechazar». Las carpetas de examen propuestas
+se aprueban, renombran o rechazan. La página llama a `/api/review` (solo admins),
+que corre las mismas funciones de `server/src/lib/review/service.js` que el
+script, siempre aplicadas y con el admin que inició sesión como revisor.
+
+**Desde una terminal:** `npm run review` (`server/src/scripts/review-submissions.js`)
+usa las mismas funciones (más adelante podrán correr solas después de cada
+envío). Con el archivo privado de Atlas, `npm run atlas:review:test -- <comando>`
+y `npm run atlas:review:prod -- <comando>` lo corren sin escribir la dirección
+(ver [DEVELOPMENT.md](DEVELOPMENT.md#scripts-de-atlas)):
 
 ```sh
 npm run review -- list                                   # problemas y carpetas pendientes, reportes abiertos
@@ -75,6 +85,10 @@ examen); `--attribution` lo reemplaza. El autor recibe una notificación en el
 sitio cuando su envío se aprueba o se rechaza.
 
 ## Migración
+
+Se aplicó a la base de prueba `teacherperi` el 2026-11-21 con
+`npm run atlas:migrate:test -- --apply`; la base del sitio usa
+`npm run atlas:migrate:prod -- --apply`.
 
 `npm run db:migrate:roles-users` (simulación por defecto; `--apply` necesita
 `MONGO_MIGRATION_TARGET_URI` y `MIGRATION_TARGET_CONFIRM`) reescribe los valores

@@ -74,6 +74,16 @@ content stops the run. Any conflict stops the whole run before writing; the writ
 happen in one transaction. After a revision, `content:import -- --dry-run` reports
 only `keep`. A fresh database gets everything from `content:import`.
 
+With the private Atlas file, `npm run atlas:revise-theory:test` and
+`npm run atlas:revise-theory:prod` (add `-- --apply` to write) set steps 1 and 3
+for you (see [DEVELOPMENT.md](DEVELOPMENT.md#atlas-scripts)).
+
+**Edits made on the site.** Editors can change a lesson on
+`/panel/teoria/:id/editar`. A lesson changed there no longer holds the exact
+previous text, so a later `content:revise-theory` run stops on it instead of
+overwriting the editor's work. Copy the site's change into the lesson file first
+(`/panel/cambios` shows the before and after), then run it again.
+
 ## Included content and sources
 
 37 Spanish Theory lessons, 56 original Problems (20 of them from the rewritten lessons), six lesson problem collections, six canonical problem Lists,
