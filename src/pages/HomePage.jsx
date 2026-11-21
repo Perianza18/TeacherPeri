@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { useInView } from '../hooks/useInView'
 import { BubbleTail, Burst, HandArrow, Highlight, Mark, Marquee } from '../components/decor/Decor'
+import PeriPenguin from '../components/decor/PeriPenguin'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
@@ -371,25 +372,37 @@ function SobreTeacherPeri() {
   return (
     <section aria-labelledby="sobre-titulo" className="relative overflow-hidden border-t-3 border-tp-ink bg-tp-yellow">
       <div aria-hidden="true" className="tp-halftone absolute -right-20 -top-20 size-[460px] opacity-[.14] [mask-image:radial-gradient(circle,black_20%,transparent_68%)]" />
-      <div className="tp-container relative grid items-center gap-14 py-20 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:py-28">
+      {/* The title spans the section; below it the penguin's bubble and the
+          Experiencias card share a row, tops aligned. */}
+      <div className="tp-container relative flex flex-col gap-10 py-20 lg:gap-12 lg:py-28">
         <div className="flex flex-col items-start gap-5">
           <span className="tp-sticker -rotate-2 bg-tp-surface">Sobre TeacherPeri</span>
-          <h2 id="sobre-titulo" className="tp-section-title">Construido desde la experiencia de aprender, competir y <Highlight color="var(--tp-sky)">enseñar</Highlight>.</h2>
-          <div className="tp-bubble mt-4 max-w-[640px] bg-tp-surface px-6 py-5 sm:px-7">
-            <p className="text-[17px] leading-[1.65]"><strong>Misión:</strong> hacer que el entrenamiento para olimpiadas de matemáticas sea accesible para todos. Inspirados por la experiencia de dar talleres gratuitos a estudiantes y profesores.</p>
-            <BubbleTail className="left-10 top-[calc(100%-3px)]" />
-          </div>
-          <div className="flex flex-wrap gap-3 pt-10">
-            <Link to="/sobre-mi" className="tp-button bg-tp-ink px-5 font-bold text-white">Sobre mí</Link>
-            <Link to="/contacto" className="tp-button bg-tp-surface px-5 font-bold text-tp-ink">Contacto</Link>
-          </div>
+          <h2 id="sobre-titulo" className="tp-section-title max-w-[1000px]">Construido desde la experiencia de aprender, competir y <Highlight color="var(--tp-sky)">enseñar</Highlight>.</h2>
         </div>
-        <aside aria-labelledby="experiencias-titulo" className="tp-card relative flex flex-col gap-3 bg-tp-surface p-7 lg:rotate-0">
-          <span className="tp-sticker -rotate-3 self-start bg-tp-coral">Próximamente</span>
-          <h3 id="experiencias-titulo" className="font-display text-[34px] font-extrabold leading-none tracking-[-0.03em]">Experiencias</h3>
-          <p className="text-[17px] text-tp-ink-muted">Historias de exolímpicos para inspirarte a dar el siguiente paso.</p>
-          <span aria-hidden="true" className="tp-hand rotate-[-3deg] self-end pt-2 text-[26px] text-tp-violet">¡pronto aquí!</span>
-        </aside>
+        <div className="grid items-start gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          {/* Peri's penguin says the mission. On a phone the bubble sits above
+              it, its tail pointing down at the head; from sm up the penguin
+              stands to the left of the bubble, the tail pointing at its beak,
+              and the buttons go under the bubble. */}
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-x-5 gap-y-3 [grid-template-areas:'bubble_bubble'_'penguin_buttons'] sm:items-start sm:gap-x-11 sm:gap-y-7 sm:[grid-template-areas:'penguin_bubble'_'penguin_buttons']">
+            <div className="tp-bubble max-w-[640px] bg-tp-surface px-6 py-5 [grid-area:bubble] sm:px-7">
+              <p className="text-[17px] leading-[1.65]"><strong>Misión:</strong> hacer que el entrenamiento para olimpiadas de matemáticas sea accesible para todos. Inspirados por la experiencia de dar talleres gratuitos a estudiantes y profesores.</p>
+              <BubbleTail className="left-12 top-[calc(100%-3px)] sm:hidden" />
+              <BubbleTail className="left-[3px] top-7 hidden origin-top-left rotate-90 sm:block" />
+            </div>
+            <PeriPenguin className="mt-11 h-[160px] w-auto [grid-area:penguin] sm:mt-0 sm:h-[220px] lg:h-[240px]" />
+            <div className="flex flex-wrap gap-3 pb-1 [grid-area:buttons]">
+              <Link to="/sobre-mi" className="tp-button bg-tp-ink px-5 font-bold text-white">Sobre mí</Link>
+              <Link to="/contacto" className="tp-button bg-tp-surface px-5 font-bold text-tp-ink">Contacto</Link>
+            </div>
+          </div>
+          <aside aria-labelledby="experiencias-titulo" className="tp-card relative flex flex-col gap-3 bg-tp-surface p-7 lg:rotate-0">
+            <span className="tp-sticker -rotate-3 self-start bg-tp-coral">Próximamente</span>
+            <h3 id="experiencias-titulo" className="font-display text-[34px] font-extrabold leading-none tracking-[-0.03em]">Experiencias</h3>
+            <p className="text-[17px] text-tp-ink-muted">Historias de exolímpicos para inspirarte a dar el siguiente paso.</p>
+            <span aria-hidden="true" className="tp-hand rotate-[-3deg] self-end pt-2 text-[26px] text-tp-violet">¡pronto aquí!</span>
+          </aside>
+        </div>
       </div>
     </section>
   )

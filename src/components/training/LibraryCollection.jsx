@@ -5,7 +5,7 @@ import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import MathText from '../math/MathText'
 import PageHero from '../PageHero'
 import { GlyphTile } from '../decor/Decor'
-import Penguin from '../decor/Penguin'
+import PeriPenguin from '../decor/PeriPenguin'
 import { SkeletonGrid } from '../Skeleton'
 import FolderFilter from './FolderFilter'
 
@@ -89,7 +89,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
     </nav>
     <div aria-live="polite" className="mt-10 font-display text-[22px] font-extrabold tracking-[-0.02em]">{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : `${results.total} resultados`}</div>
     {loading && <SkeletonGrid count={6} className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3" />}
-    {!loading && !results.error && !results.total && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><Penguin question flip className="h-20 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
+    {!loading && !results.error && !results.total && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
     {!loading && <div className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{results.items.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
       <div className={`flex items-center justify-between gap-2 border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || look.strip}`}>
         <p className="truncate text-xs font-extrabold uppercase tracking-[0.12em]">{item.codigo || title}{item.level || item.difficulty ? ` · ${LEVELS[item.level || item.difficulty]}` : ''}</p>
