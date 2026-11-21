@@ -46,6 +46,18 @@ const problemSchema = new mongoose.Schema(
 
     hint: { type: String },
     solution: { type: String },
+
+    // Up to 4 pictures (ProblemImage), each with its Spanish alt text, shown
+    // under the statement or inside the solution. See server/src/lib/images.js.
+    images: {
+      type: [new mongoose.Schema({
+        image: { type: mongoose.Schema.Types.ObjectId, ref: 'ProblemImage', required: true },
+        alt: { type: String, required: true, trim: true, minlength: 5, maxlength: 300 },
+        placement: { type: String, enum: ['statement', 'solution'], default: 'statement' },
+      }, { _id: false })],
+      default: undefined,
+      validate: [(list) => !list || list.length <= 4, 'Un problema puede tener como máximo 4 imágenes.'],
+    },
     sourceAttribution: { type: String, trim: true },
     competition: { type: String, trim: true },
     round: { type: String, trim: true },

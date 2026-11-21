@@ -12,6 +12,7 @@ import Tag from '../models/Tag.js'
 import Topic from '../models/Topic.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { examPathLabel, folderPath } from './examFolders.js'
+import { parseImageList } from './images.js'
 
 const MAX_TERMS = 10
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
@@ -44,7 +45,9 @@ export function parseProposal(body = {}) {
       problemNumber = number
     }
   }
-  return { proposal: { enunciado, topics, tags, isExam, examFolder, problemNumber } }
+  const images = parseImageList(body.images)
+  if (images.error) return images
+  return { proposal: { enunciado, topics, tags, isExam, examFolder, problemNumber, images: images.images } }
 }
 
 export async function vocabulary() {
@@ -107,7 +110,13 @@ export function proposalFromProblem(problem, folders) {
     isExam: Boolean(examFolder),
     examFolder,
     problemNumber: examFolder ? problem.problemNumber ?? null : null,
+    images: statementImages(problem.images),
   }
+}
+
+// The statement pictures of a problem or proposal, as plain values.
+export function statementImages(images = []) {
+  return (images || []).filter((entry) => (entry.placement ?? 'statement') === 'statement').map((entry) => ({ image: String(entry.image), alt: entry.alt, placement: 'statement' }))
 }
 
 // What the author sees in «Mis envíos».
@@ -143,7 +152,7 @@ export async function ownSubmissionViews(userId, problemIds = null) {
     const latest = latestByProblem.get(String(problem._id)) || null
     const pending = latest?.status === 'pending' ? latest : null
     const live = proposalFromProblem(problem, byId)
-    const proposal = pending ? { ...pending.proposed, topics: pending.proposed.topics.map(String), tags: pending.proposed.tags.map(String), examFolder: pending.proposed.examFolder ? String(pending.proposed.examFolder) : null } : live
+    const proposal = pending ? { ...pending.proposed, topics: pending.proposed.topics.map(String), tags: pending.proposed.tags.map(String), examFolder: pending.proposed.examFolder ? String(pending.proposed.examFolder) : null, images: statementImages(pending.proposed.images) } : live
     const folder = proposal.examFolder ? byId.get(String(proposal.examFolder)) : null
     return {
       _id: problem._id,
@@ -167,5 +176,6 @@ export async function ownSubmissionViews(userId, problemIds = null) {
 export function sameProposal(a, b) {
   const sorted = (list) => [...(list || [])].map(String).sort().join(',')
   return a.enunciado === b.enunciado && sorted(a.topics) === sorted(b.topics) && sorted(a.tags) === sorted(b.tags) &&
-    Boolean(a.isExam) === Boolean(b.isExam) && String(a.examFolder ?? '') === String(b.examFolder ?? '') && (a.problemNumber ?? null) === (b.problemNumber ?? null)
+    Boolean(a.isExam) === Boolean(b.isExam) && String(a.examFolder ?? '') === String(b.examFolder ?? '') && (a.problemNumber ?? null) === (b.problemNumber ?? null) &&
+    JSON.stringify(statementImages(a.images)) === JSON.stringify(statementImages(b.images))
 }

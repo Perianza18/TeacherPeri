@@ -50,7 +50,7 @@ A Ruta is an ordered path through existing material. See
 | Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Partial | The renderer is live and 2 lessons use it («Ángulos, paralelas y perpendiculares», «Principio de casillas»). The other 35 still use the older format |
 | «Reportar un error» and «Sugerir cambio» on lessons | Done | «Sugerir cambio» opens Contacto |
 | Exámenes: 3 practice exams | Done | Original TeacherPeri practice, not official OMM papers |
-| Images in problems (geometry) | Planned | **Today:** problems are text and math only; figures exist only in lessons |
+| Images in problems (geometry) | Done | Up to 4 per problem, each with a required Spanish description. Users add them when proposing; admins see them in Revisión; editors add, replace or remove them (statement or solution). Stored in MongoDB as WebP (max 1200 px), about 12 KB per figure. See [SUBMISSIONS.md](SUBMISSIONS.md#images-in-problems) |
 | Global search across all libraries | Planned | **Today:** each library has its own search |
 | Visual refresh of Inicio, Rutas, Entrenamiento, Listas, Contacto and lessons («cómic» style, penguin logo) | Done | Pull requests #18, #20 and #21 |
 

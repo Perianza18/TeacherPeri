@@ -4,6 +4,7 @@ import PanelShell, { LoadState } from '../../components/panel/PanelShell'
 import MathText from '../../components/math/MathText'
 import VocabularyPicker from '../../components/submissions/VocabularyPicker'
 import ExamFolderPicker from '../../components/submissions/ExamFolderPicker'
+import ImagesField from '../../components/images/ImagesField'
 import { apiFetch } from '../../lib/api'
 import { splitHints } from '../../lib/hints'
 import { useApiData } from '../../lib/panel'
@@ -40,6 +41,7 @@ function toForm(item) {
     isExam: Boolean(item.examFolder),
     examFolder: item.examFolder || null,
     problemNumber: item.problemNumber ?? '',
+    images: item.images || [],
   }
 }
 
@@ -91,6 +93,7 @@ function ProblemForm({ initial, vocab, token }) {
           tags: form.tags,
           examFolder: form.isExam ? form.examFolder : null,
           problemNumber: form.isExam && form.problemNumber !== '' ? Number(form.problemNumber) : null,
+          images: form.images,
           baseUpdatedAt: base.updatedAt,
         },
       })
@@ -126,6 +129,7 @@ function ProblemForm({ initial, vocab, token }) {
           preview={<ol className="flex flex-col gap-3">{hints.map((hint, index) => <li key={index}><span className="text-xs font-bold uppercase tracking-[0.12em] text-tp-ink-muted">Pista {index + 1}</span><MathText text={hint} className="tp-reading-text mt-1 leading-7" /></li>)}</ol>}
         />
         <MathField label="Solución" value={form.solution} onChange={(value) => set('solution', value)} max={LIMITS.solution} rows={10} />
+        <ImagesField value={form.images} onChange={(images) => set('images', images)} token={token} allowSolution />
       </section>
 
       <section className="tp-card-soft flex flex-col gap-6 bg-tp-surface p-5 sm:p-7">

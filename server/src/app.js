@@ -32,6 +32,7 @@ import notificationsRoutes from './routes/notifications.routes.js'
 import editorRoutes from './routes/editor.routes.js'
 import reviewRoutes from './routes/review.routes.js'
 import usersRoutes from './routes/users.routes.js'
+import imagesRoutes from './routes/images.routes.js'
 
 const app = express()
 
@@ -63,10 +64,25 @@ app.use(express.json())
 //    fallidos: así un salón entero que entra desde la misma red escolar
 //    (misma IP) no se bloquea, y adivinar contraseñas sigue limitado.
 if (process.env.NODE_ENV !== 'test') {
+  // Problem images: a page may show up to 4, and browsers cache each one for a
+  // year, so they get their own, larger budget instead of the general one.
+  const isImageRead = (req) => req.method === 'GET' && req.path.startsWith('/images/')
+  app.use(
+    '/api/images',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 2000,
+      skip: (req) => req.method !== 'GET',
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { error: 'Demasiadas peticiones. Espera unos minutos e intenta de nuevo.' },
+    }),
+  )
   app.use(
     '/api',
     rateLimit({
       windowMs: 15 * 60 * 1000,
+      skip: isImageRead,
       max: 300,
       standardHeaders: true,
       legacyHeaders: false,
@@ -106,6 +122,7 @@ app.use('/api/notifications', notificationsRoutes)
 app.use('/api/editor', editorRoutes)
 app.use('/api/review', reviewRoutes)
 app.use('/api/users', usersRoutes)
+app.use('/api/images', imagesRoutes)
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ese recurso no existe.' }))
 app.use((error, _req, res, next) => {

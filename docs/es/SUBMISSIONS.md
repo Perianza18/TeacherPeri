@@ -8,7 +8,7 @@ reportar errores. Nada de lo que mandan es público hasta que un admin lo revisa
 
 ## Problemas
 
-- **Proponer:** `/entrenamiento/problemas/proponer`. Solo el enunciado (KaTeX con
+- **Proponer:** `/entrenamiento/problemas/proponer`. El enunciado (KaTeX con
   `$…$` y `$$…$$`), áreas y etiquetas elegidas del vocabulario existente (Topics y
   Tags; «Original TeacherPeri» está reservada para el equipo) y, si quieres,
   «Es un problema de examen» con una carpeta y un número de problema.
@@ -29,6 +29,8 @@ reportar errores. Nada de lo que mandan es público hasta que un admin lo revisa
   mostrar, `$` sin cerrar, vocabulario, carpeta de examen, duplicados y casi
   duplicados, enlaces, caracteres repetidos y todo en mayúsculas. Los errores
   impiden guardar; las advertencias son para quien revisa.
+
+Con el enunciado pueden ir hasta 4 imágenes (ver [Imágenes en los problemas](#imágenes-en-los-problemas)).
 
 ## Carpetas de examen
 
@@ -97,3 +99,29 @@ de rol antiguos, crea «Exámenes» con las carpetas vacías «OMM», «OMM Esta
 los exámenes de práctica existentes en
 «Exámenes › Prácticas TeacherPeri › <ronda>». Solo agrega y se puede correr
 varias veces sin cambiar nada más.
+
+
+## Imágenes en los problemas
+
+- **Quién las agrega:** quien propone un problema (debajo del enunciado), y editores
+  y admins en `/panel/problemas/:id/editar` (debajo del enunciado o dentro de la
+  solución). Hasta 4 por problema, cada una con una descripción obligatoria en
+  español (texto alternativo, de 5 a 300 caracteres). Los admins las ven, con su
+  descripción, en Revisión.
+- **Subida:** `POST /api/images` con el archivo como cuerpo. PNG, JPG o WebP de
+  hasta 5 MB, detectado por los bytes del archivo (SVG y cualquier otro formato se
+  rechazan). El servidor la convierte a WebP, de máximo 1200 px de ancho y sin
+  metadatos (sharp).
+- **Dónde se guardan:** la colección `ProblemImage` en la misma base de MongoDB,
+  nunca en el disco de Render. Un problema o una propuesta guarda
+  `images: [{ image, alt, placement }]`. Una imagen subida que nadie usa se borra
+  al día siguiente; una imagen que se quita de un borrador o que quita un editor
+  se borra si nada más la usa. Cada persona puede tener como máximo 12 imágenes
+  subidas sin usar.
+- **Cómo se sirven:** `GET /api/images/:id`, pública, con
+  `Cache-Control: max-age=31536000, immutable`. Una imagen nunca cambia:
+  «Reemplazar» sube una nueva.
+- **Espacio:** las figuras de geometría como las de las lecciones ocupan 10–15 KB
+  cada una (12 KB en promedio, medido con las 9 figuras de `public/figuras`), así
+  que un problema con una o dos figuras usa unos 12–25 KB. La peor imagen posible
+  (ruido puro) ocupa unos 385 KB.

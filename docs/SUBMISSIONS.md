@@ -8,7 +8,7 @@ until an admin reviews it.
 
 ## Problems
 
-- **Propose:** `/entrenamiento/problemas/proponer`. Statement only (KaTeX with
+- **Propose:** `/entrenamiento/problemas/proponer`. The statement (KaTeX with
   `$…$` and `$$…$$`), áreas and tags picked from the existing vocabulary
   (Topics and Tags; «Original TeacherPeri» is reserved for staff), and optionally
   «Es un problema de examen» with a folder and a problem number.
@@ -28,6 +28,8 @@ until an admin reviews it.
   review: statement length, KaTeX rendering, unbalanced `$`, vocabulary, exam
   folder, duplicates and near duplicates, links, repeated characters and all caps.
   Errors block saving; warnings are for the reviewer.
+
+Up to 4 images may go with the statement (see [Images in problems](#images-in-problems)).
 
 ## Exam folders
 
@@ -93,3 +95,25 @@ values, creates «Exámenes» with the empty folders «OMM», «OMM Estatal», �
 «Centroamericana», «Iberoamericana» and «IMO», and files the problems of
 the existing practice exams into «Exámenes › Prácticas TeacherPeri › <round>».
 It is additive and idempotent.
+
+
+## Images in problems
+
+- **Who adds them:** anyone proposing a problem (under the statement), and editors
+  and admins on `/panel/problemas/:id/editar` (under the statement or inside the
+  solution). Up to 4 per problem, each with a required Spanish description (alt
+  text, 5–300 characters). Admins see them, with their descriptions, in Revisión.
+- **Upload:** `POST /api/images` with the file as the body. PNG, JPG or WebP up to
+  5 MB, detected from the file's bytes (SVG and anything else is refused). The
+  server turns it into WebP, at most 1200 px wide, without metadata (sharp).
+- **Storage:** the `ProblemImage` collection in the same MongoDB database, never
+  on Render's disk. A problem or proposal keeps `images: [{ image, alt, placement }]`.
+  An upload nobody uses is deleted after a day; a picture removed from a draft or
+  by an editor is deleted when nothing else uses it. Each person may keep at most
+  12 unused uploads.
+- **Serving:** `GET /api/images/:id`, public, `Cache-Control: max-age=31536000,
+  immutable`. An image never changes: «Reemplazar» uploads a new one.
+- **Space:** lesson-style geometry figures are stored at 10–15 KB each (12 KB on
+  average, measured on the 9 figures in `public/figuras`), so a problem with one or
+  two figures uses about 12–25 KB. The worst possible image (pure noise) is about
+  385 KB.

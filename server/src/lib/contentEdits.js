@@ -18,6 +18,7 @@ import { roleOf } from './permissions.js'
 import { folderPath } from './examFolders.js'
 import { mathFindings, statementFindings, STATEMENT_MAX } from './review/checks.js'
 import { vocabulary } from './submissions.js'
+import { assertUsableImages, parseImageList } from './images.js'
 
 export const PROBLEM_LIMITS = { titulo: 200, enunciado: STATEMENT_MAX, hint: 5000, solution: 20000 }
 export const THEORY_LIMITS = { title: 200, summary: 600, content: 200000 }
@@ -61,7 +62,11 @@ export function parseProblemEdit(body = {}) {
     tags: idList(body.tags, 'etiquetas'),
     examFolder: null,
     problemNumber: null,
+    images: [],
   }
+  const images = parseImageList(body.images, { allowSolution: true })
+  if (images.error) throw new EditError(images.error)
+  edit.images = images.images
   if (body.examFolder != null && body.examFolder !== '') {
     if (!isId(body.examFolder)) throw new EditError('La carpeta de examen no es válida.')
     edit.examFolder = String(body.examFolder)
@@ -115,6 +120,7 @@ export async function problemEditView(problem) {
     examFolder,
     examFolderPath: examFolder ? folderPath(examFolder, foldersById).slice(1) : [],
     problemNumber: problem.problemNumber ?? null,
+    images: (problem.images || []).map((entry) => ({ image: String(entry.image), alt: entry.alt, placement: entry.placement || 'statement' })),
     publicationStatus: problem.publicationStatus,
     deleted: Boolean(problem.deletedAt),
     author: problem.author ?? null,
@@ -150,6 +156,11 @@ export async function applyProblemEdit(problem, edit, { baseUpdatedAt } = {}) {
   const [{ topics, tags }, foldersById] = await Promise.all([vocabulary(), examFolders()])
   if (edit.topics.some((id) => !topics.has(id))) throw new EditError('Una de las áreas elegidas no existe.')
   if (edit.tags.some((id) => !tags.has(id))) throw new EditError('Una de las etiquetas elegidas no existe.')
+  try {
+    await assertUsableImages(edit.images, { staff: true })
+  } catch (error) {
+    throw new EditError(error.message, error.status || 400)
+  }
   const currentFolder = examFolderOf(problem, foldersById)
   if (edit.examFolder && edit.examFolder !== currentFolder) {
     const folder = foldersById.get(edit.examFolder)
@@ -172,6 +183,9 @@ export async function applyProblemEdit(problem, edit, { baseUpdatedAt } = {}) {
   if (!sameList(problem.topics || [], edit.topics)) changes.push({ field: 'topics', label: 'Áreas', before: names(problem.topics || [], topics, 'name'), after: names(edit.topics, topics, 'name') })
   if (!sameList(problem.tags || [], edit.tags)) changes.push({ field: 'tags', label: 'Etiquetas', before: names(problem.tags || [], tags, 'label'), after: names(edit.tags, tags, 'label') })
   if ((currentFolder || null) !== (edit.examFolder || null)) changes.push({ field: 'examFolder', label: 'Carpeta de examen', before: pathOf(currentFolder), after: pathOf(edit.examFolder) })
+  const imageLabel = (list) => list.map((entry, index) => `${index + 1}. ${entry.placement === 'solution' ? '[solución] ' : ''}${entry.alt} (${entry.image})`)
+  const currentImages = (problem.images || []).map((entry) => ({ image: String(entry.image), alt: entry.alt, placement: entry.placement || 'statement' }))
+  if (JSON.stringify(currentImages) !== JSON.stringify(edit.images)) changes.push({ field: 'images', label: 'Imágenes', before: imageLabel(currentImages), after: imageLabel(edit.images) })
   if ((problem.problemNumber ?? null) !== (edit.problemNumber ?? null)) changes.push({ field: 'problemNumber', label: 'Número de problema', before: problem.problemNumber ?? null, after: edit.problemNumber ?? null })
 
   if (changes.length) {
@@ -185,6 +199,7 @@ export async function applyProblemEdit(problem, edit, { baseUpdatedAt } = {}) {
       tags: edit.tags,
       categories: [...otherCategories, ...(edit.examFolder ? [edit.examFolder] : [])],
       problemNumber: edit.problemNumber ?? undefined,
+      images: edit.images.length ? edit.images : undefined,
     })
   }
   return changes
