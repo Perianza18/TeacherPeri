@@ -6,6 +6,7 @@ import { apiFetch } from '../lib/api'
 import useDialog from '../hooks/useDialog'
 import { useAuth } from '../context/useAuth'
 import MathText from '../components/math/MathText'
+import ProblemImages from '../components/images/ProblemImages'
 import LibraryCollection from '../components/training/LibraryCollection'
 import CommentSection from '../components/comments/CommentSection'
 import { PROPOSE_PATH } from '../lib/submissions'
@@ -148,6 +149,7 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
               HTML (el mismo tipo de error que se ve en Contacto.jsx). */}
           <div className="tp-card-quiet mb-6 bg-tp-surface p-5">
             <MathText text={problema.enunciado} className="tp-reading-text whitespace-pre-line" />
+            <ProblemImages images={problema.images} className="mt-4" />
           </div>
 
           <CommentSection

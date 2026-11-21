@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MathText from '../components/math/MathText'
 import ProblemSubmissionForm from '../components/submissions/ProblemSubmissionForm'
+import ProblemImages from '../components/images/ProblemImages'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 import { MY_SUBMISSIONS_PATH, PROPOSE_PATH, STATE_INFO } from '../lib/submissions'
@@ -63,6 +64,7 @@ function SubmissionCard({ item, token, onDeleted }) {
         {item.examFolderPending && <span className="tp-pill bg-tp-yellow-soft text-xs">Carpeta en revisión</span>}
       </div>
       <MathText text={showProposal ? item.proposal.enunciado : item.enunciado} className="line-clamp-6 whitespace-pre-wrap break-words leading-7 text-tp-ink" />
+      {showProposal && <ProblemImages images={item.proposal.images} className="justify-start" />}
       {item.state === 'published-pending' && <p className="text-sm text-tp-ink-muted">Tus cambios están en revisión; mientras tanto se muestra la versión publicada.</p>}
       {(item.state === 'rejected' || item.state === 'published-rejected') && item.latest?.reason && (
         <p className="tp-card-quiet bg-tp-coral-soft p-3 text-sm leading-6"><strong>Motivo: </strong>{item.latest.reason}</p>

@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PanelShell, { LoadState, PanelNotice } from '../../components/panel/PanelShell'
 import MathText from '../../components/math/MathText'
+import ProblemImages from '../../components/images/ProblemImages'
 import VocabularyPicker from '../../components/submissions/VocabularyPicker'
 import ExamFolderPicker from '../../components/submissions/ExamFolderPicker'
 import { apiFetch } from '../../lib/api'
@@ -24,6 +25,8 @@ function Proposal({ data, label }) {
     <div className="flex flex-col gap-2">
       {label && <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">{label}</p>}
       <MathText text={data.enunciado} className="tp-reading-text whitespace-pre-wrap break-words leading-7" />
+      <ProblemImages images={data.images} className="justify-start" />
+      {data.images?.length > 0 && <ul className="text-sm text-tp-ink-muted">{data.images.map((entry, index) => <li key={entry.image}>Imagen {index + 1}: «{entry.alt}»</li>)}</ul>}
       <p className="flex flex-wrap gap-2 text-sm">
         {data.isExam && <span className="tp-pill bg-tp-surface text-xs">{data.examFolder?.replace(/^Exámenes › /, '') ?? 'Sin carpeta'}{data.problemNumber ? ` · Problema ${data.problemNumber}` : ''}</span>}
         {data.topics.map((name) => <span key={name} className="tp-pill bg-tp-sky-soft text-xs">{name}</span>)}

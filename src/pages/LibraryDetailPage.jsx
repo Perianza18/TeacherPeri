@@ -12,6 +12,8 @@ import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
 import { useAuth } from '../context/useAuth'
 import { canEdit, editProblemPath } from '../lib/panel'
+import ProblemImages from '../components/images/ProblemImages'
+import { byPlacement } from '../lib/images'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -50,7 +52,7 @@ function Hints({ hint }) {
 
 // Two steps: opening the card first asks «¿Ya lo intentaste?»; only «Sí, ver
 // la solución» shows it. «Me doy 5 minutos más» closes the card again.
-function Solution({ solution }) {
+function Solution({ solution, images }) {
   const [stage, setStage] = useState('closed') // closed | asking | shown
   const toggle = (event) => {
     event.preventDefault()
@@ -75,7 +77,8 @@ function Solution({ solution }) {
       )}
       {stage === 'shown' && (
         <div className="border-t-2 border-dashed border-tp-rule px-5 pb-5 pt-4">
-          <MathText text={solution} className="tp-reading-text whitespace-pre-wrap leading-8" />
+          {solution && <MathText text={solution} className="tp-reading-text whitespace-pre-wrap leading-8" />}
+          <ProblemImages images={images} placement="solution" className="mt-5" />
         </div>
       )}
     </details>
@@ -198,11 +201,12 @@ export default function LibraryDetailPage({ type }) {
           <section aria-labelledby="enunciado-titulo" className="tp-box-strong bg-tp-surface p-6 sm:p-8">
             <h2 id="enunciado-titulo" className="tp-kicker tp-kicker-ink font-sans">Enunciado</h2>
             <MathText text={item.enunciado} className="tp-reading-text mt-5 whitespace-pre-wrap text-[20px] leading-[1.75]" />
+            <ProblemImages images={item.images} className="mt-6" />
           </section>
           {(item.hint || item.solution) && <p className="tp-hand -mt-2 -rotate-1 pl-2 text-[26px] text-tp-violet">Toma papel y lápiz: inténtalo antes de abrir las pistas.</p>}
         </>}
         <Hints hint={item.hint} />
-        {item.solution && <Solution solution={item.solution} />}
+        {(item.solution || byPlacement(item.images, 'solution').length > 0) && <Solution solution={item.solution} images={item.images} />}
         {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
           <FlagButton targetType="problem" targetId={item._id} />
           {canEdit(auth) && <Link to={editProblemPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar problema</Link>}

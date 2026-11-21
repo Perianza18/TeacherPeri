@@ -3,6 +3,7 @@ import { apiFetch } from '../../lib/api'
 import MathText from '../math/MathText'
 import VocabularyPicker from './VocabularyPicker'
 import ExamFolderPicker from './ExamFolderPicker'
+import ImagesField from '../images/ImagesField'
 
 const STATEMENT_MAX = 5000
 
@@ -12,7 +13,7 @@ const STATEMENT_MAX = 5000
 export default function ProblemSubmissionForm({ token, initial, problemId = null, isLive = false, onSaved, onCancel }) {
   const id = useId()
   const textareaRef = useRef(null)
-  const [form, setForm] = useState(() => ({ ...initial, problemNumber: initial.problemNumber ?? '' }))
+  const [form, setForm] = useState(() => ({ ...initial, problemNumber: initial.problemNumber ?? '', images: initial.images ?? [] }))
   const [data, setData] = useState({ topics: [], tags: [], folders: [], error: null, loaded: false })
   const [sending, setSending] = useState(false)
   const [problems, setProblems] = useState(null) // { error, checks }
@@ -51,6 +52,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
       isExam: form.isExam,
       examFolder: form.isExam ? form.examFolder : null,
       problemNumber: form.isExam && form.problemNumber !== '' ? Number(form.problemNumber) : null,
+      images: form.images.map(({ image, alt }) => ({ image, alt })),
     }
     try {
       const saved = await apiFetch(problemId ? `/api/submissions/mine/${problemId}` : '/api/submissions', { method: problemId ? 'PUT' : 'POST', token, body })
@@ -97,6 +99,8 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
           </div>
         )}
       </div>
+
+      <ImagesField value={form.images} onChange={(images) => set('images', images)} token={token} />
 
       <VocabularyPicker topics={data.topics} tags={data.tags} value={{ topics: form.topics, tags: form.tags }} onChange={(next) => setForm((current) => ({ ...current, ...next }))} />
 
