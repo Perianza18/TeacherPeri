@@ -115,15 +115,15 @@ En estos problemas la razón buscada se obtiene reuniendo varias comparaciones; 
 const exercise = (code, titulo, enunciado, hints) => ({ codigo: `TP-${code}`, pathSlug, titulo, enunciado, hint: hints.join('\n\n'), difficulty: 'basico' })
 const problem = (code, titulo, enunciado, difficulty = 'basico') => ({ codigo: `TP-${code}`, pathSlug, titulo, enunciado, difficulty })
 const problems = [
-  exercise('G29','Dos bases',String.raw`En el triángulo $ABC$, el punto $D$ está en el interior de $BC$ y $BD:DC=1:2$. Si $[ABC]=36$, calcular $[ABD]$.`,['Los dos triángulos tienen la misma altura respecto de sus bases sobre $BC$.']),
-  exercise('G30','Punto medio y área',String.raw`En el triángulo $ABC$, $M$ es el punto medio de $BC$. Si $[ABM]=14$, calcular $[ABC]$.`,['Comparar las bases $BM$ y $MC$.']),
-  exercise('G31','Altura partida',String.raw`En el triángulo $ABC$, $AH$ es una altura y $E$ está en el interior de $AH$, con $AE:EH=1:3$. Si $[ABC]=40$, calcular $[EBC]$.`,['La altura desde $E$ hasta la recta $BC$ es $EH$.']),
-  exercise('G32','Escala y área',String.raw`En un triángulo $ABC$ con altura $AH$ interior, $D$ y $E$ son los puntos medios de $AB$ y $AC$, y $DE\parallel BC$. Si $[ABC]=32$, calcular $[ADE]$.`,['Comparar la razón de los lados correspondientes con la razón de las áreas.']),
-  problem('G33','Una base dividida',String.raw`En el triángulo $ABC$, $D$ está en el interior de $BC$, $BD:DC=3:4$ y $[ABD]=21$. Calcular $[ABC]$.`),
-  problem('G34','Dos puntos en una base',String.raw`En el triángulo $ABC$, los puntos $D$ y $E$ están sobre $BC$ en el orden $B,D,E,C$ y $BD=DE=EC$. Si $[ABC]=63$, calcular $[ADE]$.`),
-  problem('G35','Dos medianas',String.raw`En el triángulo $ABC$, $M$ y $N$ son los puntos medios de $BC$ y $AC$. Demostrar que $[ABM]=[ABN]$.`),
-  problem('G36','Razón y total',String.raw`En el triángulo $ABC$, $D$ está en el interior de $BC$ y $[ABD]=2[ADC]$. Si $BC=15$, calcular $BD$ y $DC$.`),
-  problem('G37','Dos divisiones',String.raw`En el triángulo $ABC$, $D$ es el punto medio de $BC$ y $E$ está en el interior de $AD$, con $AE:ED=2:1$. Si $[ABC]=72$, calcular $[BDE]$ y $[CDE]$.`,'intermedio'),
-  problem('G38','Un triángulo entre puntos medios',String.raw`En el triángulo $ABC$, los puntos $D$, $E$ y $F$ son los puntos medios de $AB$, $BC$ y $CA$, respectivamente. Determinar la razón $[DEF]/[ABC]$ y justificarla.`,'intermedio'),
+  exercise('G29','Dos bases',String.raw`En el triángulo $ABC$, el punto $D$ está en el interior de $BC$ y $BD:DC=1:2$. Si el área de $ABC$ es $36$, calcular el área de $ABD$.`,['Los dos triángulos tienen la misma altura respecto de sus bases sobre $BC$.']),
+  exercise('G30','Punto medio y área',String.raw`En el triángulo $ABC$, $M$ es el punto medio de $BC$. Si el área de $ABM$ es $14$, calcular el área de $ABC$.`,['Comparar las bases $BM$ y $MC$.']),
+  exercise('G31','Altura partida',String.raw`En el triángulo $ABC$, $AH$ es una altura y $E$ está en el interior de $AH$, con $AE:EH=1:3$. Si el área de $ABC$ es $40$, calcular el área de $EBC$.`,['La altura desde $E$ hasta la recta $BC$ es $EH$.']),
+  exercise('G32','Escala y área',String.raw`En un triángulo $ABC$ con altura $AH$ interior, $D$ y $E$ son los puntos medios de $AB$ y $AC$, y $DE\parallel BC$. Si el área de $ABC$ es $32$, calcular el área de $ADE$.`,['Comparar la razón de los lados correspondientes con la razón de las áreas.']),
+  problem('G33','Una base dividida',String.raw`En el triángulo $ABC$, $D$ está en el interior de $BC$, $BD:DC=3:4$ y el área de $ABD$ es $21$. Calcular el área de $ABC$.`),
+  problem('G34','Dos puntos en una base',String.raw`En el triángulo $ABC$, los puntos $D$ y $E$ están sobre $BC$ en el orden $B,D,E,C$ y $BD=DE=EC$. Si el área de $ABC$ es $63$, calcular el área de $ADE$.`),
+  problem('G35','Dos medianas',String.raw`En el triángulo $ABC$, $M$ y $N$ son los puntos medios de $BC$ y $AC$. Demostrar que los triángulos $ABM$ y $ABN$ tienen la misma área.`),
+  problem('G36','Razón y total',String.raw`En el triángulo $ABC$, $D$ está en el interior de $BC$ y el área de $ABD$ es el doble del área de $ADC$. Si $BC=15$, calcular $BD$ y $DC$.`),
+  problem('G37','Dos divisiones',String.raw`En el triángulo $ABC$, $D$ es el punto medio de $BC$ y $E$ está en el interior de $AD$, con $AE:ED=2:1$. Si el área de $ABC$ es $72$, calcular las áreas de $BDE$ y $CDE$.`,'intermedio'),
+  problem('G38','Un triángulo entre puntos medios',String.raw`En el triángulo $ABC$, los puntos $D$, $E$ y $F$ son los puntos medios de $AB$, $BC$ y $CA$, respectivamente. Determinar la razón entre el área de $DEF$ y la de $ABC$, y justificarla.`,'intermedio'),
 ]
 export default { pathSlug, summary, content, problems, collections: { [collection]: { ejercicios: ['TP-G29','TP-G30','TP-G31','TP-G32'], practice: ['TP-G05','TP-G06','TP-G33','TP-G34','TP-G35','TP-G36'], dificiles: ['TP-G37','TP-G38'] } } }
