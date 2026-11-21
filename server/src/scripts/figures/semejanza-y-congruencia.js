@@ -18,7 +18,24 @@ const U=[150,30], V=[40,185], W=[260,185], M=point(V,W,0.5)
 assert.equal(length(U,V),length(U,W)); assert.equal(length(V,M),length(M,W))
 save('mediana', [line(U,V),line(V,W),line(W,U),line(U,M,'#6D3EE8')], [label(U,'A',-5,-8),label(V,'B',-17,16),label(W,'C',5,16),label(M,'M',-7,18)])
 
-const picture = (x, y, sx, sy, outline) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="0" y="0" width="80" height="60" rx="3" stroke="${outline}" vector-effect="non-scaling-stroke"/><circle cx="63" cy="12" r="5" vector-effect="non-scaling-stroke"/><path d="M 7 14 C 7 11 10 10 12 11 C 14 7 19 8 20 11 C 23 10 25 12 25 14" vector-effect="non-scaling-stroke"/><path d="M 1 48 L 18 24 L 29 36 L 43 14 L 79 48 M 13 31 L 18 30 L 21 27 L 25 32 M 36 24 L 41 26 L 44 22 L 49 29" vector-effect="non-scaling-stroke"/><path d="M 1 50 Q 18 45 36 51 T 79 49 M 37 55 H 48 M 54 54 H 65" vector-effect="non-scaling-stroke"/><path d="M 8 49 V 44 H 4 L 10 34 L 16 44 H 12 V 49 Z" fill="white" vector-effect="non-scaling-stroke"/></g>`
+const picture = (x, y, sx, sy, outline) => {
+  const clip = `landscape-${x}-${y}`
+  return `<g transform="translate(${x} ${y}) scale(${sx} ${sy})">
+    <defs><clipPath id="${clip}"><rect width="80" height="60" rx="3"/></clipPath></defs>
+    <g clip-path="url(#${clip})" fill="none" stroke="#111111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="64" cy="12" r="5"/>
+      <path d="M 7 14 C 7 11 10 9 13 10 C 15 7 19 7 21 10 C 24 9 27 11 27 14 M 30 11 Q 32 9 34 11 Q 36 9 38 11"/>
+      <path d="M -2 47 C 6 42 12 31 19 22 C 23 25 27 31 31 35 C 36 29 42 20 47 14 C 55 20 67 35 82 45"/>
+      <path d="M 14 28 C 16 28 18 27 19 25 C 21 27 23 29 25 30 M 41 22 C 43 23 46 22 47 19 C 49 21 51 23 54 24"/>
+      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48 L 82 62 L -2 62 Z" fill="white" stroke="none"/>
+      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48"/>
+      <path d="M 35 55 C 39 54 43 54 47 55 M 54 56 C 58 55 62 55 66 55"/>
+      <path d="M 3 46 L 9 34 L 15 46 Z M 65 47 L 70 37 L 75 47 Z" fill="white"/>
+      <path d="M 9 46 V 50 M 70 47 V 51"/>
+    </g>
+    <rect width="80" height="60" rx="3" fill="none" stroke="${outline}" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+  </g>`
+}
 const pictureWidth = (sx) => 80 * sx
 const pictureHeight = (sy) => 60 * sy
 const originalScale = 1.25

@@ -1,1 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220"><g fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round"><g transform="translate(15 70) scale(1.25 1.25)" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="0" y="0" width="80" height="60" rx="3" stroke="#111111" vector-effect="non-scaling-stroke"/><circle cx="63" cy="12" r="5" vector-effect="non-scaling-stroke"/><path d="M 7 14 C 7 11 10 10 12 11 C 14 7 19 8 20 11 C 23 10 25 12 25 14" vector-effect="non-scaling-stroke"/><path d="M 1 48 L 18 24 L 29 36 L 43 14 L 79 48 M 13 31 L 18 30 L 21 27 L 25 32 M 36 24 L 41 26 L 44 22 L 49 29" vector-effect="non-scaling-stroke"/><path d="M 1 50 Q 18 45 36 51 T 79 49 M 37 55 H 48 M 54 54 H 65" vector-effect="non-scaling-stroke"/><path d="M 8 49 V 44 H 4 L 10 34 L 16 44 H 12 V 49 Z" fill="white" vector-effect="non-scaling-stroke"/></g><g transform="translate(145 56) scale(1.6875 1.6875)" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="0" y="0" width="80" height="60" rx="3" stroke="#6D3EE8" vector-effect="non-scaling-stroke"/><circle cx="63" cy="12" r="5" vector-effect="non-scaling-stroke"/><path d="M 7 14 C 7 11 10 10 12 11 C 14 7 19 8 20 11 C 23 10 25 12 25 14" vector-effect="non-scaling-stroke"/><path d="M 1 48 L 18 24 L 29 36 L 43 14 L 79 48 M 13 31 L 18 30 L 21 27 L 25 32 M 36 24 L 41 26 L 44 22 L 49 29" vector-effect="non-scaling-stroke"/><path d="M 1 50 Q 18 45 36 51 T 79 49 M 37 55 H 48 M 54 54 H 65" vector-effect="non-scaling-stroke"/><path d="M 8 49 V 44 H 4 L 10 34 L 16 44 H 12 V 49 Z" fill="white" vector-effect="non-scaling-stroke"/></g><path stroke="#6D3EE8" d="M 119 105 L 134 105"/><path stroke="#6D3EE8" d="M 128 99 L 134 105"/><path stroke="#6D3EE8" d="M 128 111 L 134 105"/></g><g fill="#111111" font-size="17" font-family="KaTeX_Main, 'Times New Roman', serif" font-style="italic"><text x="35" y="185">original</text><text x="188" y="185">ampliada</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220"><g fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round"><g transform="translate(15 70) scale(1.25 1.25)">
+    <defs><clipPath id="landscape-15-70"><rect width="80" height="60" rx="3"/></clipPath></defs>
+    <g clip-path="url(#landscape-15-70)" fill="none" stroke="#111111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="64" cy="12" r="5"/>
+      <path d="M 7 14 C 7 11 10 9 13 10 C 15 7 19 7 21 10 C 24 9 27 11 27 14 M 30 11 Q 32 9 34 11 Q 36 9 38 11"/>
+      <path d="M -2 47 C 6 42 12 31 19 22 C 23 25 27 31 31 35 C 36 29 42 20 47 14 C 55 20 67 35 82 45"/>
+      <path d="M 14 28 C 16 28 18 27 19 25 C 21 27 23 29 25 30 M 41 22 C 43 23 46 22 47 19 C 49 21 51 23 54 24"/>
+      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48 L 82 62 L -2 62 Z" fill="white" stroke="none"/>
+      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48"/>
+      <path d="M 35 55 C 39 54 43 54 47 55 M 54 56 C 58 55 62 55 66 55"/>
+      <path d="M 3 46 L 9 34 L 15 46 Z M 65 47 L 70 37 L 75 47 Z" fill="white"/>
+      <path d="M 9 46 V 50 M 70 47 V 51"/>
+    </g>
+    <rect width="80" height="60" rx="3" fill="none" stroke="#111111" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+  </g><g transform="translate(145 56) scale(1.6875 1.6875)">
+    <defs><clipPath id="landscape-145-56"><rect width="80" height="60" rx="3"/></clipPath></defs>
+    <g clip-path="url(#landscape-145-56)" fill="none" stroke="#111111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="64" cy="12" r="5"/>
+      <path d="M 7 14 C 7 11 10 9 13 10 C 15 7 19 7 21 10 C 24 9 27 11 27 14 M 30 11 Q 32 9 34 11 Q 36 9 38 11"/>
+      <path d="M -2 47 C 6 42 12 31 19 22 C 23 25 27 31 31 35 C 36 29 42 20 47 14 C 55 20 67 35 82 45"/>
+      <path d="M 14 28 C 16 28 18 27 19 25 C 21 27 23 29 25 30 M 41 22 C 43 23 46 22 47 19 C 49 21 51 23 54 24"/>
+      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48 L 82 62 L -2 62 Z" fill="white" stroke="none"/>
+      <path d="M -2 50 C 12 45 24 45 38 50 C 53 55 67 55 82 48"/>
+      <path d="M 35 55 C 39 54 43 54 47 55 M 54 56 C 58 55 62 55 66 55"/>
+      <path d="M 3 46 L 9 34 L 15 46 Z M 65 47 L 70 37 L 75 47 Z" fill="white"/>
+      <path d="M 9 46 V 50 M 70 47 V 51"/>
+    </g>
+    <rect width="80" height="60" rx="3" fill="none" stroke="#6D3EE8" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+  </g><path stroke="#6D3EE8" d="M 119 105 L 134 105"/><path stroke="#6D3EE8" d="M 128 99 L 134 105"/><path stroke="#6D3EE8" d="M 128 111 L 134 105"/></g><g fill="#111111" font-size="17" font-family="KaTeX_Main, 'Times New Roman', serif" font-style="italic"><text x="35" y="185">original</text><text x="188" y="185">ampliada</text></g></svg>
