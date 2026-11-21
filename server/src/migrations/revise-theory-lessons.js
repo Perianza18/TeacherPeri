@@ -9,6 +9,7 @@ import Path from '../models/Path.js'
 import { buildMvpManifest, contentId } from '../data/mvpManifest.js'
 import { PREVIOUS_THEORY } from '../data/mvpLessons.js'
 import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
+import { EARLIER_THEORY } from '../data/theory/earlier.js'
 import { matches } from './import-mvp-content.js'
 
 // Publishes the rewritten lessons (data/theory) to a database that already
@@ -16,7 +17,8 @@ import { matches } from './import-mvp-content.js'
 //   - Theory summary and text, and the lesson Path's description;
 //   - adds the new banco problems and the lesson problem collections.
 // Compare-and-set: a lesson changes only if it still holds the exact previous
-// text (or already holds the new one). Anything else stops the whole run.
+// text, or an earlier published rewrite listed in data/theory/earlier.js (or
+// already holds the new one). Anything else stops the whole run.
 // Idempotent: a second run finds everything up to date and writes nothing.
 
 mongoose.set('transactionAsyncLocalStorage', true)
@@ -36,10 +38,17 @@ function needed(entry) {
   return false
 }
 
-// keep: already up to date · revise: holds the exact previous value · null: neither.
-export function decide(current, desired, previous) {
-  if (desired.every(([field, value]) => current[field] === value)) return 'keep'
-  if (previous.every(([field, value]) => current[field] === value)) return 'revise'
+const holds = (current, pairs) => pairs.every(([field, value]) => current[field] === value)
+
+// The first accepted previous version the record holds exactly, or null.
+export function heldPrevious(current, ...previousVersions) {
+  return previousVersions.find((pairs) => holds(current, pairs)) ?? null
+}
+
+// keep: already up to date · revise: holds one accepted previous version exactly · null: neither.
+export function decide(current, desired, ...previousVersions) {
+  if (holds(current, desired)) return 'keep'
+  if (heldPrevious(current, ...previousVersions)) return 'revise'
   return null
 }
 
@@ -67,13 +76,17 @@ export async function planTheoryRevision() {
 
     if (entry.model === 'Theory' || entry.model === 'Path') {
       const slug = entry.model === 'Theory' ? entry.key.replace(/-guia$/, '') : entry.key
-      const previous = PREVIOUS_THEORY[slug]
-      const pairs = entry.model === 'Theory'
-        ? [[['summary', entry.data.summary], ['content', entry.data.content]], [['summary', previous.summary], ['content', previous.content]]]
-        : [[['description', entry.data.description]], [['description', previous.summary]]]
-      const action = decide(existing, ...pairs)
-      if (!action) throw conflict(`${entry.model}/${entry.key} holds text that is neither the previous nor the new version.`)
-      rows.push({ model: entry.model, key: entry.key, _id: existing._id, title: existing.title, action, filter: Object.fromEntries(pairs[1]), set: Object.fromEntries(pairs[0]) })
+      const versions = [PREVIOUS_THEORY[slug], ...(EARLIER_THEORY[slug] ?? [])]
+      const desired = entry.model === 'Theory'
+        ? [['summary', entry.data.summary], ['content', entry.data.content]]
+        : [['description', entry.data.description]]
+      const accepted = versions.map((version) => (entry.model === 'Theory'
+        ? [['summary', version.summary], ['content', version.content]]
+        : [['description', version.summary]]))
+      const action = decide(existing, desired, ...accepted)
+      if (!action) throw conflict(`${entry.model}/${entry.key} holds text that is neither a previous nor the new version.`)
+      const filter = Object.fromEntries(heldPrevious(existing, ...accepted) ?? accepted[0])
+      rows.push({ model: entry.model, key: entry.key, _id: existing._id, title: existing.title, action, filter, set: Object.fromEntries(desired) })
     } else if (isNew) {
       const fields = new Model(entry.data).toObject()
       const action = !existing ? 'create' : matches(existing, fields, Object.keys(entry.data)) ? 'keep' : null

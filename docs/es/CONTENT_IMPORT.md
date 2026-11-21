@@ -82,8 +82,11 @@ Una base que ya tiene el contenido importado se actualiza con
    listar nada.
 
 Comparar y cambiar: una lección solo cambia si tiene exactamente el texto y el
-resumen anteriores (o ya tiene los nuevos); lo mismo con la descripción de su
-Ruta. Los problemas y colecciones solo se crean si faltan, y si ya existe uno con
+resumen anteriores, o una reescritura ya publicada que esté en
+`server/src/data/theory/earlier.js` (o ya tiene los nuevos); lo mismo con la
+descripción de su Ruta. Cuando se corrige en su archivo una lección que ya está
+publicada, agrega la versión publicada a `earlier.js` (nunca edites una entrada)
+para que la siguiente corrida pueda reemplazarla. Los problemas y colecciones solo se crean si faltan, y si ya existe uno con
 contenido distinto, el proceso se detiene. Cualquier conflicto detiene todo antes
 de escribir; las escrituras ocurren en una sola transacción. Después de una
 revisión, `content:import -- --dry-run` solo reporta `keep`. Una base nueva

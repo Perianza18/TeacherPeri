@@ -68,7 +68,10 @@ A database that already holds the imported content is updated with
 4. Run the dry run again: every line should say «already up to date» or list nothing.
 
 Compare-and-set: a lesson changes only while it holds the exact previous text and
-summary (or already holds the new ones); its Ruta description likewise. Problems and
+summary, or an earlier published rewrite listed in `server/src/data/theory/earlier.js`
+(or already holds the new ones); its Ruta description likewise. When a lesson that
+is already published gets corrected in its file, add the published version to
+`earlier.js` (never edit an entry) so the next run can replace it. Problems and
 collections are created only when missing, and an existing one with different
 content stops the run. Any conflict stops the whole run before writing; the writes
 happen in one transaction. After a revision, `content:import -- --dry-run` reports
