@@ -113,6 +113,7 @@ needs a signed-in user, and the server checks the role on every request (see
 | `/api/notifications` | Signed in: `GET /`, `POST /read` |
 | `/api/editor` | Editors and admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
 | `/api/review` | Admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
+| `/api/images` | Signed in: `POST /` (the image file as the body). Public: `GET /:id` (cached for a year) |
 | `/api/users` | Admins: `GET /` (`?q=` to search), `PUT /:id/role` (`user` or `editor` only) |
 | `/api/contact` | Signed in: `POST /` |
 
@@ -145,7 +146,8 @@ Models live in `server/src/models/`.
   `kind: exam` under «Exámenes». **Áreas** are `Topic`s; **tags** are `Tag`s.
 - **Community:** `Comment` (replies up to 3 levels, soft delete), `Report`
   (a reported comment), `ProblemSubmission` (a proposal or an edit waiting for
-  review), `Flag` («Reportar un error»), `Notification`, `ContentRevision` (a
+  review), `Flag` («Reportar un error»), `Notification`, `ProblemImage` (a
+  problem picture, stored as WebP in the database), `ContentRevision` (a
   direct change by an editor or admin, with each field before and after),
   `ContactMessage`.
 - **Users** (`User`) have one role: `user`, `editor` or `admin`.

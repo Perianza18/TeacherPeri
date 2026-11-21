@@ -114,6 +114,7 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/notifications` | Con sesión: `GET /`, `POST /read` |
 | `/api/editor` | Editores y admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
 | `/api/review` | Admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
+| `/api/images` | Con sesión: `POST /` (el archivo de la imagen como cuerpo). Pública: `GET /:id` (en caché un año) |
 | `/api/users` | Admins: `GET /` (`?q=` para buscar), `PUT /:id/role` (solo `user` o `editor`) |
 | `/api/contact` | Con sesión: `POST /` |
 
@@ -150,6 +151,7 @@ Los modelos están en `server/src/models/`.
 - **Comunidad:** `Comment` (respuestas hasta 3 niveles, borrado suave), `Report`
   (un comentario reportado), `ProblemSubmission` (una propuesta o una edición
   esperando revisión), `Flag` («Reportar un error»), `Notification`,
+  `ProblemImage` (una imagen de problema, guardada como WebP en la base),
   `ContentRevision` (un cambio directo de un editor o admin, con cada campo antes
   y después), `ContactMessage`.
 - **Los usuarios** (`User`) tienen un rol: `user`, `editor` o `admin`.

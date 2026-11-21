@@ -50,7 +50,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Parcial | El formato ya funciona y 2 lecciones lo usan («Ángulos, paralelas y perpendiculares», «Principio de casillas»). Las otras 35 siguen con el formato anterior |
 | «Reportar un error» y «Sugerir cambio» en las lecciones | Hecho | «Sugerir cambio» abre Contacto |
 | Exámenes: 3 exámenes de práctica | Hecho | Práctica original de TeacherPeri, no exámenes oficiales de la OMM |
-| Imágenes en los problemas (geometría) | Planeado | **Hoy:** los problemas son solo texto y matemáticas; las figuras existen solo en las lecciones |
+| Imágenes en los problemas (geometría) | Hecho | Hasta 4 por problema, cada una con descripción obligatoria en español. Los usuarios las agregan al proponer; los admins las ven en Revisión; los editores las agregan, reemplazan o quitan (enunciado o solución). Se guardan en MongoDB como WebP (máximo 1200 px), unos 12 KB por figura. Ver [SUBMISSIONS.md](SUBMISSIONS.md#imágenes-en-los-problemas) |
 | Búsqueda global en todas las bibliotecas | Planeado | **Hoy:** cada biblioteca tiene su propia búsqueda |
 | Renovación visual de Inicio, Rutas, Entrenamiento, Listas, Contacto y lecciones (estilo «cómic», logo del pingüino) | Hecho | Pull requests #18, #20 y #21 |
 

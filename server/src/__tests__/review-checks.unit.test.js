@@ -85,7 +85,9 @@ describe('vocabulary and folders', () => {
 describe('reading a proposal from the browser', () => {
   const id = '64b000000000000000000001'
   it('keeps only known fields and validates ids and numbers', () => {
-    expect(parseProposal({ enunciado: ' Hola \r\n', topics: [id, id], publicationStatus: 'published' }).proposal).toEqual({ enunciado: 'Hola', topics: [id], tags: [], isExam: false, examFolder: null, problemNumber: null })
+    expect(parseProposal({ enunciado: ' Hola \r\n', topics: [id, id], publicationStatus: 'published' }).proposal).toEqual({ enunciado: 'Hola', topics: [id], tags: [], isExam: false, examFolder: null, problemNumber: null, images: [] })
+    expect(parseProposal({ enunciado: 'Hola', images: [{ image: id, alt: 'Triángulo ABC.', placement: 'solution' }] }).error).toMatch(/enunciado/)
+    expect(parseProposal({ enunciado: 'Hola', images: [{ image: id, alt: ' Triángulo   ABC. ' }] }).proposal.images).toEqual([{ image: id, alt: 'Triángulo ABC.', placement: 'statement' }])
     expect(parseProposal({ topics: ['x'] }).error).toMatch(/áreas/)
     expect(parseProposal({ isExam: true, examFolder: id, problemNumber: 0 }).error).toMatch(/número/)
     expect(parseProposal({ isExam: false, examFolder: id, problemNumber: 4 }).proposal).toMatchObject({ examFolder: null, problemNumber: null })
