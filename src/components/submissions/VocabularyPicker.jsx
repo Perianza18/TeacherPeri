@@ -2,13 +2,14 @@ import { useId, useState } from 'react'
 import { RESERVED_TAG_SLUGS, normalize } from '../../lib/submissions'
 
 // Type-ahead over the EXISTING áreas (Topics) and tags. People can only pick;
-// nothing here creates a new term.
-export default function VocabularyPicker({ topics, tags, value, onChange }) {
+// nothing here creates a new term. Staff screens pass `allowReserved` to
+// offer the tags only the team applies («Original TeacherPeri»).
+export default function VocabularyPicker({ topics, tags, value, onChange, allowReserved = false, help = 'Elige de la lista existente. Para aprobarlo hace falta al menos un área.' }) {
   const id = useId()
   const [query, setQuery] = useState('')
   const options = [
     ...topics.map((topic) => ({ kind: 'topics', id: String(topic._id), label: topic.name, group: 'Área' })),
-    ...tags.filter((tag) => !RESERVED_TAG_SLUGS.includes(tag.slug)).map((tag) => ({ kind: 'tags', id: String(tag._id), label: tag.label, group: 'Etiqueta' })),
+    ...tags.filter((tag) => allowReserved || !RESERVED_TAG_SLUGS.includes(tag.slug)).map((tag) => ({ kind: 'tags', id: String(tag._id), label: tag.label, group: 'Etiqueta' })),
   ]
   const chosen = options.filter((option) => value[option.kind].includes(option.id))
   const wanted = normalize(query)
@@ -23,7 +24,7 @@ export default function VocabularyPicker({ topics, tags, value, onChange }) {
   return (
     <div>
       <label htmlFor={id} className="text-sm font-bold text-tp-ink">Áreas y etiquetas</label>
-      <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">Elige de la lista existente. Para aprobarlo hace falta al menos un área.</p>
+      <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">{help}</p>
       {chosen.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2" aria-label="Elegidas">
           {chosen.map((option) => (

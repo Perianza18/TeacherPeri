@@ -23,6 +23,15 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const ProponerProblemaPage = lazy(() => import('./pages/ProponerProblemaPage'))
 const MisEnviosPage = lazy(() => import('./pages/MisEnviosPage'))
 const EditarEnvioPage = lazy(() => import('./pages/MisEnviosPage').then((module) => ({ default: module.EditarEnvioPage })))
+// Team pages (editors and admins). The server checks every permission.
+const PanelPage = lazy(() => import('./pages/panel/PanelPage'))
+const ModeracionPage = lazy(() => import('./pages/panel/ModeracionPage'))
+const RevisionPage = lazy(() => import('./pages/panel/RevisionPage'))
+const UsuariosPage = lazy(() => import('./pages/panel/UsuariosPage'))
+const CambiosPage = lazy(() => import('./pages/panel/CambiosPage'))
+const CambioPage = lazy(() => import('./pages/panel/CambiosPage').then((module) => ({ default: module.CambioPage })))
+const EditarProblemaPage = lazy(() => import('./pages/panel/EditarProblemaPage'))
+const EditarLeccionPage = lazy(() => import('./pages/panel/EditarLeccionPage'))
 
 // Shown for the instant a page's code is loading: the paper background, so
 // the screen doesn't flash white.
@@ -62,6 +71,14 @@ function App() {
           </Route>
           <Route path="/mis-envios" element={<MisEnviosPage />} />
           <Route path="/mis-envios/:id" element={<EditarEnvioPage />} />
+          <Route path="/panel" element={<PanelPage />} />
+          <Route path="/panel/moderacion" element={<ModeracionPage />} />
+          <Route path="/panel/revision" element={<RevisionPage />} />
+          <Route path="/panel/usuarios" element={<UsuariosPage />} />
+          <Route path="/panel/cambios" element={<CambiosPage />} />
+          <Route path="/panel/cambios/:id" element={<CambioPage />} />
+          <Route path="/panel/problemas/:id/editar" element={<EditarProblemaPage />} />
+          <Route path="/panel/teoria/:id/editar" element={<EditarLeccionPage />} />
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />
           <Route path="/equipo" element={<EquipoPage />} />

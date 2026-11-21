@@ -5,6 +5,7 @@
 // again.
 //
 // GET  /api/review                                 pending problems, pending folders, open flags
+// GET  /api/review/folders                         every exam folder that is not rejected
 // GET  /api/review/submissions/:id                 one submission in full (with what an edit changes)
 // POST /api/review/submissions/:id/approve         { fixes: { topics, tags, folder, notExam, number, title } }
 // POST /api/review/submissions/:id/reject          { reason }
@@ -15,6 +16,7 @@
 
 import { Router } from 'express'
 import mongoose from 'mongoose'
+import Category from '../models/Category.js'
 import User from '../models/User.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
 import {
@@ -88,6 +90,13 @@ export function fixesFromBody(body = {}) {
 
 router.get('/', requirePermission('submissions:review'), async (_req, res) => {
   res.json(await listPending())
+})
+
+// Every exam folder that is not rejected (pending ones too), for the folder
+// picker when an admin moves a proposal to another folder.
+router.get('/folders', requirePermission('folders:review'), async (_req, res) => {
+  const folders = await Category.find({ kind: 'exam', reviewStatus: { $ne: 'rejected' } }).sort({ name: 1 }).select('name parent reviewStatus').lean()
+  res.json(folders.map((folder) => ({ _id: folder._id, name: folder.name, parent: folder.parent, reviewStatus: folder.reviewStatus ?? 'approved', mine: false })))
 })
 
 router.get('/submissions/:id', requirePermission('submissions:review'), async (req, res) => {

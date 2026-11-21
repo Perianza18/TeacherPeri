@@ -62,6 +62,9 @@ router.get('/', async (req, res) => {
       note: report.note,
       reporter: report.reporter ? { _id: report.reporter._id, username: report.reporter.username } : null,
       createdAt: report.createdAt,
+      status: report.status,
+      handledAt: report.handledAt,
+      handledNote: report.handledNote ?? null,
     })
   }
 

@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 import { MY_SUBMISSIONS_PATH, PROPOSE_PATH } from '../lib/submissions'
+import { PANEL_PATH, canEdit } from '../lib/panel'
 
 // Main navigation, in the order set by the design guide (DESIGN §6).
 // Universidad, Sobre mí and Contacto stay reachable from the Footer.
@@ -114,6 +115,7 @@ function AccountMenu({ user, token, logout }) {
           <nav aria-label="Tu cuenta" className="mt-3 flex flex-col">
             <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Mis envíos</Link>
             <Link to={PROPOSE_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Proponer un problema</Link>
+            {canEdit({ user }) && <Link to={PANEL_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Panel del equipo</Link>}
           </nav>
           {notifications.items.length > 0 && (
             <section aria-labelledby="tp-avisos" className="mt-3 border-t-2 border-dashed border-tp-rule pt-3">
@@ -124,7 +126,7 @@ function AccountMenu({ user, token, logout }) {
               <ul className="mt-1 flex max-h-56 flex-col gap-2 overflow-y-auto">
                 {notifications.items.slice(0, 5).map((item) => (
                   <li key={item._id} className={`rounded-lg p-2 text-sm leading-5 ${item.readAt ? 'text-tp-ink-muted' : 'bg-tp-yellow-soft text-tp-ink'}`}>
-                    <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="hover:underline">{item.message}</Link>
+                    <Link to={item.link || MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="hover:underline">{item.message}</Link>
                     <span className="mt-0.5 block text-xs text-tp-ink-muted">{fecha(item.createdAt)}</span>
                   </li>
                 ))}

@@ -129,6 +129,15 @@ export async function showSubmission(ref) {
     author: author?.username ?? null,
     createdAt: submission.createdAt,
     proposed,
+    // The same proposal with ids, for the review screen's pickers.
+    proposedIds: {
+      topics: (submission.proposed.topics || []).map(String),
+      tags: (submission.proposed.tags || []).map(String),
+      isExam: Boolean(submission.proposed.isExam),
+      examFolder: submission.proposed.examFolder ? String(submission.proposed.examFolder) : null,
+      problemNumber: submission.proposed.problemNumber ?? null,
+    },
+    titulo: problem?.titulo ?? null,
     live,
     changedFields,
     findings: runSubmissionChecks(submission.proposed, ctx),
@@ -314,7 +323,7 @@ export async function renameFolder({ ref, name, reviewer, apply = false }) {
 // --- flags ------------------------------------------------------------------------
 
 export async function listFlags(status = 'open') {
-  const flags = await Flag.find({ status }).sort({ createdAt: 1 }).populate('reporter', 'username').lean()
+  const flags = await Flag.find({ status }).sort({ createdAt: status === 'open' ? 1 : -1 }).limit(500).populate('reporter', 'username').populate('handledBy', 'username').lean()
   const problemIds = flags.filter((f) => f.targetType === 'problem').map((f) => f.target)
   const theoryIds = flags.filter((f) => f.targetType === 'theory').map((f) => f.target)
   const [problems, lessons] = await Promise.all([
@@ -322,7 +331,7 @@ export async function listFlags(status = 'open') {
     Theory.find({ _id: { $in: theoryIds } }).select('title').lean(),
   ])
   const names = new Map([...problems.map((p) => [String(p._id), `${p.codigo} «${p.titulo}»`]), ...lessons.map((t) => [String(t._id), `«${t.title}»`])])
-  return flags.map((flag) => ({ id: String(flag._id), targetType: flag.targetType, target: String(flag.target), targetName: names.get(String(flag.target)) ?? '(no longer exists)', message: flag.message, reporter: flag.reporter?.username ?? null, createdAt: flag.createdAt, status: flag.status }))
+  return flags.map((flag) => ({ id: String(flag._id), targetType: flag.targetType, target: String(flag.target), targetName: names.get(String(flag.target)) ?? '(no longer exists)', message: flag.message, reporter: flag.reporter?.username ?? null, createdAt: flag.createdAt, status: flag.status, handledBy: flag.handledBy?.username ?? null, handledAt: flag.handledAt ?? null, handledNote: flag.handledNote ?? null }))
 }
 
 export async function setFlagStatus({ ref, status, note, reviewer, apply = false }) {

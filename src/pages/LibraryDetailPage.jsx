@@ -10,6 +10,8 @@ import { LIBRARY_BASE } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
 import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
+import { useAuth } from '../context/useAuth'
+import { canEdit, editProblemPath } from '../lib/panel'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -112,6 +114,7 @@ export default function LibraryDetailPage({ type }) {
   const { id } = useParams()
   const location = useLocation()
   const config = CONFIG[type]
+  const { auth } = useAuth()
   const traversal = new URLSearchParams(location.search).get('ruta') || ''
   const context = traversal ? `?ruta=${encodeURIComponent(traversal)}` : ''
   const key = `${type}:${id}:${traversal}`
@@ -200,7 +203,10 @@ export default function LibraryDetailPage({ type }) {
         </>}
         <Hints hint={item.hint} />
         {item.solution && <Solution solution={item.solution} />}
-        {type === 'problemas' && <div><FlagButton targetType="problem" targetId={item._id} /></div>}
+        {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
+          <FlagButton targetType="problem" targetId={item._id} />
+          {canEdit(auth) && <Link to={editProblemPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar problema</Link>}
+        </div>}
 
         {item.instructions && <p className="tp-card-quiet whitespace-pre-wrap bg-tp-yellow-soft p-5 leading-7">{item.instructions}</p>}
         {['listas', 'examenes'].includes(type) && <>
