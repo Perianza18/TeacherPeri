@@ -2,13 +2,17 @@ const pathSlug = 'semejanza-y-congruencia'
 const collection = pathSlug
 const summary = 'Comparar triángulos mediante correspondencias entre sus vértices para deducir longitudes y ángulos, y justificar cuándo coinciden en forma o también en tamaño.'
 
-const content = String.raw`## Preámbulo: Una copia a escala
+const content = String.raw`## Preámbulo: Una imagen en la pantalla
 
-![Dos triángulos rectángulos ABC y DEF, el segundo ampliado respecto del primero](figuras/semejanza-y-congruencia-correspondencia.svg "Dos triángulos con lados correspondientes proporcionales")
+![Tres versiones de una carita: la original, una ampliada y otra estirada hacia los lados](figuras/semejanza-y-congruencia-pantalla.svg "Una carita ampliada y otra estirada")
 
-En la figura, $AB=80$, $AC=60$, $DE=120$ y $DF=90$. Las dos parejas de lados indicadas tienen razón $120/80=90/60=3/2$. Además, los ángulos en $A$ y $D$ son rectos. No basta comparar dos números sin fijarse en cómo están colocados los lados.
+¿Por qué una carita dibujada en la pantalla se ve igual, solo más grande, cuando se amplía, pero parece más ancha si se estira hacia los lados? En ambos casos cambia de tamaño, aunque no parece cambiar de la misma manera. La diferencia se nota en la carita, pero necesitamos algo más preciso que una impresión para explicarla.
 
-La comparación resulta útil cuando una longitud es difícil de medir, pero aparece otra figura relacionada con ella. Para utilizarla necesitamos precisar qué vértices corresponden, qué información asegura la comparación y cuándo las figuras tienen también el mismo tamaño.
+![Un triángulo ABC y otro DEF más grande y girado](figuras/semejanza-y-congruencia-giro.svg "Dos triángulos en posiciones y tamaños distintos")
+
+La misma duda aparece con las figuras geométricas. En la imagen, el triángulo $DEF$ es más grande que $ABC$ y está girado. ¿Cómo saber si conserva la forma de $ABC$ o si solo se le parece a simple vista?
+
+Una posibilidad sería comparar todos sus lados y ángulos, pero en un problema quizá solo conozcamos algunos de ellos. Necesitamos reconocer qué partes corresponden y qué datos bastan para decidir si dos triángulos tienen la misma forma. Si además tienen el mismo tamaño, la comparación nos llevará a la congruencia.
 
 ## Teoría
 

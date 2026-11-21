@@ -17,3 +17,20 @@ save('paralela', [line(P,Q),line(Q,R),line(R,P),line(S,T,'#6D3EE8'),line([145,18
 const U=[150,30], V=[40,185], W=[260,185], M=point(V,W,0.5)
 assert.equal(length(U,V),length(U,W)); assert.equal(length(V,M),length(M,W))
 save('mediana', [line(U,V),line(V,W),line(W,U),line(U,M,'#6D3EE8')], [label(U,'A',-5,-8),label(V,'B',-17,16),label(W,'C',5,16),label(M,'M',-7,18)])
+
+const face = (x, y, sx, sy, outline) => `<g transform="translate(${x} ${y}) scale(${sx} ${sy})" vector-effect="non-scaling-stroke"><circle cx="0" cy="0" r="30" fill="none" stroke="${outline}" stroke-width="2.5" vector-effect="non-scaling-stroke"/><circle cx="-10" cy="-6" r="2.3" fill="#111111" stroke="none"/><circle cx="10" cy="-6" r="2.3" fill="#111111" stroke="none"/><path d="M -12 8 Q 0 19 12 8" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/></g>`
+const faceLabels = [label([42,125], 'original'), label([183,135], 'ampliada'), label([117,215], 'estirada')]
+const faceWidth = (sx) => 60 * sx
+const faceHeight = (sy) => 60 * sy
+assert.equal(faceWidth(1.4) / faceWidth(1), faceHeight(1.4) / faceHeight(1))
+assert.equal(faceWidth(1.7) / faceWidth(1), 1.7)
+assert.equal(faceHeight(1) / faceHeight(1), 1)
+save('pantalla', [face(65,75,1,1,'#111111'),face(215,75,1.4,1.4,'#6D3EE8'),face(150,170,1.7,1,'#6D3EE8')], faceLabels)
+const G=[25,165], H=[95,165], I=[25,113], J=[242,55], K=[137,55], L=[242,133]
+const rotateAndEnlarge = (p) => [J[0]-1.5*(p[0]-G[0]), J[1]-1.5*(p[1]-G[1])]
+assert.deepEqual(rotateAndEnlarge(H), K)
+assert.deepEqual(rotateAndEnlarge(I), L)
+assert.equal(length(J,K)/length(G,H),1.5)
+assert.equal(length(J,L)/length(G,I),1.5)
+assert.equal(length(K,L)/length(H,I),1.5)
+save('giro', [line(G,H),line(H,I),line(I,G),line(J,K,'#6D3EE8'),line(K,L,'#6D3EE8'),line(L,J,'#6D3EE8')], [label(G,'A',-16,17),label(H,'B',5,17),label(I,'C',-15,-6),label(J,'D',6,-6),label(K,'E',-16,-6),label(L,'F',5,17)])
