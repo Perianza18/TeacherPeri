@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE, examTitle } from '../../lib/libraryPaths'
-import { examBrowseTree } from '../../lib/examBrowse'
+import { examBrowseContents, examBrowseTree } from '../../lib/examBrowse'
 import MathText from '../math/MathText'
 import PageHero from '../PageHero'
 import { GlyphTile } from '../decor/Decor'
@@ -29,6 +29,7 @@ const titleOf = (type, item) => type === 'exams' ? examTitle(item) : item.title 
 const EXAM_FOLDER_DESCRIPTIONS = {
   'TeacherPeri Originals': 'Exámenes de práctica originales de TeacherPeri.',
   OMM: 'Olimpiada Mexicana de Matemáticas.',
+  'OMM Estatal': 'Exámenes de las etapas estatales de la OMM.',
   OMMEB: 'Olimpiada Mexicana de Matemáticas para Educación Básica.',
 }
 
@@ -43,7 +44,7 @@ function ExamFolderCard({ name, onOpen }) {
     </span>
     <span className="flex flex-1 flex-col items-start px-5 py-4">
       <span className="font-display text-[21px] font-extrabold leading-tight tracking-[-0.02em]">{name}</span>
-      <span className="mt-2 text-sm leading-6 text-tp-ink-muted">{EXAM_FOLDER_DESCRIPTIONS[name] || 'Explora los exámenes de esta competencia.'}</span>
+      <span className="mt-2 text-sm leading-6 text-tp-ink-muted">{EXAM_FOLDER_DESCRIPTIONS[name] || 'Explora los exámenes de esta carpeta.'}</span>
       <span aria-hidden="true" className="mt-auto pt-5 text-sm font-bold text-tp-violet">Abrir carpeta →</span>
     </span>
   </button>
@@ -117,7 +118,8 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   while (ancestor && !seen.has(ancestor._id)) { seen.add(ancestor._id); crumbs.unshift(ancestor); ancestor = metadata.categories.find((c) => c._id === ancestor.parent) }
   const examTree = type === 'exams' ? examBrowseTree(results.items, metadata.categories) : null
   const examNode = examPath.reduce((node, name) => node?.children.find((child) => child.name === name), examTree) || { children: [], exams: [] }
-  const shownItems = type === 'exams' ? examNode.exams : results.items
+  const examContents = examBrowseContents(examNode, examPath.length === 0)
+  const shownItems = type === 'exams' ? examContents.exams : results.items
   const select = (field, label, choices) => <label className="text-sm font-bold text-tp-ink">{label}<select value={filters[field]} onChange={(e) => change(field, e.target.value)} className="tp-input mt-1.5 font-normal"><option value="">Todos</option>{choices.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
   const look = LOOK[type] || LOOK.problems
   const base = external ? LIBRARY_BASE.resources : LIBRARY_BASE[type]
@@ -125,7 +127,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const resultsBlock = (resultsTop, grid) => <>
     <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : (type === 'exams' ? shownItems.length : results.total) === 1 ? '1 resultado' : `${type === 'exams' ? shownItems.length : results.total} resultados`}</div>
     {loading && <SkeletonGrid count={6} className={`mt-5 grid gap-6 ${grid}`} />}
-    {!loading && !results.error && (type === 'exams' ? !shownItems.length && !examNode.children.length : !results.total) && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
+    {!loading && !results.error && (type === 'exams' ? !shownItems.length && !examContents.folders.length : !results.total) && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
     {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{shownItems.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
       <div className={`flex items-center justify-between gap-2 border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || look.strip}`}>
         <p className="truncate text-xs font-extrabold uppercase tracking-[0.12em]">{item.codigo || title}{item.level || item.difficulty ? ` · ${LEVELS[item.level || item.difficulty]}` : ''}</p>
@@ -166,15 +168,13 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
     </div>
     {type === 'exams' && <nav aria-label="Carpetas de exámenes" className="mt-6">
       <div className="flex flex-wrap items-center gap-2 text-sm"><button onClick={() => setExamPath([])} className="font-bold text-tp-violet underline-offset-2 hover:underline">Exámenes</button>{examPath.map((name, index) => <span key={index}> › <button onClick={() => setExamPath(examPath.slice(0, index + 1))} className="font-bold hover:underline">{name}</button></span>)}</div>
-      {examNode.children.length > 0 && (examPath.length === 0
-        ? <div className="mt-4 grid gap-6 sm:grid-cols-2">{examNode.children.map((child) => <ExamFolderCard key={child.name} name={child.name} onOpen={() => setExamPath([child.name])} />)}</div>
-        : <div className="mt-3 flex flex-wrap gap-2">{examNode.children.map((child) => <button key={child.name} onClick={() => setExamPath([...examPath, child.name])} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{child.name}<span aria-hidden="true">→</span></button>)}</div>)}
+      {examContents.folders.length > 0 && <div className="mt-4 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">{examContents.folders.map((child) => <ExamFolderCard key={child.name} name={child.name} onOpen={() => setExamPath([...examPath, child.name])} />)}</div>}
     </nav>}
     {!external && type !== 'exams' && <nav aria-label="Carpetas de la biblioteca" className="mt-6 rounded-[14px] border-2 border-dashed border-tp-ink bg-tp-paper p-4">
       <div className="flex flex-wrap items-center gap-2 text-sm"><button onClick={() => navigateFolder(null)} className="font-bold text-tp-violet underline-offset-2 hover:underline">Todas las carpetas</button>{crumbs.map((c) => <span key={c._id}> › <button onClick={() => navigateFolder(c._id)} className="font-bold hover:underline">{c.name}</button></span>)}</div>
       {children.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{children.map((c) => <button key={c._id} onClick={() => navigateFolder(c._id)} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{c.name}<span aria-hidden="true">→</span></button>)}</div>}
     </nav>}
-    {(type !== 'exams' || loading || results.error || (examPath.length > 0 && (shownItems.length > 0 || !examNode.children.length)) || !results.total) && resultsBlock('mt-10', 'sm:grid-cols-2 xl:grid-cols-3')}
+    {(type !== 'exams' || loading || results.error || (examPath.length > 0 && (shownItems.length > 0 || !examContents.folders.length)) || !results.total) && resultsBlock('mt-10', 'sm:grid-cols-2 xl:grid-cols-3')}
     </>}
     </section>
   </>

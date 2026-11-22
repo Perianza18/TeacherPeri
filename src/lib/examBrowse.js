@@ -15,7 +15,6 @@ export function examBrowseTree(exams, categories) {
     if (path[0] === 'Exámenes') path.shift()
     if (!path.length) path.push(exam.competition === 'TeacherPeri' ? 'TeacherPeri Originals' : exam.competition)
     if (!linked && exam.year) path.push(exam.year)
-    if (path[0] === 'OMM Estatal') path.unshift('OMM')
     let node = root
     for (const name of path) {
       let child = node.children.find((entry) => entry.name === name)
@@ -30,4 +29,17 @@ export function examBrowseTree(exams, categories) {
   }
   sort(root)
   return root
+}
+
+// A year containing exams is represented by the exam cards themselves. Other
+// subfolders remain navigable, including a year with further subfolders.
+export function examBrowseContents(node, isRoot = false) {
+  const folders = []
+  const exams = [...node.exams]
+  for (const child of node.children) {
+    if (!isRoot && /^(19|20)\d{2}$/.test(child.name) && child.children.length === 0) exams.push(...child.exams)
+    else folders.push(child)
+  }
+  exams.sort((a, b) => String(b.year || '').localeCompare(String(a.year || ''), 'es', { numeric: true }))
+  return { folders, exams }
 }
