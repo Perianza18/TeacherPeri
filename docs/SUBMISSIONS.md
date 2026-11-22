@@ -42,6 +42,12 @@ in the Problemas filter includes everything below it.
 
 ## Exam folders on the Exámenes page
 
+The Exámenes page groups published exams by their exam-folder path, hiding empty
+main folders. Each competition is a main folder; its years and other folders
+appear inside it. For example, published exams in `OMMEB › 2024` make an
+«OMMEB» main folder with «2024» inside, without a code change. The hand-made
+TeacherPeri exams appear under «TeacherPeri Originals», grouped by year.
+
 The folder and `problemNumber` of each problem are the source of truth; the
 `Exam` documents on Exámenes follow them (`server/src/lib/examSync.js`).
 
