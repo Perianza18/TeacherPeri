@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
   const item = await Exam.findOne({ _id: req.params.id, ...published })
     .populate('tags', 'name slug label')
     .populate('categories', 'name parent')
-    .populate({ path: 'problems.problem', match: publishedOrLegacyProblemQuery(), select: 'codigo titulo enunciado difficulty dificultad sourceAttribution' })
+    .populate({ path: 'problems.problem', match: publishedOrLegacyProblemQuery(), select: 'codigo titulo enunciado problemNumber difficulty dificultad sourceAttribution' })
     .lean()
   if (!item) return res.status(404).json({ error: 'Ese examen no existe o no está publicado.' })
   item.problems.sort((a, b) => a.position - b.position)

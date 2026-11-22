@@ -6,7 +6,7 @@ import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
 import PageFeedback from '../components/PageFeedback'
-import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
+import { LIBRARY_BASE, examProblemTitle, examTitle } from '../lib/libraryPaths'
 import { loadLessonBoxes } from '../lib/lessonBoxes'
 import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
@@ -214,8 +214,8 @@ export default function LibraryDetailPage({ type }) {
             {safeUrl(item.pdfUrl) && <a href={item.pdfUrl} target="_blank" rel="noreferrer" className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">PDF en la fuente ↗</a>}
           </div>}
           <ol className="flex flex-col gap-5">{item.problems?.map(({ position, problem }) => <li key={position} className="tp-card-soft bg-tp-surface p-5 sm:p-6">
-            <p className="tp-sticker -rotate-2 bg-tp-yellow text-[11px]">Problema {position}</p>
-            {problem ? <><Link className="mt-4 block font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em] hover:text-tp-violet" to={`/entrenamiento/problemas/${problem._id}`}>{problem.titulo || problem.codigo} →</Link><MathText text={problem.enunciado} className="tp-reading-text mt-3 leading-7 text-tp-ink-soft" /></> : <p className="mt-3 text-tp-ink-muted">Problema no disponible públicamente.</p>}
+            {(type !== 'examenes' || !problem?.problemNumber) && <p className="tp-sticker -rotate-2 bg-tp-yellow text-[11px]">Problema {position}</p>}
+            {problem ? <><Link className="mt-4 block font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em] hover:text-tp-violet" to={`/entrenamiento/problemas/${problem._id}`}>{type === 'examenes' ? examProblemTitle(problem) : problem.titulo || problem.codigo} →</Link><MathText text={problem.enunciado} className="tp-reading-text mt-3 leading-7 text-tp-ink-soft" /></> : <p className="mt-3 text-tp-ink-muted">Problema no disponible públicamente.</p>}
           </li>)}</ol>
         </>}
 
