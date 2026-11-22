@@ -1,5 +1,7 @@
 import { useId, useRef, useState } from 'react'
 import { ALT_MAX, IMAGES_PER_PROBLEM, imageSrc, uploadImage } from '../../lib/images'
+import { hasLoneDollar } from '../../lib/mathAlt'
+import MathText from '../math/MathText'
 
 // Add, describe, replace, reorder or remove a problem's pictures.
 // `value` is [{ image, alt, placement }]. `allowSolution` (editors and admins)
@@ -42,7 +44,7 @@ export default function ImagesField({ value, onChange, token, allowSolution = fa
     <div className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-bold">Imágenes (opcional)</p>
-        <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">Hasta {IMAGES_PER_PROBLEM}: PNG, JPG o WebP de máximo 5 MB. Cada una necesita una descripción para quien no puede verla, por ejemplo «Triángulo ABC con la altura desde A marcada».</p>
+        <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">Hasta {IMAGES_PER_PROBLEM}: PNG, JPG o WebP de máximo 5 MB. Cada una necesita una descripción para quien no puede verla, por ejemplo «Triángulo $ABC$ con $\angle A = 90^\circ$». La descripción no aparece en la página: la leen los lectores de pantalla. Puedes usar $…$ para las fórmulas.</p>
       </div>
       <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
       {value.length > 0 && (
@@ -53,6 +55,13 @@ export default function ImagesField({ value, onChange, token, allowSolution = fa
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <label htmlFor={`${id}-alt-${index}`} className="text-sm font-bold">Descripción de la imagen {index + 1}</label>
                 <textarea id={`${id}-alt-${index}`} value={entry.alt} onChange={(event) => update(index, { alt: event.target.value })} rows={2} maxLength={ALT_MAX} required aria-describedby={`${id}-ayuda`} className="tp-input text-sm" />
+                {entry.alt.trim() && (
+                  <div className="rounded-[10px] border-2 border-dashed border-tp-rule bg-tp-paper px-3 py-2">
+                    <p className="mb-1 text-xs font-bold uppercase tracking-[0.12em] text-tp-ink-muted">Vista previa</p>
+                    <MathText text={entry.alt} className="break-words text-sm leading-6 text-tp-ink" />
+                    {hasLoneDollar(entry.alt) && <p className="mt-1 text-sm font-semibold text-red-700">Hay un signo $ sin cerrar. Cada fórmula va entre $…$.</p>}
+                  </div>
+                )}
                 {allowSolution && (
                   <label className="text-sm font-semibold">
                     Dónde se muestra
