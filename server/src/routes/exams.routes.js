@@ -5,17 +5,28 @@ import { descendantCategoryIds, idsOrBadRequest, paginatedResponse, textSearch, 
 
 const router = Router()
 const published = { publicationStatus: 'published' }
-router.get('/', async (req, res) => {
+async function examFilter(req, res) {
   const tags = idsOrBadRequest(res, req.query.tags, 'tags')
   const categoryFilter = idsOrBadRequest(res, req.query.categories, 'categories')
   const categories = categoryFilter ? await descendantCategoryIds(categoryFilter) : null
-  if (!tags || !categories) return
+  if (!tags || !categories) return null
   const filter = { ...published }
   if (tags.length) filter.tags = { $in: tags }
   if (categories.length) filter.categories = { $in: categories }
   if (req.query.competition) filter.competition = textSearch(req.query.competition)
   if (req.query.year) filter.year = req.query.year
-  if (req.query.q) filter.$or = [{ competition: textSearch(req.query.q) }, { round: textSearch(req.query.q) }, { organization: textSearch(req.query.q) }]
+  if (req.query.q) filter.$or = [{ competition: textSearch(req.query.q) }, { round: textSearch(req.query.q) }, { organization: textSearch(req.query.q) }, { year: textSearch(req.query.q) }]
+  return filter
+}
+router.get('/browse', async (req, res) => {
+  const filter = await examFilter(req, res)
+  if (!filter) return
+  const items = await Exam.find(filter).sort({ year: -1, competition: 1, round: 1 }).populate('categories', 'name parent').lean()
+  res.json({ items, total: items.length, totalPages: 1 })
+})
+router.get('/', async (req, res) => {
+  const filter = await examFilter(req, res)
+  if (!filter) return
   await paginatedResponse({
     req,
     res,

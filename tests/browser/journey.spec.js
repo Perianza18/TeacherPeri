@@ -139,3 +139,32 @@ test('lesson wrappers are absent from route discovery', async ({ page }) => {
   await expect(page.getByText('Todavía no hay Rutas publicadas.')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Factorización e Identidades', exact: true })).toHaveCount(0)
 })
+
+test('exam folders show competitions and their years', async ({ page }) => {
+  const folders = [
+    { _id: 'root', name: 'Exámenes', kind: 'exam', parent: null },
+    { _id: 'omm', name: 'OMM', kind: 'exam', parent: 'root' },
+    { _id: 'year', name: '2024', kind: 'exam', parent: 'omm' },
+    { _id: 'empty', name: 'OMMEB', kind: 'exam', parent: 'root' },
+  ]
+  const exams = [
+    { _id: 'original', competition: 'TeacherPeri', year: '2026', round: 'Práctica A', problems: [] },
+    { _id: 'official', competition: 'OMM', year: '2024', categories: [{ _id: 'year' }], problems: [] },
+  ]
+  await page.route('**/api/categories', (route) => route.fulfill({ json: folders }))
+  await page.route('**/api/exams/browse?*', (route) => route.fulfill({ json: { items: exams, total: exams.length, totalPages: 1 } }))
+  await page.goto('/entrenamiento/examenes')
+  const nav = page.getByRole('navigation', { name: 'Carpetas de exámenes' })
+  await expect(nav.getByRole('button', { name: 'TeacherPeri Originals' })).toBeVisible()
+  await expect(nav.getByRole('button', { name: 'OMM', exact: true })).toBeVisible()
+  await expect(nav.getByRole('button', { name: 'OMMEB' })).toHaveCount(0)
+  await nav.getByRole('button', { name: 'OMM', exact: true }).click()
+  await nav.getByRole('button', { name: '2024' }).click()
+  await expect(page.getByRole('link', { name: 'OMM 2024', exact: true })).toBeVisible()
+  await assertFits(page)
+  await nav.getByRole('button', { name: 'Exámenes', exact: true }).click()
+  await nav.getByRole('button', { name: 'TeacherPeri Originals' }).click()
+  await nav.getByRole('button', { name: '2026' }).click()
+  await expect(page.getByRole('link', { name: /Práctica A/ })).toBeVisible()
+  await assertFits(page)
+})

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE, examTitle } from '../../lib/libraryPaths'
+import { examBrowseTree } from '../../lib/examBrowse'
 import MathText from '../math/MathText'
 import PageHero from '../PageHero'
 import { GlyphTile } from '../decor/Decor'
@@ -45,13 +46,14 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const [filters, setFilters] = useState({ q: '', area: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
   const [page, setPage] = useState(1)
   const [folder, setFolder] = useState(null)
+  const [examPath, setExamPath] = useState([])
   const [metadata, setMetadata] = useState({ categories: [], topics: [], tags: [], facets: {} })
   const [results, setResults] = useState({ key: null, items: [], total: 0, totalPages: 0, error: null })
   const key = JSON.stringify({ type, source, filters, folder, page })
   const loading = results.key !== key
   const change = (field, value) => { setFilters((current) => ({ ...current, [field]: value })); setPage(1) }
   const navigateFolder = (id) => { setFolder(id); setPage(1) }
-  const clearAll = () => { setFilters(EMPTY_FILTERS); navigateFolder(null) }
+  const clearAll = () => { setFilters(EMPTY_FILTERS); navigateFolder(null); setExamPath([]) }
   // Área (by name) and subtema (Topic id) change together.
   const choose = (area, topics) => { setFilters((current) => ({ ...current, area, topics })); setPage(1) }
   // Problemas, Teoría and Listas filter by Área › subtema and «Palabras
@@ -70,7 +72,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
       if (source) params.set('source', source)
       const active = Object.values(filters).some((value) => Array.isArray(value) ? value.length > 0 : value.trim().length > 0)
       if (folder && !(type === 'problems' && active)) params.set('categories', folder)
-      apiFetch(`/api/${type}?${params}`)
+      apiFetch(`/api/${type}${type === 'exams' ? '/browse' : ''}?${params}`)
         .then((data) => { if (!cancelled) setResults({ ...data, key, error: null }) })
         .catch((error) => { if (!cancelled) setResults({ key, items: [], total: 0, totalPages: 0, error: error.message }) })
     }, 160)
@@ -80,8 +82,8 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   useEffect(() => {
     let cancelled = false
     Promise.all([apiFetch('/api/categories'), apiFetch('/api/topics'), apiFetch('/api/tags'), type === 'problems' ? apiFetch('/api/problems/facets') : Promise.resolve({})])
-      // Exam folders only hold Problems, so the other libraries leave them out.
-      .then(([categories, topics, tags, facets]) => { if (!cancelled) setMetadata({ categories: type === 'problems' ? categories : categories.filter((c) => c.kind !== 'exam'), topics, tags, facets }) })
+      // Problems filter by exam folders, and Exams use them for browsing.
+      .then(([categories, topics, tags, facets]) => { if (!cancelled) setMetadata({ categories: ['problems', 'exams'].includes(type) ? categories : categories.filter((c) => c.kind !== 'exam'), topics, tags, facets }) })
       .catch(() => {})
     return () => { cancelled = true }
   }, [type])
@@ -91,15 +93,18 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const seen = new Set()
   let ancestor = metadata.categories.find((c) => c._id === folder)
   while (ancestor && !seen.has(ancestor._id)) { seen.add(ancestor._id); crumbs.unshift(ancestor); ancestor = metadata.categories.find((c) => c._id === ancestor.parent) }
+  const examTree = type === 'exams' ? examBrowseTree(results.items, metadata.categories) : null
+  const examNode = examPath.reduce((node, name) => node?.children.find((child) => child.name === name), examTree) || { children: [], exams: [] }
+  const shownItems = type === 'exams' ? examNode.exams : results.items
   const select = (field, label, choices) => <label className="text-sm font-bold text-tp-ink">{label}<select value={filters[field]} onChange={(e) => change(field, e.target.value)} className="tp-input mt-1.5 font-normal"><option value="">Todos</option>{choices.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
   const look = LOOK[type] || LOOK.problems
   const base = external ? LIBRARY_BASE.resources : LIBRARY_BASE[type]
   // The result count, cards and pages; `resultsTop` and `grid` fit each layout.
   const resultsBlock = (resultsTop, grid) => <>
-    <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : results.total === 1 ? '1 resultado' : `${results.total} resultados`}</div>
+    <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : (type === 'exams' ? shownItems.length : results.total) === 1 ? '1 resultado' : `${type === 'exams' ? shownItems.length : results.total} resultados`}</div>
     {loading && <SkeletonGrid count={6} className={`mt-5 grid gap-6 ${grid}`} />}
-    {!loading && !results.error && !results.total && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
-    {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{results.items.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
+    {!loading && !results.error && (type === 'exams' ? !shownItems.length && !examNode.children.length : !results.total) && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
+    {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{shownItems.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
       <div className={`flex items-center justify-between gap-2 border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || look.strip}`}>
         <p className="truncate text-xs font-extrabold uppercase tracking-[0.12em]">{item.codigo || title}{item.level || item.difficulty ? ` · ${LEVELS[item.level || item.difficulty]}` : ''}</p>
         {item.tema && <span className="tp-pill shrink-0 bg-tp-surface px-2 py-0 text-[11px]">{item.tema}</span>}
@@ -137,11 +142,15 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
       {type === 'problems' && <FolderFilter categories={metadata.categories} value={filters.categories} onChange={(ids) => change('categories', ids)} />}
       <button onClick={() => { clearAll() }} className="mt-4 text-sm font-bold text-tp-violet underline underline-offset-2">Limpiar filtros</button></>}
     </div>
-    {!external && <nav aria-label="Carpetas de la biblioteca" className="mt-6 rounded-[14px] border-2 border-dashed border-tp-ink bg-tp-paper p-4">
+    {type === 'exams' && <nav aria-label="Carpetas de exámenes" className="mt-6 rounded-[14px] border-2 border-dashed border-tp-ink bg-tp-paper p-4">
+      <div className="flex flex-wrap items-center gap-2 text-sm"><button onClick={() => setExamPath([])} className="font-bold text-tp-violet underline-offset-2 hover:underline">Exámenes</button>{examPath.map((name, index) => <span key={index}> › <button onClick={() => setExamPath(examPath.slice(0, index + 1))} className="font-bold hover:underline">{name}</button></span>)}</div>
+      {examNode.children.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{examNode.children.map((child) => <button key={child.name} onClick={() => setExamPath([...examPath, child.name])} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{child.name}<span aria-hidden="true">→</span></button>)}</div>}
+    </nav>}
+    {!external && type !== 'exams' && <nav aria-label="Carpetas de la biblioteca" className="mt-6 rounded-[14px] border-2 border-dashed border-tp-ink bg-tp-paper p-4">
       <div className="flex flex-wrap items-center gap-2 text-sm"><button onClick={() => navigateFolder(null)} className="font-bold text-tp-violet underline-offset-2 hover:underline">Todas las carpetas</button>{crumbs.map((c) => <span key={c._id}> › <button onClick={() => navigateFolder(c._id)} className="font-bold hover:underline">{c.name}</button></span>)}</div>
       {children.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{children.map((c) => <button key={c._id} onClick={() => navigateFolder(c._id)} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{c.name}<span aria-hidden="true">→</span></button>)}</div>}
     </nav>}
-    {resultsBlock('mt-10', 'sm:grid-cols-2 xl:grid-cols-3')}
+    {(type !== 'exams' || loading || results.error || (examPath.length > 0 && (shownItems.length > 0 || !examNode.children.length)) || !results.total) && resultsBlock('mt-10', 'sm:grid-cols-2 xl:grid-cols-3')}
     </>}
     </section>
   </>
