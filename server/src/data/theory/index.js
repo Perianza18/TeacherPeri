@@ -31,12 +31,13 @@ import recursos from './como-usar-listas-libros-y-bancos-de-problemas.js'
 import revisar from './como-revisar-tus-soluciones-y-detectar-errores.js'
 import elegir from './como-elegir-que-estudiar.js'
 import bases from './representacion-en-distintas-bases.js'
+import digitos from './problemas-de-digitos.js'
 
 // Lessons rewritten in the lesson format of the theory page (spec «Página de
 // teoría», Part 2). Each file holds the new summary and text of one lesson,
 // the new banco problems it introduces and the problem collections its boxes
 // point to. mvpLessons.js applies them as the last layer.
-const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir, organizar, atasco, aprender, recursos, revisar, elegir, bases]
+const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir, organizar, atasco, aprender, recursos, revisar, elegir, bases, digitos]
 
 export const THEORY_REWRITES = Object.freeze(Object.fromEntries(LESSONS.map((lesson) => [lesson.pathSlug, lesson])))
 
