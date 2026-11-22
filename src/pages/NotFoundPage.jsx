@@ -14,7 +14,7 @@ export default function NotFoundPage() {
     <>
       <Navbar />
       <main className="bg-tp-paper pt-[72px] text-tp-ink">
-        <section aria-labelledby="no-encontrada" className="relative overflow-hidden border-b-3 border-tp-ink bg-tp-coral">
+        <section aria-labelledby="no-encontrada" className="relative overflow-hidden border-b-3 border-tp-ink bg-tp-orange">
           <div aria-hidden="true" className="tp-graph absolute inset-0" />
           <div aria-hidden="true" className="tp-halftone absolute -right-24 -top-28 size-[440px] opacity-[.15] [mask-image:radial-gradient(circle,black_20%,transparent_68%)]" />
           <div className="tp-container relative flex flex-col items-start gap-6 pb-16 pt-12 lg:pb-20 lg:pt-16">

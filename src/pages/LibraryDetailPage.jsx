@@ -20,8 +20,8 @@ const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'li
 
 // Header band color: a problem takes its area's color (the same family as
 // the strips on the library cards); lists and exams have their own.
-const AREA_TONES = { 'Geometría': 'sky', 'Álgebra': 'violet', 'Combinatoria': 'coral', 'Teoría de Números': 'mint' }
-const TYPE_TONES = { listas: 'mint', examenes: 'coral' }
+const AREA_TONES = { 'Geometría': 'sky', 'Álgebra': 'violet', 'Combinatoria': 'orange', 'Teoría de Números': 'mint' }
+const TYPE_TONES = { listas: 'mint', examenes: 'orange' }
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 
 // «+» that turns into «×» while its <details> is open.
@@ -179,7 +179,7 @@ export default function LibraryDetailPage({ type }) {
       {backLink}
       {routeNav}
       {error
-        ? <p role="alert" className="tp-card-quiet max-w-[760px] bg-tp-coral-soft p-4">{error}</p>
+        ? <p role="alert" className="tp-card-quiet max-w-[760px] bg-tp-orange-soft p-4">{error}</p>
         : <><p className="text-tp-ink-muted">Cargando contenido…</p><div className="max-w-[800px]"><SkeletonCard strip={false} strong /></div></>}
     </div></section>
   }

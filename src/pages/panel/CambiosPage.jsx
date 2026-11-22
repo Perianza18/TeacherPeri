@@ -66,7 +66,7 @@ function Detalle({ id, token }) {
         <section key={change.field} aria-labelledby={`campo-${change.field}`} className="flex flex-col gap-3">
           <h3 id={`campo-${change.field}`} className="tp-eyebrow">{change.label}</h3>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="tp-card-quiet min-w-0 bg-tp-coral-soft p-4">
+            <div className="tp-card-quiet min-w-0 bg-tp-orange-soft p-4">
               <p className="mb-2 text-xs font-black uppercase tracking-[0.12em]">Antes</p>
               <pre className="max-h-[50vh] overflow-auto whitespace-pre-wrap break-words font-mono text-sm leading-6">{shown(change.before)}</pre>
             </div>

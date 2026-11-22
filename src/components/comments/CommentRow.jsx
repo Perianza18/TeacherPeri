@@ -4,7 +4,7 @@ import RoleBadge from '../RoleBadge'
 import CommentComposer from './CommentComposer'
 import ReasonForm from './ReasonForm'
 
-const AVATAR_FILLS = ['#e8ddff', '#d9f1ff', '#ffdfd6', '#d8f5e8']
+const AVATAR_FILLS = ['#e8ddff', '#d9f1ff', '#ffe2c4', '#d8f5e8']
 
 function avatarFill(name) {
   let sum = 0
@@ -97,7 +97,7 @@ export default function CommentRow({ comment, viewer, onReply, onReport, onDelet
             />
           )}
           {panel === 'delete' && isOwn && (
-            <div className="mt-2 flex flex-wrap items-center gap-2 rounded-[10px] border-2 border-black bg-[#ffe4e1] p-3">
+            <div className="mt-2 flex flex-wrap items-center gap-2 rounded-[10px] border-2 border-black bg-tp-orange-soft p-3">
               <p className="text-sm font-bold text-brand-900">¿Eliminar tu comentario?</p>
               <div className="ml-auto flex gap-2">
                 <button type="button" onClick={close} className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-brand-600 hover:text-brand-900">Cancelar</button>

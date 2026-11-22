@@ -145,7 +145,7 @@ function useReadingState(articleRef, sections) {
 }
 
 // Section colors, in the same order as the lesson's section headings.
-const SECTION_DOTS = ['bg-tp-violet text-white', 'bg-tp-sky', 'bg-tp-coral', 'bg-tp-mint']
+const SECTION_DOTS = ['bg-tp-violet text-white', 'bg-tp-sky', 'bg-tp-orange', 'bg-tp-mint']
 
 // Side index on wide screens: stays in view while reading, marks the
 // current section and shows how much of the lesson is read.
@@ -335,7 +335,7 @@ export default function TheoryView({ item, error, route, ancestors = [], problem
           : (
             <div className="tp-container py-12">
               {error
-                ? <p role="alert" className="tp-card-quiet bg-tp-coral-soft p-4">{error}</p>
+                ? <p role="alert" className="tp-card-quiet bg-tp-orange-soft p-4">{error}</p>
                 : <p className="text-tp-ink-muted">Cargando contenido…</p>}
             </div>
           )}

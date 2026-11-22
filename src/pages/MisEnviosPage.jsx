@@ -67,7 +67,7 @@ function SubmissionCard({ item, token, onDeleted }) {
       {showProposal && <ProblemImages images={item.proposal.images} className="justify-start" />}
       {item.state === 'published-pending' && <p className="text-sm text-tp-ink-muted">Tus cambios están en revisión; mientras tanto se muestra la versión publicada.</p>}
       {(item.state === 'rejected' || item.state === 'published-rejected') && item.latest?.reason && (
-        <p className="tp-card-quiet bg-tp-coral-soft p-3 text-sm leading-6"><strong>Motivo: </strong>{item.latest.reason}</p>
+        <p className="tp-card-quiet bg-tp-orange-soft p-3 text-sm leading-6"><strong>Motivo: </strong>{item.latest.reason}</p>
       )}
       <div className="flex flex-wrap gap-2 text-sm">
         {item.examFolderPath.length > 0 && <span className="tp-pill bg-tp-surface text-xs">{item.examFolderPath.slice(1).join(' › ')}{item.proposal.problemNumber ? ` · Problema ${item.proposal.problemNumber}` : ''}</span>}
@@ -81,7 +81,7 @@ function SubmissionCard({ item, token, onDeleted }) {
         {confirming && (
           <span className="flex flex-wrap items-center gap-2" role="group" aria-label="Confirmar eliminación">
             <span className="font-semibold">¿Eliminar este problema?</span>
-            <button type="button" onClick={remove} disabled={busy} className="tp-button bg-tp-coral px-3 text-tp-ink disabled:opacity-60">Sí, eliminar</button>
+            <button type="button" onClick={remove} disabled={busy} className="tp-button bg-tp-orange px-3 text-tp-ink disabled:opacity-60">Sí, eliminar</button>
             <button type="button" onClick={() => setConfirming(false)} className="min-h-11 px-1 font-semibold underline">Cancelar</button>
           </span>
         )}
@@ -125,7 +125,7 @@ export default function MisEnviosPage() {
         </div>
       )}
       {auth && loading && <p className="mt-8 text-tp-ink-muted" aria-live="polite">Cargando tus envíos…</p>}
-      {auth && !loading && result.error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-coral-soft p-4">No fue posible cargar tus envíos: {result.error}</p>}
+      {auth && !loading && result.error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-orange-soft p-4">No fue posible cargar tus envíos: {result.error}</p>}
       {auth && !loading && !result.error && result.items.length === 0 && (
         <section className="tp-card-soft mt-8 bg-tp-surface p-6">
           <span className="tp-kicker">Mis envíos</span>
@@ -166,7 +166,7 @@ export function EditarEnvioPage() {
       <Link to={MY_SUBMISSIONS_PATH} className="mt-4 inline-block text-sm font-semibold text-tp-violet">← Volver a Mis envíos</Link>
       {!auth && <SignInCard abrirModal={abrirModal} />}
       {auth && !item && !error && <p className="mt-8 text-tp-ink-muted" aria-live="polite">Cargando…</p>}
-      {auth && error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-coral-soft p-4">{error}</p>}
+      {auth && error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-orange-soft p-4">{error}</p>}
       {auth && item && (
         <div className="tp-card-soft mt-6 bg-tp-surface p-5 sm:p-7">
           <ProblemSubmissionForm

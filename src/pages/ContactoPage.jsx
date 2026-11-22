@@ -19,7 +19,7 @@ export default function ContactoPage() {
           id="contacto-titulo"
           tone="mint"
           kicker="Contacto"
-          title={<Mark variant="lines" color="var(--tp-coral)" width={6} delay={300}>Contáctame</Mark>}
+          title={<Mark variant="lines" color="var(--tp-orange)" width={6} delay={300}>Contáctame</Mark>}
           lead="¡Holaaa! Qué gusto que quieras ponerte en contacto. 🚀"
         />
 

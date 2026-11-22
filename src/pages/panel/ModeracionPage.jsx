@@ -79,7 +79,7 @@ function DeleteComment({ group, token, onDone }) {
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
   const [state, setState] = useState({ busy: false, error: null })
-  if (!open) return <button type="button" onClick={() => setOpen(true)} className="tp-button bg-tp-coral px-4 text-sm font-bold text-tp-ink">Eliminar comentario</button>
+  if (!open) return <button type="button" onClick={() => setOpen(true)} className="tp-button bg-tp-orange px-4 text-sm font-bold text-tp-ink">Eliminar comentario</button>
   const submit = async (event) => {
     event.preventDefault()
     if (!reason) return setState({ busy: false, error: 'Elige un motivo.' })
@@ -93,7 +93,7 @@ function DeleteComment({ group, token, onDone }) {
     }
   }
   return (
-    <form onSubmit={submit} className="tp-card-quiet flex w-full flex-col gap-2 bg-tp-coral-soft p-4">
+    <form onSubmit={submit} className="tp-card-quiet flex w-full flex-col gap-2 bg-tp-orange-soft p-4">
       <label htmlFor={`${id}-motivo`} className="text-sm font-bold">Motivo para eliminarlo</label>
       <select id={`${id}-motivo`} value={reason} onChange={(event) => setReason(event.target.value)} className="tp-input">
         <option value="">Elige un motivo…</option>
@@ -119,7 +119,7 @@ function CommentReportCard({ group, status, token, onDone }) {
   return (
     <article className="tp-card-soft flex flex-col gap-3 bg-tp-surface p-5 sm:p-6">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="tp-pill bg-tp-coral-soft text-xs">{group.count} {group.count === 1 ? 'reporte' : 'reportes'}</span>
+        <span className="tp-pill bg-tp-orange-soft text-xs">{group.count} {group.count === 1 ? 'reporte' : 'reportes'}</span>
         {group.comment.status === 'deleted' && <span className="tp-pill bg-tp-surface text-xs">Comentario eliminado</span>}
         <span className="text-sm text-tp-ink-muted">En <Link to={href} className="font-semibold text-tp-violet underline underline-offset-2">{group.problem.codigo ? `${group.problem.codigo} «${group.problem.titulo}»` : 'un problema'}</Link></span>
       </div>

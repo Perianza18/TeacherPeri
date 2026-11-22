@@ -39,11 +39,11 @@ componentes usa las variables, no valores hexadecimales sueltos.
 | `--tp-yellow-soft` | #FFF4CC | Consejos y pistas |
 | `--tp-mint` | #8EE8BF | Acciones «Resolver» / «Completado», encabezado de ejemplo |
 | `--tp-mint-soft` | #D8F5E8 | Panel de problemas relacionados |
-| `--tp-coral` | #FF7F79 | Etiqueta de error común, estados de reporte |
-| `--tp-coral-soft` | #FFE4E1 | Fondo de error común |
+| `--tp-orange` | #FF9F43 | El naranja del pingüino: etiqueta de error común, estados de reporte, «¡Hoy!», «Próximamente», la página 404 |
+| `--tp-orange-soft` | #FFE9D2 | Fondo de error común |
 
 Los fondos de los encabezados de sección rotan en este orden: #E8DDFF, #D9F1FF,
-#FFDFD6, #D8F5E8 (`.tp-lesson-heading-0…3`).
+#FFE2C4, #D8F5E8 (`.tp-lesson-heading-0…3`).
 
 **Regla de contraste:** texto blanco solo sobre `--tp-violet` o `--tp-ink`. Sobre
 cualquier otro color, usa `--tp-ink`.
@@ -109,7 +109,7 @@ una caja a mano.
 | `Ejemplo` (`example`) | franja menta «EJEMPLO n» | blanco | 2px | Se numera solo. Enunciado visible; solución oculta detrás de «Ver solución» |
 | `Intentalo` (`try`) | `<details>` «Inténtalo: …» | blanco | 2px, sombra 4px | Respuesta oculta hasta abrirla |
 | `Consejo` (`tip`) | CONSEJO DE OLIMPIADA sobre amarillo | yellow-soft | 2px | |
-| `ErrorComun` (`mistake`) | ERROR COMÚN sobre coral | coral-soft | 2px | |
+| `ErrorComun` (`mistake`) | ERROR COMÚN sobre naranja | orange-soft | 2px | |
 | `PracticeBox` (cajas de problemas) | PRACTICA, EJERCICIOS o RETO sobre tinta (texto blanco) + «N problemas para esta lección» | **amarillo** | 3px, sombra 6px | Una caja por tipo, con filas blancas compactas: metadatos (nivel · comentarios), vista previa del enunciado (sin título), «Resolver →» en menta. Apunta al problema del banco; nunca lo copia |
 | `Tabla` | ninguna | blanco, fila de encabezado #F2EFE9 | 2px, radio 12px | En celular se desplaza de lado |
 | `Figura` | ninguna (pie abajo, Inter 13px) | blanco | 2px, radio 14px | SVG de máximo 480px, centrado. Líneas de tinta de 2.5px, un solo acento (violeta) para lo que señala el texto, etiquetas en la fuente matemática, paralelas con flechas, ángulos iguales con la misma letra. Varias figuras de una misma idea van en fila y se apilan en celular. Texto alternativo obligatorio |

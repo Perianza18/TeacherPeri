@@ -153,7 +153,7 @@ function ProblemForm({ initial, vocab, token }) {
       </section>
 
       {state.error && (
-        <div role="alert" className="tp-card-quiet bg-tp-coral-soft p-4 text-sm leading-6">
+        <div role="alert" className="tp-card-quiet bg-tp-orange-soft p-4 text-sm leading-6">
           <p className="font-bold">{state.error}</p>
           {state.checks.length > 1 && <ul className="mt-2 list-disc pl-5">{state.checks.map((check) => <li key={`${check.code}-${check.message}`}>{check.message}</li>)}</ul>}
         </div>

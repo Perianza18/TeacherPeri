@@ -37,10 +37,10 @@ tokens, not raw hex values, in components.
 | `--tp-yellow-soft` | #FFF4CC | Tips and hints |
 | `--tp-mint` | #8EE8BF | «Resolver» / «Completado» actions, example header |
 | `--tp-mint-soft` | #D8F5E8 | Related problems panel |
-| `--tp-coral` | #FF7F79 | Error común label, report states |
-| `--tp-coral-soft` | #FFE4E1 | Error común background |
+| `--tp-orange` | #FF9F43 | The penguin's orange: Error común label, report states, «¡Hoy!», «Próximamente», the 404 page |
+| `--tp-orange-soft` | #FFE9D2 | Error común background |
 
-Section heading backgrounds rotate in this order: #E8DDFF, #D9F1FF, #FFDFD6,
+Section heading backgrounds rotate in this order: #E8DDFF, #D9F1FF, #FFE2C4,
 #D8F5E8 (`.tp-lesson-heading-0…3`).
 
 **Contrast rule:** white text only on `--tp-violet` or `--tp-ink`. On every other
@@ -104,7 +104,7 @@ These are React components in `src/components/content/` (`Bloques.jsx`,
 | `Ejemplo` (`example`) | mint header strip «EJEMPLO n» | white | 2px | Numbered automatically. Statement visible; solution hidden behind «Ver solución» |
 | `Intentalo` (`try`) | `<details>` «Inténtalo: …» | white | 2px, 4px shadow | Answer hidden until opened |
 | `Consejo` (`tip`) | CONSEJO DE OLIMPIADA on yellow | yellow-soft | 2px | |
-| `ErrorComun` (`mistake`) | ERROR COMÚN on coral | coral-soft | 2px | |
+| `ErrorComun` (`mistake`) | ERROR COMÚN on orange | orange-soft | 2px | |
 | `PracticeBox` (problem boxes) | PRACTICA, EJERCICIOS or RETO on ink (white text) + «N problemas para esta lección» | **yellow** | 3px, 6px shadow | One box per kind, with compact white rows: meta (level · comments), statement preview (no title), mint «Resolver →». Points to the problem in the bank; never copies it |
 | `Tabla` | none | white, header row #F2EFE9 | 2px, radius 12px | Scrolls sideways on mobile |
 | `Figura` | none (caption below, Inter 13px) | white | 2px, radius 14px | SVG max 480px, centered. Ink lines 2.5px, one accent (violet) for what the text points at, labels in the math font, parallel lines with arrows, equal angles with the same letter. Several figures of one idea sit in a row and stack on mobile. Alt text required |

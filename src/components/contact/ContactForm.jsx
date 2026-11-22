@@ -130,7 +130,7 @@ export default function ContactForm() {
         />
       </label>
 
-      {error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft px-3 py-2 text-sm font-semibold">{error}</p>}
+      {error && <p role="alert" className="tp-card-quiet bg-tp-orange-soft px-3 py-2 text-sm font-semibold">{error}</p>}
 
       <button
         type="submit"
