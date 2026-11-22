@@ -15,6 +15,7 @@ export function examBrowseTree(exams, categories) {
     if (path[0] === 'Exámenes') path.shift()
     if (!path.length) path.push(exam.competition === 'TeacherPeri' ? 'TeacherPeri Originals' : exam.competition)
     if (!linked && exam.year) path.push(exam.year)
+    if (path[0] === 'OMM Estatal') path.unshift('OMM')
     let node = root
     for (const name of path) {
       let child = node.children.find((entry) => entry.name === name)

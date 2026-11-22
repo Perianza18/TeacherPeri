@@ -146,10 +146,13 @@ test('exam folders show competitions and their years', async ({ page }) => {
     { _id: 'omm', name: 'OMM', kind: 'exam', parent: 'root' },
     { _id: 'year', name: '2024', kind: 'exam', parent: 'omm' },
     { _id: 'empty', name: 'OMMEB', kind: 'exam', parent: 'root' },
+    { _id: 'state', name: 'OMM Estatal', kind: 'exam', parent: 'root' },
+    { _id: 'chiapas', name: 'Chiapas', kind: 'exam', parent: 'state' },
   ]
   const exams = [
     { _id: 'original', competition: 'TeacherPeri', year: '2026', round: 'Práctica A', problems: [] },
     { _id: 'official', competition: 'OMM', year: '2024', categories: [{ _id: 'year' }], problems: [] },
+    { _id: 'state-exam', competition: 'OMM Estatal', round: 'Chiapas', categories: [{ _id: 'chiapas' }], problems: [] },
   ]
   await page.route('**/api/categories', (route) => route.fulfill({ json: folders }))
   await page.route('**/api/exams/browse?*', (route) => route.fulfill({ json: { items: exams, total: exams.length, totalPages: 1 } }))
@@ -158,7 +161,9 @@ test('exam folders show competitions and their years', async ({ page }) => {
   await expect(nav.getByRole('button', { name: 'TeacherPeri Originals' })).toBeVisible()
   await expect(nav.getByRole('button', { name: 'OMM', exact: true })).toBeVisible()
   await expect(nav.getByRole('button', { name: 'OMMEB' })).toHaveCount(0)
+  await expect(nav.getByRole('button', { name: 'OMM Estatal' })).toHaveCount(0)
   await nav.getByRole('button', { name: 'OMM', exact: true }).click()
+  await expect(nav.getByRole('button', { name: 'OMM Estatal' })).toBeVisible()
   await nav.getByRole('button', { name: '2024' }).click()
   await expect(page.getByRole('link', { name: 'OMM 2024', exact: true })).toBeVisible()
   await assertFits(page)

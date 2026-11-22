@@ -46,7 +46,8 @@ filtro de Problemas incluye todo lo que está dentro.
 
 La página Exámenes agrupa los exámenes publicados por su ruta de carpetas y
 oculta las carpetas principales vacías. Cada competencia es una carpeta
-principal; sus años y demás carpetas aparecen dentro. Por ejemplo, los exámenes
+principal; sus años y demás carpetas aparecen dentro. «OMM Estatal» aparece
+dentro de «OMM». Por ejemplo, los exámenes
 publicados en `OMMEB › 2024` hacen aparecer «OMMEB» como carpeta principal con
 «2024» dentro, sin cambiar código. Los exámenes de TeacherPeri hechos a mano
 aparecen en «TeacherPeri Originals», agrupados por año.
