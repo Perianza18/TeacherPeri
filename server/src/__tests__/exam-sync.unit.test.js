@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { examFieldsFromPath, examTitle, orderExamProblems } from '../lib/examSync.js'
-import { examTitle as pageTitle } from '../../../src/lib/libraryPaths.js'
+import { examProblemTitle, examTitle as pageTitle } from '../../../src/lib/libraryPaths.js'
 
 describe('exam card from the folder path', () => {
   it('takes competition, year and round from the folder names', () => {
@@ -26,5 +26,11 @@ describe('exam card from the folder path', () => {
   it('orders by problem number; problems without a number go last', () => {
     const list = [{ codigo: 'U-3' }, { codigo: 'U-2', problemNumber: 4 }, { codigo: 'U-1', problemNumber: 1 }, { codigo: 'U-0' }]
     expect(orderExamProblems(list).map((p) => p.codigo)).toEqual(['U-1', 'U-2', 'U-0', 'U-3'])
+  })
+
+  it('uses the original problem number on an incomplete exam', () => {
+    expect(examProblemTitle({ titulo: 'OMM 2025 - Problema 5', problemNumber: 5 })).toBe('Problema 5')
+    expect(examProblemTitle({ titulo: 'Práctica original', codigo: 'TP-A01' })).toBe('Práctica original')
+    expect(examProblemTitle({ codigo: 'TP-A01' })).toBe('TP-A01')
   })
 })

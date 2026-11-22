@@ -125,3 +125,5 @@ A Ruta is an ordered path through existing material. See
 | Works on phones (375 px and up) | Done | |
 | Hosting: Vercel (website), Render (API), MongoDB Atlas (database) | Done | See [DEPLOYMENT.md](DEPLOYMENT.md) |
 | Own domain | Planned | **Today:** teacherperi.vercel.app |
+
+Exam pages display a numbered problem by its original problem number, even when an exam is incomplete; the problem bank retains the full title.
