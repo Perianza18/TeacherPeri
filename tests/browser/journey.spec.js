@@ -146,14 +146,16 @@ test('exam folders show competitions and their years', async ({ page }, testInfo
     { _id: 'omm', name: 'OMM', kind: 'exam', parent: 'root' },
     { _id: 'year', name: '2024', kind: 'exam', parent: 'omm' },
     { _id: 'empty', name: 'OMMEB', kind: 'exam', parent: 'root' },
-    { _id: 'state', name: 'OMM Estatal', kind: 'exam', parent: 'root' },
+    { _id: 'state', name: 'OMM Estatal', kind: 'exam', parent: 'omm' },
     { _id: 'chiapas', name: 'Chiapas', kind: 'exam', parent: 'state' },
   ]
   const exams = [
     { _id: 'original', competition: 'TeacherPeri', year: '2026', round: 'Práctica A', problems: [] },
-    { _id: 'official', competition: 'OMM', year: '2024', categories: [{ _id: 'year' }], problems: [] },
-    { _id: 'state-exam', competition: 'OMM Estatal', round: 'Chiapas', categories: [{ _id: 'chiapas' }], problems: [] },
+    { _id: 'official', competition: 'OMM', year: '2024', categories: [{ _id: 'year' }], problems: [{ position: 1, problem: { _id: 'p5', titulo: 'OMM 2024 - Problema 5', problemNumber: 5, enunciado: 'Enunciado nacional' } }] },
+    { _id: 'state-exam', competition: 'OMM Estatal', round: 'Chiapas', categories: [{ _id: 'chiapas' }], problems: [{ position: 1, problem: { _id: 'p3', titulo: 'Estatal - Problema 3', problemNumber: 3, enunciado: 'Enunciado estatal' } }] },
   ]
+  await page.route('**/api/exams/official', (route) => route.fulfill({ json: exams[1] }))
+  await page.route('**/api/exams/state-exam', (route) => route.fulfill({ json: exams[2] }))
   await page.route('**/api/categories', (route) => route.fulfill({ json: folders }))
   await page.route('**/api/exams/browse?*', (route) => route.fulfill({ json: { items: exams, total: exams.length, totalPages: 1 } }))
   await page.goto('/entrenamiento/examenes')
@@ -165,18 +167,22 @@ test('exam folders show competitions and their years', async ({ page }, testInfo
   await page.screenshot({ path: testInfo.outputPath('exam-folders.png'), fullPage: true })
   await assertFits(page)
   await expect(nav.getByRole('button', { name: 'OMMEB' })).toHaveCount(0)
-  await expect(nav.getByRole('button', { name: 'OMM Estatal' })).toBeVisible()
   await nav.getByRole('button', { name: 'OMM', exact: true }).click()
+  await expect(nav.getByRole('button', { name: 'OMM Estatal' })).toBeVisible()
   await expect(nav.getByRole('button', { name: '2024' })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: 'OMM 2024', exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'OMM 2024', exact: true }).click()
+  await expect(page.getByRole('link', { name: 'Problema 5 →' })).toBeVisible()
   await assertFits(page)
+  await page.goBack()
   await nav.getByRole('button', { name: 'Exámenes', exact: true }).click()
   await nav.getByRole('button', { name: 'TeacherPeri Originals' }).click()
   await expect(nav.getByRole('button', { name: '2026' })).toHaveCount(0)
   await expect(page.getByRole('link', { name: /Práctica A/ })).toBeVisible()
   await nav.getByRole('button', { name: 'Exámenes', exact: true }).click()
+  await nav.getByRole('button', { name: 'OMM', exact: true }).click()
   await nav.getByRole('button', { name: 'OMM Estatal' }).click()
   await nav.getByRole('button', { name: 'Chiapas' }).click()
-  await expect(page.getByRole('link', { name: 'OMM Estatal · Chiapas', exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'OMM Estatal · Chiapas', exact: true }).click()
+  await expect(page.getByRole('link', { name: 'Problema 3 →' })).toBeVisible()
   await assertFits(page)
 })

@@ -71,6 +71,7 @@ describe('Exámenes sigue a las carpetas de examen', () => {
     expect(page.body.items.map((e) => [e.competition, e.year])).toEqual([['OMM', '2024']])
     const detail = await request(app).get(`/api/exams/${exams[0]._id}`)
     expect(detail.body.problems.map((p) => p.problem.codigo)).toEqual([first.codigo, third.codigo, loose.codigo])
+    expect(detail.body.problems.map((p) => p.problem.problemNumber ?? null)).toEqual([1, 3, null])
   })
 
   it('aprobar con npm run review (el mismo servicio) llena competencia, año y ronda desde la ruta', async () => {
