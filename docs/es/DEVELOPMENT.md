@@ -130,6 +130,7 @@ dirección y se la pasa a la herramienta por la variable propia de esa herramien
 | `atlas:set-role:test`, `atlas:set-role:prod` | `users:set-role` |
 | `atlas:revise-theory:test`, `atlas:revise-theory:prod` | `content:revise-theory` |
 | `atlas:import:test`, `atlas:import:prod` | `content:import` |
+| `atlas:sync-exams:test`, `atlas:sync-exams:prod` | `db:sync:exam-folders` (un examen por carpeta de examen en Exámenes) |
 
 Cada uno es simulación (o solo lectura) salvo que `--apply` vaya después de `--`,
 por ejemplo `npm run atlas:migrate:test -- --apply`. Con `--apply` el envoltorio

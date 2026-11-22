@@ -146,7 +146,9 @@ Los modelos están en `server/src/models/`.
   agrega enlaces «También te puede interesar». El avance se guarda por usuario y
   por Path final (`PathCompletion`).
 - **Las carpetas** son registros `Category` en forma de árbol. Las carpetas de
-  examen son Categories con `kind: exam` dentro de «Exámenes». **Las áreas** son
+  examen son Categories con `kind: exam` dentro de «Exámenes»; cada una con
+  problemas publicados tiene un `Exam` armado con ellos
+  (`server/src/lib/examSync.js`). **Las áreas** son
   `Topic`s y **las etiquetas** son `Tag`s.
 - **Comunidad:** `Comment` (respuestas hasta 3 niveles, borrado suave), `Report`
   (un comentario reportado), `ProblemSubmission` (una propuesta o una edición
