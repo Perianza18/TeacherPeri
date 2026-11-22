@@ -102,7 +102,7 @@ A Ruta is an ordered path through existing material. See
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Profile page `/perfil/<username>` («Mi Espacio» in the avatar menu) | Done | Profile card, «En números» and tabs: Actividad, Comentarios, Listas, Mis envíos, Insignias. Visitors see only Comentarios, Listas and Insignias. The email, Actividad, Mis envíos and private lists are only sent to the owner by the server. See [PROFILES.md](PROFILES.md) |
-| «Editar perfil»: preset avatars and a short description | Done | 12 preset avatars (no uploads) and up to 160 characters. Shown in the navbar, on comments and in follower lists |
+| «Editar perfil»: preset avatars and a short description | Done | 24 preset avatars (12 drawings and 12 math shapes, no uploads), a background colour for them, and up to 160 characters. Shown in the navbar, on comments and in follower lists |
 | «Lo resolví» on problems | Done | The student marks a problem solved (nothing checks the answer). Counts as «problemas resueltos» |
 | Earned badges | Done | Problems solved (1/10/50), comments (1/10/50), accepted problems (1/5/20), applied suggestions (1/5/20), and Editor/Admin. Never taken away. See [PROFILES.md](PROFILES.md#lo-resolví-and-badges) |
 | Followed Rutas, «continue where you left off» | Planned | **Today:** Actividad lists your recent comments, saves, solves, proposals and suggestions |

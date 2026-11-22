@@ -32,9 +32,11 @@ privados de sus respuestas, así que nunca llegan al navegador de otra persona.
   Insignias. Son pestañas reales: ←/→ avanzan (y dan la vuelta), Inicio y Fin
   saltan. Al hacer clic en seguidores o siguiendo se muestra esa lista
   (`?ver=seguidores` o `?ver=siguiendo`), sin pestaña marcada y con «Volver».
-- **Editar perfil:** uno de 12 avatares prediseñados (sin fotos) y una
-  descripción de hasta 160 caracteres. Las cuentas que nunca eligieron avatar
-  tienen uno fijo, calculado de su id.
+- **Editar perfil:** uno de 24 avatares prediseñados (sin fotos): 12 dibujos
+  ilustrados y 12 figuras matemáticas. Un color de fondo para él (amarillo,
+  cielo, menta, lila, naranja o durazno, u «Original», el relleno propio del
+  avatar). Y una descripción de hasta 160 caracteres. Las cuentas que nunca
+  eligieron avatar tienen una figura fija, calculada de su id.
 
 ## Listas («Guardar en lista»)
 
@@ -82,13 +84,14 @@ borró, la página abre en los comentarios.
 ## Código y API
 
 - Páginas: `src/pages/PerfilPage.jsx`, `src/pages/UserListPage.jsx`; piezas en
-  `src/components/profile/`. Avatares: `src/lib/avatars.js`.
+  `src/components/profile/`. Avatares: `src/lib/avatars.js`, dibujos en
+  `src/assets/avatars/` (WebP cuadrado de 256 px con fondo transparente).
 - API: `server/src/routes/profiles.routes.js` (`/api/profiles`),
   `userLists.routes.js` (`/api/my-lists`), `solves.routes.js`
   (`/api/problems/:id/solved`) y `GET /api/flags/mine`. Ver
   [ARCHITECTURE.md](ARCHITECTURE.md#api).
 - Modelos: `Follow`, `UserList`, `UserListItem`, `ProblemSolve`, `UserBadge`, y
-  `bio` y `avatar` en `User`. **No hace falta migración:** los campos nuevos
+  `bio`, `avatar` y `avatarColor` en `User`. **No hace falta migración:** los campos nuevos
   tienen valor por defecto y la API crea las colecciones e índices nuevos al
   arrancar.
 - Pruebas: `server/src/__tests__/profiles.test.js`, `user-lists.test.js`,
