@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
 import { MVP_LESSONS, PREVIOUS_THEORY } from '../data/mvpLessons.js'
@@ -90,9 +91,21 @@ describe('Rewritten theory lessons', () => {
     }
   })
 
+  it('preserves the original separately added advanced lessons', () => {
+    const hashes = {
+      'aritmetica-modular': 'e74e7b6aa8d3dd154e854658339f5afe3facd59db603fef78ff19bd861a5169e',
+      'inversos-y-congruencias-lineales': 'af2a6521cb85889b1cac6b5027be5851432bba9789dbb672dbde05ee4de686cd',
+    }
+    for (const [slug, expected] of Object.entries(hashes)) {
+      const original = PREVIOUS_THEORY[slug] ?? MVP_LESSONS.find((entry) => entry.pathSlug === slug).theory
+      expect(createHash('sha256').update(original.content).digest('hex')).toBe(expected)
+    }
+  })
+
   it('is the last layer: the release uses the new text and keeps the exact previous one', () => {
     for (const lesson of lessons) {
-      const base = OMM_LAUNCH_CONTENT_BATCH_1.lessons.find((entry) => entry.pathSlug === lesson.pathSlug).theory
+      const base = OMM_LAUNCH_CONTENT_BATCH_1.lessons.find((entry) => entry.pathSlug === lesson.pathSlug)?.theory ?? PREVIOUS_THEORY[lesson.pathSlug]
+      expect(base).toBeDefined()
       const released = MVP_LESSONS.find((entry) => entry.pathSlug === lesson.pathSlug).theory
       expect(released).toMatchObject({ title: base.title, summary: lesson.summary, content: lesson.content })
       expect(PREVIOUS_THEORY[lesson.pathSlug]).toMatchObject({ title: base.title, summary: base.summary })

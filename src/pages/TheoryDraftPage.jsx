@@ -21,6 +21,6 @@ export default function TheoryDraftPage() {
   const rootEntry = OMM_CURRICULUM.rootEntries.find(({ child }) => containsLesson(child))
   const section = OMM_CURRICULUM.sections.find(({ key }) => key === rootEntry?.sectionKey)
   const topic = section ? section.title.split(' — ')[0] : rootEntry?.child.title
-  const item = { ...lesson.theory, _id: slug, level: 'basico', topics: topic ? [{ name: topic }] : [] }
+  const item = { ...lesson.theory, _id: slug, topics: topic ? [{ name: topic }] : [] }
   return <TheoryView item={item} problems={[]} renderCollection={collection} />
 }

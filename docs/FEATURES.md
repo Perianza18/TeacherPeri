@@ -48,7 +48,7 @@ A Ruta is an ordered path through existing material. See
 | Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |
 | Teoría: 37 lessons with math, examples and practice | Done | |
 | Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Partial | The renderer is live and 2 lessons use it («Ángulos, paralelas y perpendiculares», «Principio de casillas»). The other 35 still use the older format |
-| Local theory draft preview | In progress | Development only: `/dev/teoria-borrador/<lesson-slug>` renders rewrite data and collections without a database, with the lesson’s curriculum label |
+| Local theory draft preview | In progress | Development only: `/dev/teoria-borrador/<lesson-slug>` renders rewrite data and collections without a database, with the lesson’s curriculum label and level |
 | «Reportar un error» and «Sugerir cambio» on lessons | Done | «Sugerir cambio» opens Contacto |
 | Exámenes: 3 practice exams | Done | Original TeacherPeri practice, not official OMM papers |
 | Images in problems (geometry) | Done | Up to 4 per problem, each with a required Spanish description. Users add them when proposing; admins see them in Revisión; editors add, replace or remove them (statement or solution). Stored in MongoDB as WebP (max 1200 px), about 12 KB per figure. See [SUBMISSIONS.md](SUBMISSIONS.md#images-in-problems) |
