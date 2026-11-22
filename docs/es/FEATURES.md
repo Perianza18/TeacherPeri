@@ -42,7 +42,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 
 | Función | Estado | Notas |
 | --- | --- | --- |
-| Problemas: búsqueda, filtros (área › subtema, carpeta de examen), páginas | Hecho | 56 problemas. Un problema se abre en una ventana con sus comentarios |
+| Problemas: búsqueda, filtros (área › subtema, carpeta de examen), páginas | Hecho | 330 problemas en el catálogo de contenido; el total publicado puede incluir aportes de la comunidad. Un problema se abre en una ventana con sus comentarios |
 | Filtros más simples en las bibliotecas: «Palabras clave» y Área › subtema | Hecho | Problemas, Teoría y Listas muestran una sola tarjeta: una caja de palabras clave que ignora acentos y mayúsculas (también busca en enunciados, etiquetas y nombres de subtemas, y sugiere subtemas como atajos), y luego las 4 áreas como mosaicos; al elegir una se abren sus subtemas. «Otros temas» agrupa «Cómo entrenar», «Demostraciones»… cuando tienen contenido. Las carpetas de exámenes siguen en «Buscar por examen o carpeta». Se quitaron los filtros «Tema curricular», «Etiqueta», «Nivel», «Año» y «Colección». La API acepta `?area=<nombre>` (coincide con el árbol de Topics o con el campo viejo `tema`) y `GET /api/topics/counts` |
 | Problemas: pistas (cada una con su propio botón) y soluciones | Hecho | |
 | Página de problema con enlace estable | Hecho | `/entrenamiento/problemas/:id` |
