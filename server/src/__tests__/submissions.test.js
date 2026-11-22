@@ -103,13 +103,14 @@ describe('Proponer un problema', () => {
 })
 
 describe('Revisión (servicio que usan los scripts)', () => {
-  it('solo un admin aprueba: ni la autora ni un editor pueden', async () => {
+  it('solo un editor o admin aprueba: la autora no puede', async () => {
     const { ana, editor, algebra } = await setup()
     const { body } = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)] })
     await expect(approveSubmission({ ref: body.codigo, reviewer: ana.user, apply: true })).rejects.toThrow(/permission/)
-    await expect(approveSubmission({ ref: body.codigo, reviewer: editor.user, apply: true })).rejects.toThrow(/permission/)
     await expect(approveSubmission({ ref: body.codigo, reviewer: null, apply: true })).rejects.toThrow(/reviewer/)
     expect((await Problem.findById(body._id).lean()).publicationStatus).toBe('draft')
+    await approveSubmission({ ref: body.codigo, reviewer: editor.user, apply: true })
+    expect((await Problem.findById(body._id).lean()).publicationStatus).toBe('published')
   })
 
   it('el modo de prueba describe el cambio y no escribe nada', async () => {

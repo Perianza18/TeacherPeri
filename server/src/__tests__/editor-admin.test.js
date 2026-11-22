@@ -12,6 +12,7 @@ import Tag from '../models/Tag.js'
 import Theory from '../models/Theory.js'
 import Topic from '../models/Topic.js'
 import User from '../models/User.js'
+import { restoreProblem } from '../lib/review/service.js'
 
 const STATEMENT = 'Demuestra que para todo entero $n$, el número $n^2+n$ es par.'
 const legacy = { año: '2024', tema: 'Álgebra', tipo: 'Colección interna', dificultad: 'Media' }
@@ -114,25 +115,52 @@ describe('Editores: editar cualquier problema o lección', () => {
   })
 })
 
-describe('Admins: revisión en el sitio', () => {
+describe('Editores y admins: revisión en el sitio', () => {
   async function proposal(token, topic) {
     return request(app).post('/api/submissions').set(as(token)).send({ enunciado: STATEMENT, topics: topic ? [String(topic._id)] : [] })
   }
 
-  it('solo admins ven la cola y aprueban o rechazan', async () => {
-    const { usuario, editor, admin, algebra } = await setup()
+  it('un usuario no ve la cola; un admin aprueba y queda en el historial sin avisar a nadie', async () => {
+    const { usuario, admin, algebra } = await setup()
     const sent = await proposal(usuario.token, algebra)
     const submission = await ProblemSubmission.findOne({ problem: sent.body._id }).lean()
-    for (const token of [usuario.token, editor.token]) {
-      expect((await request(app).get('/api/review').set(as(token))).status).toBe(403)
-      expect((await request(app).post(`/api/review/submissions/${submission._id}/approve`).set(as(token)).send({})).status).toBe(403)
-    }
+    expect((await request(app).get('/api/review').set(as(usuario.token))).status).toBe(403)
+    expect((await request(app).post(`/api/review/submissions/${submission._id}/approve`).set(as(usuario.token)).send({})).status).toBe(403)
     const queue = await request(app).get('/api/review').set(as(admin.token))
     expect(queue.body.submissions).toHaveLength(1)
     const ok = await request(app).post(`/api/review/submissions/${submission._id}/approve`).set(as(admin.token)).send({ fixes: { title: 'Paridad de n^2+n' } })
     expect(ok.status).toBe(200)
     expect((await Problem.findById(sent.body._id).lean())).toMatchObject({ publicationStatus: 'published', titulo: 'Paridad de n^2+n' })
     expect(await Notification.countDocuments({ user: usuario.user._id, type: 'submission-approved' })).toBe(1)
+    expect(await ContentRevision.findOne({ kind: 'review' }).lean()).toMatchObject({ action: 'approved', editorRole: 'admin', targetType: 'problem' })
+    expect(await Notification.countDocuments({ type: 'editor-reviewed' })).toBe(0)
+  })
+
+  it('un editor aprueba o rechaza; cada decisión sale en Cambios y avisa a los admins', async () => {
+    const { usuario, editor, admin, admin2, algebra } = await setup()
+    const first = await proposal(usuario.token, algebra)
+    const second = await request(app).post('/api/submissions').set(as(usuario.token)).send({ enunciado: 'Encuentra todos los enteros positivos $k$ tales que $k^2+1$ divide a $k^3+5$.', topics: [String(algebra._id)] })
+    const [a, b] = await Promise.all([first, second].map((sent) => ProblemSubmission.findOne({ problem: sent.body._id }).lean()))
+    expect((await request(app).get('/api/review').set(as(editor.token))).body.submissions).toHaveLength(2)
+    expect((await request(app).post(`/api/review/submissions/${a._id}/approve`).set(as(editor.token)).send({})).status).toBe(200)
+    expect((await request(app).post(`/api/review/submissions/${b._id}/reject`).set(as(editor.token)).send({ reason: 'Falta un dato en el enunciado.' })).status).toBe(200)
+
+    const history = await request(app).get('/api/editor/revisions').set(as(admin.token))
+    expect(history.body.map((r) => [r.kind, r.action, r.editor])).toEqual([['review', 'rejected', 'edith'], ['review', 'approved', 'edith']])
+    expect(history.body[0]).toMatchObject({ note: 'Falta un dato en el enunciado.', href: `/entrenamiento/problemas/${second.body._id}` })
+    const notes = await Notification.find({ type: 'editor-reviewed' }).lean()
+    expect(notes).toHaveLength(4)
+    expect(new Set(notes.map((n) => String(n.user)))).toEqual(new Set([String(admin.user._id), String(admin2.user._id)]))
+    expect(notes.find((n) => n.message.startsWith('@edith aprobó el problema nuevo'))).toBeTruthy()
+    expect(notes.every((n) => n.link.startsWith('/panel/cambios/'))).toBe(true)
+  })
+
+  it('restaurar un problema borrado sigue siendo solo de admins', async () => {
+    const { editor, admin, problem } = await setup()
+    await Problem.updateOne({ _id: problem._id }, { deletedAt: new Date(), publicationStatus: 'archived' })
+    await expect(restoreProblem({ ref: problem.codigo, reviewer: editor.user, apply: true })).rejects.toThrow(/permission/)
+    await restoreProblem({ ref: problem.codigo, reviewer: admin.user, apply: true })
+    expect((await Problem.findById(problem._id).lean()).deletedAt).toBeNull()
   })
 
   it('al aprobar se pueden corregir áreas y carpeta; sin área no se aprueba', async () => {
@@ -160,16 +188,18 @@ describe('Admins: revisión en el sitio', () => {
     expect((await ProblemSubmission.findById(submission._id).lean())).toMatchObject({ status: 'rejected', reason: 'Falta un dato en el enunciado.' })
   })
 
-  it('carpetas: aprobar, renombrar y rechazar solo como admin', async () => {
-    const { usuario, editor, admin, omm } = await setup()
+  it('carpetas: un usuario no; un editor aprueba, renombra y rechaza, y queda registrado', async () => {
+    const { usuario, editor, omm } = await setup()
     const a = await Category.create({ name: 'Jalisco', kind: 'exam', parent: omm._id, reviewStatus: 'pending', createdBy: usuario.user._id })
     const b = await Category.create({ name: 'Basura', kind: 'exam', parent: omm._id, reviewStatus: 'pending', createdBy: usuario.user._id })
-    expect((await request(app).post(`/api/review/folders/${a._id}/approve`).set(as(editor.token))).status).toBe(403)
-    expect((await request(app).post(`/api/review/folders/${a._id}/rename`).set(as(admin.token)).send({ name: 'Jalisco (estatal)' })).status).toBe(200)
-    expect((await request(app).post(`/api/review/folders/${a._id}/approve`).set(as(admin.token))).status).toBe(200)
-    expect((await request(app).post(`/api/review/folders/${b._id}/reject`).set(as(admin.token)).send({ reason: 'No es un examen real.' })).status).toBe(200)
+    expect((await request(app).post(`/api/review/folders/${a._id}/approve`).set(as(usuario.token))).status).toBe(403)
+    expect((await request(app).post(`/api/review/folders/${a._id}/rename`).set(as(editor.token)).send({ name: 'Jalisco (estatal)' })).status).toBe(200)
+    expect((await request(app).post(`/api/review/folders/${a._id}/approve`).set(as(editor.token))).status).toBe(200)
+    expect((await request(app).post(`/api/review/folders/${b._id}/reject`).set(as(editor.token)).send({ reason: 'No es un examen real.' })).status).toBe(200)
     expect((await Category.findById(a._id).lean())).toMatchObject({ name: 'Jalisco (estatal)', reviewStatus: 'approved' })
     expect((await Category.findById(b._id).lean()).reviewStatus).toBe('rejected')
+    const actions = (await ContentRevision.find({ kind: 'review' }).sort({ createdAt: 1 }).lean()).map((r) => [r.targetType, r.action])
+    expect(actions).toEqual([['folder', 'renamed'], ['folder', 'approved'], ['folder', 'rejected']])
   })
 })
 

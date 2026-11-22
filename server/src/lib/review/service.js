@@ -21,6 +21,7 @@ import ProblemSubmission, { REJECTION_REASON_MAX } from '../../models/ProblemSub
 import User from '../../models/User.js'
 import { DIFFICULTY_LEVELS, normalizeSlug } from '../../models/content.js'
 import { can, roleOf } from '../permissions.js'
+import { recordReview } from '../activity.js'
 import { folderPath, parseFolderName } from '../examFolders.js'
 import { derivedProblemFields, proposalFromProblem, statementImages, vocabulary } from '../submissions.js'
 import { imageUrl } from '../images.js'
@@ -254,6 +255,11 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
     submission.set({ status: 'approved', proposed: proposal, reviewedBy: reviewer._id, reviewedAt: now, checks: findings })
     await submission.save()
     await notify(submission.author, 'submission-approved', problem, submission.kind === 'edit' ? `Tus cambios a ${problem.codigo} ya están publicados.` : `Tu problema ${problem.codigo} fue aprobado y ya está publicado.`)
+    const folderNote = folders.length ? ` También aprobó la carpeta «${folderPath(proposal.examFolder, ctx.foldersById).join(' › ')}».` : ''
+    await recordReview({
+      targetType: 'problem', target: problem._id, targetLabel: `${problem.codigo} «${problem.titulo}»`, reviewer, action: 'approved',
+      summary: `${submission.kind === 'edit' ? 'los cambios propuestos a' : 'el problema nuevo'} ${problem.codigo} «${problem.titulo}» de @${author?.username ?? 'comunidad'}.${folderNote}`,
+    })
   }
   return { mode: apply ? 'applied' : 'dry-run', codigo: problem.codigo, problemId: String(problem._id), changes, findings }
 }
@@ -264,7 +270,7 @@ export async function rejectSubmission({ ref, reviewer, reason, apply = false })
   if (text.length < 5) throw new ReviewError('A rejection needs a reason (--reason "…", at least 5 characters). The author will read it.')
   if (text.length > REJECTION_REASON_MAX) throw new ReviewError(`The reason cannot exceed ${REJECTION_REASON_MAX} characters.`)
   const submission = await findSubmission(ref)
-  const problem = await Problem.findById(submission.problem).select('codigo publicationStatus').lean()
+  const problem = await Problem.findById(submission.problem).select('codigo titulo publicationStatus').lean()
   const changes = [
     `reject submission ${submission._id} (${problem?.codigo}) with reason: ${text}`,
     problem?.publicationStatus === 'published' ? 'the published version stays as it is' : 'the problem stays unpublished; the author can edit and resend it',
@@ -273,6 +279,10 @@ export async function rejectSubmission({ ref, reviewer, reason, apply = false })
     submission.set({ status: 'rejected', reason: text, reviewedBy: reviewer._id, reviewedAt: new Date() })
     await submission.save()
     await notify(submission.author, 'submission-rejected', problem, `${submission.kind === 'edit' ? `Tus cambios a ${problem.codigo}` : `Tu problema ${problem.codigo}`} no se aprobaron: ${text}`)
+    await recordReview({
+      targetType: 'problem', target: submission.problem, targetLabel: `${problem?.codigo ?? 'Problema'} «${problem?.titulo ?? ''}»`, reviewer, action: 'rejected',
+      summary: `${submission.kind === 'edit' ? 'los cambios propuestos a' : 'el problema nuevo'} ${problem?.codigo ?? ''}.`, note: text,
+    })
   }
   return { mode: apply ? 'applied' : 'dry-run', codigo: problem?.codigo, changes }
 }
@@ -294,6 +304,8 @@ export async function approveFolder({ ref, reviewer, apply = false }) {
   if (apply) {
     const now = new Date()
     for (const f of chain) await Category.updateOne({ _id: f._id, reviewStatus: 'pending' }, { reviewStatus: 'approved', reviewedBy: reviewer._id, reviewedAt: now })
+    const path = folderPath(folder._id, ctx.foldersById).join(' › ')
+    await recordReview({ targetType: 'folder', target: folder._id, targetLabel: `«${path}»`, reviewer, action: 'approved', summary: `la carpeta de examen «${path}».` })
   }
   return { mode: apply ? 'applied' : 'dry-run', changes }
 }
@@ -311,7 +323,11 @@ export async function rejectFolder({ ref, reviewer, reason, apply = false }) {
   ])
   if (children || inUse || problems) throw new ReviewError(`The folder still has ${children} subfolder(s), ${inUse} pending submission(s) and ${problems} problem(s). Move them first (approve --folder or reject the submissions).`)
   const changes = [`reject exam folder «${folderPath(folder._id, ctx.foldersById).join(' › ')}» with reason: ${text}`]
-  if (apply) await Category.updateOne({ _id: folder._id, reviewStatus: 'pending' }, { reviewStatus: 'rejected', reviewReason: text, reviewedBy: reviewer._id, reviewedAt: new Date() })
+  if (apply) {
+    await Category.updateOne({ _id: folder._id, reviewStatus: 'pending' }, { reviewStatus: 'rejected', reviewReason: text, reviewedBy: reviewer._id, reviewedAt: new Date() })
+    const path = folderPath(folder._id, ctx.foldersById).join(' › ')
+    await recordReview({ targetType: 'folder', target: folder._id, targetLabel: `«${path}»`, reviewer, action: 'rejected', summary: `la carpeta de examen «${path}».`, note: text })
+  }
   return { mode: apply ? 'applied' : 'dry-run', changes }
 }
 
@@ -328,6 +344,7 @@ export async function renameFolder({ ref, name, reviewer, apply = false }) {
     await doc.save()
     const map = await examFolderMap()
     await syncFolderExams(folderAndDescendants(folder._id, map), { foldersById: map })
+    await recordReview({ targetType: 'folder', target: folder._id, targetLabel: `«${before}»`, reviewer, action: 'renamed', summary: `la carpeta de examen «${before}» a «${parsed.name}».` })
   }
   return { mode: apply ? 'applied' : 'dry-run', changes }
 }
@@ -346,15 +363,26 @@ export async function listFlags(status = 'open') {
   return flags.map((flag) => ({ id: String(flag._id), targetType: flag.targetType, target: String(flag.target), targetName: names.get(String(flag.target)) ?? '(no longer exists)', message: flag.message, reporter: flag.reporter?.username ?? null, createdAt: flag.createdAt, status: flag.status, handledBy: flag.handledBy?.username ?? null, handledAt: flag.handledAt ?? null, handledNote: flag.handledNote ?? null }))
 }
 
+// Suggestions («Sugerir un cambio») are Flag documents: `resolved` is shown as
+// «Aplicada» and `dismissed` as «Descartada».
 export async function setFlagStatus({ ref, status, note, reviewer, apply = false }) {
-  assertReviewer(reviewer, 'flags:view')
+  assertReviewer(reviewer, 'suggestions:review')
   if (!['resolved', 'dismissed'].includes(status)) throw new ReviewError('Status must be resolved or dismissed.')
-  const flag = isId(ref) ? await Flag.findOne({ _id: ref, status: 'open' }) : null
+  const flag = isId(ref) ? await Flag.findOne({ _id: ref, status: 'open' }).populate('reporter', 'username') : null
   if (!flag) throw new ReviewError(`No open flag matches «${ref}».`)
-  const changes = [`mark flag ${flag._id} ${status}${note ? ` (${note})` : ''}`]
+  const text = typeof note === 'string' ? note.trim().slice(0, 500) : ''
+  const changes = [`mark flag ${flag._id} ${status}${text ? ` (${text})` : ''}`]
   if (apply) {
-    flag.set({ status, handledBy: reviewer._id, handledAt: new Date(), handledNote: note || null })
+    flag.set({ status, handledBy: reviewer._id, handledAt: new Date(), handledNote: text || null })
     await flag.save()
+    const page = flag.targetType === 'problem'
+      ? await Problem.findById(flag.target).select('codigo titulo').lean()
+      : await Theory.findById(flag.target).select('title').lean()
+    const label = flag.targetType === 'problem' ? `${page?.codigo ?? 'Problema'} «${page?.titulo ?? ''}»` : `«${page?.title ?? 'Lección'}»`
+    await recordReview({
+      targetType: flag.targetType, target: flag.target, targetLabel: label, reviewer, action: status === 'resolved' ? 'applied' : 'dismissed',
+      summary: `la sugerencia de @${flag.reporter?.username ?? 'cuenta eliminada'} en ${label}: «${flag.message.slice(0, 300)}»`, note: text || null,
+    })
   }
   return { mode: apply ? 'applied' : 'dry-run', changes }
 }
