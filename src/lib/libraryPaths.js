@@ -14,3 +14,11 @@ export const LIBRARY_BASE = {
 export function examTitle({ competition, year, round } = {}) {
   return [[competition, year].filter(Boolean).join(' '), round].filter(Boolean).join(' · ')
 }
+
+// Use the original exam number, which may differ from the list position when
+// some problems have not yet been published.
+export function examProblemTitle(problem) {
+  return Number.isInteger(problem?.problemNumber) && problem.problemNumber > 0
+    ? `Problema ${problem.problemNumber}`
+    : problem?.titulo || problem?.codigo
+}
