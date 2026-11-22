@@ -127,7 +127,7 @@ test('OMM traversal, unfinished cycles and return to the learning Path', async (
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Factorización')
   const crumbs = page.getByRole('navigation', { name: 'Migas' })
   await expect(crumbs).toContainText('Preparación para la OMM')
-  await expect(page.getByRole('link', { name: 'Resolver problema 1' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Resolver problema 1' }).first()).toBeVisible()
   await page.reload()
   await expect(crumbs).toContainText('Álgebra Básica')
   await expect(page.getByText('En la Ruta', { exact: true })).toBeVisible()
@@ -136,7 +136,7 @@ test('OMM traversal, unfinished cycles and return to the learning Path', async (
   await expect(returnLink).toHaveAttribute('href', '/rutas/preparacion-para-la-omm/algebra-basica-para-olimpiadas')
   await page.screenshot({ path: testInfo.outputPath('lesson.png'), fullPage: true })
   await assertFits(page)
-  await page.getByRole('link', { name: 'Resolver problema 1' }).click()
+  await page.getByRole('link', { name: 'Resolver problema 1' }).first().click()
   await expect(page).toHaveURL(/\/entrenamiento\/problemas\/[0-9a-f]{24}\?ruta=preparacion-para-la-omm/)
 })
 
