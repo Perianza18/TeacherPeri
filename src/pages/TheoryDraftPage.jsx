@@ -4,6 +4,7 @@ import PracticeBox from '../components/content/PracticeBox'
 import { MVP_LESSONS } from '../../server/src/data/mvpLessons'
 import { MVP_PROBLEMS } from '../../server/src/data/mvpProblems'
 import { THEORY_REWRITES } from '../../server/src/data/theory/index'
+import { OMM_CURRICULUM } from '../../server/src/data/ommCurriculum'
 
 export default function TheoryDraftPage() {
   const { slug } = useParams()
@@ -16,6 +17,7 @@ export default function TheoryDraftPage() {
       .map((problem) => ({ ...problem, _id: problem.codigo, href: null }))
     return entries.length ? <PracticeBox kind={kind} problems={entries} fullStatements /> : null
   }
-  const item = { ...lesson.theory, _id: slug, level: 'basico', topics: [{ name: 'Ciclo 1' }] }
+  const isProofTechnique = OMM_CURRICULUM.references.some((ref) => ref.parentSlug === 'tecnicas-de-demostracion' && ref.childSlug === slug)
+  const item = { ...lesson.theory, _id: slug, level: 'basico', topics: [{ name: isProofTechnique ? 'Técnicas de demostración' : 'Ciclo 1' }] }
   return <TheoryView item={item} problems={[]} renderCollection={collection} />
 }
