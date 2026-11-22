@@ -7,7 +7,7 @@ import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
 import PageFeedback from '../components/PageFeedback'
 import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
-import { collectionSlugs, problemReferences } from '../lib/theoryArticle'
+import { loadLessonBoxes } from '../lib/lessonBoxes'
 import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
 import { useAuth } from '../context/useAuth'
@@ -96,18 +96,6 @@ function loadPracticeProblem(id) {
   ]).then(([problem, commentCount]) => ({ ...problem, commentCount })).catch(() => null)
 }
 
-// The problems of every `[[collection:<slug>:<kind>]]` and
-// `[[problems:<códigos>:<kind>]]` in the lesson, keyed `slug:kind` (the key of
-// a problems box is `problems:<códigos>`). A box that can't be loaded is left out.
-function loadCollections(content) {
-  const slugs = Promise.all(collectionSlugs(content).map((slug) => apiFetch(`/api/collections/${encodeURIComponent(slug)}`).catch(() => null)))
-    .then((results) => results.filter(Boolean).flatMap(({ slug, collections }) => Object.entries(collections).map(([kind, problems]) => [`${slug}:${kind}`, problems])))
-  const picked = Promise.all(problemReferences(content).map(({ key, codes, kind }) => apiFetch(`/api/collections?codes=${encodeURIComponent(codes.join(','))}`)
-    .then(({ problems }) => [`${key}:${kind}`, problems]).catch(() => null)))
-    .then((results) => results.filter(Boolean))
-  return Promise.all([slugs, picked]).then(([a, b]) => Object.fromEntries([...a, ...b]))
-}
-
 // The Path of every breadcrumb above the leaf, root first (null if missing).
 function loadAncestors(crumbs) {
   return Promise.all(crumbs.slice(0, -1).map((crumb, index) => {
@@ -144,7 +132,7 @@ export default function LibraryDetailPage({ type }) {
           ? await Promise.all([
             Promise.all(problemIds.map(loadPracticeProblem)).then((list) => list.filter(Boolean)),
             belongs ? loadAncestors(route.breadcrumbs) : [],
-            loadCollections(item.content),
+            loadLessonBoxes(item.content),
           ])
           : [[], [], {}]
         if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems, ancestors, collections })

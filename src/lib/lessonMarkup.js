@@ -87,3 +87,38 @@ export function problemsSnippet(codes, kind = 'ejercicios') {
   const text = `[[problems:${codes.join(',')}:${kind}]]`
   return { text, block: true }
 }
+
+// How each line of the lesson text looks in the editor, so the text shows
+// the format it has on the page: [{ text, box, role }].
+//   box  — the `:::` block the line belongs to (inner one when nested), or null
+//   role — 'open' | 'close' | 'body' inside a block; otherwise 'h2', 'h3',
+//          'problems' ([[…]]), 'figure', 'table' or 'text'
+const FENCE = /^:::([a-z]+)(?:[ \t]+.*)?\s*$/
+const FENCE_END = /^:::\s*$/
+export function markupLines(text) {
+  const stack = []
+  return String(text).split('\n').map((line) => {
+    const trimmed = line.trim()
+    const open = FENCE.exec(trimmed)
+    if (open) {
+      stack.push(open[1])
+      return { text: line, box: open[1], role: 'open' }
+    }
+    if (FENCE_END.test(trimmed) && stack.length) {
+      return { text: line, box: stack.pop(), role: 'close' }
+    }
+    const box = stack.at(-1) ?? null
+    let role = box ? 'body' : 'text'
+    if (/^###\s/.test(trimmed)) role = 'h3'
+    else if (/^##\s/.test(trimmed)) role = 'h2'
+    else if (/^\[\[[^\]]+\]\]$/.test(trimmed)) role = 'problems'
+    else if (/^!\[/.test(trimmed)) role = 'figure'
+    else if (trimmed.startsWith('|')) role = 'table'
+    return { text: line, box, role }
+  })
+}
+
+// A line split into plain text and `$…$` math, for coloring the math.
+export function mathParts(line) {
+  return line.split(/(\$\$[^$]*\$\$|\$[^$]+\$)/g).filter(Boolean).map((part) => ({ text: part, math: /^\$.*\$$/.test(part) && part.length > 1 }))
+}

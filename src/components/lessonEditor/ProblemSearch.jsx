@@ -1,14 +1,12 @@
 import { useEffect, useId, useState } from 'react'
 import { apiFetch } from '../../lib/api'
 import { PROBLEM_BOX_KINDS } from '../../lib/lessonMarkup'
-import MathText from '../math/MathText'
 
 const MAX_PICKED = 20
 
 // Searches the problem bank and collects the problems to put in one box.
-// `layout` 'compact' (option A: short rows) or 'cards' (option B: rows with
-// the start of the statement). `onInsert(codes, kind)` writes the reference.
-export default function ProblemSearch({ layout = 'compact', onInsert, autoFocus = false }) {
+// `onInsert(codes, kind)` writes the reference.
+export default function ProblemSearch({ onInsert, autoFocus = false }) {
   const id = useId()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState({ query: null, items: [], error: null })
@@ -40,7 +38,7 @@ export default function ProblemSearch({ layout = 'compact', onInsert, autoFocus 
       {term.length >= 2 && results.query === term && !results.error && shown.length === 0 && <p className="text-sm text-tp-ink-muted">No hay problemas con «{term}».</p>}
       {results.error && <p role="alert" className="text-sm font-semibold text-red-700">{results.error}</p>}
       {shown.length > 0 && (
-        <ul aria-label="Resultados" className={`flex flex-col ${layout === 'cards' ? 'gap-2' : 'divide-y-2 divide-dashed divide-tp-rule rounded-[10px] border-2 border-tp-ink bg-tp-surface'}`}>
+        <ul aria-label="Resultados" className="flex flex-col divide-y-2 divide-dashed divide-tp-rule rounded-[10px] border-2 border-tp-ink bg-tp-surface">
           {shown.map((problem) => {
             const on = isPicked(problem.codigo)
             return (
@@ -49,16 +47,13 @@ export default function ProblemSearch({ layout = 'compact', onInsert, autoFocus 
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggle(problem)}
-                  className={layout === 'cards'
-                    ? `tp-card-quiet flex w-full flex-col gap-1 p-3 text-left ${on ? 'bg-tp-mint-soft' : 'bg-tp-surface hover:bg-tp-yellow-soft'}`
-                    : `flex min-h-11 w-full items-center gap-3 px-3 py-2 text-left text-sm ${on ? 'bg-tp-mint-soft' : 'hover:bg-tp-yellow-soft'}`}
+                  className={`flex min-h-11 w-full items-center gap-3 px-3 py-2 text-left text-sm ${on ? 'bg-tp-mint-soft' : 'hover:bg-tp-yellow-soft'}`}
                 >
                   <span className="flex items-center gap-2">
                     <span aria-hidden="true" className="font-black">{on ? '✓' : '+'}</span>
                     <span className="shrink-0 whitespace-nowrap font-black text-tp-violet">{problem.codigo}</span>
                     <span className="font-semibold">{problem.titulo}</span>
                   </span>
-                  {layout === 'cards' && <MathText text={String(problem.enunciado || '').slice(0, 160)} className="line-clamp-2 text-sm leading-6 text-tp-ink-soft" />}
                 </button>
               </li>
             )

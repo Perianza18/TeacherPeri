@@ -4,10 +4,10 @@ import ProblemSearch from './ProblemSearch'
 
 const BUTTON = 'tp-button inline-flex items-center gap-1 bg-tp-surface px-3 text-sm font-bold'
 
-// OPCIÓN A — one row of labeled buttons above the text. «Bloque», «Título»
+// Lesson editor toolbar: one row of labeled buttons above the text. «Bloque», «Título»
 // and «Problema» open a panel under the row; «$ LaTeX» acts at once.
 // `insert(build)` comes from the editor: build(selected) → snippet.
-export default function ToolbarA({ insert }) {
+export default function LessonToolbar({ insert }) {
   const id = useId()
   const [open, setOpen] = useState(null)
   const root = useRef(null)
@@ -59,7 +59,7 @@ export default function ToolbarA({ insert }) {
       )}
       {open === 'problema' && (
         <div id={`${id}-problema`} className="tp-card-quiet bg-tp-surface p-4">
-          <ProblemSearch layout="compact" autoFocus onInsert={(codes, kind) => run(() => problemsSnippet(codes, kind))} />
+          <ProblemSearch autoFocus onInsert={(codes, kind) => run(() => problemsSnippet(codes, kind))} />
         </div>
       )}
     </div>

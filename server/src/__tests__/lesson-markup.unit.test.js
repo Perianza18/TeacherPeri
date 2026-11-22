@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { LESSON_BLOCKS, blockSnippet, headingSnippet, insertSnippet, mathSnippet, problemsSnippet, tableSnippet, figureSnippet } from '../../../src/lib/lessonMarkup.js'
+import { LESSON_BLOCKS, blockSnippet, figureSnippet, headingSnippet, insertSnippet, markupLines, mathParts, mathSnippet, problemsSnippet, tableSnippet } from '../../../src/lib/lessonMarkup.js'
 import { codesOfKey, parseArticle, problemReferences } from '../../../src/lib/theoryArticle.js'
 
 const write = (value, start, end, snippet) => insertSnippet(value, start, end, snippet)
@@ -52,5 +52,21 @@ describe('lesson editor toolbar markup', () => {
     expect(codesOfKey(box.slug)).toEqual(['TP-A01', 'TP-G08'])
     expect(problemReferences(text)).toEqual([{ key: 'problems:TP-A01,TP-G08', codes: ['TP-A01', 'TP-G08'], kind: 'ejercicios' }])
     expect(problemReferences('[[problems:TP-A01]]')).toEqual([])
+  })
+})
+
+describe('editor text in its page format', () => {
+  it('marks each line with its box (inner one when nested) and role', () => {
+    const text = ['## Teoría', ':::theorem Tales', 'Enunciado.', ':::reveal Pista', 'Mira el ángulo.', ':::', ':::', '', '[[problems:TP-A01:ejercicios]]', '| a | b |', '![alt](figuras/x.svg)', 'Texto.'].join('\n')
+    expect(markupLines(text).map((line) => [line.box, line.role])).toEqual([
+      [null, 'h2'], ['theorem', 'open'], ['theorem', 'body'], ['reveal', 'open'], ['reveal', 'body'], ['reveal', 'close'], ['theorem', 'close'],
+      [null, 'text'], [null, 'problems'], [null, 'table'], [null, 'figure'], [null, 'text'],
+    ])
+  })
+
+  it('keeps every character, so the colored layer lines up with the text', () => {
+    const text = 'a\n\n:::tip X\nb $x$\n:::\n'
+    expect(markupLines(text).map((line) => line.text).join('\n')).toBe(text)
+    expect(mathParts('sea $n$ y $$m$$ fin')).toEqual([{ text: 'sea ', math: false }, { text: '$n$', math: true }, { text: ' y ', math: false }, { text: '$$m$$', math: true }, { text: ' fin', math: false }])
   })
 })
