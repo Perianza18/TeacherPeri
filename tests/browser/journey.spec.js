@@ -65,7 +65,7 @@ test('problem discovery, pagination, math, solution and comments', async ({ page
   await page.getByRole('button', { name: 'Siguiente', exact: true }).click()
   await expect(page.getByText('2 / 5')).toBeVisible()
   await page.getByRole('searchbox').fill('El ángulo exterior')
-  await expect(page.getByText('1 resultados')).toBeVisible()
+  await expect(page.getByText('1 resultado', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Comentarios', exact: true }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.keyboard.press('Escape')
@@ -138,4 +138,45 @@ test('lesson wrappers are absent from route discovery', async ({ page }) => {
   await page.goto('/rutas')
   await expect(page.getByText('Todavía no hay Rutas publicadas.')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Factorización e Identidades', exact: true })).toHaveCount(0)
+})
+
+test('exam folders show competitions and their years', async ({ page }, testInfo) => {
+  const folders = [
+    { _id: 'root', name: 'Exámenes', kind: 'exam', parent: null },
+    { _id: 'omm', name: 'OMM', kind: 'exam', parent: 'root' },
+    { _id: 'year', name: '2024', kind: 'exam', parent: 'omm' },
+    { _id: 'empty', name: 'OMMEB', kind: 'exam', parent: 'root' },
+    { _id: 'state', name: 'OMM Estatal', kind: 'exam', parent: 'root' },
+    { _id: 'chiapas', name: 'Chiapas', kind: 'exam', parent: 'state' },
+  ]
+  const exams = [
+    { _id: 'original', competition: 'TeacherPeri', year: '2026', round: 'Práctica A', problems: [] },
+    { _id: 'official', competition: 'OMM', year: '2024', categories: [{ _id: 'year' }], problems: [] },
+    { _id: 'state-exam', competition: 'OMM Estatal', round: 'Chiapas', categories: [{ _id: 'chiapas' }], problems: [] },
+  ]
+  await page.route('**/api/categories', (route) => route.fulfill({ json: folders }))
+  await page.route('**/api/exams/browse?*', (route) => route.fulfill({ json: { items: exams, total: exams.length, totalPages: 1 } }))
+  await page.goto('/entrenamiento/examenes')
+  const nav = page.getByRole('navigation', { name: 'Carpetas de exámenes' })
+  await expect(nav.getByRole('button', { name: 'TeacherPeri Originals' })).toBeVisible()
+  await expect(nav.getByRole('button', { name: 'OMM', exact: true })).toBeVisible()
+  await expect(nav.getByText('Olimpiada Mexicana de Matemáticas.', { exact: true })).toBeVisible()
+  await expect(nav.getByText('Exámenes de práctica originales de TeacherPeri.', { exact: true })).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath('exam-folders.png'), fullPage: true })
+  await assertFits(page)
+  await expect(nav.getByRole('button', { name: 'OMMEB' })).toHaveCount(0)
+  await expect(nav.getByRole('button', { name: 'OMM Estatal' })).toBeVisible()
+  await nav.getByRole('button', { name: 'OMM', exact: true }).click()
+  await expect(nav.getByRole('button', { name: '2024' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'OMM 2024', exact: true })).toBeVisible()
+  await assertFits(page)
+  await nav.getByRole('button', { name: 'Exámenes', exact: true }).click()
+  await nav.getByRole('button', { name: 'TeacherPeri Originals' }).click()
+  await expect(nav.getByRole('button', { name: '2026' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /Práctica A/ })).toBeVisible()
+  await nav.getByRole('button', { name: 'Exámenes', exact: true }).click()
+  await nav.getByRole('button', { name: 'OMM Estatal' }).click()
+  await nav.getByRole('button', { name: 'Chiapas' }).click()
+  await expect(page.getByRole('link', { name: 'OMM Estatal · Chiapas', exact: true })).toBeVisible()
+  await assertFits(page)
 })

@@ -7,12 +7,17 @@ The server checks the role on every request; the website only hides buttons.
 
 | Role | Can do | Status |
 | --- | --- | --- |
-| **User** (everyone who signs up) | Read; comment; report comments; report errors on problems and lessons; propose problems and exam folders; edit and delete their own proposals | Done |
-| **Editor** | + delete any comment, with a reason; see every comment report and error report; edit any problem or lesson | Done. «Panel del equipo» (`/panel`): Moderación, plus «Editar problema» and «Editar lección» on each problem and lesson. See [FEATURES.md](FEATURES.md#accounts-and-roles) |
-| **Admin** | + approve or reject proposals and exam folders; restore deleted problems; name editors; get notified when an editor changes something | Done, except restoring: Revisión (`/panel/revision`), Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) and a notification for every editor change. Restoring deleted problems is still only `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
+| **User** (everyone who signs up) | Read; comment; report comments; «Sugerir un cambio» and «Reportar» on problems and lessons; propose problems and exam folders; edit and delete their own proposals | Done |
+| **Editor** | + delete any comment, with a reason; handle every report (Moderación); approve or reject proposals and exam folders and close suggestions (Revisión); edit any problem or lesson | Done. «Panel del equipo» (`/panel`): Moderación and Revisión, plus «Editar problema» and «Editar lección» on each problem and lesson. See [FEATURES.md](FEATURES.md#accounts-and-roles) |
+| **Admin** | + restore deleted problems; name editors; get notified when an editor changes or reviews something | Done, except restoring: Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) and a notification for every editor change or review decision. Restoring deleted problems is still only `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
 Role badges: comments show «Editor» or «Admin» next to the username. Users get
-no badge.
+no badge. Profiles show every role as a pill (Usuario, Editor, Admin), and
+editors and admins earn a role badge in Insignias.
+
+Profiles have fixed privacy, the same for every role: the email, Actividad,
+Mis envíos and private lists are only for their owner, including for editors
+and admins. See [PROFILES.md](PROFILES.md).
 
 ## Where it lives in the code
 
@@ -72,8 +77,8 @@ Nobody can make an admin from the website. Only this script can.
 | Page | Who | What |
 | --- | --- | --- |
 | `/panel` | Editor, Admin | Start page («Panel del equipo» in the avatar menu) |
-| `/panel/moderacion` | Editor, Admin | Comment reports and error reports |
+| `/panel/moderacion` | Editor, Admin | Reports of inappropriate content: comments, problems and lessons |
 | `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Editor, Admin | Edit a problem or a lesson; applies at once |
-| `/panel/revision` | Admin | Review proposed problems and exam folders |
+| `/panel/revision` | Editor, Admin | Proposed problems, changes to problems, exam folders and suggestions on problems and lessons |
 | `/panel/usuarios` | Admin | Name or remove editors |
-| `/panel/cambios`, `/panel/cambios/:id` | Admin | Every editor change, with before and after |
+| `/panel/cambios`, `/panel/cambios/:id` | Admin | Every editor change, with before and after, and every decision taken in Revisión |

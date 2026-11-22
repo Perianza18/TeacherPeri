@@ -1,10 +1,14 @@
 // ---------------------------------------------------------------------------
-// «Reportar un error» on a problem or a theory page.
+// «Sugerir un cambio» on a problem or a theory page: a content correction
+// (wrong answer, typo, missing case). Stored as a Flag; every Flag is a
+// suggestion, including the ones sent before as «Reportar un error».
+// Inappropriate content goes to /api/reports/content instead (Moderación).
 //
 // POST /api/flags                 anyone signed in: { targetType, targetId, message }
-// GET  /api/flags?status=open     editors and admins: every flag, oldest first
-// POST /api/flags/:id/status      editors and admins: { status: resolved|dismissed, note }
+// GET  /api/flags?status=open     editors and admins (Revisión): every suggestion, oldest first
+// POST /api/flags/:id/status      editors and admins: { status: resolved («Aplicada») | dismissed, note }
 //
+// Closing one is recorded in «Cambios de editores» (server/src/lib/activity.js).
 // The review script (npm run review -- flags) lists and closes them too.
 // ---------------------------------------------------------------------------
 
@@ -13,9 +17,10 @@ import mongoose from 'mongoose'
 import Flag, { FLAG_MESSAGE_MAX, FLAG_MESSAGE_MIN, FLAG_STATUSES, FLAG_TARGETS } from '../models/Flag.js'
 import Problem from '../models/Problem.js'
 import Theory from '../models/Theory.js'
+import User from '../models/User.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
-import { listFlags } from '../lib/review/service.js'
+import { ReviewError, listFlags, setFlagStatus } from '../lib/review/service.js'
 
 const router = Router()
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
@@ -27,35 +32,67 @@ async function publicTargetExists(targetType, id) {
   return Theory.exists({ _id: id, publicationStatus: 'published' })
 }
 
-router.post('/', requirePermission('flags:create'), async (req, res) => {
+// The signed-in person's own suggestions (Mi Espacio › Mis envíos), problems
+// and lessons, newest first. Only their own: never anyone else's.
+router.get('/mine', async (req, res) => {
+  const flags = await Flag.find({ reporter: req.userId }).sort({ createdAt: -1 }).limit(200).lean()
+  const problemIds = flags.filter((f) => f.targetType === 'problem').map((f) => f.target)
+  const theoryIds = flags.filter((f) => f.targetType === 'theory').map((f) => f.target)
+  const [problems, lessons] = await Promise.all([
+    Problem.find({ _id: { $in: problemIds } }).select('codigo titulo').lean(),
+    Theory.find({ _id: { $in: theoryIds } }).select('title').lean(),
+  ])
+  const pages = new Map([
+    ...problems.map((p) => [String(p._id), { label: p.titulo || p.codigo, href: `/entrenamiento/problemas/${p._id}` }]),
+    ...lessons.map((t) => [String(t._id), { label: t.title, href: `/entrenamiento/teoria/${t._id}` }]),
+  ])
+  res.json(flags.map((flag) => ({
+    id: flag._id,
+    targetType: flag.targetType,
+    target: pages.get(String(flag.target)) ?? { label: flag.targetType === 'problem' ? 'Problema' : 'Lección', href: null },
+    message: flag.message,
+    status: flag.status,
+    note: flag.handledNote ?? null,
+    createdAt: flag.createdAt,
+    handledAt: flag.handledAt ?? null,
+  })))
+})
+
+router.post('/', requirePermission('suggestions:create'), async (req, res) => {
   const { targetType, targetId } = req.body ?? {}
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : ''
-  if (!FLAG_TARGETS.includes(targetType) || !isId(targetId)) return res.status(400).json({ error: 'No se puede reportar esa página.' })
-  if (message.length < FLAG_MESSAGE_MIN) return res.status(400).json({ error: `Describe el error con un poco más de detalle (mínimo ${FLAG_MESSAGE_MIN} caracteres).` })
-  if (message.length > FLAG_MESSAGE_MAX) return res.status(400).json({ error: `El reporte no puede pasar de ${FLAG_MESSAGE_MAX} caracteres.` })
+  if (!FLAG_TARGETS.includes(targetType) || !isId(targetId)) return res.status(400).json({ error: 'No se puede sugerir un cambio en esa página.' })
+  if (message.length < FLAG_MESSAGE_MIN) return res.status(400).json({ error: `Describe el cambio con un poco más de detalle (mínimo ${FLAG_MESSAGE_MIN} caracteres).` })
+  if (message.length > FLAG_MESSAGE_MAX) return res.status(400).json({ error: `La sugerencia no puede pasar de ${FLAG_MESSAGE_MAX} caracteres.` })
   if (!await publicTargetExists(targetType, targetId)) return res.status(404).json({ error: 'Esa página no existe.' })
   try {
     const flag = await Flag.create({ targetType, target: targetId, reporter: req.userId, message })
     res.status(201).json({ _id: flag._id, status: flag.status, createdAt: flag.createdAt })
   } catch (error) {
-    if (error.code === 11000) return res.status(409).json({ error: 'Ya reportaste un error en esta página. Lo revisaremos pronto.' })
+    if (error.code === 11000) return res.status(409).json({ error: 'Ya enviaste una sugerencia para esta página. La revisaremos pronto.' })
     throw error
   }
 })
 
-router.get('/', requirePermission('flags:view'), async (req, res) => {
+router.get('/', requirePermission('suggestions:review'), async (req, res) => {
   const status = req.query.status ?? 'open'
   if (!FLAG_STATUSES.includes(status)) return res.status(400).json({ error: 'Estado de reporte no válido.' })
   res.json(await listFlags(status))
 })
 
-router.post('/:id/status', requirePermission('flags:view'), async (req, res) => {
+router.post('/:id/status', requirePermission('suggestions:review'), async (req, res) => {
   const { status } = req.body ?? {}
-  const note = typeof req.body?.note === 'string' ? req.body.note.trim().slice(0, 500) : null
-  if (!['resolved', 'dismissed'].includes(status)) return res.status(400).json({ error: 'Elige resuelto o descartado.' })
-  const flag = isId(req.params.id) ? await Flag.findOneAndUpdate({ _id: req.params.id, status: 'open' }, { status, handledBy: req.userId, handledAt: new Date(), handledNote: note || null }, { returnDocument: 'after' }) : null
-  if (!flag) return res.status(404).json({ error: 'No hay un reporte abierto con ese identificador.' })
-  res.json({ _id: flag._id, status: flag.status })
+  const note = typeof req.body?.note === 'string' ? req.body.note : ''
+  if (!['resolved', 'dismissed'].includes(status)) return res.status(400).json({ error: 'Elige «Aplicada» o «Descartar».' })
+  if (!isId(req.params.id)) return res.status(404).json({ error: 'Esa sugerencia ya no está abierta. Recarga la página.' })
+  const reviewer = await User.findById(req.userId).select('username role').lean()
+  try {
+    await setFlagStatus({ ref: req.params.id, status, note, reviewer, apply: true })
+  } catch (error) {
+    if (error instanceof ReviewError) return res.status(404).json({ error: 'Esa sugerencia ya no está abierta. Recarga la página.' })
+    throw error
+  }
+  res.json({ _id: req.params.id, status })
 })
 
 export default router

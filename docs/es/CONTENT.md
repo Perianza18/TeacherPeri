@@ -78,6 +78,21 @@ Otro marcado:
 - Cajas de problemas: `[[collection:<slug>:ejercicios]]` (EJERCICIOS, con pistas),
   `[[collection:<slug>:practice]]` (PRACTICA) y
   `[[collection:<slug>:dificiles]]` (RETO).
+- Problemas elegidos uno por uno: `[[problems:TP-A01,TP-G08:ejercicios]]` (hasta
+  20 códigos, en el orden en que se muestran; el tipo es `ejercicios`,
+  `practice` o `dificiles`). Es la misma caja que una colección, pero no necesita
+  una `ProblemCollection` en la base: la página carga esos códigos con
+  `GET /api/collections?codes=…`. Los códigos que no son públicos se omiten.
+
+**Editar en el sitio:** editores y admins cambian una lección en
+`/panel/teoria/:id/editar` («Editar lección»). El texto sigue siendo este
+marcado, pero cada caja, título y fórmula se colorea como se ve en la página. La
+barra sobre el texto inserta el marcado en el cursor, o alrededor del texto
+seleccionado: «Bloque» (todos los bloques de arriba, más una figura y una
+tabla), «Título» (`##` o `###`), «Problema» (busca en el banco de problemas e
+inserta una caja `[[problems:…]]`) y «$ LaTeX». La vista previa al lado usa el
+renderizador de lecciones, con las cajas de problemas reales. Ver
+[ROLES.md](ROLES.md).
 
 Cada bloque tiene un solo aspecto; los autores nunca le dan estilo a mano. El
 lector del marcado es `src/lib/theoryArticle.js` y las cajas están en

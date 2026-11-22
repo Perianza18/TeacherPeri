@@ -105,8 +105,8 @@ export function Consejo({ title, children }) {
 
 export function ErrorComun({ title, children }) {
   return (
-    <div className="tp-card-quiet flex flex-col gap-2 bg-tp-coral-soft px-5 py-4">
-      <BoxLabel className="bg-tp-coral">Error común</BoxLabel>
+    <div className="tp-card-quiet flex flex-col gap-2 bg-tp-orange-soft px-5 py-4">
+      <BoxLabel className="bg-tp-orange">Error común</BoxLabel>
       {title && <RichText text={title} className="font-bold" />}
       {children}
     </div>

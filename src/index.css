@@ -25,7 +25,7 @@
   --color-accent-blue: #377cf6;
   --color-accent-sky: #86d7ff;
   --color-accent-mint: #8ee8bf;
-  --color-accent-coral: #ff7f79;
+  --color-accent-orange: #ff9f43;
   --color-accent-yellow: #ffd65a;
   --color-accent-purple-soft: #eee7ff;
   --color-accent-blue-soft: #e5f1ff;
@@ -54,6 +54,8 @@
   --tp-yellow-soft: #fff4cc;
   --tp-mint: #8ee8bf;
   --tp-mint-soft: #d8f5e8;
+  --tp-orange: #ff9f43;
+  --tp-orange-soft: #ffe9d2;
   --tp-coral: #ff7f79;
   --tp-coral-soft: #ffe4e1;
 
@@ -61,7 +63,7 @@
      strips, in the guide's rotation order (DESIGN §2). */
   --tp-tint-violet: #e8ddff;
   --tp-tint-sky: #d9f1ff;
-  --tp-tint-coral: #ffdfd6;
+  --tp-tint-orange: #ffe2c4;
   --tp-tint-mint: var(--tp-mint-soft);
 
   /* Type scale and layout (DESIGN §3–4, reduced ~10% on 2026-11-14). */
@@ -103,11 +105,13 @@
   --color-tp-yellow-soft: var(--tp-yellow-soft);
   --color-tp-mint: var(--tp-mint);
   --color-tp-mint-soft: var(--tp-mint-soft);
+  --color-tp-orange: var(--tp-orange);
+  --color-tp-orange-soft: var(--tp-orange-soft);
   --color-tp-coral: var(--tp-coral);
   --color-tp-coral-soft: var(--tp-coral-soft);
   --color-tp-tint-violet: var(--tp-tint-violet);
   --color-tp-tint-sky: var(--tp-tint-sky);
-  --color-tp-tint-coral: var(--tp-tint-coral);
+  --color-tp-tint-orange: var(--tp-tint-orange);
   --color-tp-tint-mint: var(--tp-tint-mint);
 }
 
@@ -704,7 +708,7 @@ textarea {
    Each section's color also marks its subheadings (.tp-subheading). */
 .tp-lesson-heading-0 { --section: var(--tp-violet); --section-ink: #fff; }
 .tp-lesson-heading-1 { --section: var(--tp-sky); }
-.tp-lesson-heading-2 { --section: var(--tp-coral); }
+.tp-lesson-heading-2 { --section: var(--tp-orange); }
 .tp-lesson-heading-3 { --section: var(--tp-mint); }
 
 h2.tp-lesson-heading {
@@ -756,4 +760,41 @@ h2.tp-lesson-heading {
   padding: .35em 0;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+/* Mi Espacio tabs: the colored section-heading labels (DESIGN §4). The
+   active tab lifts with a hard shadow. Text is always ink. */
+.tp-tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border: 2px solid var(--tp-ink);
+  border-radius: 10px;
+  padding: 0 14px;
+  color: var(--tp-ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.tp-tab[aria-selected="true"] {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--tp-ink);
+}
+
+/* A comment opened from a link (#comentario-…) glows for a moment. */
+@keyframes tp-flash {
+  0%, 60% { background-color: var(--tp-yellow-soft); }
+  100% { background-color: transparent; }
+}
+
+.tp-flash {
+  border-radius: 12px;
+  animation: tp-flash 2.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-tab { transition: none; }
+  .tp-flash { animation: none; background-color: var(--tp-yellow-soft); }
 }

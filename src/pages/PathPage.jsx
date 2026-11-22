@@ -7,6 +7,7 @@ import PageHero from '../components/PageHero'
 import { Celebration, Highlight } from '../components/decor/Decor'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
 
@@ -45,7 +46,7 @@ export function ChildPathCard({ child, slugs }) {
   )
 }
 
-const SECTION_COLORS = ['var(--tp-yellow)', 'var(--tp-sky)', 'var(--tp-mint)', 'var(--tp-coral)', 'var(--tp-tint-violet)']
+const SECTION_COLORS = ['var(--tp-yellow)', 'var(--tp-sky)', 'var(--tp-mint)', 'var(--tp-orange)', 'var(--tp-tint-violet)']
 
 export function PathSectionHeading({ section, index = 0 }) {
   return <div className="pb-1 pt-10 first:pt-0">
@@ -121,6 +122,7 @@ export default function PathPage() {
   }
 
   const path = detail?.path
+  usePageMeta({ title: path?.title, description: path?.description, noindex: Boolean(error) })
   const visibleProgress = progressKey === progressState.progressKey ? progressState.progress : null
   const completed = visibleProgress?.percentage === 100
 
@@ -152,7 +154,7 @@ export default function PathPage() {
         {(loading || error) && (
           <div className="tp-container py-12">
             {loading && <p className="text-tp-ink-muted">Cargando Ruta…</p>}
-            {error && <p className="tp-card-quiet bg-tp-coral-soft p-5">{error}</p>}
+            {error && <p className="tp-card-quiet bg-tp-orange-soft p-5">{error}</p>}
           </div>
         )}
 

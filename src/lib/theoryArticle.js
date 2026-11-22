@@ -3,7 +3,8 @@
 //
 // New markup: `:::<type> <título>` … `:::` blocks (one nested level), `##` /
 // `###` headings, lists, GFM tables, figures, `[[collection:<slug>:<kind>]]`,
-// `[[practice]]`, `[[source:…]]`. Inline markup is left in the text for
+// `[[problems:<código>,<código>:<kind>]]` (problems picked one by one, same
+// box as a collection), `[[practice]]`, `[[source:…]]`. Inline markup is left in the text for
 // RichText. Older lessons keep working: ALL-CAPS heading lines, `### Ejemplo`,
 // «EJEMPLO TRABAJADO» / «ERRORES FRECUENTES» sections and `practice|challenge`.
 // The stored text is never changed.
@@ -26,6 +27,7 @@ const FENCE_CLOSE = /^:::\s*$/
 const BOXES = new Set(['definition', 'theorem', 'lemma', 'corollary', 'proposition', 'proof', 'example', 'try', 'tip', 'mistake', 'reveal'])
 const NUMBERED_BOXES = new Set(['lemma', 'corollary', 'proposition'])
 const COLLECTION = /^\[\[collection:([a-z0-9-]+):(ejercicios|practice|dificiles|challenge)\]\]$/
+const PROBLEMS = /^\[\[problems:([A-Za-z0-9-]+(?:,[A-Za-z0-9-]+){0,19}):(ejercicios|practice|dificiles)\]\]$/
 const PRACTICE = /^\[\[practice\]\]$/
 const SOURCE = /^\[\[source:(https:\/\/[^\s\]]+)\]\]$/
 const IMAGE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g
@@ -43,6 +45,18 @@ const LEVELS = { basico: 'básico', intermedio: 'intermedio', avanzado: 'avanzad
 // folders, other sites) is not loaded: the figure shows its alt text instead.
 export function figureUrl(src) {
   return /^figuras\/[\w.-]+$/.test(src) && !src.includes('..') ? `/${src}` : null
+}
+
+// `[[problems:…]]` boxes use the key `problems:<códigos>` in place of a slug,
+// so they go through the same renderCollection(slug, kind) as collections.
+export const PROBLEMS_KEY_PREFIX = 'problems:'
+export const problemsKey = (codes) => `${PROBLEMS_KEY_PREFIX}${codes.join(',')}`
+export const codesOfKey = (key) => (key.startsWith(PROBLEMS_KEY_PREFIX) ? key.slice(PROBLEMS_KEY_PREFIX.length).split(',') : null)
+
+// Each `[[problems:…]]` box in the text: { key, codes, kind }.
+export function problemReferences(content) {
+  return String(content || '').split(/\r\n?|\n/).map((line) => PROBLEMS.exec(line.trim())).filter(Boolean)
+    .map(([, codes, kind]) => { const list = codes.split(',').map((code) => code.toUpperCase()); return { key: problemsKey(list), codes: list, kind } })
 }
 
 // Distinct collection slugs the lesson text points to, in order, so the
@@ -125,6 +139,7 @@ function contentBlocks(lines) {
   const text = lines.join('\n').trim()
   let match
   if ((match = COLLECTION.exec(text))) return [{ type: 'collection', slug: match[1], kind: match[2] === 'challenge' ? 'dificiles' : match[2] }]
+  if ((match = PROBLEMS.exec(text))) return [{ type: 'collection', slug: problemsKey(match[1].split(',').map((code) => code.toUpperCase())), kind: match[2] }]
   if (PRACTICE.test(text)) return [{ type: 'practice' }]
   if ((match = SOURCE.exec(text))) return [{ type: 'source', url: match[1] }]
   if (ONLY_IMAGES.test(text)) return [{ type: 'figures', images: [...text.matchAll(IMAGE)].map(([, alt, src, title]) => ({ alt: alt.trim(), src, title: title || '' })) }]

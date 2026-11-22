@@ -10,10 +10,10 @@ export const RESERVED_TAG_SLUGS = ['teacherperi-original']
 
 export const STATE_INFO = {
   pending: { label: 'En revisión', className: 'bg-tp-yellow-soft' },
-  rejected: { label: 'Rechazado', className: 'bg-tp-coral-soft' },
+  rejected: { label: 'Rechazado', className: 'bg-tp-orange-soft' },
   published: { label: 'Publicado', className: 'bg-tp-mint' },
   'published-pending': { label: 'Publicado · cambios en revisión', className: 'bg-tp-yellow-soft' },
-  'published-rejected': { label: 'Publicado · cambios rechazados', className: 'bg-tp-coral-soft' },
+  'published-rejected': { label: 'Publicado · cambios rechazados', className: 'bg-tp-orange-soft' },
 }
 
 export const normalize = (text) => String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()

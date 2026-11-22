@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
-import FlagButton from '../FlagButton'
+import PageFeedback from '../PageFeedback'
+import SaveToListButton from '../profile/SaveToListButton'
 import ArticleText from '../training/ArticleText'
 import PracticeBox from '../content/PracticeBox'
 import RichText from '../content/RichText'
@@ -145,7 +146,7 @@ function useReadingState(articleRef, sections) {
 }
 
 // Section colors, in the same order as the lesson's section headings.
-const SECTION_DOTS = ['bg-tp-violet text-white', 'bg-tp-sky', 'bg-tp-coral', 'bg-tp-mint']
+const SECTION_DOTS = ['bg-tp-violet text-white', 'bg-tp-sky', 'bg-tp-orange', 'bg-tp-mint']
 
 // Side index on wide screens: stays in view while reading, marks the
 // current section and shows how much of the lesson is read.
@@ -238,7 +239,6 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
   const ruta = useMemo(() => (route ? buildRutaContext(route, ancestors) : null), [route, ancestors])
   const strip = ruta?.strip || null
   const completion = useStepCompletion(strip)
-  const [notice, setNotice] = useState('')
   // Bumped each time the reader marks the step complete, to replay «¡Listo!».
   const [celebration, setCelebration] = useState(0)
   const markStep = async () => { if (await completion.toggle()) setCelebration((count) => count + 1) }
@@ -290,11 +290,10 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
                   </button>
                 </span>
               )}
-              <button type="button" onClick={() => setNotice('Próximamente podrás guardar lecciones en tus listas.')} className="inline-flex min-h-11 items-center rounded-xl border-2 border-tp-ink bg-tp-surface px-4 font-bold">Guardar en lista</button>
-              <Link to="/contacto" className="inline-flex min-h-11 items-center px-1 font-semibold text-tp-ink-muted underline underline-offset-2 hover:text-tp-ink">Sugerir cambio</Link>
+              {item._id && <SaveToListButton itemType="theory" itemId={item._id} className="text-[15px]" />}
             </div>
-            <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error || notice}</p>
-            <FlagButton targetType="theory" targetId={item._id} />
+            <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error}</p>
+            <PageFeedback targetType="theory" targetId={item._id} />
             {canEdit(auth) && item._id && <div><Link to={editLessonPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar lección</Link></div>}
           </div>
 
@@ -335,7 +334,7 @@ export default function TheoryView({ item, error, route, ancestors = [], problem
           : (
             <div className="tp-container py-12">
               {error
-                ? <p role="alert" className="tp-card-quiet bg-tp-coral-soft p-4">{error}</p>
+                ? <p role="alert" className="tp-card-quiet bg-tp-orange-soft p-4">{error}</p>
                 : <p className="text-tp-ink-muted">Cargando contenido…</p>}
             </div>
           )}

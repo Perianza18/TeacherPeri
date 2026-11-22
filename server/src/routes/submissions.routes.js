@@ -23,6 +23,7 @@ import { requireAuth, requirePermission } from '../middleware/auth.js'
 import { ensureExamRoot, examFoldersVisibleTo, folderPath, parseFolderName } from '../lib/examFolders.js'
 import { hasErrors, runSubmissionChecks } from '../lib/review/checks.js'
 import { ImageError, assertUsableImages, deleteIfUnused } from '../lib/images.js'
+import { syncProblemExams } from '../lib/examSync.js'
 import { comparableProblemsFor, derivedProblemFields, nextCommunityCode, ownSubmissionViews, parseProposal, proposalFromProblem, sameProposal, vocabulary } from '../lib/submissions.js'
 
 const router = Router()
@@ -178,6 +179,8 @@ router.delete('/mine/:id', requirePermission('problems:delete-own'), async (req,
   if (!problem) return
   problem.set({ deletedAt: new Date(), deletedBy: req.userId, publicationStatus: 'archived' })
   await problem.save()
+  // Its exam card loses it (and is unpublished if it was the last one).
+  await syncProblemExams(problem, null)
   await ProblemSubmission.updateMany({ problem: problem._id, status: 'pending' }, { status: 'withdrawn' })
   res.json({ deleted: true, _id: problem._id })
 })

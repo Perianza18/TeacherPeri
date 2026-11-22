@@ -1,3 +1,4 @@
+import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
@@ -51,7 +52,7 @@ export function PanelNotice({ kicker, text, children }) {
 }
 
 export function LoadState({ loading, error, empty, emptyText }) {
-  if (error) return <p role="alert" className="tp-card-quiet max-w-[840px] bg-tp-coral-soft p-4">No fue posible cargar: {error}</p>
+  if (error) return <p role="alert" className="tp-card-quiet max-w-[840px] bg-tp-orange-soft p-4">No fue posible cargar: {error}</p>
   if (loading) return <p className="text-tp-ink-muted" aria-live="polite">Cargando…</p>
   if (empty) return <PanelNotice kicker="Al día" text={emptyText} />
   return null
@@ -72,6 +73,34 @@ export function Segmented({ label, options, value, onChange }) {
           {option.label}
         </button>
       ))}
+    </div>
+  )
+}
+
+// Note box + buttons for closing one item (a report or a suggestion).
+// `actions` are { label, tone, run(note) }.
+export function CloseActions({ actions, noteLabel = 'Nota (opcional)', placeholder = 'Por ejemplo: corregido en el enunciado' }) {
+  const id = useId()
+  const [note, setNote] = useState('')
+  const [state, setState] = useState({ busy: false, error: null })
+  const go = async (action) => {
+    setState({ busy: true, error: null })
+    try {
+      await action.run(note.trim())
+    } catch (error) {
+      setState({ busy: false, error: error.message })
+    }
+  }
+  return (
+    <div className="flex flex-col gap-2 border-t-2 border-dashed border-tp-rule pt-4">
+      <label htmlFor={id} className="text-sm font-bold">{noteLabel}</label>
+      <input id={id} value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} placeholder={placeholder} className="tp-input" />
+      <div className="flex flex-wrap gap-3">
+        {actions.map((action) => (
+          <button key={action.label} type="button" disabled={state.busy} onClick={() => go(action)} className={`tp-button px-4 text-sm font-bold disabled:opacity-60 ${action.tone}`}>{action.label}</button>
+        ))}
+      </div>
+      {state.error && <p role="alert" className="text-sm font-semibold text-red-700">{state.error}</p>}
     </div>
   )
 }

@@ -129,6 +129,7 @@ it to the tool through the tool's own variable.
 | `atlas:set-role:test`, `atlas:set-role:prod` | `users:set-role` |
 | `atlas:revise-theory:test`, `atlas:revise-theory:prod` | `content:revise-theory` |
 | `atlas:import:test`, `atlas:import:prod` | `content:import` |
+| `atlas:sync-exams:test`, `atlas:sync-exams:prod` | `db:sync:exam-folders` (one exam per exam folder on Exámenes) |
 
 Each one is a dry run (or read only) unless `--apply` follows `--`, for example
 `npm run atlas:migrate:test -- --apply`. With `--apply` the wrapper confirms the

@@ -1,14 +1,21 @@
 // ---------------------------------------------------------------------------
-// ContentRevision — one document per change an editor or admin makes directly
-// to a problem or a lesson from the site (/panel/problemas/:id/editar,
-// /panel/teoria/:id/editar). It records who changed what and when, with the
-// value before and after each field, so admins can read the history and get
-// notified (see server/src/lib/contentEdits.js).
+// ContentRevision — the history in «Cambios de editores» (/panel/cambios).
+//
+// kind 'edit': a change an editor or admin makes directly to a problem or a
+// lesson from the site (/panel/problemas/:id/editar, /panel/teoria/:id/editar),
+// with the value before and after each field (server/src/lib/contentEdits.js).
+//
+// kind 'review': a decision taken in Revisión, on the site or with
+// `npm run review`: approving or rejecting a proposal or an exam folder,
+// renaming a folder, or closing a suggestion (server/src/lib/activity.js).
+// It stores the action, a readable summary and the note or reason.
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
 
-export const REVISION_TARGETS = ['problem', 'theory']
+export const REVISION_TARGETS = ['problem', 'theory', 'folder']
+export const REVISION_KINDS = ['edit', 'review']
+export const REVIEW_ACTIONS = ['approved', 'rejected', 'renamed', 'applied', 'dismissed']
 
 const changeSchema = new mongoose.Schema(
   {
@@ -23,12 +30,17 @@ const changeSchema = new mongoose.Schema(
 
 const revisionSchema = new mongoose.Schema(
   {
+    kind: { type: String, enum: REVISION_KINDS, default: 'edit' },
     targetType: { type: String, enum: REVISION_TARGETS, required: true },
     target: { type: mongoose.Schema.Types.ObjectId, required: true },
     targetLabel: { type: String, required: true, trim: true },
     editor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     editorRole: { type: String, required: true },
     changes: { type: [changeSchema], default: [] },
+    // Only for kind 'review'.
+    action: { type: String, enum: REVIEW_ACTIONS, default: null },
+    summary: { type: String, trim: true, maxlength: 2000, default: null },
+    note: { type: String, trim: true, maxlength: 1000, default: null },
   },
   { timestamps: true },
 )

@@ -5,22 +5,26 @@ import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
-import FlagButton from '../components/FlagButton'
-import { LIBRARY_BASE } from '../lib/libraryPaths'
-import { collectionSlugs } from '../lib/theoryArticle'
+import PageFeedback from '../components/PageFeedback'
+import CommentSection from '../components/comments/CommentSection'
+import SaveToListButton from '../components/profile/SaveToListButton'
+import SolvedToggle from '../components/profile/SolvedToggle'
+import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
+import { loadLessonBoxes } from '../lib/lessonBoxes'
 import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
 import { useAuth } from '../context/useAuth'
 import { canEdit, editProblemPath } from '../lib/panel'
 import ProblemImages from '../components/images/ProblemImages'
 import { byPlacement } from '../lib/images'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
 // Header band color: a problem takes its area's color (the same family as
 // the strips on the library cards); lists and exams have their own.
-const AREA_TONES = { 'Geometría': 'sky', 'Álgebra': 'violet', 'Combinatoria': 'coral', 'Teoría de Números': 'mint' }
-const TYPE_TONES = { listas: 'mint', examenes: 'coral' }
+const AREA_TONES = { 'Geometría': 'sky', 'Álgebra': 'violet', 'Combinatoria': 'orange', 'Teoría de Números': 'mint' }
+const TYPE_TONES = { listas: 'mint', examenes: 'orange' }
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 
 // «+» that turns into «×» while its <details> is open.
@@ -96,13 +100,6 @@ function loadPracticeProblem(id) {
   ]).then(([problem, commentCount]) => ({ ...problem, commentCount })).catch(() => null)
 }
 
-// The problems of every `[[collection:<slug>:<kind>]]` in the lesson, keyed
-// `slug:kind`. A slug that can't be loaded just leaves its boxes out.
-function loadCollections(content) {
-  return Promise.all(collectionSlugs(content).map((slug) => apiFetch(`/api/collections/${encodeURIComponent(slug)}`).catch(() => null)))
-    .then((results) => Object.fromEntries(results.filter(Boolean).flatMap(({ slug, collections }) => Object.entries(collections).map(([kind, problems]) => [`${slug}:${kind}`, problems]))))
-}
-
 // The Path of every breadcrumb above the leaf, root first (null if missing).
 function loadAncestors(crumbs) {
   return Promise.all(crumbs.slice(0, -1).map((crumb, index) => {
@@ -117,7 +114,7 @@ export default function LibraryDetailPage({ type }) {
   const { id } = useParams()
   const location = useLocation()
   const config = CONFIG[type]
-  const { auth } = useAuth()
+  const { auth, logout, abrirModal } = useAuth()
   const traversal = new URLSearchParams(location.search).get('ruta') || ''
   const context = traversal ? `?ruta=${encodeURIComponent(traversal)}` : ''
   const key = `${type}:${id}:${traversal}`
@@ -139,7 +136,7 @@ export default function LibraryDetailPage({ type }) {
           ? await Promise.all([
             Promise.all(problemIds.map(loadPracticeProblem)).then((list) => list.filter(Boolean)),
             belongs ? loadAncestors(route.breadcrumbs) : [],
-            loadCollections(item.content),
+            loadLessonBoxes(item.content),
           ])
           : [[], [], {}]
         if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems, ancestors, collections })
@@ -147,7 +144,8 @@ export default function LibraryDetailPage({ type }) {
       .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, paths: [] }) })
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
-  const title = type === 'examenes' && item ? `${item.competition} ${item.year} · ${item.round}` : item?.title || item?.titulo || item?.codigo
+  const title = type === 'examenes' && item ? examTitle(item) : item?.title || item?.titulo || item?.codigo
+  usePageMeta({ title, description: item?.summary || item?.enunciado, noindex: Boolean(error) })
   const route = result.key === key ? result.route : null
   const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
 
@@ -169,7 +167,10 @@ export default function LibraryDetailPage({ type }) {
     item.authors?.length > 0 && `Autoría: ${item.authors.join(', ')}`,
   ].filter(Boolean) : []
 
-  const backLink = !route && (!traversal || item || error) && <Link to={LIBRARY_BASE[config.api]} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a {config.label}</Link>
+  // An external resource is a List from another publisher: it goes back to
+  // the «Recursos externos» tab, not to TeacherPeri's lists.
+  const resource = type === 'listas' && item?.sourceOrganization && item.sourceOrganization !== 'TeacherPeri'
+  const backLink = !route && (!traversal || item || error) && <Link to={resource ? LIBRARY_BASE.resources : LIBRARY_BASE[config.api]} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a {resource ? 'Recursos externos' : config.label}</Link>
   const routeNav = result.key === key && result.route && <nav aria-label="Recorrido de aprendizaje" className="flex flex-wrap gap-2 text-sm font-bold">{result.route.breadcrumbs.map((crumb, index, crumbs) => <span key={crumb.slug}>{index > 0 && ' › '}<Link className="underline underline-offset-4 hover:text-tp-violet" to={`/rutas/${crumbs.slice(0, index + 1).map((entry) => encodeURIComponent(entry.slug)).join('/')}`}>{crumb.title}</Link></span>)}</nav>
 
   if (!item) {
@@ -177,7 +178,7 @@ export default function LibraryDetailPage({ type }) {
       {backLink}
       {routeNav}
       {error
-        ? <p role="alert" className="tp-card-quiet max-w-[760px] bg-tp-coral-soft p-4">{error}</p>
+        ? <p role="alert" className="tp-card-quiet max-w-[760px] bg-tp-orange-soft p-4">{error}</p>
         : <><p className="text-tp-ink-muted">Cargando contenido…</p><div className="max-w-[800px]"><SkeletonCard strip={false} strong /></div></>}
     </div></section>
   }
@@ -186,7 +187,7 @@ export default function LibraryDetailPage({ type }) {
     <PageHero
       id="contenido-titulo"
       tone={tone}
-      kicker={`${isProblem ? 'Problema' : config.label}${item.codigo ? ` · ${item.codigo}` : ''}`}
+      kicker={`${isProblem ? 'Problema' : resource ? 'Recurso externo' : config.label}${item.codigo ? ` · ${item.codigo}` : ''}`}
       title={<span className="break-words">{title}</span>}
       lead={item.summary}
       before={<>{backLink}{routeNav}</>}
@@ -208,8 +209,18 @@ export default function LibraryDetailPage({ type }) {
         <Hints hint={item.hint} />
         {(item.solution || byPlacement(item.images, 'solution').length > 0) && <Solution solution={item.solution} images={item.images} />}
         {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
-          <FlagButton targetType="problem" targetId={item._id} />
+          <SolvedToggle problemId={item._id} />
+          <SaveToListButton itemType="problem" itemId={item._id} />
           {canEdit(auth) && <Link to={editProblemPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar problema</Link>}
+          <PageFeedback targetType="problem" targetId={item._id} />
+        </div>}
+        {type === 'problemas' && <div className="border-t-2 border-dashed border-tp-rule pt-8">
+          <CommentSection
+            problemId={item._id}
+            auth={auth}
+            onAuthExpired={logout}
+            signIn={<div className="tp-card-quiet flex flex-wrap items-center gap-3 bg-tp-surface p-4"><p className="text-sm text-tp-ink-soft">Entra a tu cuenta para comentar.</p><button type="button" onClick={() => abrirModal()} className="tp-button bg-tp-mint px-4 text-sm font-bold text-tp-ink">Entrar</button></div>}
+          />
         </div>}
 
         {item.instructions && <p className="tp-card-quiet whitespace-pre-wrap bg-tp-yellow-soft p-5 leading-7">{item.instructions}</p>}

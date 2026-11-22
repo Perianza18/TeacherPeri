@@ -59,6 +59,47 @@ describe('publication visibility', () => {
     expect((await request(app).get(`/api/${path}/${archived._id}`)).status).toBe(404)
   })
 
+  it('splits Lists into TeacherPeri lists and external resources', async () => {
+    const own = await List.create({ title: 'Lista propia', summary: 'Resumen.', sourceOrganization: 'TeacherPeri', publicationStatus: 'published' })
+    const unnamed = await List.create({ title: 'Lista sin fuente', summary: 'Resumen.', publicationStatus: 'published' })
+    const external = await List.create({ title: 'Recurso externo', summary: 'Resumen.', sourceOrganization: 'NRICH', sourceUrl: 'https://nrich.maths.org/', publicationStatus: 'published' })
+    const ids = async (source) => (await request(app).get(`/api/lists?limit=20&source=${source}`)).body.items.map((item) => item._id).sort()
+    expect(await ids('teacherperi')).toEqual([own._id.toString(), unnamed._id.toString()].sort())
+    expect(await ids('external')).toEqual([external._id.toString()])
+    expect((await request(app).get('/api/lists?source=otra')).status).toBe(400)
+  })
+
+  it('finds keywords without accents or capitals, in text, tags and topics', async () => {
+    const geometry = await Topic.create({ name: 'Geometría' })
+    const triangles = await Topic.create({ name: 'Triángulos', parent: geometry._id })
+    const tag = await Tag.create({ name: 'Máximo común divisor', label: 'Máximo común divisor' })
+    const byTopic = await problemFixture({ codigo: 'KW-1', titulo: 'Uno', topics: [geometry._id, triangles._id] })
+    const byTag = await problemFixture({ codigo: 'KW-2', titulo: 'Dos', tags: [tag._id] })
+    const byText = await problemFixture({ codigo: 'KW-3', titulo: 'Tres', enunciado: 'Una ECUACIÓN cuadrática.' })
+    const found = async (q) => (await request(app).get(`/api/problems?limit=20&q=${encodeURIComponent(q)}`)).body.items.map((item) => item._id)
+    expect(await found('TRIANGULOS')).toEqual([byTopic._id.toString()])
+    expect(await found('maximo comun')).toEqual([byTag._id.toString()])
+    expect(await found('ecuacion')).toEqual([byText._id.toString()])
+    expect(await found('Ecuación')).toEqual([byText._id.toString()])
+  })
+
+  it('includes subtopics when filtering by an área, and counts each topic', async () => {
+    const algebra = await Topic.create({ name: 'Álgebra' })
+    const sequences = await Topic.create({ name: 'Sucesiones', parent: algebra._id })
+    const onlySub = await problemFixture({ codigo: 'AR-1', topics: [sequences._id] })
+    await problemFixture({ codigo: 'AR-2', topics: [] })
+    const items = (await request(app).get(`/api/problems?limit=20&topics=${algebra._id}`)).body.items
+    expect(items.map((item) => item._id)).toEqual([onlySub._id.toString()])
+    // ?area= finds the Topic tree and also problems with only the old `tema`.
+    const oldStyle = await problemFixture({ codigo: 'AR-3', tema: 'Álgebra', topics: [] })
+    const byArea = (await request(app).get(`/api/problems?limit=20&area=${encodeURIComponent('Álgebra')}`)).body.items.map((item) => item._id).sort()
+    expect(byArea).toEqual(expect.arrayContaining([onlySub._id.toString(), oldStyle._id.toString()]))
+    const counts = await request(app).get('/api/topics/counts?library=problems')
+    expect(counts.body.topics).toMatchObject({ [algebra._id]: 1, [sequences._id]: 1 })
+    expect(counts.body.areas['Geometría']).toBe(0)
+    expect((await request(app).get('/api/topics/counts?library=otra')).status).toBe(400)
+  })
+
   it('keeps legacy published Problems visible while hiding explicit draft and archived records', async () => {
     const category = await Category.create({ name: 'Visibilidad' })
     const legacyId = new mongoose.Types.ObjectId()

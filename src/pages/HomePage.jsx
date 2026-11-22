@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { useInView } from '../hooks/useInView'
+import { usePageMeta } from '../hooks/usePageMeta'
 import { BubbleTail, Burst, HandArrow, Highlight, Mark, Marquee } from '../components/decor/Decor'
 import PeriPenguin from '../components/decor/PeriPenguin'
 import { useAuth } from '../context/useAuth'
@@ -24,7 +25,7 @@ const STEPS = [
 
 const EXPLORE = [
   { kicker: 'Entrenamiento', art: 'bg-tp-sky', glyph: 'π', title: 'Resolver problemas por tema', text: 'Problemas, teoría y exámenes, con filtros por tema.', cta: 'Abrir Entrenamiento', to: '/entrenamiento' },
-  { kicker: 'Exámenes', art: 'bg-tp-coral', glyph: '≥', title: 'Practicar con exámenes reales', text: 'OMMU Primera Ronda, OMMU Nacional y Putnam.', cta: 'Ver exámenes', to: LIBRARY_BASE.exams },
+  { kicker: 'Exámenes', art: 'bg-tp-orange', glyph: '≥', title: 'Practicar con exámenes reales', text: 'OMMU Primera Ronda, OMMU Nacional y Putnam.', cta: 'Ver exámenes', to: LIBRARY_BASE.exams },
   { kicker: 'Listas', art: 'bg-tp-mint', glyph: '√', title: 'Practicar con una selección', text: 'Colecciones de problemas elegidas por el equipo.', cta: 'Ver Listas', to: LIBRARY_BASE.lists },
 ]
 
@@ -77,7 +78,7 @@ function ProblemaDelDia({ problem }) {
   return (
     <section aria-labelledby="problema-del-dia" aria-busy={!problem} className="tp-card relative flex flex-col gap-4 bg-tp-yellow px-6 pb-7 pt-7 sm:px-8">
       <span aria-hidden="true" className="absolute -right-4 -top-11 rotate-12 sm:-right-7">
-        <Burst className="size-[92px] sm:size-[104px]" color="var(--tp-coral)">
+        <Burst className="size-[92px] sm:size-[104px]" color="var(--tp-orange)">
           <span className="font-display text-[19px] font-extrabold leading-none sm:text-[21px]">¡Hoy!</span>
         </Burst>
       </span>
@@ -101,7 +102,7 @@ function ProblemaDelDia({ problem }) {
 
 // Shown in place of the problem when the bank can't be loaded.
 function SymbolCollage() {
-  const tiles = [['π', 'bg-tp-mint', '-rotate-6'], ['√2', 'bg-tp-surface', 'rotate-3'], ['Δ', 'bg-tp-coral', 'rotate-6'], ['n!', 'bg-tp-sky', '-rotate-3'], ['x²', 'bg-tp-yellow', 'rotate-2'], ['∞', 'bg-tp-tint-violet', '-rotate-6']]
+  const tiles = [['π', 'bg-tp-mint', '-rotate-6'], ['√2', 'bg-tp-surface', 'rotate-3'], ['Δ', 'bg-tp-orange', 'rotate-6'], ['n!', 'bg-tp-sky', '-rotate-3'], ['x²', 'bg-tp-yellow', 'rotate-2'], ['∞', 'bg-tp-tint-violet', '-rotate-6']]
   return (
     <div aria-hidden="true" className="tp-card relative grid grid-cols-3 gap-4 bg-tp-surface p-7">
       {tiles.map(([symbol, color, tilt]) => (
@@ -172,15 +173,16 @@ function Ticker() {
 const STATS = [
   { api: 'problems', label: 'problemas para practicar', to: LIBRARY_BASE.problems, bar: 'bg-tp-violet' },
   { api: 'theory', label: 'lecciones de teoría', to: LIBRARY_BASE.theory, bar: 'bg-tp-sky' },
-  { api: 'lists', label: 'listas de problemas', to: LIBRARY_BASE.lists, bar: 'bg-tp-mint' },
-  { api: 'exams', label: 'exámenes de práctica', to: LIBRARY_BASE.exams, bar: 'bg-tp-coral' },
+  // Only TeacherPeri's own lists: external resources are counted apart.
+  { api: 'lists', query: '&source=teacherperi', label: 'listas de problemas', to: LIBRARY_BASE.lists, bar: 'bg-tp-mint' },
+  { api: 'exams', label: 'exámenes de práctica', to: LIBRARY_BASE.exams, bar: 'bg-tp-orange' },
 ]
 
 function useLibraryTotals() {
   const [totals, setTotals] = useState({})
   useEffect(() => {
     let active = true
-    Promise.all(STATS.map(({ api }) => apiFetch(`/api/${api}?page=1&limit=1`).then((data) => [api, data?.total]).catch(() => [api, null])))
+    Promise.all(STATS.map(({ api, query = '' }) => apiFetch(`/api/${api}?page=1&limit=1${query}`).then((data) => [api, data?.total]).catch(() => [api, null])))
       .then((entries) => { if (active) setTotals(Object.fromEntries(entries.filter(([, total]) => total > 0))) })
     return () => { active = false }
   }, [])
@@ -343,7 +345,7 @@ function Explora() {
     <section aria-labelledby="explora-titulo" className="bg-tp-paper">
       <div className="tp-container py-20 lg:py-28">
         <SectionHeading id="explora-titulo" kicker="O explora por tu cuenta">
-          ¿Qué quieres hacer <Mark variant="scribble" color="var(--tp-coral)" width={5}>hoy</Mark>?
+          ¿Qué quieres hacer <Mark variant="scribble" color="var(--tp-orange)" width={5}>hoy</Mark>?
         </SectionHeading>
         <ul className="mt-14 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-7">
           {EXPLORE.map((card) => (
@@ -397,7 +399,7 @@ function SobreTeacherPeri() {
             </div>
           </div>
           <aside aria-labelledby="experiencias-titulo" className="tp-card relative flex flex-col gap-3 bg-tp-surface p-7 lg:rotate-0">
-            <span className="tp-sticker -rotate-3 self-start bg-tp-coral">Próximamente</span>
+            <span className="tp-sticker -rotate-3 self-start bg-tp-orange">Próximamente</span>
             <h3 id="experiencias-titulo" className="font-display text-[34px] font-extrabold leading-none tracking-[-0.03em]">Experiencias</h3>
             <p className="text-[17px] text-tp-ink-muted">Historias de exolímpicos para inspirarte a dar el siguiente paso.</p>
             <span aria-hidden="true" className="tp-hand rotate-[-3deg] self-end pt-2 text-[26px] text-tp-violet">¡pronto aquí!</span>
@@ -409,6 +411,7 @@ function SobreTeacherPeri() {
 }
 
 export default function HomePage() {
+  usePageMeta()
   return (
     <>
       <Navbar />

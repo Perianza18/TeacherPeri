@@ -3,16 +3,18 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Burst } from '../components/decor/Decor'
 import PeriPenguin from '../components/decor/PeriPenguin'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 // 404: a poster «4✸4» where the zero is a comic starburst and a puzzled
 // penguin stands beside it, the page title
 // for screen readers and search, and three ways back in.
 export default function NotFoundPage() {
+  usePageMeta({ title: 'Página no encontrada', noindex: true })
   return (
     <>
       <Navbar />
       <main className="bg-tp-paper pt-[72px] text-tp-ink">
-        <section aria-labelledby="no-encontrada" className="relative overflow-hidden border-b-3 border-tp-ink bg-tp-coral">
+        <section aria-labelledby="no-encontrada" className="relative overflow-hidden border-b-3 border-tp-ink bg-tp-orange">
           <div aria-hidden="true" className="tp-graph absolute inset-0" />
           <div aria-hidden="true" className="tp-halftone absolute -right-24 -top-28 size-[440px] opacity-[.15] [mask-image:radial-gradient(circle,black_20%,transparent_68%)]" />
           <div className="tp-container relative flex flex-col items-start gap-6 pb-16 pt-12 lg:pb-20 lg:pt-16">

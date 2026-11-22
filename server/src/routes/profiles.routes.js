@@ -1,0 +1,215 @@
+// Mi Espacio (profiles)
+//
+// GET    /api/profiles/:username              public; `email` only for the owner
+// PUT    /api/profiles/me                     signed in: { avatar, bio }
+// GET    /api/profiles/:username/followers    public, 50 per page (?page=)
+// GET    /api/profiles/:username/following    public, 50 per page
+// PUT    /api/profiles/:username/follow       signed in, not yourself
+// DELETE /api/profiles/:username/follow       signed in
+// GET    /api/profiles/:username/comments     public, 20 per page
+// GET    /api/profiles/:username/activity     owner only (404 for anyone else)
+// GET    /api/profiles/:username/lists        public lists; the owner also gets private ones
+// GET    /api/profiles/:username/badges       public
+//
+// Privacy is fixed: activity, «Mis envíos», private lists and the email are
+// only for the owner. They are filtered here, in the query, never sent and
+// hidden in the page.
+
+import { Router } from 'express'
+import Comment from '../models/Comment.js'
+import Flag from '../models/Flag.js'
+import Follow from '../models/Follow.js'
+import Problem from '../models/Problem.js'
+import ProblemSolve from '../models/ProblemSolve.js'
+import User from '../models/User.js'
+import UserList from '../models/UserList.js'
+import UserListItem from '../models/UserListItem.js'
+import { publishedOrLegacyProblemQuery } from '../models/content.js'
+import { requireAuth } from '../middleware/auth.js'
+import { optionalAuth } from '../middleware/optionalAuth.js'
+import { roleOf } from '../lib/permissions.js'
+import { AVATAR_IDS, avatarOf, isOwner, parseBio } from '../lib/profile.js'
+import { awardBadges, publicCommentFilter } from '../lib/badges.js'
+import { contentNames, problemHref } from '../lib/profileContent.js'
+import { ownSubmissionViews } from '../lib/submissions.js'
+import { listSummaries } from './userLists.routes.js'
+
+const router = Router()
+const FOLLOW_PAGE = 50
+const COMMENT_PAGE = 20
+const ACTIVITY_LIMIT = 30
+
+const page = (value) => Math.max(1, Math.min(1000, Number.parseInt(value, 10) || 1))
+export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), role: roleOf(user) })
+
+async function findProfile(req, res) {
+  const username = typeof req.params.username === 'string' ? req.params.username : ''
+  const user = username ? await User.findOne({ username }).select('username email role bio avatar createdAt').lean() : null
+  if (!user) res.status(404).json({ error: 'Ese perfil no existe.' })
+  return user
+}
+
+async function followCounts(userId) {
+  const [followers, following] = await Promise.all([Follow.countDocuments({ followee: userId }), Follow.countDocuments({ follower: userId })])
+  return { followers, following }
+}
+
+router.put('/me', requireAuth, async (req, res) => {
+  const update = {}
+  if ('avatar' in req.body) {
+    if (!AVATAR_IDS.includes(req.body.avatar)) return res.status(400).json({ error: 'Elige uno de los avatares.' })
+    update.avatar = req.body.avatar
+  }
+  if ('bio' in req.body) {
+    const bio = parseBio(req.body.bio)
+    if (bio.error) return res.status(400).json({ error: bio.error })
+    update.bio = bio.value
+  }
+  const user = await User.findByIdAndUpdate(req.userId, update, { new: true, runValidators: true }).select('username role bio avatar').lean()
+  res.json({ ...personView(user), bio: user.bio ?? '' })
+})
+
+router.get('/:username', optionalAuth, async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  const owner = isOwner(req.userId, user)
+  const [counts, badges, commentFilter, proposed, isFollowing] = await Promise.all([
+    followCounts(user._id),
+    awardBadges(user),
+    publicCommentFilter(user._id),
+    Problem.countDocuments({ author: user._id, ...publishedOrLegacyProblemQuery() }),
+    req.userId && !owner ? Follow.exists({ follower: req.userId, followee: user._id }) : null,
+  ])
+  const comments = await Comment.countDocuments(commentFilter)
+  res.json({
+    ...personView(user),
+    bio: user.bio ?? '',
+    joinedAt: user.createdAt,
+    ...counts,
+    stats: { solved: badges.counts.solved, comments, proposed, badges: badges.earned.length },
+    isOwner: owner,
+    isFollowing: Boolean(isFollowing),
+    ...(owner ? { email: user.email } : {}),
+  })
+})
+
+async function followList(req, res, field, other) {
+  const user = await findProfile(req, res)
+  if (!user) return
+  const current = page(req.query.page)
+  const filter = { [field]: user._id }
+  const [total, rows] = await Promise.all([
+    Follow.countDocuments(filter),
+    Follow.find(filter).sort({ createdAt: -1 }).skip((current - 1) * FOLLOW_PAGE).limit(FOLLOW_PAGE).populate(other, 'username role avatar').lean(),
+  ])
+  res.json({ total, page: current, pageSize: FOLLOW_PAGE, items: rows.filter((row) => row[other]).map((row) => personView(row[other])) })
+}
+
+router.get('/:username/followers', (req, res) => followList(req, res, 'followee', 'follower'))
+router.get('/:username/following', (req, res) => followList(req, res, 'follower', 'followee'))
+
+router.put('/:username/follow', requireAuth, async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  if (String(user._id) === req.userId) return res.status(400).json({ error: 'No puedes seguirte a ti.' })
+  await Follow.updateOne({ follower: req.userId, followee: user._id }, { $setOnInsert: { follower: req.userId, followee: user._id } }, { upsert: true })
+  res.json({ ...(await followCounts(user._id)), isFollowing: true })
+})
+
+router.delete('/:username/follow', requireAuth, async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  await Follow.deleteOne({ follower: req.userId, followee: user._id })
+  res.json({ ...(await followCounts(user._id)), isFollowing: false })
+})
+
+router.get('/:username/comments', async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  const current = page(req.query.page)
+  const filter = await publicCommentFilter(user._id)
+  const [total, comments] = await Promise.all([
+    Comment.countDocuments(filter),
+    Comment.find(filter).sort({ createdAt: -1 }).skip((current - 1) * COMMENT_PAGE).limit(COMMENT_PAGE).select('problem body createdAt').lean(),
+  ])
+  const names = await contentNames({ problemIds: comments.map((c) => c.problem) })
+  res.json({
+    total,
+    page: current,
+    pageSize: COMMENT_PAGE,
+    items: comments.map((comment) => {
+      const problem = names.problems.get(String(comment.problem))
+      return { id: comment._id, body: comment.body, createdAt: comment.createdAt, target: { label: problem?.label ?? 'Problema', href: `${problemHref(comment.problem)}#comentario-${comment._id}` } }
+    }),
+  })
+})
+
+const FLAG_STATES = { open: 'pending', resolved: 'applied', dismissed: 'dismissed' }
+const SUBMISSION_STATES = { pending: 'pending', 'published-pending': 'pending', rejected: 'rejected', 'published-rejected': 'rejected', published: 'accepted' }
+
+router.get('/:username/activity', optionalAuth, async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  // Same answer as an unknown profile, so nobody learns more than the public page shows.
+  if (!isOwner(req.userId, user)) return res.status(404).json({ error: 'Ese perfil no existe.' })
+  const limit = ACTIVITY_LIMIT
+  const [comments, submissions, flags, saved, solves, follows] = await Promise.all([
+    Comment.find({ author: user._id, status: 'visible' }).sort({ createdAt: -1 }).limit(limit).select('problem createdAt').lean(),
+    ownSubmissionViews(user._id),
+    Flag.find({ reporter: user._id }).sort({ createdAt: -1 }).limit(limit).select('targetType target status createdAt').lean(),
+    UserListItem.find({ owner: user._id }).sort({ createdAt: -1 }).limit(limit).populate('list', 'name').lean(),
+    ProblemSolve.find({ user: user._id }).sort({ createdAt: -1 }).limit(limit).select('problem createdAt').lean(),
+    Follow.find({ follower: user._id }).sort({ createdAt: -1 }).limit(limit).populate('followee', 'username').lean(),
+  ])
+  const problemIds = [
+    ...comments.map((c) => c.problem), ...solves.map((s) => s.problem),
+    ...flags.filter((f) => f.targetType === 'problem').map((f) => f.target),
+    ...saved.filter((s) => s.itemType === 'problem').map((s) => s.item),
+  ]
+  const theoryIds = [...flags.filter((f) => f.targetType === 'theory').map((f) => f.target), ...saved.filter((s) => s.itemType === 'theory').map((s) => s.item)]
+  const names = await contentNames({ problemIds, theoryIds })
+  const nameOf = (type, id) => (type === 'problem' ? names.problems : names.theory).get(String(id))
+  const events = []
+  for (const c of comments) {
+    const problem = nameOf('problem', c.problem)
+    if (problem) events.push({ kind: 'comment', at: c.createdAt, target: { label: problem.label, href: `${problem.href}#comentario-${c._id}` } })
+  }
+  for (const s of submissions) {
+    const label = s.examFolderPath.length > 1 ? `${s.examFolderPath.slice(1).join(' › ')}${s.proposal.problemNumber ? `, problema ${s.proposal.problemNumber}` : ''}` : (s.titulo || s.codigo)
+    events.push({ kind: 'proposal', at: s.createdAt, target: { label, href: `/mis-envios/${s._id}` }, status: SUBMISSION_STATES[s.state] ?? 'pending' })
+  }
+  for (const f of flags) {
+    const target = nameOf(f.targetType, f.target)
+    if (target) events.push({ kind: 'suggestion', at: f.createdAt, target: { label: target.label, href: target.href }, status: FLAG_STATES[f.status] })
+  }
+  for (const s of saved) {
+    const target = nameOf(s.itemType, s.item)
+    if (target && s.list) events.push({ kind: 'saved', at: s.createdAt, target: { label: target.label, href: target.href }, list: { name: s.list.name, href: `/perfil/${encodeURIComponent(user.username)}/listas/${s.list._id}` } })
+  }
+  for (const s of solves) {
+    const problem = nameOf('problem', s.problem)
+    if (problem) events.push({ kind: 'solved', at: s.createdAt, target: { label: problem.label, href: problem.href } })
+  }
+  for (const f of follows) {
+    if (f.followee) events.push({ kind: 'follow', at: f.createdAt, target: { label: `@${f.followee.username}`, href: `/perfil/${encodeURIComponent(f.followee.username)}` } })
+  }
+  events.sort((a, b) => new Date(b.at) - new Date(a.at))
+  res.json({ items: events.slice(0, limit) })
+})
+
+router.get('/:username/lists', optionalAuth, async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  const owner = isOwner(req.userId, user)
+  const lists = await UserList.find({ owner: user._id, ...(owner ? {} : { isPublic: true }) }).sort({ createdAt: -1 }).lean()
+  res.json({ isOwner: owner, items: await listSummaries(lists, user) })
+})
+
+router.get('/:username/badges', async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  const { view } = await awardBadges(user)
+  res.json(view)
+})
+
+export default router

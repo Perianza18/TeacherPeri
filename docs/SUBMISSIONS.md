@@ -40,22 +40,78 @@ Exam folders are `Category` documents with `kind: exam` under one root,
 unique ignoring case and accents. Because they are Categories, choosing a folder
 in the Problemas filter includes everything below it.
 
-## Error reports (flags)
+## Exam folders on the Exámenes page
 
-«Reportar un error» on a problem or a theory page stores a `Flag` (page, person,
-message). One open flag per person per page. Editors and admins handle them on
-`/panel/moderacion` (resolve or dismiss, with an optional note), which uses
-`GET /api/flags` and `POST /api/flags/:id/status`; the review script works too.
+The Exámenes page groups published exams by their exam-folder path, hiding empty
+main folders. Each competition, including «OMM Estatal», is a main folder. Year
+folders that contain exams directly are displayed as exam cards without an extra navigation
+step; other subfolders appear as folder cards. For example, published exams in
+`OMMEB › 2024` appear as exam cards inside «OMMEB» without a code change. The
+hand-made TeacherPeri exams appear under «TeacherPeri Originals», ordered by year.
 
-## Review (admins)
+The folder and `problemNumber` of each problem are the source of truth; the
+`Exam` documents on Exámenes follow them (`server/src/lib/examSync.js`).
 
-**On the site:** `/panel/revision` («Revisión» in «Panel del equipo»). Each
-proposal shows its automatic checks; «Revisar» opens it, where the admin can fix
-the title, áreas, tags, exam folder and number before «Aprobar y publicar», or
-write a reason and «Rechazar». Proposed exam folders can be approved, renamed or
-rejected. The page calls `/api/review` (admins only), which runs the same
-functions in `server/src/lib/review/service.js` as the script, always applied,
-with the signed-in admin as reviewer.
+- Every exam folder that holds published problems has one published `Exam` whose
+  `categories` include that folder. It is created when the first problem lands
+  there. Its title comes from the folder path: the year is the name that looks
+  like a year, the competition is the first other name, the rest is the round
+  (`OMM › 2024` → «OMM 2024»; `OMM Estatal › Jalisco › 2023` → «OMM Estatal
+  2023 · Jalisco»).
+- Problems are in `problemNumber` order; problems without a number go last.
+- It is kept in sync on approval (site and `npm run review`), when an editor
+  changes the folder or number, when a problem is deleted or restored, and when a
+  folder is renamed. An exam left with no problems is set to `draft`, never
+  deleted.
+- Hand-made exams are left alone: an exam whose `categories` hold no exam folder
+  (the 3 TeacherPeri practice exams) keeps its own list, and a folder whose
+  problems such an exam already lists gets no second exam.
+- Backfill for problems already in folders: `npm run atlas:sync-exams:test` (or
+  `:prod`) prints what it would create; add `-- --apply` to write. A second run
+  changes nothing. Locally: `MONGO_EXAM_SYNC_URI=… npm run db:sync:exam-folders`.
+
+## Suggestions and reports on problems and lessons
+
+Every problem and lesson page has two actions for signed-in users:
+
+| Action | What it is for | Stored as | Goes to |
+| --- | --- | --- | --- |
+| «Sugerir un cambio» | A content correction: wrong answer, typo, missing case. A message of 10–1000 characters | `Flag` (`POST /api/flags`) | Revisión |
+| «Reportar» | Inappropriate content: spam, offensive, personal data… Same reasons as reporting a comment («otro» needs a note) | `ContentReport` (`POST /api/reports/content`) | Moderación |
+
+One open suggestion and one open report per person per page. Every `Flag` is a
+suggestion, including the ones sent before as «Reportar un error», so nothing
+needed a migration.
+
+- **Suggestions** are listed with `GET /api/flags` and closed with
+  `POST /api/flags/:id/status` (`resolved` is shown as «Aplicada», `dismissed` as
+  «Descartada», with an optional note). The review script works too
+  (`npm run review -- flags | resolve-flag | dismiss-flag`).
+- **Reports** are listed with `GET /api/reports/content` and closed with
+  `POST /api/reports/content/:id/status` (resolved or dismissed, with an
+  optional note). Comment reports keep their own routes (`/api/reports`).
+
+## Review (editors and admins)
+
+**On the site:** `/panel/revision` («Revisión» in «Panel del equipo»), for
+editors and admins. It lists new problems, changes to published problems,
+proposed exam folders and suggestions, with a filter: «Todo», «Problemas» (new
+problems, changes and suggestions on problems), «Teoría» (suggestions on
+lessons) and «Carpetas». Each proposal shows its automatic checks; «Revisar»
+opens it, where the reviewer can fix the title, áreas, tags, exam folder and
+number before «Aprobar y publicar», or write a reason and «Rechazar». Proposed
+exam folders can be approved, renamed or rejected. Each suggestion shows the
+page (with a link), the person, the message and the date, a link to «Editar
+problema» or «Editar lección», and «Aplicada» / «Descartar» with an optional
+note. The page calls `/api/review` and `/api/flags`, which run the same functions
+in `server/src/lib/review/service.js` as the script, always applied, with the
+signed-in person as reviewer.
+
+**History and notifications:** every decision (approve, reject, rename a folder,
+close a suggestion), on the site or with the script, is recorded in «Cambios de
+editores» (`ContentRevision` with `kind: review`, `server/src/lib/activity.js`).
+When an editor takes it, every admin also gets a notification that links to it.
+Restoring a deleted problem stays admin-only.
 
 **From a terminal:** `npm run review` (`server/src/scripts/review-submissions.js`)
 uses the same functions (they can later run automatically after an upload).
@@ -66,8 +122,8 @@ With the private Atlas file, `npm run atlas:review:test -- <command>` and
 ```sh
 npm run review -- list                                   # pending problems and folders, open flags
 npm run review -- show U-00001                           # full detail; for edits, what changes
-npm run review -- approve U-00001 --as <admin> --topics "Álgebra" [--tags "…"] [--folder "OMM › 2024" | --not-exam] [--number 3] [--title "…"] [--difficulty basico] [--attribution "…"]
-npm run review -- reject U-00001 --as <admin> --reason "Lo que debe corregir"
+npm run review -- approve U-00001 --as <editor or admin> --topics "Álgebra" [--tags "…"] [--folder "OMM › 2024" | --not-exam] [--number 3] [--title "…"] [--difficulty basico] [--attribution "…"]
+npm run review -- reject U-00001 --as <editor or admin> --reason "Lo que debe corregir"
 npm run review -- folders | approve-folder <id|path> | reject-folder <id|path> --reason "…" | rename-folder <id|path> --name "…"
 npm run review -- flags | resolve-flag <id> [--note "…"] | dismiss-flag <id> [--note "…"]
 npm run review -- deleted | restore U-00001
@@ -102,7 +158,13 @@ It is additive and idempotent.
 - **Who adds them:** anyone proposing a problem (under the statement), and editors
   and admins on `/panel/problemas/:id/editar` (under the statement or inside the
   solution). Up to 4 per problem, each with a required Spanish description (alt
-  text, 5–300 characters). Admins see them, with their descriptions, in Revisión.
+  text, 5–300 characters). Editors and admins see them, with their descriptions, in Revisión.
+- **Math in the description:** the description may use `$…$`. It is never shown
+  on the page. Writers see a KaTeX preview under the field, and Revisión shows it
+  rendered next to each image. The `alt` attribute gets plain text without `$`
+  (`src/lib/mathAlt.js`: `\angle` → «ángulo», `^\circ` → «°», `\frac{a}{b}` →
+  «a/b»; other commands keep their name). A lone `$` is refused like in the
+  statement.
 - **Upload:** `POST /api/images` with the file as the body. PNG, JPG or WebP up to
   5 MB, detected from the file's bytes (SVG and anything else is refused). The
   server turns it into WebP, at most 1200 px wide, without metadata (sharp).

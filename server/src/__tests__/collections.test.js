@@ -63,3 +63,22 @@ describe('problem collections', () => {
     await expect(ProblemCollection.create({ slug: 'casillas', kind: 'ejercicios', problems: [{ problem: new mongoose.Types.ObjectId(), position: 1 }] })).rejects.toThrow('must exist')
   })
 })
+
+describe('problems picked one by one ([[problems:…]])', () => {
+  it('returns the public problems of the codes, in the order written, without solutions', async () => {
+    await problems(3)
+    await Problem.create({ codigo: 'TP-COL-DRAFT', titulo: 'Borrador', enunciado: 'No público.', año: '2026', tema: 'Combinatoria', tipo: 'Ejercicio', dificultad: 'Fácil', publicationStatus: 'draft' })
+    const response = await request(app).get('/api/collections?codes=tp-col-3,TP-COL-DRAFT,TP-COL-1,TP-NADA')
+    expect(response.status).toBe(200)
+    expect(response.body.problems.map((problem) => problem.codigo)).toEqual(['TP-COL-3', 'TP-COL-1'])
+    expect(response.body.problems[0]).toMatchObject({ hint: 'Primera pista.\n\nSegunda pista.', commentCount: 0 })
+    expect(response.body.problems[0].solution).toBeUndefined()
+    expect(response.body.problems[0].titulo).toBeUndefined()
+  })
+
+  it('rejects an empty, too long or malformed list', async () => {
+    expect((await request(app).get('/api/collections')).status).toBe(400)
+    expect((await request(app).get(`/api/collections?codes=${Array.from({ length: 21 }, (_, i) => `TP-${i}`).join(',')}`)).status).toBe(400)
+    expect((await request(app).get('/api/collections?codes=TP-A01,$where')).status).toBe(400)
+  })
+})

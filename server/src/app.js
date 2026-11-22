@@ -26,12 +26,16 @@ import listsRoutes from './routes/lists.routes.js'
 import examsRoutes from './routes/exams.routes.js'
 import pathsRoutes from './routes/paths.routes.js'
 import reportsRoutes from './routes/reports.routes.js'
+import contentReportsRoutes from './routes/contentReports.routes.js'
 import submissionsRoutes from './routes/submissions.routes.js'
 import flagsRoutes from './routes/flags.routes.js'
 import notificationsRoutes from './routes/notifications.routes.js'
 import editorRoutes from './routes/editor.routes.js'
 import reviewRoutes from './routes/review.routes.js'
 import usersRoutes from './routes/users.routes.js'
+import profilesRoutes from './routes/profiles.routes.js'
+import userListsRoutes from './routes/userLists.routes.js'
+import solvesRoutes from './routes/solves.routes.js'
 import imagesRoutes from './routes/images.routes.js'
 
 const app = express()
@@ -107,6 +111,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/categories', categoriesRoutes)
 app.use('/api/problems', problemsRoutes)
 app.use('/api/problems/:problemId/comments', commentsRoutes)
+app.use('/api/problems/:problemId/solved', solvesRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/topics', topicsRoutes)
 app.use('/api/tags', tagsRoutes)
@@ -115,6 +120,7 @@ app.use('/api/collections', collectionsRoutes)
 app.use('/api/lists', listsRoutes)
 app.use('/api/exams', examsRoutes)
 app.use('/api/paths', pathsRoutes)
+app.use('/api/reports/content', contentReportsRoutes)
 app.use('/api/reports', reportsRoutes)
 app.use('/api/submissions', submissionsRoutes)
 app.use('/api/flags', flagsRoutes)
@@ -122,6 +128,8 @@ app.use('/api/notifications', notificationsRoutes)
 app.use('/api/editor', editorRoutes)
 app.use('/api/review', reviewRoutes)
 app.use('/api/users', usersRoutes)
+app.use('/api/profiles', profilesRoutes)
+app.use('/api/my-lists', userListsRoutes)
 app.use('/api/images', imagesRoutes)
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ese recurso no existe.' }))

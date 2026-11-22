@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
 import { canModerate } from '../../lib/roles'
 import CommentComposer from './CommentComposer'
@@ -23,6 +24,31 @@ export default function CommentSection({ problemId, auth, onAuthExpired, signIn 
   const [loadError, setLoadError] = useState(null)
 
   const load = useCallback(() => apiFetch(`/api/problems/${problemId}/comments`).then((data) => setComments(Array.isArray(data) ? data : [])), [problemId])
+
+  // A link like /entrenamiento/problemas/:id#comentario-<id> (from Mi Espacio)
+  // scrolls to that comment once the thread has loaded and makes it glow.
+  // If it is gone, the page opens at the comments.
+  const { hash } = useLocation()
+  const linked = hash.startsWith('#comentario-') ? hash.slice('#comentario-'.length) : null
+  // The page above may still grow while it loads (content, images), so the
+  // scroll is checked again twice and corrected; it stops as soon as the
+  // person scrolls or types.
+  useEffect(() => {
+    if (!linked || loading) return
+    const target = () => document.getElementById(`comentario-${linked}`) || document.getElementById(`comentarios-${problemId}`)
+    const smooth = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const go = (behavior) => target()?.scrollIntoView({ behavior, block: 'center' })
+    const offScreen = () => {
+      const rect = target()?.getBoundingClientRect()
+      return rect && (rect.top < 0 || rect.bottom > window.innerHeight)
+    }
+    go(smooth ? 'smooth' : 'auto')
+    const timers = [500, 1200].map((delay) => setTimeout(() => { if (offScreen()) go('auto') }, delay))
+    const stop = () => timers.forEach(clearTimeout)
+    const events = ['wheel', 'touchstart', 'keydown']
+    events.forEach((name) => window.addEventListener(name, stop, { once: true, passive: true }))
+    return () => { stop(); events.forEach((name) => window.removeEventListener(name, stop)) }
+  }, [linked, loading, problemId])
 
   useEffect(() => {
     let active = true
@@ -58,7 +84,7 @@ export default function CommentSection({ problemId, auth, onAuthExpired, signIn 
 
   return (
     <section aria-labelledby={`comentarios-${problemId}`} className="flex flex-col gap-4">
-      <h4 id={`comentarios-${problemId}`} className="font-display text-[22px] font-extrabold tracking-[-0.02em] text-tp-ink">
+      <h4 id={`comentarios-${problemId}`} className="scroll-mt-28 font-display text-[22px] font-extrabold tracking-[-0.02em] text-tp-ink">
         Comentarios{comments.length > 0 && <span className="ml-2 text-sm font-semibold text-brand-600">({comments.filter((c) => !c.deleted).length})</span>}
       </h4>
 
@@ -79,6 +105,7 @@ export default function CommentSection({ problemId, auth, onAuthExpired, signIn 
                     onReply={(parent, body) => post(body, parent._id)}
                     onReport={report}
                     onDelete={remove}
+                    highlighted={linked === comment._id}
                   />
                 ))}
               </ol>

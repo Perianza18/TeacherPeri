@@ -1,21 +1,55 @@
-import { useDeferredValue, useId, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PanelShell, { LoadState, Segmented } from '../../components/panel/PanelShell'
 import ArticleText from '../../components/training/ArticleText'
+import PracticeBox from '../../components/content/PracticeBox'
+import LessonToolbar from '../../components/lessonEditor/LessonToolbar'
+import LessonTextarea from '../../components/lessonEditor/LessonTextarea'
 import { apiFetch } from '../../lib/api'
-import { parseArticle } from '../../lib/theoryArticle'
+import { codesOfKey, parseArticle } from '../../lib/theoryArticle'
+import { insertSnippet } from '../../lib/lessonMarkup'
+import { boxesSignature, loadLessonBoxes } from '../../lib/lessonBoxes'
 import { useApiData } from '../../lib/panel'
 
 const LIMITS = { title: 200, summary: 600, content: 200000 }
 
-// Problem boxes ([[collection:…]]) need data from the bank; the preview
-// shows where they go instead.
-function CollectionPlaceholder(slug, kind) {
+const BOX_NAMES = { ejercicios: 'Ejercicios', practice: 'Práctica', dificiles: 'Reto' }
+
+// A problem box the preview could not fill (unknown slug or codes, or
+// problems that are not public): says so instead of hiding it.
+function MissingBox({ slug, kind }) {
+  const codes = codesOfKey(slug)
   return (
-    <div className="tp-card-quiet bg-tp-yellow-soft p-4 font-sans text-sm">
-      <strong>Caja de problemas</strong> «{slug}» ({kind}). En la lección publicada aquí aparecen sus problemas.
+    <div className="tp-card-quiet bg-tp-coral-soft p-4 font-sans text-sm">
+      <strong>Caja de problemas · {BOX_NAMES[kind] ?? kind}</strong>: {codes ? `no se encontraron problemas públicos con ${codes.join(', ')}` : `no hay una colección publicada «${slug}»`}. En la lección publicada esta caja no aparecería.
     </div>
   )
+}
+
+// `[[practice]]`: on the site it shows the problems of the lesson's step in
+// the Ruta, which the editor does not know.
+const RUTA_PRACTICE = (
+  <div className="tp-card-quiet bg-tp-yellow-soft p-4 font-sans text-sm">
+    <strong>Práctica de la Ruta</strong>: en la lección publicada aquí aparecen los problemas de su paso en la Ruta.
+  </div>
+)
+
+// The real problem boxes of the text being written, like the lesson page.
+// Reloaded only when the box references change.
+function usePreviewBoxes(content) {
+  const signature = boxesSignature(content)
+  const [state, setState] = useState({ signature: null, boxes: {} })
+  useEffect(() => {
+    if (!signature) return undefined
+    let cancelled = false
+    const timer = setTimeout(() => {
+      loadLessonBoxes(content).then((boxes) => { if (!cancelled) setState({ signature, boxes }) })
+    }, 400)
+    return () => { cancelled = true; clearTimeout(timer) }
+    // `content` is read only when the boxes change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature])
+  return { boxes: state.boxes, ready: state.signature === signature }
 }
 
 // /panel/teoria/:id/editar — an editor changes a lesson's text, with the
@@ -40,10 +74,41 @@ function LessonForm({ initial, token }) {
   const [base, setBase] = useState(initial)
   const [form, setForm] = useState({ title: initial.title, summary: initial.summary, content: initial.content })
   const [view, setView] = useState('write')
+  const textarea = useRef(null)
+  const pendingSelection = useRef(null)
   const [state, setState] = useState({ busy: false, error: null, saved: null })
   const deferred = useDeferredValue(form.content)
   const article = useMemo(() => parseArticle(deferred), [deferred])
+  const preview = usePreviewBoxes(deferred)
+  const renderBox = (slug, kind) => {
+    const list = preview.boxes[`${slug}:${kind}`]
+    if (list?.length) return <PracticeBox kind={kind} problems={list} />
+    if (!preview.ready) return <p className="font-sans text-sm text-tp-ink-muted">Cargando caja de problemas…</p>
+    // Like the lesson page: an empty practice collection falls back to the Ruta practice.
+    if (kind === 'practice' && !slug.startsWith('problems:')) return RUTA_PRACTICE
+    return <MissingBox slug={slug} kind={kind} />
+  }
   const set = (field, value) => setForm((current) => ({ ...current, [field]: value }))
+
+  // Toolbar: build(selected) → snippet, written at the cursor (or around the
+  // selection); then the new text stays selected so the author types over it.
+  const insert = (build) => {
+    const el = textarea.current
+    if (!el) return
+    const { selectionStart: start, selectionEnd: end } = el
+    const next = insertSnippet(form.content, start, end, build(form.content.slice(start, end)))
+    pendingSelection.current = [next.start, next.end]
+    set('content', next.value)
+  }
+  // After the new text is on screen, put the cursor on the inserted part.
+  useLayoutEffect(() => {
+    const el = textarea.current
+    if (!el || !pendingSelection.current) return
+    const [start, end] = pendingSelection.current
+    pendingSelection.current = null
+    el.focus()
+    el.setSelectionRange(start, end)
+  }, [form.content])
 
   const save = async (event) => {
     event.preventDefault()
@@ -78,9 +143,10 @@ function LessonForm({ initial, token }) {
         <Segmented label="Vista" value={view} onChange={setView} options={[{ value: 'write', label: 'Escribir' }, { value: 'preview', label: 'Vista previa' }]} />
       </div>
       <div className="grid gap-6 xl:grid-cols-2">
-        <div className={`flex flex-col gap-2 ${view === 'write' ? '' : 'hidden xl:flex'}`}>
+        <div className={`flex min-w-0 flex-col gap-2 ${view === 'write' ? '' : 'hidden xl:flex'}`}>
           <label htmlFor={`${id}-texto`} className="text-sm font-bold">Texto de la lección</label>
-          <textarea id={`${id}-texto`} value={form.content} onChange={(event) => set('content', event.target.value)} maxLength={LIMITS.content} spellCheck className="tp-input min-h-[70vh] font-mono text-sm leading-6" />
+          <LessonToolbar insert={insert} />
+          <LessonTextarea ref={textarea} id={`${id}-texto`} value={form.content} onChange={(value) => set('content', value)} maxLength={LIMITS.content} />
           <p className="text-xs text-tp-ink-muted">{form.content.length.toLocaleString('es-MX')} caracteres</p>
         </div>
         <section aria-label="Vista previa" className={`tp-card-soft min-w-0 bg-tp-paper p-5 sm:p-7 ${view === 'preview' ? '' : 'hidden xl:block'} xl:max-h-[calc(70vh+44px)] xl:overflow-y-auto`}>
@@ -88,12 +154,12 @@ function LessonForm({ initial, token }) {
           <h2 className="tp-page-title mb-2 text-[32px]">{form.title}</h2>
           <p className="tp-lead mb-6 text-tp-ink-soft">{form.summary}</p>
           <div className="tp-reading-text flex flex-col gap-[22px]">
-            <ArticleText article={article} practice={null} renderCollection={CollectionPlaceholder} />
+            <ArticleText article={article} practice={article.hasPracticeMarker ? RUTA_PRACTICE : null} renderCollection={renderBox} />
           </div>
         </section>
       </div>
 
-      {state.error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft p-4 text-sm font-bold">{state.error}</p>}
+      {state.error && <p role="alert" className="tp-card-quiet bg-tp-orange-soft p-4 text-sm font-bold">{state.error}</p>}
       {state.saved !== null && <p role="status" className="tp-card-quiet bg-tp-mint-soft p-4 text-sm font-semibold">Guardado: {state.saved} {state.saved === 1 ? 'campo cambió' : 'campos cambiaron'}. Ya está en el sitio y los admins recibieron un aviso.</p>}
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={state.busy} className="tp-button bg-tp-ink px-5 font-black text-white disabled:opacity-60">{state.busy ? 'Guardando…' : 'Guardar cambios'}</button>

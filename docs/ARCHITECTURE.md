@@ -40,7 +40,8 @@ src/                        Website
     math/                   MathText: text with KaTeX math
     auth/, contact/         Sign-in window and contact form
     motion/, sections/      Animation helpers and the Contacto section
-    Navbar, Footer, FlagButton, RoleBadge, PagePlaceholder
+    lessonEditor/             Lesson editor toolbar, formatted text field, problem search
+    Navbar, Footer, PageFeedback («Sugerir un cambio» + «Reportar»), RoleBadge, PagePlaceholder
   context/                  The signed-in user (AuthContext, useAuth)
   hooks/                    Shared React hooks (useDialog)
   lib/                      api.js (apiFetch), theoryArticle.js (lesson markup), roles.js, rutaContext.js, ...
@@ -79,10 +80,13 @@ All routes are in `src/App.jsx`. Every visible text is in Spanish.
 | `/entrenamiento/problemas/proponer` | Propose a problem |
 | `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Lesson library and lesson page |
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Exam library and exam page |
-| `/listas`, `/listas/:id` | Lists. Old `/entrenamiento/listas` links redirect here |
+| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | «Listas» tab: TeacherPeri's problem lists, and a list page |
+| `/entrenamiento/recursos`, `/entrenamiento/recursos/:id` | «Recursos externos» tab: links to other publishers (OMM, IMO, NRICH), and a resource page |
+| `/listas`, `/listas/:id` | Old addresses: redirect to `/entrenamiento/listas` |
 | `/mis-envios`, `/mis-envios/:id` | The user's proposals, and the page to edit one |
-| `/panel`, `/panel/moderacion`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Team pages for editors and admins (see [ROLES.md](ROLES.md#where-the-team-pages-are)) |
-| `/panel/revision`, `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Team pages for admins only |
+| `/perfil/:username`, `/perfil/:username/listas/:id` | Mi Espacio: a profile (tabs in `?tab=`, follower lists in `?ver=`) and one personal list (see [PROFILES.md](PROFILES.md)) |
+| `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Team pages for editors and admins (see [ROLES.md](ROLES.md#where-the-team-pages-are)) |
+| `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Team pages for admins only |
 | `/recursos` | External resources |
 | `/contacto` | Contact form |
 | `/experiencias`, `/equipo`, `/estudia-en-el-extranjero`, `/sobre-mi`, `/colaboradores` | «Próximamente» pages |
@@ -101,23 +105,27 @@ needs a signed-in user, and the server checks the role on every request (see
 | Route | Endpoints |
 | --- | --- |
 | `/api/auth` | `POST /signup`, `POST /login`, `GET /me` |
-| `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id` |
+| `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id`. In `/api/problems`, `/api/theory` and `/api/lists`: `?q=` ignores accents and capitals and also matches tag and topic names; `?area=<name>` takes an área with all its subtemas (or the older `tema` field); `?topics=` includes subtopics |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
-| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id` |
-| `/api/collections` | `GET /:slug`: the problem boxes of one lesson |
+| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id`. `GET /api/lists?source=teacherperi` or `?source=external` returns only TeacherPeri lists or only external resources |
+| `/api/collections` | `GET /:slug`: the problem boxes of one lesson. `GET /?codes=A,B`: the problems of a `[[problems:…]]` box |
 | `/api/paths` | `GET /` (also `?traversal=a/b` for a path through several Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
-| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags |
+| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags. `GET /api/topics/counts?library=problems\|theory\|lists` counts items per área and per topic |
 | `/api/reports` | Editors and admins: `GET /`, `POST /comments/:commentId/dismiss` (with an optional `note`) |
+| `/api/reports/content` | Signed in: `POST /` («Reportar» a problem or lesson). Editors and admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Signed in: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
-| `/api/flags` | Signed in: `POST /`. Editors and admins: `GET /`, `POST /:id/status` |
+| `/api/flags` | Suggestions. Signed in: `POST /`, `GET /mine` (your own). Editors and admins: `GET /`, `POST /:id/status` |
+| `/api/profiles` | Public: `GET /:username` (`email` only for the owner), `GET /:username/followers`, `/following`, `/comments`, `/lists` (private lists only for the owner), `/badges`. Owner only: `GET /:username/activity` (404 for anyone else). Signed in: `PUT /me` (`avatar`, `bio`), `PUT`/`DELETE /:username/follow` |
+| `/api/my-lists` | Personal lists. Signed in: `GET /containing?itemType=&item=`, `POST /`. Owner: `PATCH /:id`, `DELETE /:id`, `POST /:id/items`, `DELETE /:id/items/:itemType/:item`. `GET /:id`: the owner, or anyone if the list is public (otherwise 404) |
+| `/api/problems/:problemId/solved` | Signed in: `GET`, `PUT`, `DELETE` («Lo resolví») |
 | `/api/notifications` | Signed in: `GET /`, `POST /read` |
 | `/api/editor` | Editors and admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
-| `/api/review` | Admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
+| `/api/review` | Editors and admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
 | `/api/images` | Signed in: `POST /` (the image file as the body). Public: `GET /:id` (cached for a year) |
 | `/api/users` | Admins: `GET /` (`?q=` to search), `PUT /:id/role` (`user` or `editor` only) |
 | `/api/contact` | Signed in: `POST /` |
 
-Admins approve and reject proposals on `/panel/revision` (`/api/review`) or with
+Editors and admins approve and reject proposals on `/panel/revision` (`/api/review`) or with
 `npm run review`; both use `server/src/lib/review/service.js` (see
 [SUBMISSIONS.md](SUBMISSIONS.md)).
 
@@ -143,14 +151,22 @@ Models live in `server/src/models/`.
   `RelatedPath` adds «También te puede interesar» links. Completion is stored
   per user and leaf Path (`PathCompletion`).
 - **Folders** are `Category` records in a tree. Exam folders are Categories with
-  `kind: exam` under «Exámenes». **Áreas** are `Topic`s; **tags** are `Tag`s.
+  `kind: exam` under «Exámenes»; each one that holds published problems has one
+  `Exam` built from them (`server/src/lib/examSync.js`). **Áreas** are `Topic`s;
+  **tags** are `Tag`s.
 - **Community:** `Comment` (replies up to 3 levels, soft delete), `Report`
   (a reported comment), `ProblemSubmission` (a proposal or an edit waiting for
-  review), `Flag` («Reportar un error»), `Notification`, `ProblemImage` (a
+  review), `Flag` (a suggestion, «Sugerir un cambio»), `ContentReport` (a problem
+  or lesson reported with «Reportar»), `Notification`, `ProblemImage` (a
   problem picture, stored as WebP in the database), `ContentRevision` (a
-  direct change by an editor or admin, with each field before and after),
+  direct change by an editor or admin, with each field before and after, or a
+  decision taken in Revisión),
   `ContactMessage`.
-- **Users** (`User`) have one role: `user`, `editor` or `admin`.
+- **Users** (`User`) have one role: `user`, `editor` or `admin`, plus a preset
+  `avatar` and a short `bio`.
+- **Mi Espacio:** `Follow` (who follows whom), `UserList` and `UserListItem`
+  (personal lists of problems and lessons), `ProblemSolve` («Lo resolví») and
+  `UserBadge` (earned badges, never removed). See [PROFILES.md](PROFILES.md).
 
 ## Safety rules built into the code
 

@@ -61,7 +61,7 @@ export default function AuthModal({ onClose, onAuthSuccess, initialMode = 'login
             {signup && <input type="text" aria-label="Nombre de usuario" placeholder="Nombre de usuario" value={username} onChange={(e) => setUsername(e.target.value)} required className={inputClass} />}
             <input type="email" aria-label="Correo" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
             <input type="password" aria-label="Contraseña" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} className={inputClass} />
-            {error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft px-3 py-2 text-sm font-semibold">{error}</p>}
+            {error && <p role="alert" className="tp-card-quiet bg-tp-orange-soft px-3 py-2 text-sm font-semibold">{error}</p>}
             <button type="submit" disabled={enviando} className="tp-button mt-2 bg-tp-violet px-4 text-[16px] font-bold text-white disabled:opacity-50">{enviando ? 'Un momento…' : signup ? 'Registrarme' : 'Iniciar sesión'}</button>
           </form>
           <p className="text-center text-sm text-tp-ink-muted">

@@ -28,6 +28,7 @@
     "users:set-role": "node server/src/scripts/promote-user.js",
     "review": "node server/src/scripts/review-submissions.js",
     "db:migrate:roles-users": "node server/src/scripts/migrate-roles-users.js",
+    "db:sync:exam-folders": "node server/src/scripts/sync-exam-folders.js",
     "db:local:start": "node server/src/scripts/start-local-mongo.js",
     "atlas:migrate:test": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js test migrate",
     "atlas:migrate:prod": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js prod migrate",
@@ -39,6 +40,8 @@
     "atlas:revise-theory:prod": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js prod revise-theory",
     "atlas:import:test": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js test import",
     "atlas:import:prod": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js prod import",
+    "atlas:sync-exams:test": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js test sync-exams",
+    "atlas:sync-exams:prod": "node --env-file=\"$HOME/.config/teacherperi/atlas.env\" server/src/scripts/atlas.js prod sync-exams",
     "test:browser": "playwright test",
     "start": "node server/src/server.js"
   },
