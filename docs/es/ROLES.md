@@ -7,9 +7,9 @@ servidor revisa el rol en cada petición; el sitio solo esconde botones.
 
 | Rol | Puede | Estado |
 | --- | --- | --- |
-| **Usuario** (todos al registrarse) | Leer; comentar; reportar comentarios; reportar errores en problemas y lecciones; proponer problemas y carpetas de examen; editar y borrar sus propias propuestas | Hecho |
-| **Editor** | + borrar cualquier comentario, con motivo; ver todos los reportes de comentarios y de errores; editar cualquier problema o lección | Hecho. «Panel del equipo» (`/panel`): Moderación, y «Editar problema» y «Editar lección» en cada problema y lección. Ver [FEATURES.md](FEATURES.md#cuentas-y-roles) |
-| **Admin** | + aprobar o rechazar propuestas y carpetas de examen; restaurar problemas borrados; nombrar editores; recibir aviso cuando un editor cambia algo | Hecho, salvo restaurar: Revisión (`/panel/revision`), Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) y un aviso por cada cambio de un editor. Restaurar problemas borrados sigue siendo solo `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
+| **Usuario** (todos al registrarse) | Leer; comentar; reportar comentarios; «Sugerir un cambio» y «Reportar» en problemas y lecciones; proponer problemas y carpetas de examen; editar y borrar sus propias propuestas | Hecho |
+| **Editor** | + borrar cualquier comentario, con motivo; atender todos los reportes (Moderación); aprobar o rechazar propuestas y carpetas de examen y cerrar sugerencias (Revisión); editar cualquier problema o lección | Hecho. «Panel del equipo» (`/panel`): Moderación y Revisión, y «Editar problema» y «Editar lección» en cada problema y lección. Ver [FEATURES.md](FEATURES.md#cuentas-y-roles) |
+| **Admin** | + restaurar problemas borrados; nombrar editores; recibir aviso cuando un editor cambia o revisa algo | Hecho, salvo restaurar: Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) y un aviso por cada cambio o decisión de revisión de un editor. Restaurar problemas borrados sigue siendo solo `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
 Insignias de rol: los comentarios muestran «Editor» o «Admin» junto al nombre de
 usuario. Los usuarios normales no llevan insignia.
@@ -72,8 +72,8 @@ Nadie puede crear un admin desde el sitio. Solo este script puede.
 | Página | Quién | Qué |
 | --- | --- | --- |
 | `/panel` | Editor, Admin | Inicio («Panel del equipo» en el menú del avatar) |
-| `/panel/moderacion` | Editor, Admin | Reportes de comentarios y de errores |
+| `/panel/moderacion` | Editor, Admin | Reportes de contenido inapropiado: comentarios, problemas y lecciones |
 | `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Editor, Admin | Editar un problema o una lección; se publica al guardar |
-| `/panel/revision` | Admin | Revisar problemas y carpetas de examen propuestos |
+| `/panel/revision` | Editor, Admin | Problemas propuestos, cambios a problemas, carpetas de examen y sugerencias en problemas y lecciones |
 | `/panel/usuarios` | Admin | Nombrar o quitar editores |
-| `/panel/cambios`, `/panel/cambios/:id` | Admin | Cada cambio de un editor, con el antes y el después |
+| `/panel/cambios`, `/panel/cambios/:id` | Admin | Cada cambio de un editor, con el antes y el después, y cada decisión tomada en Revisión |

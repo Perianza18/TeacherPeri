@@ -67,23 +67,48 @@ documentos `Exam` de Exámenes los siguen (`server/src/lib/examSync.js`).
   segunda vuelta no cambia nada. En local:
   `MONGO_EXAM_SYNC_URI=… npm run db:sync:exam-folders`.
 
-## Reportes de errores (flags)
+## Sugerencias y reportes en problemas y lecciones
 
-«Reportar un error» en un problema o en una lección guarda un `Flag` (página,
-persona, mensaje). Hay un solo reporte abierto por persona y página. Editores y
-admins los atienden en `/panel/moderacion` (resolver o descartar, con nota
-opcional), que usa `GET /api/flags` y `POST /api/flags/:id/status`; el script de
-revisión también sirve.
+Cada página de problema y de lección tiene dos acciones para quien tiene sesión:
 
-## Revisión (admins)
+| Acción | Para qué sirve | Se guarda como | Va a |
+| --- | --- | --- | --- |
+| «Sugerir un cambio» | Una corrección de contenido: respuesta equivocada, errata, caso faltante. Un mensaje de 10 a 1000 caracteres | `Flag` (`POST /api/flags`) | Revisión |
+| «Reportar» | Contenido inapropiado: spam, ofensivo, datos personales… Los mismos motivos que al reportar un comentario («otro» pide una nota) | `ContentReport` (`POST /api/reports/content`) | Moderación |
 
-**En el sitio:** `/panel/revision` («Revisión» en «Panel del equipo»). Cada
-propuesta muestra sus revisiones automáticas; «Revisar» la abre, y ahí el admin
-puede corregir título, áreas, etiquetas, carpeta y número antes de «Aprobar y
-publicar», o escribir un motivo y «Rechazar». Las carpetas de examen propuestas
-se aprueban, renombran o rechazan. La página llama a `/api/review` (solo admins),
-que corre las mismas funciones de `server/src/lib/review/service.js` que el
-script, siempre aplicadas y con el admin que inició sesión como revisor.
+Una sugerencia abierta y un reporte abierto por persona y página. Todo `Flag` es
+una sugerencia, incluidos los que se enviaron antes como «Reportar un error», así
+que no hizo falta migración.
+
+- **Sugerencias:** se listan con `GET /api/flags` y se cierran con
+  `POST /api/flags/:id/status` (`resolved` se muestra como «Aplicada» y
+  `dismissed` como «Descartada», con nota opcional). El script de revisión
+  también sirve (`npm run review -- flags | resolve-flag | dismiss-flag`).
+- **Reportes:** se listan con `GET /api/reports/content` y se cierran con
+  `POST /api/reports/content/:id/status` (resuelto o descartado, con nota
+  opcional). Los reportes de comentarios siguen en sus rutas (`/api/reports`).
+
+## Revisión (editores y admins)
+
+**En el sitio:** `/panel/revision` («Revisión» en «Panel del equipo»), para
+editores y admins. Lista problemas nuevos, cambios a problemas publicados,
+carpetas de examen propuestas y sugerencias, con un filtro: «Todo», «Problemas»
+(problemas nuevos, cambios y sugerencias en problemas), «Teoría» (sugerencias en
+lecciones) y «Carpetas». Cada propuesta muestra sus revisiones automáticas;
+«Revisar» la abre, y ahí se puede corregir título, áreas, etiquetas, carpeta y
+número antes de «Aprobar y publicar», o escribir un motivo y «Rechazar». Las
+carpetas de examen propuestas se aprueban, renombran o rechazan. Cada sugerencia
+muestra la página (con enlace), la persona, el mensaje y la fecha, un enlace a
+«Editar problema» o «Editar lección», y «Aplicada» / «Descartar» con nota
+opcional. La página llama a `/api/review` y `/api/flags`, que corren las mismas
+funciones de `server/src/lib/review/service.js` que el script, siempre aplicadas
+y con la persona que inició sesión como revisora.
+
+**Historial y avisos:** cada decisión (aprobar, rechazar, renombrar una carpeta,
+cerrar una sugerencia), en el sitio o con el script, queda en «Cambios de
+editores» (`ContentRevision` con `kind: review`, `server/src/lib/activity.js`).
+Si la toma un editor, cada admin recibe además un aviso que enlaza a ella.
+Restaurar un problema borrado sigue siendo solo de admins.
 
 **Desde una terminal:** `npm run review` (`server/src/scripts/review-submissions.js`)
 usa las mismas funciones (más adelante podrán correr solas después de cada
@@ -94,8 +119,8 @@ y `npm run atlas:review:prod -- <comando>` lo corren sin escribir la dirección
 ```sh
 npm run review -- list                                   # problemas y carpetas pendientes, reportes abiertos
 npm run review -- show U-00001                           # detalle completo; en ediciones, qué cambia
-npm run review -- approve U-00001 --as <admin> --topics "Álgebra" [--tags "…"] [--folder "OMM › 2024" | --not-exam] [--number 3] [--title "…"] [--difficulty basico] [--attribution "…"]
-npm run review -- reject U-00001 --as <admin> --reason "Lo que debe corregir"
+npm run review -- approve U-00001 --as <editor o admin> --topics "Álgebra" [--tags "…"] [--folder "OMM › 2024" | --not-exam] [--number 3] [--title "…"] [--difficulty basico] [--attribution "…"]
+npm run review -- reject U-00001 --as <editor o admin> --reason "Lo que debe corregir"
 npm run review -- folders | approve-folder <id|ruta> | reject-folder <id|ruta> --reason "…" | rename-folder <id|ruta> --name "…"
 npm run review -- flags | resolve-flag <id> [--note "…"] | dismiss-flag <id> [--note "…"]
 npm run review -- deleted | restore U-00001
@@ -131,7 +156,7 @@ varias veces sin cambiar nada más.
 - **Quién las agrega:** quien propone un problema (debajo del enunciado), y editores
   y admins en `/panel/problemas/:id/editar` (debajo del enunciado o dentro de la
   solución). Hasta 4 por problema, cada una con una descripción obligatoria en
-  español (texto alternativo, de 5 a 300 caracteres). Los admins las ven, con su
+  español (texto alternativo, de 5 a 300 caracteres). Editores y admins las ven, con su
   descripción, en Revisión.
 - **Fórmulas en la descripción:** la descripción acepta `$…$`. Nunca se muestra
   en la página. Quien escribe ve una vista previa con KaTeX debajo del campo, y
