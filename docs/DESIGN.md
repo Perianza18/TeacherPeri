@@ -121,7 +121,7 @@ paragraph that uses it.
 - **Logo:** text only, «TeacherPeri», Bricolage Grotesque 800, 22px,
   letter-spacing -0.02em. No box, no icon.
 - **Navbar:** white, 3px bottom border. «Entrar» is a mint button with ink text
-  and a 4px ink shadow. Order: Inicio, Rutas, Entrenamiento, Listas,
+  and a 4px ink shadow. Order: Inicio, Rutas, Entrenamiento,
   Experiencias, Equipo, then the avatar (or «Entrar»). The active item has a 3px
   violet underline. On mobile it collapses into a menu button.
 - **Breadcrumbs:** 14px muted. Inside a Ruta, show the Ruta path.

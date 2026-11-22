@@ -17,8 +17,7 @@ buscando material.
 | --- | --- | --- |
 | Inicio | Página de inicio con el «Problema del día» | Hecho |
 | Rutas | Rutas de estudio ordenadas, con progreso. La Ruta OMM tiene Preparación y 5 ciclos | Parcial: Preparación y Ciclo 1 están completos; Ciclo 2 tiene 2 lecciones |
-| Entrenamiento | Bibliotecas: Problemas (56), Teoría (37 lecciones), Exámenes (3) | Hecho. En curso: formato nuevo de lecciones y renovación visual |
-| Listas | 6 listas de problemas y 3 recursos externos | Hecho |
+| Entrenamiento | Bibliotecas: Problemas (56), Teoría (37 lecciones), Exámenes (3), Listas (6) y Recursos externos (3) | Hecho. En curso: formato nuevo de lecciones y renovación visual |
 | Comunidad | Comentarios, proponer problemas, reportar errores | Parcial: están planeadas las pantallas de moderación y de editor |
 | Mi Espacio | Perfil, cosas guardadas, insignias | Planeado |
 | Experiencias, Equipo, Universidad | Blog, equipo, guías para la universidad | Planeado (hoy dicen «Próximamente») |

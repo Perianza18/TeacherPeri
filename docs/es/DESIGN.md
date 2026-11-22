@@ -128,7 +128,7 @@ del párrafo que la usa.
   letter-spacing -0.02em. Sin caja ni ícono.
 - **Barra de navegación:** blanca, borde inferior de 3px. «Entrar» es un botón
   menta con texto de tinta y sombra de tinta de 4px. Orden: Inicio, Rutas,
-  Entrenamiento, Listas, Experiencias, Equipo, y luego el avatar (o «Entrar»).
+  Entrenamiento, Experiencias, Equipo, y luego el avatar (o «Entrar»).
   El elemento activo tiene un subrayado violeta de 3px. En celular se vuelve un
   botón de menú.
 - **Migas de pan:** 14px atenuadas. Dentro de una Ruta, muestran el camino de la

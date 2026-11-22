@@ -5,7 +5,6 @@ import PeriPenguin from './decor/PeriPenguin'
 const LINKS = [
   ['Rutas', '/rutas'],
   ['Entrenamiento', '/entrenamiento'],
-  ['Listas', '/listas'],
   ['Experiencias', '/experiencias'],
   ['Equipo', '/equipo'],
   ['Universidad', '/estudia-en-el-extranjero'],

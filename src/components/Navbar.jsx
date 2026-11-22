@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { path: '/', label: 'Inicio' },
   { path: '/rutas', label: 'Rutas' },
   { path: '/entrenamiento', label: 'Entrenamiento' },
-  { path: '/listas', label: 'Listas' },
   { path: '/experiencias', label: 'Experiencias' },
   { path: '/equipo', label: 'Equipo' },
 ]

@@ -59,6 +59,16 @@ describe('publication visibility', () => {
     expect((await request(app).get(`/api/${path}/${archived._id}`)).status).toBe(404)
   })
 
+  it('splits Lists into TeacherPeri lists and external resources', async () => {
+    const own = await List.create({ title: 'Lista propia', summary: 'Resumen.', sourceOrganization: 'TeacherPeri', publicationStatus: 'published' })
+    const unnamed = await List.create({ title: 'Lista sin fuente', summary: 'Resumen.', publicationStatus: 'published' })
+    const external = await List.create({ title: 'Recurso externo', summary: 'Resumen.', sourceOrganization: 'NRICH', sourceUrl: 'https://nrich.maths.org/', publicationStatus: 'published' })
+    const ids = async (source) => (await request(app).get(`/api/lists?limit=20&source=${source}`)).body.items.map((item) => item._id).sort()
+    expect(await ids('teacherperi')).toEqual([own._id.toString(), unnamed._id.toString()].sort())
+    expect(await ids('external')).toEqual([external._id.toString()])
+    expect((await request(app).get('/api/lists?source=otra')).status).toBe(400)
+  })
+
   it('keeps legacy published Problems visible while hiding explicit draft and archived records', async () => {
     const category = await Category.create({ name: 'Visibilidad' })
     const legacyId = new mongoose.Types.ObjectId()

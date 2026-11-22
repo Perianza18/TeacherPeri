@@ -164,7 +164,10 @@ export default function LibraryDetailPage({ type }) {
     item.authors?.length > 0 && `Autoría: ${item.authors.join(', ')}`,
   ].filter(Boolean) : []
 
-  const backLink = !route && (!traversal || item || error) && <Link to={LIBRARY_BASE[config.api]} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a {config.label}</Link>
+  // An external resource is a List from another publisher: it goes back to
+  // the «Recursos externos» tab, not to TeacherPeri's lists.
+  const resource = type === 'listas' && item?.sourceOrganization && item.sourceOrganization !== 'TeacherPeri'
+  const backLink = !route && (!traversal || item || error) && <Link to={resource ? LIBRARY_BASE.resources : LIBRARY_BASE[config.api]} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a {resource ? 'Recursos externos' : config.label}</Link>
   const routeNav = result.key === key && result.route && <nav aria-label="Recorrido de aprendizaje" className="flex flex-wrap gap-2 text-sm font-bold">{result.route.breadcrumbs.map((crumb, index, crumbs) => <span key={crumb.slug}>{index > 0 && ' › '}<Link className="underline underline-offset-4 hover:text-tp-violet" to={`/rutas/${crumbs.slice(0, index + 1).map((entry) => encodeURIComponent(entry.slug)).join('/')}`}>{crumb.title}</Link></span>)}</nav>
 
   if (!item) {
@@ -181,7 +184,7 @@ export default function LibraryDetailPage({ type }) {
     <PageHero
       id="contenido-titulo"
       tone={tone}
-      kicker={`${isProblem ? 'Problema' : config.label}${item.codigo ? ` · ${item.codigo}` : ''}`}
+      kicker={`${isProblem ? 'Problema' : resource ? 'Recurso externo' : config.label}${item.codigo ? ` · ${item.codigo}` : ''}`}
       title={<span className="break-words">{title}</span>}
       lead={item.summary}
       before={<>{backLink}{routeNav}</>}

@@ -81,7 +81,9 @@ Todas las rutas están en `src/App.jsx`. Todo el texto visible está en español
 | `/entrenamiento/problemas/proponer` | Proponer un problema |
 | `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Biblioteca de lecciones y página de una lección |
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Biblioteca de exámenes y página de un examen |
-| `/listas`, `/listas/:id` | Listas. Los enlaces viejos `/entrenamiento/listas` redirigen aquí |
+| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | Pestaña «Listas»: listas de problemas de TeacherPeri, y la página de una lista |
+| `/entrenamiento/recursos`, `/entrenamiento/recursos/:id` | Pestaña «Recursos externos»: enlaces a otras organizaciones (OMM, IMO, NRICH), y la página de un recurso |
+| `/listas`, `/listas/:id` | Direcciones viejas: redirigen a `/entrenamiento/listas` |
 | `/mis-envios`, `/mis-envios/:id` | Las propuestas del usuario y la página para editar una |
 | `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Páginas del equipo para editores y admins (ver [ROLES.md](ROLES.md#dónde-están-las-páginas-del-equipo)) |
 | `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Páginas del equipo solo para admins |
@@ -105,7 +107,7 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/auth` | `POST /signup`, `POST /login`, `GET /me` |
 | `/api/problems` | `GET /` (búsqueda, filtros, páginas), `GET /facets`, `GET /:id` |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
-| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id` |
+| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id`. `GET /api/lists?source=teacherperi` o `?source=external` devuelve solo las listas de TeacherPeri o solo los recursos externos |
 | `/api/collections` | `GET /:slug`: las cajas de problemas de una lección. `GET /?codes=A,B`: los problemas de una caja `[[problems:…]]` |
 | `/api/paths` | `GET /` (también `?traversal=a/b` para un camino a través de varias Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
 | `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: carpetas, áreas y etiquetas |

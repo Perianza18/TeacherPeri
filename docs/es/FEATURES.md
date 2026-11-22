@@ -12,7 +12,7 @@ Todo lo que TeacherPeri hace hoy o quiere hacer. Cada función tiene un estado:
 Actualiza este archivo, y [../FEATURES.md](../FEATURES.md), en el mismo pull
 request que cambia la función (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-_Última actualización: 2026-11-21._
+_Última actualización: 2026-11-22._
 
 ## Inicio
 
@@ -59,7 +59,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 
 | Función | Estado | Notas |
 | --- | --- | --- |
-| Listas seleccionadas en su propia página | Hecho | `/listas`: 6 listas de TeacherPeri y 3 recursos externos (OMM, IMO, NRICH). Los enlaces viejos `/entrenamiento/listas` redirigen |
+| Listas seleccionadas dentro de Entrenamiento, en dos pestañas | Hecho | «Listas» (`/entrenamiento/listas`): las 6 listas de problemas de TeacherPeri, con búsqueda y filtros. «Recursos externos» (`/entrenamiento/recursos`): los 3 enlaces a otras organizaciones (OMM, IMO, NRICH), solo con búsqueda. El menú principal ya no tiene «Listas»; los enlaces viejos `/listas` redirigen |
 | Listas personales («Guardar en lista») | Planeado | Parte de Mi Espacio. **Hoy:** no se pueden guardar problemas ni lecciones |
 
 ## Comunidad

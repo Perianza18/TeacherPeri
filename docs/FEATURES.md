@@ -12,7 +12,7 @@ Everything TeacherPeri does today or aims to do. Each feature has a status:
 Update this file, and [es/FEATURES.md](es/FEATURES.md), in the same pull request
 that changes a feature (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-_Last updated: 2026-11-21._
+_Last updated: 2026-11-22._
 
 ## Inicio (home)
 
@@ -59,7 +59,7 @@ A Ruta is an ordered path through existing material. See
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Curated lists on their own page | Done | `/listas`: 6 TeacherPeri lists and 3 external resources (OMM, IMO, NRICH). Old `/entrenamiento/listas` links redirect |
+| Curated lists inside Entrenamiento, in two tabs | Done | «Listas» (`/entrenamiento/listas`): the 6 TeacherPeri problem lists, with search and filters. «Recursos externos» (`/entrenamiento/recursos`): the 3 links to other publishers (OMM, IMO, NRICH), with search only. The main menu no longer has «Listas»; old `/listas` links redirect |
 | Personal lists («Guardar en lista») | Planned | Part of Mi Espacio. **Today:** users cannot save problems or lessons |
 
 ## Community
