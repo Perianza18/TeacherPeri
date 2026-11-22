@@ -3,11 +3,13 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import PageHero from './PageHero'
 import { Burst, Highlight } from './decor/Decor'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 // Empty state / «Próximamente» page (DESIGN §6): the page title in a yellow
 // band, then a white card with a kicker and one sentence. No placeholder
 // people, posts or illustrations.
 export default function PagePlaceholder({ title, description, kicker = 'Próximamente' }) {
+  usePageMeta({ title, description })
   return (
     <>
       <Navbar />

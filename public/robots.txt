@@ -1,0 +1,9 @@
+# TeacherPeri: everything public may be crawled, except account and team
+# pages and the form to propose a problem.
+User-agent: *
+Disallow: /panel
+Disallow: /mis-envios
+Disallow: /entrenamiento/problemas/proponer
+Disallow: /dev/
+
+Sitemap: https://teacherperi.vercel.app/sitemap.xml

@@ -7,6 +7,7 @@ import PageHero from '../components/PageHero'
 import { Celebration, Highlight } from '../components/decor/Decor'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
 
@@ -121,6 +122,7 @@ export default function PathPage() {
   }
 
   const path = detail?.path
+  usePageMeta({ title: path?.title, description: path?.description, noindex: Boolean(error) })
   const visibleProgress = progressKey === progressState.progressKey ? progressState.progress : null
   const completed = visibleProgress?.percentage === 100
 

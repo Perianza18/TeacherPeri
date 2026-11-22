@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The main pages of TeacherPeri. Each problem, lesson, exam and list is
+     linked from these pages, so search engines reach them from here. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://teacherperi.vercel.app/</loc></url>
+  <url><loc>https://teacherperi.vercel.app/rutas</loc></url>
+  <url><loc>https://teacherperi.vercel.app/rutas/preparacion-para-la-omm</loc></url>
+  <url><loc>https://teacherperi.vercel.app/entrenamiento/problemas</loc></url>
+  <url><loc>https://teacherperi.vercel.app/entrenamiento/teoria</loc></url>
+  <url><loc>https://teacherperi.vercel.app/entrenamiento/examenes</loc></url>
+  <url><loc>https://teacherperi.vercel.app/listas</loc></url>
+  <url><loc>https://teacherperi.vercel.app/recursos</loc></url>
+  <url><loc>https://teacherperi.vercel.app/contacto</loc></url>
+</urlset>

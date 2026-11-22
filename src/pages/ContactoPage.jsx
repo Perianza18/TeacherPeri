@@ -4,11 +4,13 @@ import PageHero from '../components/PageHero'
 import Contacto from '../components/sections/Contacto'
 import ContactForm from '../components/contact/ContactForm'
 import { BubbleTail, Mark } from '../components/decor/Decor'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 // Página Contacto: la bienvenida (texto exacto pedido) en un globo de
 // diálogo junto al formulario, y al final las formas de contacto directo
 // (Contacto.jsx).
 export default function ContactoPage() {
+  usePageMeta({ title: 'Contacto', description: 'Ponte en contacto con TeacherPeri: escríbenos con tus dudas, ideas o ganas de colaborar.' })
   return (
     <>
       <Navbar />

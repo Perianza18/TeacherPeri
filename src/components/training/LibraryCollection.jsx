@@ -8,6 +8,7 @@ import { GlyphTile } from '../decor/Decor'
 import PeriPenguin from '../decor/PeriPenguin'
 import { SkeletonGrid } from '../Skeleton'
 import FolderFilter from './FolderFilter'
+import { usePageMeta } from '../../hooks/usePageMeta'
 
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 // Header tone and symbol sticker per library, and a strip color per problem area.
@@ -21,7 +22,16 @@ const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet'
 const CHIP = 'cursor-pointer rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1 text-xs font-semibold transition-colors hover:bg-tp-yellow-soft has-[:checked]:bg-tp-yellow'
 const titleOf = (type, item) => type === 'exams' ? examTitle(item) : item.title || item.titulo
 
+// What each library tells search engines (usePageMeta).
+const PAGE_META = {
+  problems: { title: 'Problemas de olimpiada de matemáticas', description: 'Banco de problemas de olimpiada de matemáticas en español. Practica, escribe tu solución y compara tus ideas con las de otras personas.' },
+  theory: { title: 'Teoría para la olimpiada de matemáticas', description: 'Lecciones de teoría para la olimpiada de matemáticas en español: conceptos, ejemplos y problemas para practicar.' },
+  exams: { title: 'Exámenes de olimpiada de matemáticas', description: 'Exámenes de olimpiada de matemáticas para practicar con sus problemas en el orden original.' },
+  lists: { title: 'Listas de problemas de olimpiada', description: 'Listas de problemas de olimpiada de matemáticas para practicar, y recursos externos enlazados a su fuente original.' },
+}
+
 export default function LibraryCollection({ type, title, subtitle, onOpen, eyebrow = 'Zona de Entrenamiento', headerAction = null }) {
+  usePageMeta(PAGE_META[type] || { title, description: subtitle })
   const location = useLocation()
   const [filters, setFilters] = useState({ q: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
   const [page, setPage] = useState(1)
