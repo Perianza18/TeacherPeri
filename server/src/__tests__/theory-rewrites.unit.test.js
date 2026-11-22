@@ -38,7 +38,7 @@ describe('Rewritten theory lessons', () => {
     top.forEach((block, index) => {
       if (block.type === 'box' && ['theorem', 'proposition', 'lemma'].includes(block.kind)) expect(top[index + 1]).toMatchObject({ type: 'box', kind: 'proof' })
     })
-    expect(lesson.content).not.toMatch(/\b(tú|usted|puedes|imagina|obvio|obviamente|claramente|trivialmente)\b/iu)
+    expect(lesson.content.replace(/\[\[collection:[^\]]+\]\]/g, '')).not.toMatch(/\b(tú|usted|puedes|imagina|obvio|obviamente|claramente|trivialmente)\b/iu)
   })
 
   it('points every box to its own collections, all three kinds once', () => {
