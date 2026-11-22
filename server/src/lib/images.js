@@ -13,6 +13,7 @@ import sharp from 'sharp'
 import Problem from '../models/Problem.js'
 import ProblemImage from '../models/ProblemImage.js'
 import ProblemSubmission from '../models/ProblemSubmission.js'
+import { mathFindings } from './review/checks.js'
 
 export const IMAGE_MAX_BYTES = 5 * 1024 * 1024
 export const IMAGE_MAX_WIDTH = 1200
@@ -102,6 +103,10 @@ export function parseImageList(value, { allowSolution = false } = {}) {
     const alt = typeof entry.alt === 'string' ? entry.alt.replace(/\s+/g, ' ').trim() : ''
     if (alt.length < ALT_MIN) return { error: `Describe la imagen ${index + 1} para quien no puede verla (mínimo ${ALT_MIN} caracteres).` }
     if (alt.length > ALT_MAX) return { error: `La descripción de la imagen ${index + 1} no puede pasar de ${ALT_MAX} caracteres.` }
+    // The description may use $…$ math (shown rendered to writers and
+    // reviewers, as plain text in the alt attribute), checked like a statement.
+    const [math] = mathFindings(alt)
+    if (math) return { error: `Descripción de la imagen ${index + 1}: ${math.message[0].toLowerCase()}${math.message.slice(1)}` }
     const placement = entry.placement ?? 'statement'
     if (!PLACEMENTS.includes(placement) || (placement === 'solution' && !allowSolution)) return { error: 'Las imágenes de una propuesta van con el enunciado.' }
     images.push({ image: id, alt, placement })

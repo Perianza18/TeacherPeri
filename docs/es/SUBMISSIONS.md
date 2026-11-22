@@ -42,6 +42,31 @@ la ve hasta que se aprueba. Los nombres de carpetas hermanas son únicos sin
 importar mayúsculas ni acentos. Como son Categories, elegir una carpeta en el
 filtro de Problemas incluye todo lo que está dentro.
 
+## Carpetas de examen en la página Exámenes
+
+La carpeta y el `problemNumber` de cada problema son la fuente de verdad; los
+documentos `Exam` de Exámenes los siguen (`server/src/lib/examSync.js`).
+
+- Cada carpeta de examen con problemas publicados tiene un `Exam` publicado cuyas
+  `categories` incluyen esa carpeta. Se crea cuando llega el primer problema. Su
+  título sale de la ruta de la carpeta: el año es el nombre que parece año, la
+  competencia es el primer otro nombre y el resto es la ronda (`OMM › 2024` →
+  «OMM 2024»; `OMM Estatal › Jalisco › 2023` → «OMM Estatal 2023 · Jalisco»).
+- Los problemas van en orden de `problemNumber`; los que no tienen número van al
+  final.
+- Se mantiene al día al aprobar (en el sitio y con `npm run review`), cuando un
+  editor cambia la carpeta o el número, cuando se borra o se restaura un problema
+  y cuando se renombra una carpeta. Un examen que se queda sin problemas pasa a
+  `draft`; nunca se borra.
+- Los exámenes hechos a mano no se tocan: un examen cuyas `categories` no tienen
+  ninguna carpeta de examen (los 3 exámenes de práctica de TeacherPeri) conserva
+  su propia lista, y una carpeta cuyos problemas ya lista un examen así no recibe
+  un segundo examen.
+- Para los problemas que ya estaban en carpetas: `npm run atlas:sync-exams:test`
+  (o `:prod`) muestra lo que crearía; agrega `-- --apply` para escribir. Una
+  segunda vuelta no cambia nada. En local:
+  `MONGO_EXAM_SYNC_URI=… npm run db:sync:exam-folders`.
+
 ## Reportes de errores (flags)
 
 «Reportar un error» en un problema o en una lección guarda un `Flag` (página,
@@ -108,6 +133,12 @@ varias veces sin cambiar nada más.
   solución). Hasta 4 por problema, cada una con una descripción obligatoria en
   español (texto alternativo, de 5 a 300 caracteres). Los admins las ven, con su
   descripción, en Revisión.
+- **Fórmulas en la descripción:** la descripción acepta `$…$`. Nunca se muestra
+  en la página. Quien escribe ve una vista previa con KaTeX debajo del campo, y
+  Revisión la muestra renderizada junto a cada imagen. El atributo `alt` recibe
+  texto simple sin `$` (`src/lib/mathAlt.js`: `\angle` → «ángulo», `^\circ` →
+  «°», `\frac{a}{b}` → «a/b»; los demás comandos quedan con su nombre). Un `$`
+  sin cerrar se rechaza igual que en el enunciado.
 - **Subida:** `POST /api/images` con el archivo como cuerpo. PNG, JPG o WebP de
   hasta 5 MB, detectado por los bytes del archivo (SVG y cualquier otro formato se
   rechazan). El servidor la convierte a WebP, de máximo 1200 px de ancho y sin

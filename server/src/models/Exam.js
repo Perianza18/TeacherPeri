@@ -7,8 +7,10 @@ const examSchema = new mongoose.Schema(
     durationMinutes: { type: Number, min: 1, validate: Number.isInteger },
     instructions: { type: String, trim: true },
     competition: { type: String, required: true, trim: true },
-    year: { type: String, required: true, trim: true },
-    round: { type: String, required: true, trim: true },
+    // Exams built from an exam folder (server/src/lib/examSync.js) may have no
+    // year or round, e.g. «Exámenes › IMO» or «Exámenes › OMM › 2024».
+    year: { type: String, trim: true },
+    round: { type: String, trim: true },
     organization: { type: String, trim: true },
     country: { type: String, trim: true },
     problems: { type: [orderedProblemSchema], default: [] },

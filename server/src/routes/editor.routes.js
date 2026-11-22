@@ -25,6 +25,7 @@ import {
   problemEditView, recordRevision, revisionView, theoryEditView,
 } from '../lib/contentEdits.js'
 import { deleteIfUnused } from '../lib/images.js'
+import { syncProblemExams } from '../lib/examSync.js'
 
 const router = Router()
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
@@ -49,9 +50,11 @@ router.put('/problems/:id', requirePermission('content:edit-any'), async (req, r
   try {
     const edit = parseProblemEdit(req.body)
     const beforeImages = (problem.images || []).map((entry) => String(entry.image))
+    const before = problem.toObject()
     const changes = await applyProblemEdit(problem, edit, { baseUpdatedAt: req.body?.baseUpdatedAt })
     if (!changes.length) return res.status(400).json({ error: 'No hay cambios que guardar.' })
     await problem.save()
+    if (changes.some((change) => ['examFolder', 'problemNumber'].includes(change.field))) await syncProblemExams(before, problem)
     await deleteIfUnused(beforeImages.filter((id) => !edit.images.some((entry) => entry.image === id)))
     const revision = await recordRevision({ targetType: 'problem', target: problem._id, targetLabel: `${problem.codigo} «${problem.titulo}»`, editorId: req.userId, changes })
     res.json({ item: await problemEditView(problem.toObject()), revision: revision._id, changed: changes.map((change) => change.field) })

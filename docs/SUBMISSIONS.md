@@ -40,6 +40,29 @@ Exam folders are `Category` documents with `kind: exam` under one root,
 unique ignoring case and accents. Because they are Categories, choosing a folder
 in the Problemas filter includes everything below it.
 
+## Exam folders on the Exámenes page
+
+The folder and `problemNumber` of each problem are the source of truth; the
+`Exam` documents on Exámenes follow them (`server/src/lib/examSync.js`).
+
+- Every exam folder that holds published problems has one published `Exam` whose
+  `categories` include that folder. It is created when the first problem lands
+  there. Its title comes from the folder path: the year is the name that looks
+  like a year, the competition is the first other name, the rest is the round
+  (`OMM › 2024` → «OMM 2024»; `OMM Estatal › Jalisco › 2023` → «OMM Estatal
+  2023 · Jalisco»).
+- Problems are in `problemNumber` order; problems without a number go last.
+- It is kept in sync on approval (site and `npm run review`), when an editor
+  changes the folder or number, when a problem is deleted or restored, and when a
+  folder is renamed. An exam left with no problems is set to `draft`, never
+  deleted.
+- Hand-made exams are left alone: an exam whose `categories` hold no exam folder
+  (the 3 TeacherPeri practice exams) keeps its own list, and a folder whose
+  problems such an exam already lists gets no second exam.
+- Backfill for problems already in folders: `npm run atlas:sync-exams:test` (or
+  `:prod`) prints what it would create; add `-- --apply` to write. A second run
+  changes nothing. Locally: `MONGO_EXAM_SYNC_URI=… npm run db:sync:exam-folders`.
+
 ## Error reports (flags)
 
 «Reportar un error» on a problem or a theory page stores a `Flag` (page, person,
@@ -103,6 +126,12 @@ It is additive and idempotent.
   and admins on `/panel/problemas/:id/editar` (under the statement or inside the
   solution). Up to 4 per problem, each with a required Spanish description (alt
   text, 5–300 characters). Admins see them, with their descriptions, in Revisión.
+- **Math in the description:** the description may use `$…$`. It is never shown
+  on the page. Writers see a KaTeX preview under the field, and Revisión shows it
+  rendered next to each image. The `alt` attribute gets plain text without `$`
+  (`src/lib/mathAlt.js`: `\angle` → «ángulo», `^\circ` → «°», `\frac{a}{b}` →
+  «a/b»; other commands keep their name). A lone `$` is refused like in the
+  statement.
 - **Upload:** `POST /api/images` with the file as the body. PNG, JPG or WebP up to
   5 MB, detected from the file's bytes (SVG and anything else is refused). The
   server turns it into WebP, at most 1200 px wide, without metadata (sharp).

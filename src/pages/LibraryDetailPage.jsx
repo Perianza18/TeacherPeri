@@ -6,7 +6,7 @@ import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
 import FlagButton from '../components/FlagButton'
-import { LIBRARY_BASE } from '../lib/libraryPaths'
+import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
 import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
@@ -147,7 +147,7 @@ export default function LibraryDetailPage({ type }) {
       .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, paths: [] }) })
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
-  const title = type === 'examenes' && item ? `${item.competition} ${item.year} · ${item.round}` : item?.title || item?.titulo || item?.codigo
+  const title = type === 'examenes' && item ? examTitle(item) : item?.title || item?.titulo || item?.codigo
   const route = result.key === key ? result.route : null
   const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
 

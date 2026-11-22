@@ -143,7 +143,9 @@ Models live in `server/src/models/`.
   `RelatedPath` adds «También te puede interesar» links. Completion is stored
   per user and leaf Path (`PathCompletion`).
 - **Folders** are `Category` records in a tree. Exam folders are Categories with
-  `kind: exam` under «Exámenes». **Áreas** are `Topic`s; **tags** are `Tag`s.
+  `kind: exam` under «Exámenes»; each one that holds published problems has one
+  `Exam` built from them (`server/src/lib/examSync.js`). **Áreas** are `Topic`s;
+  **tags** are `Tag`s.
 - **Community:** `Comment` (replies up to 3 levels, soft delete), `Report`
   (a reported comment), `ProblemSubmission` (a proposal or an edit waiting for
   review), `Flag` («Reportar un error»), `Notification`, `ProblemImage` (a
