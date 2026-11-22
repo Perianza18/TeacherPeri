@@ -43,7 +43,7 @@ describe('Rewritten theory lessons', () => {
 
   it('points every box to its own collections, all three kinds once', () => {
     for (const lesson of lessons) {
-      const refs = [...lesson.content.matchAll(/^\[\[collection:([a-z-]+):([a-z]+)\]\]$/gm)].map((match) => `${match[1]}:${match[2]}`)
+      const refs = [...lesson.content.matchAll(/^\[\[collection:([a-z0-9-]+):([a-z]+)\]\]$/gm)].map((match) => `${match[1]}:${match[2]}`)
       const own = Object.entries(lesson.collections).flatMap(([slug, kinds]) => Object.keys(kinds).map((kind) => `${slug}:${kind}`))
       expect(refs).toEqual(own)
       expect(refs.map((ref) => ref.split(':')[1])).toEqual(['ejercicios', 'practice', 'dificiles'])
