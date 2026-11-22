@@ -7,7 +7,7 @@ import { importTarget } from '../scripts/import-mvp-content.js'
 const entries = buildMvpManifest()
 describe('MVP release integrity', () => {
   it('renders every math expression strictly and resolves canonical references', () => {
-    expect(validateMvpContent()).toMatchObject({ Problem: 278, ProblemCollection: 90, Theory: 37, List: 9, Exam: 3, PathSection: 5 })
+    expect(validateMvpContent()).toMatchObject({ Problem: 282, ProblemCollection: 93, Theory: 37, List: 9, Exam: 3, PathSection: 5 })
   })
   it('keeps identity stable across lists, Steps and examinations', () => {
     const problem = entries.find((e) => e.model === 'Problem' && e.key === 'TP-C05')
