@@ -67,7 +67,7 @@ export default function RutasPage() {
 
         <section aria-label="Rutas publicadas" className="tp-container py-16 lg:py-20">
           {loading && <><p className="sr-only">Cargando Rutas…</p><SkeletonGrid count={3} strip={false} strong className="grid gap-8 md:grid-cols-2 xl:grid-cols-3" /></>}
-          {error && <p className="tp-card-quiet bg-tp-coral-soft p-4">No fue posible cargar las Rutas: {error}</p>}
+          {error && <p className="tp-card-quiet bg-tp-orange-soft p-4">No fue posible cargar las Rutas: {error}</p>}
           {!loading && !error && paths.length === 0 && <div className="tp-card-soft flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin className="h-24 w-auto shrink-0" /><p className="text-[17px] text-tp-ink-soft">Todavía no hay Rutas publicadas.</p></div>}
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             {paths.map((path, index) => {

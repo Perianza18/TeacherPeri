@@ -127,7 +127,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
       </div>
 
       {problems && (
-        <div role="alert" className="tp-card-quiet bg-tp-coral-soft p-4 text-sm leading-6">
+        <div role="alert" className="tp-card-quiet bg-tp-orange-soft p-4 text-sm leading-6">
           <p className="font-bold">{problems.checks.length > 1 ? 'Corrige estos puntos antes de enviar:' : problems.error}</p>
           {problems.checks.length > 1 && <ul className="mt-2 list-disc pl-5">{problems.checks.map((check) => <li key={`${check.code}-${check.message}`}>{check.message}</li>)}</ul>}
         </div>

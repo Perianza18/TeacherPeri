@@ -51,7 +51,7 @@ export function PanelNotice({ kicker, text, children }) {
 }
 
 export function LoadState({ loading, error, empty, emptyText }) {
-  if (error) return <p role="alert" className="tp-card-quiet max-w-[840px] bg-tp-coral-soft p-4">No fue posible cargar: {error}</p>
+  if (error) return <p role="alert" className="tp-card-quiet max-w-[840px] bg-tp-orange-soft p-4">No fue posible cargar: {error}</p>
   if (loading) return <p className="text-tp-ink-muted" aria-live="polite">Cargando…</p>
   if (empty) return <PanelNotice kicker="Al día" text={emptyText} />
   return null

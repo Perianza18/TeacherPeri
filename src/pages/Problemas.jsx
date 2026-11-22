@@ -11,7 +11,7 @@ import LibraryCollection from '../components/training/LibraryCollection'
 import CommentSection from '../components/comments/CommentSection'
 import { PROPOSE_PATH } from '../lib/submissions'
 // Header color per area, the same as the library card strips.
-const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-coral', 'Teoría de Números': 'bg-tp-mint' }
+const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
 const formatearTitulo = (p) => p.titulo || p.codigo
 
 function AuthInlineForm({ onAuthSuccess }) {
@@ -77,7 +77,7 @@ function AuthInlineForm({ onAuthSuccess }) {
         className={inputClass}
       />
 
-      {error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft px-3 py-2 text-sm font-semibold">{error}</p>}
+      {error && <p role="alert" className="tp-card-quiet bg-tp-orange-soft px-3 py-2 text-sm font-semibold">{error}</p>}
 
       <div className="flex items-center justify-between gap-3">
         <button

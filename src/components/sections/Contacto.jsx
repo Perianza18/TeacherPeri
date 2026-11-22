@@ -10,7 +10,7 @@ const REDES = [
     label: 'Instagram',
     href: 'https://instagram.com/tu-usuario',
     icon: '/icons8-instagram-logo-48.png',
-    color: 'bg-tp-coral-soft',
+    color: 'bg-tp-orange-soft',
   },
   {
     label: 'LinkedIn',

@@ -46,7 +46,7 @@ export function ChildPathCard({ child, slugs }) {
   )
 }
 
-const SECTION_COLORS = ['var(--tp-yellow)', 'var(--tp-sky)', 'var(--tp-mint)', 'var(--tp-coral)', 'var(--tp-tint-violet)']
+const SECTION_COLORS = ['var(--tp-yellow)', 'var(--tp-sky)', 'var(--tp-mint)', 'var(--tp-orange)', 'var(--tp-tint-violet)']
 
 export function PathSectionHeading({ section, index = 0 }) {
   return <div className="pb-1 pt-10 first:pt-0">
@@ -154,7 +154,7 @@ export default function PathPage() {
         {(loading || error) && (
           <div className="tp-container py-12">
             {loading && <p className="text-tp-ink-muted">Cargando Ruta…</p>}
-            {error && <p className="tp-card-quiet bg-tp-coral-soft p-5">{error}</p>}
+            {error && <p className="tp-card-quiet bg-tp-orange-soft p-5">{error}</p>}
           </div>
         )}
 

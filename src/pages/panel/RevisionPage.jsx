@@ -8,7 +8,7 @@ import ExamFolderPicker from '../../components/submissions/ExamFolderPicker'
 import { apiFetch } from '../../lib/api'
 import { PANEL, fechaHora, useApiData } from '../../lib/panel'
 
-const LEVEL_TONES = { error: 'bg-tp-coral-soft', warning: 'bg-tp-yellow-soft', info: 'bg-tp-sky-soft' }
+const LEVEL_TONES = { error: 'bg-tp-orange-soft', warning: 'bg-tp-yellow-soft', info: 'bg-tp-sky-soft' }
 const sameList = (a, b) => [...a].sort().join(',') === [...b].sort().join(',')
 
 function Findings({ findings }) {
@@ -104,7 +104,7 @@ function ReviewFields({ d, token, vocab, onDone }) {
         )}
       </div>
       {state.error && (
-        <div role="alert" className="tp-card-quiet bg-tp-coral-soft p-4 text-sm leading-6">
+        <div role="alert" className="tp-card-quiet bg-tp-orange-soft p-4 text-sm leading-6">
           <p className="font-bold">{state.error}</p>
           {state.checks.length > 0 && <ul className="mt-2 list-disc pl-5">{state.checks.filter((check) => check.level === 'error').map((check) => <li key={`${check.code}-${check.message}`}>{check.message}</li>)}</ul>}
         </div>
@@ -115,7 +115,7 @@ function ReviewFields({ d, token, vocab, onDone }) {
       <div className="flex flex-col gap-2 border-t-2 border-dashed border-tp-rule pt-4">
         <label htmlFor={`${formId}-motivo`} className="text-sm font-bold">Motivo del rechazo (la persona autora lo leerá)</label>
         <textarea id={`${formId}-motivo`} value={reason} onChange={(event) => setReason(event.target.value)} rows={2} maxLength={1000} placeholder="Por ejemplo: falta decir que $n$ es entero positivo." className="tp-input" />
-        <div><button type="button" disabled={state.busy || reason.trim().length < 5} onClick={() => act(`/api/review/submissions/${d.id}/reject`, { reason })} className="tp-button bg-tp-coral px-4 text-sm font-bold text-tp-ink disabled:opacity-60">Rechazar</button></div>
+        <div><button type="button" disabled={state.busy || reason.trim().length < 5} onClick={() => act(`/api/review/submissions/${d.id}/reject`, { reason })} className="tp-button bg-tp-orange px-4 text-sm font-bold text-tp-ink disabled:opacity-60">Rechazar</button></div>
       </div>
     </div>
   )
@@ -175,7 +175,7 @@ function FolderCard({ folder, token, onDone }) {
         <label htmlFor={`${id}-motivo`} className="flex-1 text-sm font-bold">Motivo del rechazo
           <input id={`${id}-motivo`} value={reason} onChange={(event) => setReason(event.target.value)} maxLength={300} className="tp-input mt-1 font-normal" />
         </label>
-        <button type="button" disabled={state.busy || reason.trim().length < 5} onClick={() => act(`/api/review/folders/${folder.id}/reject`, { reason })} className="tp-button bg-tp-coral px-4 text-sm font-bold text-tp-ink disabled:opacity-60">Rechazar</button>
+        <button type="button" disabled={state.busy || reason.trim().length < 5} onClick={() => act(`/api/review/folders/${folder.id}/reject`, { reason })} className="tp-button bg-tp-orange px-4 text-sm font-bold text-tp-ink disabled:opacity-60">Rechazar</button>
       </div>
       {state.error && <p role="alert" className="text-sm font-semibold text-red-700">{state.error}</p>}
     </article>

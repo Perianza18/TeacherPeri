@@ -8,7 +8,7 @@ const TONES = {
   sky: 'bg-tp-sky',
   yellow: 'bg-tp-yellow',
   mint: 'bg-tp-mint',
-  coral: 'bg-tp-coral',
+  orange: 'bg-tp-orange',
   violet: 'bg-tp-tint-violet',
 }
 

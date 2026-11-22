@@ -93,7 +93,7 @@ function LessonForm({ initial, token }) {
         </section>
       </div>
 
-      {state.error && <p role="alert" className="tp-card-quiet bg-tp-coral-soft p-4 text-sm font-bold">{state.error}</p>}
+      {state.error && <p role="alert" className="tp-card-quiet bg-tp-orange-soft p-4 text-sm font-bold">{state.error}</p>}
       {state.saved !== null && <p role="status" className="tp-card-quiet bg-tp-mint-soft p-4 text-sm font-semibold">Guardado: {state.saved} {state.saved === 1 ? 'campo cambió' : 'campos cambiaron'}. Ya está en el sitio y los admins recibieron un aviso.</p>}
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" disabled={state.busy} className="tp-button bg-tp-ink px-5 font-black text-white disabled:opacity-60">{state.busy ? 'Guardando…' : 'Guardar cambios'}</button>

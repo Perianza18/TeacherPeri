@@ -25,7 +25,7 @@
   --color-accent-blue: #377cf6;
   --color-accent-sky: #86d7ff;
   --color-accent-mint: #8ee8bf;
-  --color-accent-coral: #ff7f79;
+  --color-accent-orange: #ff9f43;
   --color-accent-yellow: #ffd65a;
   --color-accent-purple-soft: #eee7ff;
   --color-accent-blue-soft: #e5f1ff;
@@ -54,14 +54,14 @@
   --tp-yellow-soft: #fff4cc;
   --tp-mint: #8ee8bf;
   --tp-mint-soft: #d8f5e8;
-  --tp-coral: #ff7f79;
-  --tp-coral-soft: #ffe4e1;
+  --tp-orange: #ff9f43;
+  --tp-orange-soft: #ffe9d2;
 
   /* Pastel tints for section headings, numbered circles and card header
      strips, in the guide's rotation order (DESIGN §2). */
   --tp-tint-violet: #e8ddff;
   --tp-tint-sky: #d9f1ff;
-  --tp-tint-coral: #ffdfd6;
+  --tp-tint-orange: #ffe2c4;
   --tp-tint-mint: var(--tp-mint-soft);
 
   /* Type scale and layout (DESIGN §3–4, reduced ~10% on 2026-11-14). */
@@ -103,11 +103,11 @@
   --color-tp-yellow-soft: var(--tp-yellow-soft);
   --color-tp-mint: var(--tp-mint);
   --color-tp-mint-soft: var(--tp-mint-soft);
-  --color-tp-coral: var(--tp-coral);
-  --color-tp-coral-soft: var(--tp-coral-soft);
+  --color-tp-orange: var(--tp-orange);
+  --color-tp-orange-soft: var(--tp-orange-soft);
   --color-tp-tint-violet: var(--tp-tint-violet);
   --color-tp-tint-sky: var(--tp-tint-sky);
-  --color-tp-tint-coral: var(--tp-tint-coral);
+  --color-tp-tint-orange: var(--tp-tint-orange);
   --color-tp-tint-mint: var(--tp-tint-mint);
 }
 
@@ -704,7 +704,7 @@ textarea {
    Each section's color also marks its subheadings (.tp-subheading). */
 .tp-lesson-heading-0 { --section: var(--tp-violet); --section-ink: #fff; }
 .tp-lesson-heading-1 { --section: var(--tp-sky); }
-.tp-lesson-heading-2 { --section: var(--tp-coral); }
+.tp-lesson-heading-2 { --section: var(--tp-orange); }
 .tp-lesson-heading-3 { --section: var(--tp-mint); }
 
 h2.tp-lesson-heading {
