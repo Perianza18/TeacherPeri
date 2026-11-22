@@ -67,7 +67,7 @@ export async function descendantCategoryIds(ids) {
 }
 
 export function populatedProblems(query) {
-  return query.populate({ path: 'problems.problem', match: publishedOrLegacyProblemQuery(), select: 'codigo titulo enunciado difficulty dificultad sourceAttribution' })
+  return query.populate({ path: 'problems.problem', match: publishedOrLegacyProblemQuery(), select: 'codigo titulo enunciado problemNumber difficulty dificultad sourceAttribution' })
 }
 
 // Keyword search that forgives accents and capitals: «geometria», «GEOMETRÍA»
