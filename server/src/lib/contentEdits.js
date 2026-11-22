@@ -235,16 +235,25 @@ export async function recordRevision({ targetType, target, targetLabel, editorId
   return revision
 }
 
+const TARGET_HREF = {
+  problem: (id) => `/entrenamiento/problemas/${id}`,
+  theory: (id) => `/entrenamiento/teoria/${id}`,
+}
+
 export function revisionView(revision) {
   return {
     _id: revision._id,
+    kind: revision.kind ?? 'edit',
     targetType: revision.targetType,
     target: revision.target,
     targetLabel: revision.targetLabel,
-    href: revision.targetType === 'problem' ? `/entrenamiento/problemas/${revision.target}` : `/entrenamiento/teoria/${revision.target}`,
+    href: TARGET_HREF[revision.targetType]?.(revision.target) ?? null,
     editor: revision.editor?.username ?? null,
     editorRole: revision.editorRole,
     changes: revision.changes,
+    action: revision.action ?? null,
+    summary: revision.summary ?? null,
+    note: revision.note ?? null,
     createdAt: revision.createdAt,
   }
 }

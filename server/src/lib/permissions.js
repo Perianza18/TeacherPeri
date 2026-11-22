@@ -2,12 +2,13 @@
 // Roles de TeacherPeri. Cada rol hereda los permisos del anterior, así que el
 // ORDEN de esta lista importa: de menos a más poder.
 //
-//   user    -> leer, comentar, reportar, proponer problemas y carpetas de
-//              examen, editar y borrar (suave) sus propios problemas
-//   editor  -> + ver todos los reportes, moderar comentarios, editar cualquier
-//              problema o página de teoría
-//   admin   -> + revisar envíos, nombrar editores, restaurar lo borrado y
-//              recibir avisos cuando un editor cambia algo
+//   user    -> leer, comentar, reportar, sugerir cambios, proponer problemas
+//              y carpetas de examen, editar y borrar (suave) sus propios
+//              problemas
+//   editor  -> + Moderación (reportes), Revisión (propuestas, carpetas y
+//              sugerencias), editar cualquier problema o página de teoría
+//   admin   -> + nombrar editores, restaurar lo borrado y recibir avisos
+//              cuando un editor cambia o revisa algo
 //
 // Los permisos se revisan SIEMPRE en el servidor; la interfaz solo los refleja.
 // ---------------------------------------------------------------------------
@@ -39,16 +40,18 @@ export function roleOf(user) {
 export const PERMISSIONS = Object.freeze({
   'comments:create': 'user',
   'comments:report': 'user',
-  'flags:create': 'user', // reportar un error en un problema o una página de teoría
+  'suggestions:create': 'user', // «Sugerir un cambio» en un problema o una lección (va a Revisión)
+  'content:report': 'user', // «Reportar» un problema o una lección inapropiados (va a Moderación)
   'problems:submit': 'user',
   'problems:edit-own': 'user', // queda en revisión; la versión aprobada sigue publicada
   'problems:delete-own': 'user', // borrado suave, recuperable por un admin
   'folders:propose': 'user', // subcarpetas de examen, en revisión
   'comments:moderate': 'editor', // borrar comentarios ajenos con motivo; ver sus reportes
-  'flags:view': 'editor', // ver y atender los reportes de errores
+  'reports:moderate': 'editor', // ver y cerrar reportes de problemas y lecciones (Moderación)
+  'suggestions:review': 'editor', // ver y cerrar sugerencias de cambio (Revisión)
   'content:edit-any': 'editor', // editar problemas y teoría de cualquiera (/api/editor)
-  'submissions:review': 'admin', // aprobar o rechazar envíos (/api/review y npm run review)
-  'folders:review': 'admin',
+  'submissions:review': 'editor', // aprobar o rechazar envíos (/api/review y npm run review)
+  'folders:review': 'editor',
   'content:restore': 'admin',
   'roles:assign-editor': 'admin', // /api/users
   'activity:notified': 'admin', // avisos e historial de cambios de editores (/api/editor/revisions)

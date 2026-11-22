@@ -41,7 +41,8 @@ src/                        Sitio
     math/                   MathText: texto con matemáticas en KaTeX
     auth/, contact/         Ventana de inicio de sesión y formulario de contacto
     motion/, sections/      Utilidades de animación y la sección de Contacto
-    Navbar, Footer, FlagButton, RoleBadge, PagePlaceholder
+    lessonEditor/             Barra del editor de lecciones, campo de texto con formato, buscador de problemas
+    Navbar, Footer, PageFeedback («Sugerir un cambio» + «Reportar»), RoleBadge, PagePlaceholder
   context/                  El usuario con sesión iniciada (AuthContext, useAuth)
   hooks/                    Hooks de React compartidos (useDialog)
   lib/                      api.js (apiFetch), theoryArticle.js (marcado de lecciones), roles.js, rutaContext.js, ...
@@ -82,8 +83,8 @@ Todas las rutas están en `src/App.jsx`. Todo el texto visible está en español
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Biblioteca de exámenes y página de un examen |
 | `/listas`, `/listas/:id` | Listas. Los enlaces viejos `/entrenamiento/listas` redirigen aquí |
 | `/mis-envios`, `/mis-envios/:id` | Las propuestas del usuario y la página para editar una |
-| `/panel`, `/panel/moderacion`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Páginas del equipo para editores y admins (ver [ROLES.md](ROLES.md#dónde-están-las-páginas-del-equipo)) |
-| `/panel/revision`, `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Páginas del equipo solo para admins |
+| `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Páginas del equipo para editores y admins (ver [ROLES.md](ROLES.md#dónde-están-las-páginas-del-equipo)) |
+| `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Páginas del equipo solo para admins |
 | `/recursos` | Recursos externos |
 | `/contacto` | Formulario de contacto |
 | `/experiencias`, `/equipo`, `/estudia-en-el-extranjero`, `/sobre-mi`, `/colaboradores` | Páginas «Próximamente» |
@@ -105,20 +106,21 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/problems` | `GET /` (búsqueda, filtros, páginas), `GET /facets`, `GET /:id` |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
 | `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id` |
-| `/api/collections` | `GET /:slug`: las cajas de problemas de una lección |
+| `/api/collections` | `GET /:slug`: las cajas de problemas de una lección. `GET /?codes=A,B`: los problemas de una caja `[[problems:…]]` |
 | `/api/paths` | `GET /` (también `?traversal=a/b` para un camino a través de varias Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
 | `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: carpetas, áreas y etiquetas |
 | `/api/reports` | Editores y admins: `GET /`, `POST /comments/:commentId/dismiss` (con `note` opcional) |
+| `/api/reports/content` | Con sesión: `POST /` («Reportar» un problema o una lección). Editores y admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Con sesión: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
-| `/api/flags` | Con sesión: `POST /`. Editores y admins: `GET /`, `POST /:id/status` |
+| `/api/flags` | Sugerencias. Con sesión: `POST /`. Editores y admins: `GET /`, `POST /:id/status` |
 | `/api/notifications` | Con sesión: `GET /`, `POST /read` |
 | `/api/editor` | Editores y admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
-| `/api/review` | Admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
+| `/api/review` | Editores y admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
 | `/api/images` | Con sesión: `POST /` (el archivo de la imagen como cuerpo). Pública: `GET /:id` (en caché un año) |
 | `/api/users` | Admins: `GET /` (`?q=` para buscar), `PUT /:id/role` (solo `user` o `editor`) |
 | `/api/contact` | Con sesión: `POST /` |
 
-Los admins aprueban y rechazan propuestas en `/panel/revision` (`/api/review`) o
+Editores y admins aprueban y rechazan propuestas en `/panel/revision` (`/api/review`) o
 con `npm run review`; los dos usan `server/src/lib/review/service.js` (ver
 [SUBMISSIONS.md](SUBMISSIONS.md)).
 
@@ -152,10 +154,11 @@ Los modelos están en `server/src/models/`.
   `Topic`s y **las etiquetas** son `Tag`s.
 - **Comunidad:** `Comment` (respuestas hasta 3 niveles, borrado suave), `Report`
   (un comentario reportado), `ProblemSubmission` (una propuesta o una edición
-  esperando revisión), `Flag` («Reportar un error»), `Notification`,
+  esperando revisión), `Flag` (una sugerencia, «Sugerir un cambio»),
+  `ContentReport` (un problema o lección reportado con «Reportar»), `Notification`,
   `ProblemImage` (una imagen de problema, guardada como WebP en la base),
   `ContentRevision` (un cambio directo de un editor o admin, con cada campo antes
-  y después), `ContactMessage`.
+  y después, o una decisión tomada en Revisión), `ContactMessage`.
 - **Los usuarios** (`User`) tienen un rol: `user`, `editor` o `admin`.
 
 ## Reglas de seguridad dentro del código

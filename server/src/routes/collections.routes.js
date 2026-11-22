@@ -11,6 +11,28 @@ import { publishedOrLegacyProblemQuery } from '../models/content.js'
 // the title or the solution.
 const router = Router()
 const ROW_FIELDS = '_id codigo enunciado hint difficulty'
+const CODE = /^[A-Z0-9][A-Z0-9-]{0,19}$/
+const MAX_CODES = 20
+
+async function withCommentCounts(problems) {
+  const counts = await Comment.aggregate([
+    { $match: { problem: { $in: problems.map((p) => p._id) }, status: { $ne: 'deleted' } } },
+    { $group: { _id: '$problem', count: { $sum: 1 } } },
+  ])
+  const commentCount = new Map(counts.map((entry) => [String(entry._id), entry.count]))
+  return problems.map((problem) => ({ ...problem, commentCount: commentCount.get(String(problem._id)) ?? 0 }))
+}
+
+// GET /api/collections?codes=TP-A01,TP-G08 — the problems of a
+// `[[problems:<códigos>:<kind>]]` box, in the order written. Codes that are
+// not public are left out. Same row fields as a collection.
+router.get('/', async (req, res) => {
+  const codes = String(req.query.codes || '').split(',').map((code) => code.trim().toUpperCase()).filter(Boolean)
+  if (!codes.length || codes.length > MAX_CODES || !codes.every((code) => CODE.test(code))) return res.status(400).json({ error: 'Lista de códigos inválida.' })
+  const problems = await Problem.find({ codigo: { $in: codes }, ...publishedOrLegacyProblemQuery() }).select(ROW_FIELDS).lean()
+  const byCode = new Map(problems.map((problem) => [problem.codigo, problem]))
+  res.json({ codes, problems: await withCommentCounts([...new Set(codes)].map((code) => byCode.get(code)).filter(Boolean)) })
+})
 
 router.get('/:slug', async (req, res) => {
   const { slug } = req.params

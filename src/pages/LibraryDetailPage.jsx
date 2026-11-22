@@ -5,9 +5,9 @@ import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
-import FlagButton from '../components/FlagButton'
+import PageFeedback from '../components/PageFeedback'
 import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
-import { collectionSlugs } from '../lib/theoryArticle'
+import { loadLessonBoxes } from '../lib/lessonBoxes'
 import { hintLabel, splitHints } from '../lib/hints'
 import { problemSourceLabel } from '../lib/inicio'
 import { useAuth } from '../context/useAuth'
@@ -97,13 +97,6 @@ function loadPracticeProblem(id) {
   ]).then(([problem, commentCount]) => ({ ...problem, commentCount })).catch(() => null)
 }
 
-// The problems of every `[[collection:<slug>:<kind>]]` in the lesson, keyed
-// `slug:kind`. A slug that can't be loaded just leaves its boxes out.
-function loadCollections(content) {
-  return Promise.all(collectionSlugs(content).map((slug) => apiFetch(`/api/collections/${encodeURIComponent(slug)}`).catch(() => null)))
-    .then((results) => Object.fromEntries(results.filter(Boolean).flatMap(({ slug, collections }) => Object.entries(collections).map(([kind, problems]) => [`${slug}:${kind}`, problems]))))
-}
-
 // The Path of every breadcrumb above the leaf, root first (null if missing).
 function loadAncestors(crumbs) {
   return Promise.all(crumbs.slice(0, -1).map((crumb, index) => {
@@ -140,7 +133,7 @@ export default function LibraryDetailPage({ type }) {
           ? await Promise.all([
             Promise.all(problemIds.map(loadPracticeProblem)).then((list) => list.filter(Boolean)),
             belongs ? loadAncestors(route.breadcrumbs) : [],
-            loadCollections(item.content),
+            loadLessonBoxes(item.content),
           ])
           : [[], [], {}]
         if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems, ancestors, collections })
@@ -210,7 +203,7 @@ export default function LibraryDetailPage({ type }) {
         <Hints hint={item.hint} />
         {(item.solution || byPlacement(item.images, 'solution').length > 0) && <Solution solution={item.solution} images={item.images} />}
         {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
-          <FlagButton targetType="problem" targetId={item._id} />
+          <PageFeedback targetType="problem" targetId={item._id} />
           {canEdit(auth) && <Link to={editProblemPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar problema</Link>}
         </div>}
 

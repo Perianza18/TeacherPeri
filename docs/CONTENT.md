@@ -74,6 +74,20 @@ Other markup:
 - Problem boxes: `[[collection:<slug>:ejercicios]]` (EJERCICIOS, with hints),
   `[[collection:<slug>:practice]]` (PRACTICA) and
   `[[collection:<slug>:dificiles]]` (RETO).
+- Problems picked one by one: `[[problems:TP-A01,TP-G08:ejercicios]]` (up to 20
+  codes, in the order shown; the kind is `ejercicios`, `practice` or
+  `dificiles`). Same box as a collection, but it needs no `ProblemCollection` in
+  the database: the page loads those codes with `GET /api/collections?codes=…`.
+  Codes that are not public are left out.
+
+**Editing on the site:** editors and admins change a lesson on
+`/panel/teoria/:id/editar` («Editar lección»). The text stays this markup, but
+each box, heading and formula is colored the way it looks on the page. The
+toolbar above the text inserts the markup at the cursor, or around the selected
+text: «Bloque» (every block above, plus a figure and a table), «Título» (`##` or
+`###`), «Problema» (searches the problem bank and inserts a
+`[[problems:…]]` box) and «$ LaTeX». The preview next to it uses the lesson
+renderer, with the real problem boxes. See [ROLES.md](ROLES.md).
 
 Each block has one fixed look; authors never style boxes by hand. The parser is
 `src/lib/theoryArticle.js` and the boxes are in `src/components/content/`.

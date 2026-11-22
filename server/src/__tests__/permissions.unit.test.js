@@ -27,22 +27,22 @@ describe('roles', () => {
 const as = (role) => ({ role })
 
 describe('can()', () => {
-  it('da a todos lo básico: comentar, reportar, proponer y cuidar lo propio', () => {
-    for (const permission of ['comments:create', 'comments:report', 'flags:create', 'problems:submit', 'problems:edit-own', 'problems:delete-own', 'folders:propose']) {
+  it('da a todos lo básico: comentar, reportar, sugerir, proponer y cuidar lo propio', () => {
+    for (const permission of ['comments:create', 'comments:report', 'suggestions:create', 'content:report', 'problems:submit', 'problems:edit-own', 'problems:delete-own', 'folders:propose']) {
       for (const role of ROLES) expect(can(as(role), permission)).toBe(true)
     }
   })
 
-  it('reserva moderar, ver reportes y editar todo para editor en adelante', () => {
-    for (const permission of ['comments:moderate', 'flags:view', 'content:edit-any']) {
+  it('reserva Moderación, Revisión y editar todo para editor en adelante', () => {
+    for (const permission of ['comments:moderate', 'reports:moderate', 'suggestions:review', 'submissions:review', 'folders:review', 'content:edit-any']) {
       expect(can(as('user'), permission)).toBe(false)
       expect(can(as('editor'), permission)).toBe(true)
       expect(can(as('admin'), permission)).toBe(true)
     }
   })
 
-  it('reserva revisar envíos, restaurar y nombrar editores para admin', () => {
-    for (const permission of ['submissions:review', 'folders:review', 'content:restore', 'roles:assign-editor', 'activity:notified']) {
+  it('reserva restaurar, nombrar editores y los avisos para admin', () => {
+    for (const permission of ['content:restore', 'roles:assign-editor', 'activity:notified']) {
       expect(can(as('user'), permission)).toBe(false)
       expect(can(as('editor'), permission)).toBe(false)
       expect(can(as('admin'), permission)).toBe(true)

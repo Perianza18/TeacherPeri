@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
-import FlagButton from '../FlagButton'
+import PageFeedback from '../PageFeedback'
 import ArticleText from '../training/ArticleText'
 import PracticeBox from '../content/PracticeBox'
 import RichText from '../content/RichText'
@@ -291,10 +291,9 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
                 </span>
               )}
               <button type="button" onClick={() => setNotice('Próximamente podrás guardar lecciones en tus listas.')} className="inline-flex min-h-11 items-center rounded-xl border-2 border-tp-ink bg-tp-surface px-4 font-bold">Guardar en lista</button>
-              <Link to="/contacto" className="inline-flex min-h-11 items-center px-1 font-semibold text-tp-ink-muted underline underline-offset-2 hover:text-tp-ink">Sugerir cambio</Link>
             </div>
             <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error || notice}</p>
-            <FlagButton targetType="theory" targetId={item._id} />
+            <PageFeedback targetType="theory" targetId={item._id} />
             {canEdit(auth) && item._id && <div><Link to={editLessonPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar lección</Link></div>}
           </div>
 

@@ -2,12 +2,13 @@
 // Notification — an in-site message for one account, shown in the avatar menu.
 // The author hears when a submission is approved or rejected; admins hear
 // when an editor changes a problem or a lesson (`content-edited`, with a link
-// to the change in /panel/cambios).
+// to the change in /panel/cambios) and when an editor approves, rejects or
+// closes something in Revisión (`editor-reviewed`, same link).
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
 
-export const NOTIFICATION_TYPES = ['submission-approved', 'submission-rejected', 'content-edited']
+export const NOTIFICATION_TYPES = ['submission-approved', 'submission-rejected', 'content-edited', 'editor-reviewed']
 
 const notificationSchema = new mongoose.Schema(
   {

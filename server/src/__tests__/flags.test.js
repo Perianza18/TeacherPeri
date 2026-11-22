@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import app from '../app.js'
+import ContentRevision from '../models/ContentRevision.js'
 import Flag from '../models/Flag.js'
+import Notification from '../models/Notification.js'
 import Problem from '../models/Problem.js'
 import Theory from '../models/Theory.js'
 import User from '../models/User.js'
@@ -26,8 +28,8 @@ async function setup() {
 
 const flag = (token, body) => request(app).post('/api/flags').set(as(token)).send(body)
 
-describe('Reportar un error', () => {
-  it('cualquier persona con sesión reporta un problema o una página de teoría', async () => {
+describe('Sugerir un cambio (Flag)', () => {
+  it('cualquier persona con sesión sugiere un cambio en un problema o una página de teoría', async () => {
     const { problem, lesson, lector } = await setup()
     expect((await request(app).post('/api/flags').send({ targetType: 'problem', targetId: String(problem._id), message: MESSAGE })).status).toBe(401)
     expect((await flag(lector.token, { targetType: 'problem', targetId: String(problem._id), message: MESSAGE })).status).toBe(201)
@@ -46,7 +48,7 @@ describe('Reportar un error', () => {
     expect((await flag(lector.token, { targetType: 'theory', targetId: String(problem._id), message: MESSAGE })).status).toBe(404)
   })
 
-  it('un reporte abierto por persona y página; otra persona sí puede reportar', async () => {
+  it('una sugerencia abierta por persona y página; otra persona sí puede enviar la suya', async () => {
     const { problem, lector, otra } = await setup()
     const body = { targetType: 'problem', targetId: String(problem._id), message: MESSAGE }
     expect((await flag(lector.token, body)).status).toBe(201)
@@ -54,7 +56,7 @@ describe('Reportar un error', () => {
     expect((await flag(otra.token, body)).status).toBe(201)
   })
 
-  it('solo editores y admins ven y cierran los reportes', async () => {
+  it('solo editores y admins ven y cierran las sugerencias', async () => {
     const { problem, lector, editor, admin } = await setup()
     const created = await flag(lector.token, { targetType: 'problem', targetId: String(problem._id), message: MESSAGE })
     expect((await request(app).get('/api/flags').set(as(lector.token))).status).toBe(403)
@@ -72,11 +74,36 @@ describe('Reportar un error', () => {
     expect((await flag(lector.token, { targetType: 'problem', targetId: String(problem._id), message: MESSAGE })).status).toBe(201)
   })
 
-  it('el script cierra reportes solo con un editor o admin', async () => {
+  it('el script cierra sugerencias solo con un editor o admin', async () => {
     const { problem, lector, editor } = await setup()
     const created = await flag(lector.token, { targetType: 'problem', targetId: String(problem._id), message: MESSAGE })
     await expect(setFlagStatus({ ref: created.body._id, status: 'dismissed', reviewer: lector.user, apply: true })).rejects.toThrow(/permission/)
     await setFlagStatus({ ref: created.body._id, status: 'dismissed', reviewer: editor.user, apply: true })
     expect((await Flag.findById(created.body._id).lean()).status).toBe('dismissed')
+  })
+})
+
+describe('Sugerencias en Revisión', () => {
+  it('las que se enviaron antes como «Reportar un error» aparecen como sugerencias, sin migración', async () => {
+    const { lesson, lector, editor } = await setup()
+    await Flag.create({ targetType: 'theory', target: lesson._id, reporter: lector.user._id, message: MESSAGE })
+    const list = await request(app).get('/api/flags').set(as(editor.token))
+    expect(list.body).toHaveLength(1)
+    expect(list.body[0]).toMatchObject({ targetType: 'theory', targetName: '«Paridad»', status: 'open' })
+  })
+
+  it('cerrarla queda en Cambios de editores; si fue un editor, avisa a los admins', async () => {
+    const { problem, lesson, lector, editor, admin } = await setup()
+    const one = await flag(lector.token, { targetType: 'problem', targetId: String(problem._id), message: MESSAGE })
+    const two = await flag(lector.token, { targetType: 'theory', targetId: String(lesson._id), message: MESSAGE })
+    await request(app).post(`/api/flags/${one.body._id}/status`).set(as(editor.token)).send({ status: 'resolved', note: 'Corregido en el enunciado' })
+    await request(app).post(`/api/flags/${two.body._id}/status`).set(as(admin.token)).send({ status: 'dismissed' })
+    const history = await ContentRevision.find({ kind: 'review' }).sort({ createdAt: 1 }).lean()
+    expect(history.map((r) => [r.targetType, r.action, r.editorRole])).toEqual([['problem', 'applied', 'editor'], ['theory', 'dismissed', 'admin']])
+    expect(history[0]).toMatchObject({ note: 'Corregido en el enunciado', targetLabel: 'F-1 «Uno»' })
+    const notes = await Notification.find({ type: 'editor-reviewed' }).lean()
+    expect(notes.map((n) => String(n.user))).toEqual([String(admin.user._id)])
+    expect(notes[0].message).toContain('@edith marcó como aplicada la sugerencia de @lector en F-1 «Uno»')
+    expect((await request(app).post(`/api/flags/${one.body._id}/status`).set(as(editor.token)).send({ status: 'dismissed' })).status).toBe(404)
   })
 })

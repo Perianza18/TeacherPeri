@@ -1,10 +1,12 @@
 // ---------------------------------------------------------------------------
-// On-site review of community submissions (admins). Same functions as
+// On-site review of community submissions (editors and admins). Same functions as
 // `npm run review` (server/src/lib/review/service.js), always applied: the
 // person clicking is the reviewer, and the service checks their permission
-// again.
+// again. Every decision is recorded in «Cambios de editores» and, when an
+// editor takes it, admins are notified (server/src/lib/activity.js).
+// Suggestions («Sugerir un cambio») are listed and closed through /api/flags.
 //
-// GET  /api/review                                 pending problems, pending folders, open flags
+// GET  /api/review                                 pending problems and pending folders
 // GET  /api/review/folders                         every exam folder that is not rejected
 // GET  /api/review/submissions/:id                 one submission in full (with what an edit changes)
 // POST /api/review/submissions/:id/approve         { fixes: { topics, tags, folder, notExam, number, title } }

@@ -40,7 +40,8 @@ src/                        Website
     math/                   MathText: text with KaTeX math
     auth/, contact/         Sign-in window and contact form
     motion/, sections/      Animation helpers and the Contacto section
-    Navbar, Footer, FlagButton, RoleBadge, PagePlaceholder
+    lessonEditor/             Lesson editor toolbar, formatted text field, problem search
+    Navbar, Footer, PageFeedback («Sugerir un cambio» + «Reportar»), RoleBadge, PagePlaceholder
   context/                  The signed-in user (AuthContext, useAuth)
   hooks/                    Shared React hooks (useDialog)
   lib/                      api.js (apiFetch), theoryArticle.js (lesson markup), roles.js, rutaContext.js, ...
@@ -81,8 +82,8 @@ All routes are in `src/App.jsx`. Every visible text is in Spanish.
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Exam library and exam page |
 | `/listas`, `/listas/:id` | Lists. Old `/entrenamiento/listas` links redirect here |
 | `/mis-envios`, `/mis-envios/:id` | The user's proposals, and the page to edit one |
-| `/panel`, `/panel/moderacion`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Team pages for editors and admins (see [ROLES.md](ROLES.md#where-the-team-pages-are)) |
-| `/panel/revision`, `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Team pages for admins only |
+| `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Team pages for editors and admins (see [ROLES.md](ROLES.md#where-the-team-pages-are)) |
+| `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Team pages for admins only |
 | `/recursos` | External resources |
 | `/contacto` | Contact form |
 | `/experiencias`, `/equipo`, `/estudia-en-el-extranjero`, `/sobre-mi`, `/colaboradores` | «Próximamente» pages |
@@ -104,20 +105,21 @@ needs a signed-in user, and the server checks the role on every request (see
 | `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id` |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
 | `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id` |
-| `/api/collections` | `GET /:slug`: the problem boxes of one lesson |
+| `/api/collections` | `GET /:slug`: the problem boxes of one lesson. `GET /?codes=A,B`: the problems of a `[[problems:…]]` box |
 | `/api/paths` | `GET /` (also `?traversal=a/b` for a path through several Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
 | `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags |
 | `/api/reports` | Editors and admins: `GET /`, `POST /comments/:commentId/dismiss` (with an optional `note`) |
+| `/api/reports/content` | Signed in: `POST /` («Reportar» a problem or lesson). Editors and admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Signed in: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
-| `/api/flags` | Signed in: `POST /`. Editors and admins: `GET /`, `POST /:id/status` |
+| `/api/flags` | Suggestions. Signed in: `POST /`. Editors and admins: `GET /`, `POST /:id/status` |
 | `/api/notifications` | Signed in: `GET /`, `POST /read` |
 | `/api/editor` | Editors and admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
-| `/api/review` | Admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
+| `/api/review` | Editors and admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
 | `/api/images` | Signed in: `POST /` (the image file as the body). Public: `GET /:id` (cached for a year) |
 | `/api/users` | Admins: `GET /` (`?q=` to search), `PUT /:id/role` (`user` or `editor` only) |
 | `/api/contact` | Signed in: `POST /` |
 
-Admins approve and reject proposals on `/panel/revision` (`/api/review`) or with
+Editors and admins approve and reject proposals on `/panel/revision` (`/api/review`) or with
 `npm run review`; both use `server/src/lib/review/service.js` (see
 [SUBMISSIONS.md](SUBMISSIONS.md)).
 
@@ -148,9 +150,11 @@ Models live in `server/src/models/`.
   **tags** are `Tag`s.
 - **Community:** `Comment` (replies up to 3 levels, soft delete), `Report`
   (a reported comment), `ProblemSubmission` (a proposal or an edit waiting for
-  review), `Flag` («Reportar un error»), `Notification`, `ProblemImage` (a
+  review), `Flag` (a suggestion, «Sugerir un cambio»), `ContentReport` (a problem
+  or lesson reported with «Reportar»), `Notification`, `ProblemImage` (a
   problem picture, stored as WebP in the database), `ContentRevision` (a
-  direct change by an editor or admin, with each field before and after),
+  direct change by an editor or admin, with each field before and after, or a
+  decision taken in Revisión),
   `ContactMessage`.
 - **Users** (`User`) have one role: `user`, `editor` or `admin`.
 

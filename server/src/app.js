@@ -26,6 +26,7 @@ import listsRoutes from './routes/lists.routes.js'
 import examsRoutes from './routes/exams.routes.js'
 import pathsRoutes from './routes/paths.routes.js'
 import reportsRoutes from './routes/reports.routes.js'
+import contentReportsRoutes from './routes/contentReports.routes.js'
 import submissionsRoutes from './routes/submissions.routes.js'
 import flagsRoutes from './routes/flags.routes.js'
 import notificationsRoutes from './routes/notifications.routes.js'
@@ -115,6 +116,7 @@ app.use('/api/collections', collectionsRoutes)
 app.use('/api/lists', listsRoutes)
 app.use('/api/exams', examsRoutes)
 app.use('/api/paths', pathsRoutes)
+app.use('/api/reports/content', contentReportsRoutes)
 app.use('/api/reports', reportsRoutes)
 app.use('/api/submissions', submissionsRoutes)
 app.use('/api/flags', flagsRoutes)

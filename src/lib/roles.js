@@ -24,6 +24,19 @@ export function isAtLeast(role, minimum) {
   return ROLES.indexOf(normalizeRole(role)) >= ROLES.indexOf(minimum)
 }
 
+// Same split as server/src/lib/permissions.js:
+//   user   → sugerir un cambio, reportar, comentar, proponer
+//   editor → Moderación (comments:moderate, reports:moderate) y Revisión
+//            (submissions:review, folders:review, suggestions:review)
+//   admin  → + Usuarios, Cambios de editores, restaurar lo borrado
 export function canModerate(role) {
   return isAtLeast(role, 'editor')
+}
+
+export function canReview(role) {
+  return isAtLeast(role, 'editor')
+}
+
+export function canRestore(role) {
+  return isAtLeast(role, 'admin')
 }

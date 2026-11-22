@@ -3,10 +3,10 @@
 //
 //   npm run review -- list                       pending problems, pending folders, open flags
 //   npm run review -- show <id|U-00001>          one submission in full (with the diff for edits)
-//   npm run review -- approve <id> --as <admin> [--topics "Álgebra,Geometría"] [--tags "Paridad"]
+//   npm run review -- approve <id> --as <editor or admin> [--topics "Álgebra,Geometría"] [--tags "Paridad"]
 //        [--folder "OMM › 2024" | --not-exam] [--number 3] [--title "…"] [--difficulty basico]
 //        [--attribution "…"]
-//   npm run review -- reject <id> --as <admin> --reason "…"
+//   npm run review -- reject <id> --as <editor or admin> --reason "…"
 //   npm run review -- folders | approve-folder <id|path> | reject-folder <id|path> --reason "…"
 //        | rename-folder <id|path> --name "…"
 //   npm run review -- flags [--status open] | resolve-flag <id> [--note "…"] | dismiss-flag <id> [--note "…"]
