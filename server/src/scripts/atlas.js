@@ -27,6 +27,7 @@ export const TOOLS = {
   'set-role': { script: 'promote-user.js', uriVar: 'MONGO_ROLE_URI', confirmVar: 'ROLE_CHANGE_CONFIRM' },
   'revise-theory': { script: 'revise-theory-lessons.js', uriVar: 'MONGO_REVISION_URI', confirmVar: 'REVISION_DATABASE_CONFIRM' },
   import: { script: 'import-mvp-content.js', uriVar: 'MONGO_CONTENT_IMPORT_URI', confirmVar: 'CONTENT_IMPORT_CONFIRM' },
+  'sync-exams': { script: 'sync-exam-folders.js', uriVar: 'MONGO_EXAM_SYNC_URI', confirmVar: 'EXAM_SYNC_CONFIRM' },
 }
 
 export class AtlasError extends Error {}

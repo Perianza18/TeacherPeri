@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
-import { LIBRARY_BASE } from '../../lib/libraryPaths'
+import { LIBRARY_BASE, examTitle } from '../../lib/libraryPaths'
 import MathText from '../math/MathText'
 import PageHero from '../PageHero'
 import { GlyphTile } from '../decor/Decor'
@@ -19,7 +19,7 @@ const LOOK = {
 }
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-coral', 'Teoría de Números': 'bg-tp-mint' }
 const CHIP = 'cursor-pointer rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1 text-xs font-semibold transition-colors hover:bg-tp-yellow-soft has-[:checked]:bg-tp-yellow'
-const titleOf = (type, item) => type === 'exams' ? `${item.competition} ${item.year} · ${item.round}` : item.title || item.titulo
+const titleOf = (type, item) => type === 'exams' ? examTitle(item) : item.title || item.titulo
 
 export default function LibraryCollection({ type, title, subtitle, onOpen, eyebrow = 'Zona de Entrenamiento', headerAction = null }) {
   const location = useLocation()

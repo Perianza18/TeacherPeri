@@ -24,6 +24,7 @@ import { can, roleOf } from '../permissions.js'
 import { folderPath, parseFolderName } from '../examFolders.js'
 import { derivedProblemFields, proposalFromProblem, statementImages, vocabulary } from '../submissions.js'
 import { imageUrl } from '../images.js'
+import { examFolderMap, examFoldersOfProblem, folderAndDescendants, syncFolderExams, syncProblemExams } from '../examSync.js'
 import { hasErrors, runSubmissionChecks } from './checks.js'
 
 export class ReviewError extends Error {
@@ -235,10 +236,13 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
     approvedAt: problem.approvedAt || new Date(),
   }
   const folders = pendingAncestors(proposal.examFolder, ctx)
+  const before = problem.toObject()
+  const examFolderIds = [...examFoldersOfProblem(before, ctx.foldersById), ...(proposal.isExam && proposal.examFolder ? [String(proposal.examFolder)] : [])]
   const changes = [
     ...folders.map((folder) => `approve exam folder «${folderPath(folder._id, ctx.foldersById).join(' › ')}»`),
     `${submission.kind === 'edit' ? 'apply the change to' : 'publish'} ${problem.codigo} «${update.titulo}»`,
     ...Object.entries(fixes).filter(([, value]) => value !== undefined && value !== false).map(([key, value]) => `reviewer fix ${key}: ${Array.isArray(value) ? value.join(', ') : value}`),
+    ...[...new Set(examFolderIds)].map((id) => `update the Exámenes card of «${folderPath(id, ctx.foldersById).join(' › ')}»`),
     `mark submission ${submission._id} approved and notify ${author?.username ?? 'the author'}`,
   ]
   if (apply) {
@@ -246,6 +250,7 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
     for (const folder of folders) await Category.updateOne({ _id: folder._id, reviewStatus: 'pending' }, { reviewStatus: 'approved', reviewedBy: reviewer._id, reviewedAt: now })
     problem.set(update)
     await problem.save()
+    await syncProblemExams(before, problem)
     submission.set({ status: 'approved', proposed: proposal, reviewedBy: reviewer._id, reviewedAt: now, checks: findings })
     await submission.save()
     await notify(submission.author, 'submission-approved', problem, submission.kind === 'edit' ? `Tus cambios a ${problem.codigo} ya están publicados.` : `Tu problema ${problem.codigo} fue aprobado y ya está publicado.`)
@@ -316,11 +321,13 @@ export async function renameFolder({ ref, name, reviewer, apply = false }) {
   if (parsed.error) throw new ReviewError(parsed.error)
   const { folder, ctx } = await findFolder(ref)
   const before = folderPath(folder._id, ctx.foldersById).join(' › ')
-  const changes = [`rename «${before}» to «${parsed.name}»`, 'titles of problems already published in this folder keep their old text until they are edited']
+  const changes = [`rename «${before}» to «${parsed.name}»`, 'titles of problems already published in this folder keep their old text until they are edited', 'the Exámenes cards of this folder and the ones inside it take the new name']
   if (apply) {
     const doc = await Category.findById(folder._id)
     doc.name = parsed.name
     await doc.save()
+    const map = await examFolderMap()
+    await syncFolderExams(folderAndDescendants(folder._id, map), { foldersById: map })
   }
   return { mode: apply ? 'applied' : 'dry-run', changes }
 }
@@ -374,6 +381,7 @@ export async function restoreProblem({ ref, reviewer, apply = false }) {
   if (apply) {
     problem.set({ deletedAt: null, deletedBy: null, publicationStatus: status })
     await problem.save()
+    await syncProblemExams(null, problem)
     if (reopen) {
       reopen.status = 'pending'
       await reopen.save()

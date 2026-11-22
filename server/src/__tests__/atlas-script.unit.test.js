@@ -35,6 +35,8 @@ describe('atlas wrapper', () => {
     expect(dry.env.ATLAS_TEST_URI).toBeUndefined()
     const apply = toolEnv({ ATLAS_PROD_URI: prod }, 'prod', 'review', ['approve', 'U-00001', '--apply'])
     expect(apply.env.REVIEW_DATABASE_CONFIRM).toBe('teacherperi_prod')
+    const sync = toolEnv({ ATLAS_TEST_URI: test }, 'test', 'sync-exams', ['--apply'])
+    expect(sync.env).toMatchObject({ MONGO_EXAM_SYNC_URI: test, EXAM_SYNC_CONFIRM: 'teacherperi' })
     expect(() => toolEnv({ ATLAS_TEST_URI: test }, 'test', 'drop', [])).toThrow(/Unknown tool/)
   })
 })
