@@ -12,7 +12,13 @@ servidor revisa el rol en cada petición; el sitio solo esconde botones.
 | **Admin** | + restaurar problemas borrados; nombrar editores; recibir aviso cuando un editor cambia o revisa algo | Hecho, salvo restaurar: Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) y un aviso por cada cambio o decisión de revisión de un editor. Restaurar problemas borrados sigue siendo solo `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
 Insignias de rol: los comentarios muestran «Editor» o «Admin» junto al nombre de
-usuario. Los usuarios normales no llevan insignia.
+usuario. Los usuarios normales no llevan insignia. Los perfiles muestran cada rol como
+etiqueta (Usuario, Editor, Admin), y editores y admins ganan una insignia de rol
+en Insignias.
+
+Los perfiles tienen privacidad fija, igual para todos los roles: el correo,
+Actividad, Mis envíos y las listas privadas son solo para su dueño, también
+frente a editores y admins. Ver [PROFILES.md](PROFILES.md).
 
 ## Dónde está en el código
 

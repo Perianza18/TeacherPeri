@@ -35,7 +35,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Ruta OMM: Preparación (18 lecciones) y Ciclo 1 (17 lecciones) | Hecho | |
 | Ruta OMM: Ciclo 2 | Parcial | Hay 2 de 13 lecciones (aritmética modular y congruencias lineales). Las demás muestran «Próximamente» |
 | Ruta OMM: Ciclos 3 a 5 | Planeado | **Hoy:** sus títulos muestran «Próximamente» |
-| Seguir una Ruta, guardarla para después | Planeado | Parte de Mi Espacio. **Hoy:** solo se guardan los pasos completados |
+| Seguir una Ruta, guardarla para después | Planeado | Parte de Mi Espacio. **Hoy:** solo se guardan los pasos completados; las lecciones se pueden guardar en listas personales |
 | Ruta Universidad (aplicar a universidades de EE. UU. y Canadá) | Planeado | Usará el mismo motor de Rutas. **Hoy:** `/estudia-en-el-extranjero` es una página «Próximamente» («Universidad» en el pie de página) |
 
 ## Entrenamiento (bibliotecas)
@@ -61,13 +61,13 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Función | Estado | Notas |
 | --- | --- | --- |
 | Listas seleccionadas dentro de Entrenamiento, en dos pestañas | Hecho | «Listas» (`/entrenamiento/listas`): las 6 listas de problemas de TeacherPeri, con búsqueda y filtros. «Recursos externos» (`/entrenamiento/recursos`): los 3 enlaces a otras organizaciones (OMM, IMO, NRICH), solo con búsqueda. El menú principal ya no tiene «Listas»; los enlaces viejos `/listas` redirigen |
-| Listas personales («Guardar en lista») | Planeado | Parte de Mi Espacio. **Hoy:** no se pueden guardar problemas ni lecciones |
+| Listas personales («Guardar en lista») | Hecho | En la página del problema, la ventana del problema y las lecciones: marca tus listas o crea una. Privadas salvo que se marquen «Pública»; se renombran, se hacen públicas o privadas y se borran en Mi Espacio › Listas; cada lista en `/perfil/<usuario>/listas/<id>`. Solo problemas y lecciones; las publicaciones de Experiencias y otro contenido vendrán después. Ver [PROFILES.md](PROFILES.md#listas-guardar-en-lista) |
 
 ## Comunidad
 
 | Función | Estado | Notas |
 | --- | --- | --- |
-| Comentarios en problemas: respuestas hasta 3 niveles, matemáticas con `$...$`, insignias de rol | Hecho | |
+| Comentarios en problemas: respuestas hasta 3 niveles, matemáticas con `$...$`, insignias de rol | Hecho | Se ven en la ventana del problema y, desde Mi Espacio, también en la página del problema. Cada comentario tiene un enlace (`#comentario-<id>`) que baja hasta él y lo resalta. Los nombres de usuario llevan a su perfil |
 | Reportar un comentario; borrar un comentario con motivo | Hecho | Cada quien borra sus comentarios. Editores y admins borran cualquiera y deben dar un motivo |
 | Botones «@ Mencionar» y «Enlazar problema» en la caja de comentarios | Planeado | **Hoy:** la caja solo tiene el botón «$ LaTeX» |
 | Figuras en los comentarios | Planeado | **Hoy:** solo texto y matemáticas |
@@ -80,7 +80,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Revisión automática al proponer un problema | Planeado | **Hoy:** al guardar corren revisiones automáticas; un editor o admin aprueba o rechaza en `/panel/revision` (o con `npm run review`) |
 | Página de moderación para reportes de contenido inapropiado | Hecho | `/panel/moderacion`, editores y admins. Solo reportes: comentarios, y problemas y lecciones reportados con «Reportar». Un problema o lección reportado enlaza a la página y a «Editar», y se marca como resuelto o descartado con una nota opcional. Los comentarios reportados se descartan con nota o se eliminan con motivo. Filtros: abiertos, resueltos, descartados. Las correcciones de contenido no están aquí: van a Revisión |
 | Sugerir cambios a problemas y lecciones oficiales | Hecho | «Sugerir un cambio» (solo mensaje). Editores y admins las ven en Revisión, abren desde ahí «Editar problema» o «Editar lección» y marcan cada una como «Aplicada» o «Descartar» con una nota opcional |
-| Seguir a otros usuarios | Planeado | |
+| Seguir a otros usuarios | Hecho | «Seguir» / «Siguiendo» en un perfil; listas de seguidores y seguidos en cada perfil. Aún no hay aviso de nuevos seguidores |
 | Hilos (un foro aparte de los comentarios de los problemas) | Planeado | **Hoy:** la conversación ocurre solo en los comentarios de cada problema |
 
 ## Cuentas y roles
@@ -99,10 +99,11 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 
 | Función | Estado | Notas |
 | --- | --- | --- |
-| Perfil con parte pública (usuario, avatar, rol, insignias, comentarios) y privada (correo, listas) | Planeado | **Hoy:** el menú del avatar tiene «Mis envíos», notificaciones y «Cerrar sesión» |
-| Rutas que sigues, cosas guardadas, «continúa donde te quedaste» | Planeado | |
-| Avatares prediseñados | Planeado | **Hoy:** el avatar es la primera letra del nombre de usuario |
-| Insignias ganadas | Planeado | |
+| Página de perfil `/perfil/<usuario>` («Mi Espacio» en el menú del avatar) | Hecho | Tarjeta del perfil, «En números» y pestañas: Actividad, Comentarios, Listas, Mis envíos, Insignias. Los visitantes solo ven Comentarios, Listas e Insignias. El servidor solo manda al dueño el correo, la Actividad, Mis envíos y las listas privadas. Ver [PROFILES.md](PROFILES.md) |
+| «Editar perfil»: avatares prediseñados y una descripción corta | Hecho | 12 avatares prediseñados (sin fotos) y hasta 160 caracteres. Se ven en la barra, en los comentarios y en las listas de seguidores |
+| «Lo resolví» en los problemas | Hecho | El estudiante marca un problema como resuelto (nada revisa la respuesta). Cuenta como «problemas resueltos» |
+| Insignias ganadas | Hecho | Problemas resueltos (1/10/50), comentarios (1/10/50), problemas aceptados (1/5/20), sugerencias aplicadas (1/5/20), y Editor/Admin. Nunca se pierden. Ver [PROFILES.md](PROFILES.md#lo-resolví-e-insignias) |
+| Rutas que sigues, «continúa donde te quedaste» | Planeado | **Hoy:** Actividad muestra tus comentarios, cosas guardadas, problemas resueltos, propuestas y sugerencias recientes |
 
 ## Otras páginas
 

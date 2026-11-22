@@ -84,6 +84,7 @@ All routes are in `src/App.jsx`. Every visible text is in Spanish.
 | `/entrenamiento/recursos`, `/entrenamiento/recursos/:id` | «Recursos externos» tab: links to other publishers (OMM, IMO, NRICH), and a resource page |
 | `/listas`, `/listas/:id` | Old addresses: redirect to `/entrenamiento/listas` |
 | `/mis-envios`, `/mis-envios/:id` | The user's proposals, and the page to edit one |
+| `/perfil/:username`, `/perfil/:username/listas/:id` | Mi Espacio: a profile (tabs in `?tab=`, follower lists in `?ver=`) and one personal list (see [PROFILES.md](PROFILES.md)) |
 | `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Team pages for editors and admins (see [ROLES.md](ROLES.md#where-the-team-pages-are)) |
 | `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Team pages for admins only |
 | `/recursos` | External resources |
@@ -113,7 +114,10 @@ needs a signed-in user, and the server checks the role on every request (see
 | `/api/reports` | Editors and admins: `GET /`, `POST /comments/:commentId/dismiss` (with an optional `note`) |
 | `/api/reports/content` | Signed in: `POST /` («Reportar» a problem or lesson). Editors and admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Signed in: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
-| `/api/flags` | Suggestions. Signed in: `POST /`. Editors and admins: `GET /`, `POST /:id/status` |
+| `/api/flags` | Suggestions. Signed in: `POST /`, `GET /mine` (your own). Editors and admins: `GET /`, `POST /:id/status` |
+| `/api/profiles` | Public: `GET /:username` (`email` only for the owner), `GET /:username/followers`, `/following`, `/comments`, `/lists` (private lists only for the owner), `/badges`. Owner only: `GET /:username/activity` (404 for anyone else). Signed in: `PUT /me` (`avatar`, `bio`), `PUT`/`DELETE /:username/follow` |
+| `/api/my-lists` | Personal lists. Signed in: `GET /containing?itemType=&item=`, `POST /`. Owner: `PATCH /:id`, `DELETE /:id`, `POST /:id/items`, `DELETE /:id/items/:itemType/:item`. `GET /:id`: the owner, or anyone if the list is public (otherwise 404) |
+| `/api/problems/:problemId/solved` | Signed in: `GET`, `PUT`, `DELETE` («Lo resolví») |
 | `/api/notifications` | Signed in: `GET /`, `POST /read` |
 | `/api/editor` | Editors and admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |
 | `/api/review` | Editors and admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
@@ -158,7 +162,11 @@ Models live in `server/src/models/`.
   direct change by an editor or admin, with each field before and after, or a
   decision taken in Revisión),
   `ContactMessage`.
-- **Users** (`User`) have one role: `user`, `editor` or `admin`.
+- **Users** (`User`) have one role: `user`, `editor` or `admin`, plus a preset
+  `avatar` and a short `bio`.
+- **Mi Espacio:** `Follow` (who follows whom), `UserList` and `UserListItem`
+  (personal lists of problems and lessons), `ProblemSolve` («Lo resolví») and
+  `UserBadge` (earned badges, never removed). See [PROFILES.md](PROFILES.md).
 
 ## Safety rules built into the code
 
