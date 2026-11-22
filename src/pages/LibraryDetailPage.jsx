@@ -6,6 +6,9 @@ import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
 import PageFeedback from '../components/PageFeedback'
+import CommentSection from '../components/comments/CommentSection'
+import SaveToListButton from '../components/profile/SaveToListButton'
+import SolvedToggle from '../components/profile/SolvedToggle'
 import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
 import { loadLessonBoxes } from '../lib/lessonBoxes'
 import { hintLabel, splitHints } from '../lib/hints'
@@ -111,7 +114,7 @@ export default function LibraryDetailPage({ type }) {
   const { id } = useParams()
   const location = useLocation()
   const config = CONFIG[type]
-  const { auth } = useAuth()
+  const { auth, logout, abrirModal } = useAuth()
   const traversal = new URLSearchParams(location.search).get('ruta') || ''
   const context = traversal ? `?ruta=${encodeURIComponent(traversal)}` : ''
   const key = `${type}:${id}:${traversal}`
@@ -206,8 +209,18 @@ export default function LibraryDetailPage({ type }) {
         <Hints hint={item.hint} />
         {(item.solution || byPlacement(item.images, 'solution').length > 0) && <Solution solution={item.solution} images={item.images} />}
         {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
-          <PageFeedback targetType="problem" targetId={item._id} />
+          <SolvedToggle problemId={item._id} />
+          <SaveToListButton itemType="problem" itemId={item._id} />
           {canEdit(auth) && <Link to={editProblemPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar problema</Link>}
+          <PageFeedback targetType="problem" targetId={item._id} />
+        </div>}
+        {type === 'problemas' && <div className="border-t-2 border-dashed border-tp-rule pt-8">
+          <CommentSection
+            problemId={item._id}
+            auth={auth}
+            onAuthExpired={logout}
+            signIn={<div className="tp-card-quiet flex flex-wrap items-center gap-3 bg-tp-surface p-4"><p className="text-sm text-tp-ink-soft">Entra a tu cuenta para comentar.</p><button type="button" onClick={() => abrirModal()} className="tp-button bg-tp-mint px-4 text-sm font-bold text-tp-ink">Entrar</button></div>}
+          />
         </div>}
 
         {item.instructions && <p className="tp-card-quiet whitespace-pre-wrap bg-tp-yellow-soft p-5 leading-7">{item.instructions}</p>}

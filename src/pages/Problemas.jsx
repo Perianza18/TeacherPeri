@@ -9,6 +9,8 @@ import MathText from '../components/math/MathText'
 import ProblemImages from '../components/images/ProblemImages'
 import LibraryCollection from '../components/training/LibraryCollection'
 import CommentSection from '../components/comments/CommentSection'
+import SaveToListButton from '../components/profile/SaveToListButton'
+import SolvedToggle from '../components/profile/SolvedToggle'
 import { PROPOSE_PATH } from '../lib/submissions'
 // Header color per area, the same as the library card strips.
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
@@ -150,6 +152,11 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
           <div className="tp-card-quiet mb-6 bg-tp-surface p-5">
             <MathText text={problema.enunciado} className="tp-reading-text whitespace-pre-line" />
             <ProblemImages images={problema.images} className="mt-4" />
+          </div>
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <SolvedToggle problemId={problema._id} />
+            <SaveToListButton itemType="problem" itemId={problema._id} />
+            <Link to={`/entrenamiento/problemas/${problema._id}`} className="inline-flex min-h-11 items-center px-1 text-sm font-semibold text-tp-ink underline decoration-tp-violet decoration-2 underline-offset-4">Abrir página del problema</Link>
           </div>
 
           <CommentSection

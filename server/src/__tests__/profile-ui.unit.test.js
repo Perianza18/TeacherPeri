@@ -1,0 +1,39 @@
+import { describe, it, expect } from 'vitest'
+import { nextTabIndex, plural, profilePath, relativeTime, tabsFor } from '../../../src/lib/profile.js'
+import { AVATARS } from '../../../src/lib/avatars.js'
+import { AVATAR_IDS } from '../lib/profile.js'
+
+describe('Mi Espacio en el sitio', () => {
+  it('visitantes ven Comentarios, Listas e Insignias; el dueño ve las cinco pestañas', () => {
+    expect(tabsFor(false).map((t) => t.label)).toEqual(['Comentarios', 'Listas', 'Insignias'])
+    expect(tabsFor(true).map((t) => t.label)).toEqual(['Actividad', 'Comentarios', 'Listas', 'Mis envíos', 'Insignias'])
+    expect(tabsFor(true).every((t) => !/text-white/.test(t.color))).toBe(true)
+  })
+
+  it('flechas, Inicio y Fin recorren las pestañas en círculo', () => {
+    expect(nextTabIndex('ArrowRight', 4, 5)).toBe(0)
+    expect(nextTabIndex('ArrowLeft', 0, 5)).toBe(4)
+    expect(nextTabIndex('Home', 3, 5)).toBe(0)
+    expect(nextTabIndex('End', 1, 5)).toBe(4)
+    expect(nextTabIndex('Enter', 1, 5)).toBeNull()
+  })
+
+  it('tiempo relativo en español', () => {
+    const now = Date.UTC(2026, 10, 22, 12)
+    const ago = (ms) => new Date(now - ms)
+    expect(relativeTime(ago(2 * 3600e3), now)).toBe('hace 2 h')
+    expect(relativeTime(ago(26 * 3600e3), now)).toBe('ayer')
+    expect(relativeTime(ago(3 * 86400e3), now)).toBe('hace 3 días')
+    expect(relativeTime(ago(5 * 60e3), now)).toBe('hace 5 min')
+  })
+
+  it('enlaces y plurales', () => {
+    expect(profilePath('ana maría')).toBe('/perfil/ana%20mar%C3%ADa')
+    expect(plural(1, 'elemento', 'elementos')).toBe('1 elemento')
+    expect(plural(3, 'elemento', 'elementos')).toBe('3 elementos')
+  })
+
+  it('el sitio dibuja exactamente los avatares que el servidor acepta', () => {
+    expect(AVATARS.map((a) => a.id)).toEqual([...AVATAR_IDS])
+  })
+})

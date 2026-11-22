@@ -56,6 +56,8 @@
   --tp-mint-soft: #d8f5e8;
   --tp-orange: #ff9f43;
   --tp-orange-soft: #ffe9d2;
+  --tp-coral: #ff7f79;
+  --tp-coral-soft: #ffe4e1;
 
   /* Pastel tints for section headings, numbered circles and card header
      strips, in the guide's rotation order (DESIGN §2). */
@@ -105,6 +107,8 @@
   --color-tp-mint-soft: var(--tp-mint-soft);
   --color-tp-orange: var(--tp-orange);
   --color-tp-orange-soft: var(--tp-orange-soft);
+  --color-tp-coral: var(--tp-coral);
+  --color-tp-coral-soft: var(--tp-coral-soft);
   --color-tp-tint-violet: var(--tp-tint-violet);
   --color-tp-tint-sky: var(--tp-tint-sky);
   --color-tp-tint-orange: var(--tp-tint-orange);
@@ -756,4 +760,41 @@ h2.tp-lesson-heading {
   padding: .35em 0;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+/* Mi Espacio tabs: the colored section-heading labels (DESIGN §4). The
+   active tab lifts with a hard shadow. Text is always ink. */
+.tp-tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border: 2px solid var(--tp-ink);
+  border-radius: 10px;
+  padding: 0 14px;
+  color: var(--tp-ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.tp-tab[aria-selected="true"] {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--tp-ink);
+}
+
+/* A comment opened from a link (#comentario-…) glows for a moment. */
+@keyframes tp-flash {
+  0%, 60% { background-color: var(--tp-yellow-soft); }
+  100% { background-color: transparent; }
+}
+
+.tp-flash {
+  border-radius: 12px;
+  animation: tp-flash 2.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-tab { transition: none; }
+  .tp-flash { animation: none; background-color: var(--tp-yellow-soft); }
 }

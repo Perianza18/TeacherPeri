@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
 import PageFeedback from '../PageFeedback'
+import SaveToListButton from '../profile/SaveToListButton'
 import ArticleText from '../training/ArticleText'
 import PracticeBox from '../content/PracticeBox'
 import RichText from '../content/RichText'
@@ -238,7 +239,6 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
   const ruta = useMemo(() => (route ? buildRutaContext(route, ancestors) : null), [route, ancestors])
   const strip = ruta?.strip || null
   const completion = useStepCompletion(strip)
-  const [notice, setNotice] = useState('')
   // Bumped each time the reader marks the step complete, to replay «¡Listo!».
   const [celebration, setCelebration] = useState(0)
   const markStep = async () => { if (await completion.toggle()) setCelebration((count) => count + 1) }
@@ -290,9 +290,9 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
                   </button>
                 </span>
               )}
-              <button type="button" onClick={() => setNotice('Próximamente podrás guardar lecciones en tus listas.')} className="inline-flex min-h-11 items-center rounded-xl border-2 border-tp-ink bg-tp-surface px-4 font-bold">Guardar en lista</button>
+              {item._id && <SaveToListButton itemType="theory" itemId={item._id} className="text-[15px]" />}
             </div>
-            <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error || notice}</p>
+            <p aria-live="polite" className="text-sm text-tp-ink-muted">{completion.error}</p>
             <PageFeedback targetType="theory" targetId={item._id} />
             {canEdit(auth) && item._id && <div><Link to={editLessonPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar lección</Link></div>}
           </div>
