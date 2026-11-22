@@ -110,6 +110,24 @@ export async function descendantTopicIds(ids) {
   return [...seen]
 }
 
+// ?area=<name>: one área («Geometría») with all its subtemas. Matches the
+// Topic tree, and also the older `tema` field, so databases from before
+// Topics existed still filter by área.
+export async function areaCondition(name) {
+  const root = await Topic.findOne({ parent: null, name }).select('_id').lean()
+  const ids = root ? await descendantTopicIds([root._id]) : []
+  return { $or: [{ topics: { $in: ids } }, { tema: name }] }
+}
+
+export function areaOrBadRequest(res, value) {
+  if (value === undefined || value === '') return ''
+  if (typeof value !== 'string' || value.length > 80) {
+    res.status(400).json({ error: 'El filtro area es inválido.' })
+    return null
+  }
+  return value.trim()
+}
+
 // ?source= on Lists: TeacherPeri's own lists, or links to other publishers.
 const TEACHERPERI = 'TeacherPeri'
 export const LIST_SOURCES = {

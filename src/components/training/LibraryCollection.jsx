@@ -9,10 +9,8 @@ import PeriPenguin from '../decor/PeriPenguin'
 import { SkeletonGrid } from '../Skeleton'
 import FolderFilter from './FolderFilter'
 import { useAreaTree } from './filters/areaTree'
-import { ActiveFilters, KeywordSearch } from './filters/FilterParts'
-import OptionTree from './filters/OptionTree'
-import OptionSteps from './filters/OptionSteps'
-import DevViewSwitcher from './filters/DevViewSwitcher'
+import { ActiveFilters } from './filters/FilterParts'
+import AreaFilters from './filters/AreaFilters'
 import { usePageMeta } from '../../hooks/usePageMeta'
 
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
@@ -25,7 +23,7 @@ const LOOK = {
 }
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
 const CHIP = 'cursor-pointer rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1 text-xs font-semibold transition-colors hover:bg-tp-yellow-soft has-[:checked]:bg-tp-yellow'
-const EMPTY_FILTERS = { q: '', topics: '', tags: '', level: '', categories: [], year: [], subject: [], type: [] }
+const EMPTY_FILTERS = { q: '', area: '', topics: '', tags: '', level: '', categories: [], year: [], subject: [], type: [] }
 const titleOf = (type, item) => type === 'exams' ? examTitle(item) : item.title || item.titulo
 
 // What each library tells search engines (usePageMeta).
@@ -44,7 +42,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const external = source === 'external'
   usePageMeta(PAGE_META[external ? 'resources' : type] || { title, description: subtitle })
   const location = useLocation()
-  const [filters, setFilters] = useState({ q: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
+  const [filters, setFilters] = useState({ q: '', area: '', topics: new URLSearchParams(location.search).get('topics') || '', tags: '', level: '', categories: [], year: [], subject: [], type: [] })
   const [page, setPage] = useState(1)
   const [folder, setFolder] = useState(null)
   const [metadata, setMetadata] = useState({ categories: [], topics: [], tags: [], facets: {} })
@@ -54,12 +52,12 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const change = (field, value) => { setFilters((current) => ({ ...current, [field]: value })); setPage(1) }
   const navigateFolder = (id) => { setFolder(id); setPage(1) }
   const clearAll = () => { setFilters(EMPTY_FILTERS); navigateFolder(null) }
-  // Filter design proposals, only in `npm run dev` (?vista=a or ?vista=b):
-  // an área tree (Área › subtema) instead of «Tema curricular» + «Etiqueta».
-  const vista = import.meta.env.DEV ? new URLSearchParams(location.search).get('vista') : null
-  const treeLibrary = ['problems', 'theory', 'lists'].includes(type) && !external ? type : null
-  const option = treeLibrary && ['a', 'b'].includes(vista) ? vista : null
-  const tree = useAreaTree(option ? treeLibrary : null, source)
+  // Área (by name) and subtema (Topic id) change together.
+  const choose = (area, topics) => { setFilters((current) => ({ ...current, area, topics })); setPage(1) }
+  // Problemas, Teoría and Listas filter by Área › subtema and «Palabras
+  // clave». Exámenes and Recursos externos keep the simple search.
+  const areaLibrary = ['problems', 'theory', 'lists'].includes(type) && !external ? type : null
+  const tree = useAreaTree(areaLibrary, source)
 
   useEffect(() => {
     let cancelled = false
@@ -98,7 +96,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const base = external ? LIBRARY_BASE.resources : LIBRARY_BASE[type]
   // The result count, cards and pages; `resultsTop` and `grid` fit each layout.
   const resultsBlock = (resultsTop, grid) => <>
-    <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : `${results.total} resultados`}</div>
+    <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : results.total === 1 ? '1 resultado' : `${results.total} resultados`}</div>
     {loading && <SkeletonGrid count={6} className={`mt-5 grid gap-6 ${grid}`} />}
     {!loading && !results.error && !results.total && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><PeriPenguin question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
     {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{results.items.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
@@ -122,20 +120,12 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
       {headerAction && <div className="pt-1">{headerAction}</div>}
     </PageHero>
     <section className="tp-container pb-24 pt-10">
-    {option === 'a' && <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
-      <OptionTree tree={tree} filters={filters} change={change} categories={metadata.categories} showFolders={type === 'problems'} />
-      <div className="min-w-0">
-        <div className="tp-card-soft bg-tp-surface p-5"><KeywordSearch value={filters.q} onChange={(value) => change('q', value)} tree={tree} onPickTopic={(id) => { change('topics', id); change('q', '') }} /></div>
-        <div className="mt-5"><ActiveFilters tree={tree} filters={filters} categories={metadata.categories} change={change} onClear={clearAll} /></div>
-        {resultsBlock('mt-6', 'sm:grid-cols-2')}
-      </div>
-    </div>}
-    {option === 'b' && <>
-      <OptionSteps tree={tree} filters={filters} change={change} categories={metadata.categories} showFolders={type === 'problems'} />
-      <div className="mt-6"><ActiveFilters tree={tree} filters={filters} categories={metadata.categories} change={change} onClear={clearAll} /></div>
+    {areaLibrary && <>
+      <AreaFilters tree={tree} filters={filters} change={change} choose={choose} categories={metadata.categories} showFolders={type === 'problems'} />
+      <div className="mt-6"><ActiveFilters tree={tree} filters={filters} categories={metadata.categories} change={change} choose={choose} onClear={clearAll} /></div>
       {resultsBlock('mt-8', 'sm:grid-cols-2 xl:grid-cols-3')}
     </>}
-    {!option && <>
+    {!areaLibrary && <>
     <div className="tp-card-soft bg-tp-surface p-5 sm:p-6">
       <label className="text-sm font-bold text-tp-ink">Buscar en {title.toLowerCase()}<input type="search" value={filters.q} onChange={(e) => change('q', e.target.value)} placeholder={external ? 'Nombre o tema del recurso' : 'Título, tema o palabra clave'} className="tp-input mt-2 bg-tp-paper" /></label>
       {!external && <><div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -153,7 +143,6 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
     </nav>}
     {resultsBlock('mt-10', 'sm:grid-cols-2 xl:grid-cols-3')}
     </>}
-    {import.meta.env.DEV && treeLibrary && <DevViewSwitcher current={option} />}
     </section>
   </>
 }

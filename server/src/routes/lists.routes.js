@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import List from '../models/List.js'
-import { LIST_SOURCES, descendantCategoryIds, descendantTopicIds, populatedProblems, difficultyOrBadRequest, idsOrBadRequest, keywordConditions, paginatedResponse, populatedContent, validObjectId } from './library.utils.js'
+import { LIST_SOURCES, descendantCategoryIds, areaCondition, areaOrBadRequest, descendantTopicIds, populatedProblems, difficultyOrBadRequest, idsOrBadRequest, keywordConditions, paginatedResponse, populatedContent, validObjectId } from './library.utils.js'
 
 const router = Router()
 const published = { publicationStatus: 'published' }
@@ -16,6 +16,8 @@ router.get('/', async (req, res) => {
   if (!topics || !tags || !categories) return
   const level = difficultyOrBadRequest(res, req.query.level, 'level')
   if (level === undefined) return
+  const area = areaOrBadRequest(res, req.query.area)
+  if (area === null) return
   const filter = { ...published }
   if (topics.length) filter.topics = { $in: await descendantTopicIds(topics) }
   if (tags.length) filter.tags = { $in: tags }
@@ -23,6 +25,7 @@ router.get('/', async (req, res) => {
   if (level) filter.level = level
   filter.$and = [
     ...(source ? [SOURCES[source]] : []),
+    ...(area ? [await areaCondition(area)] : []),
     ...(req.query.q ? await keywordConditions(req.query.q, ['title', 'summary', 'sourceOrganization']) : []),
   ]
   if (!filter.$and.length) delete filter.$and

@@ -90,8 +90,13 @@ describe('publication visibility', () => {
     await problemFixture({ codigo: 'AR-2', topics: [] })
     const items = (await request(app).get(`/api/problems?limit=20&topics=${algebra._id}`)).body.items
     expect(items.map((item) => item._id)).toEqual([onlySub._id.toString()])
+    // ?area= finds the Topic tree and also problems with only the old `tema`.
+    const oldStyle = await problemFixture({ codigo: 'AR-3', tema: 'Álgebra', topics: [] })
+    const byArea = (await request(app).get(`/api/problems?limit=20&area=${encodeURIComponent('Álgebra')}`)).body.items.map((item) => item._id).sort()
+    expect(byArea).toEqual(expect.arrayContaining([onlySub._id.toString(), oldStyle._id.toString()]))
     const counts = await request(app).get('/api/topics/counts?library=problems')
-    expect(counts.body).toMatchObject({ [algebra._id]: 1, [sequences._id]: 1 })
+    expect(counts.body.topics).toMatchObject({ [algebra._id]: 1, [sequences._id]: 1 })
+    expect(counts.body.areas['Geometría']).toBe(0)
     expect((await request(app).get('/api/topics/counts?library=otra')).status).toBe(400)
   })
 
