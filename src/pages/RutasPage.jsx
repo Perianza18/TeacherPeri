@@ -8,6 +8,7 @@ import { SkeletonGrid } from '../components/Skeleton'
 import PeriPenguin from '../components/decor/PeriPenguin'
 import RouteGraph from '../components/decor/RouteGraph'
 import { apiFetch } from '../lib/api'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 const LEVEL_LABELS = { introductorio: 'Introductorio', omm: 'OMM', avanzado: 'Avanzado' }
 
@@ -20,6 +21,7 @@ const CARD_TONES = [
 ]
 
 export default function RutasPage() {
+  usePageMeta({ title: 'Rutas de entrenamiento para la olimpiada', description: 'Rutas para prepararte para la olimpiada de matemáticas: recorridos en orden que conectan teoría, problemas y exámenes. Tú eliges el ritmo.' })
   const [query, setQuery] = useState('')
   const [tag, setTag] = useState('')
   const [results, setResults] = useState({ requestKey: null, items: [], error: null })

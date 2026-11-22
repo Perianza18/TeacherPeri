@@ -14,6 +14,7 @@ import { useAuth } from '../context/useAuth'
 import { canEdit, editProblemPath } from '../lib/panel'
 import ProblemImages from '../components/images/ProblemImages'
 import { byPlacement } from '../lib/images'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -148,6 +149,7 @@ export default function LibraryDetailPage({ type }) {
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
   const title = type === 'examenes' && item ? examTitle(item) : item?.title || item?.titulo || item?.codigo
+  usePageMeta({ title, description: item?.summary || item?.enunciado, noindex: Boolean(error) })
   const route = result.key === key ? result.route : null
   const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
 

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import { fadeUp, revealProps, staggerContainer } from '../components/motion/variants'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 // Página 3/8: Más Recursos. Contenido EXACTO pedido, organizado en las
 // categorías dadas. Los href ahora son los reales, dados por el
@@ -104,6 +105,7 @@ function RecursoCard({ recurso }) {
 }
 
 export default function RecursosPage() {
+  usePageMeta({ title: 'Más recursos para la olimpiada', description: 'Una colección curada de sitios, libros y canales para seguir aprendiendo matemáticas olímpicas fuera del banco de problemas de TeacherPeri.' })
   return (
     <>
       <Navbar />

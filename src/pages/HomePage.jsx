@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { useInView } from '../hooks/useInView'
+import { usePageMeta } from '../hooks/usePageMeta'
 import { BubbleTail, Burst, HandArrow, Highlight, Mark, Marquee } from '../components/decor/Decor'
 import PeriPenguin from '../components/decor/PeriPenguin'
 import { useAuth } from '../context/useAuth'
@@ -409,6 +410,7 @@ function SobreTeacherPeri() {
 }
 
 export default function HomePage() {
+  usePageMeta()
   return (
     <>
       <Navbar />

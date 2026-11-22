@@ -3,11 +3,13 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Burst } from '../components/decor/Decor'
 import PeriPenguin from '../components/decor/PeriPenguin'
+import { usePageMeta } from '../hooks/usePageMeta'
 
 // 404: a poster «4✸4» where the zero is a comic starburst and a puzzled
 // penguin stands beside it, the page title
 // for screen readers and search, and three ways back in.
 export default function NotFoundPage() {
+  usePageMeta({ title: 'Página no encontrada', noindex: true })
   return (
     <>
       <Navbar />

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-site-verification" content="tg970AFhIqKQrJ6ZBShnc8iEl6PBnKakc8AsAdqDsWI" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -11,7 +12,47 @@
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>TeacherPeri | Matemáticas Olímpicas</title>
+    <!-- Defaults for search engines and link previews. Each page sets its own
+         title and description while it is open (src/hooks/usePageMeta.js,
+         which repeats these two defaults). The preview card and the site
+         info below use absolute URLs, so they name the live domain. -->
+    <title>TeacherPeri | Material para la olimpiada de matemáticas</title>
+    <meta name="description" content="TeacherPeri: material en español para la olimpiada de matemáticas. Rutas de entrenamiento, problemas, teoría y exámenes para prepararte para la OMM desde cualquier nivel." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TeacherPeri" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:title" content="TeacherPeri | Material para la olimpiada de matemáticas" />
+    <meta property="og:description" content="Rutas de entrenamiento, problemas, teoría y exámenes para prepararte para la olimpiada de matemáticas, en español y desde cualquier nivel." />
+    <meta property="og:image" content="https://teacherperi.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="TeacherPeri, material para la olimpiada de matemáticas: Rutas, Problemas, Teoría y Exámenes, con el pingüino de TeacherPeri." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://teacherperi.vercel.app/#sitio",
+            "name": "TeacherPeri",
+            "alternateName": ["Teacher Peri"],
+            "url": "https://teacherperi.vercel.app/",
+            "inLanguage": "es",
+            "publisher": { "@id": "https://teacherperi.vercel.app/#organizacion" }
+          },
+          {
+            "@type": "EducationalOrganization",
+            "@id": "https://teacherperi.vercel.app/#organizacion",
+            "name": "TeacherPeri",
+            "alternateName": "Teacher Peri",
+            "url": "https://teacherperi.vercel.app/",
+            "logo": "https://teacherperi.vercel.app/logo-512.png",
+            "description": "Material en español para la olimpiada de matemáticas: Rutas de entrenamiento, problemas, teoría y exámenes."
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
