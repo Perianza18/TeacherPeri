@@ -13,7 +13,6 @@ export function KeywordSearch({ value, onChange, tree, onPick, label = 'Palabras
     <div className={className}>
       <label htmlFor={id} className="text-sm font-bold text-tp-ink">{label}</label>
       <input id={id} type="search" value={value} onChange={(e) => onChange(e.target.value)} placeholder="Por ejemplo: triangulo, mcd, paridad" className="tp-input mt-2 bg-tp-paper" autoComplete="off" />
-      <p className="mt-1.5 text-xs text-tp-ink-muted">No importan los acentos ni las mayúsculas.</p>
       {suggestions.length > 0 && (
         <div className="mt-2 flex flex-wrap items-center gap-2" aria-label="Temas que coinciden">
           <span className="text-xs font-bold text-tp-ink-muted">Ir al tema:</span>

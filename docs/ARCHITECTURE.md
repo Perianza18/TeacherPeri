@@ -104,12 +104,12 @@ needs a signed-in user, and the server checks the role on every request (see
 | Route | Endpoints |
 | --- | --- |
 | `/api/auth` | `POST /signup`, `POST /login`, `GET /me` |
-| `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id` |
+| `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id`. In `/api/problems`, `/api/theory` and `/api/lists`: `?q=` ignores accents and capitals and also matches tag and topic names; `?area=<name>` takes an área with all its subtemas (or the older `tema` field); `?topics=` includes subtopics |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
 | `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id`. `GET /api/lists?source=teacherperi` or `?source=external` returns only TeacherPeri lists or only external resources |
 | `/api/collections` | `GET /:slug`: the problem boxes of one lesson. `GET /?codes=A,B`: the problems of a `[[problems:…]]` box |
 | `/api/paths` | `GET /` (also `?traversal=a/b` for a path through several Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
-| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags |
+| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags. `GET /api/topics/counts?library=problems\|theory\|lists` counts items per área and per topic |
 | `/api/reports` | Editors and admins: `GET /`, `POST /comments/:commentId/dismiss` (with an optional `note`) |
 | `/api/reports/content` | Signed in: `POST /` («Reportar» a problem or lesson). Editors and admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Signed in: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
