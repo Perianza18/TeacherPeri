@@ -23,12 +23,13 @@ import porQue from './por-que-hacer-olimpiadas-de-matematicas.js'
 import entrenar from './como-entrenar-para-una-olimpiada.js'
 import abordar from './como-abordar-un-problema.js'
 import introduccionPruebas from './introduccion-a-las-demostraciones.js'
+import escribir from './como-escribir-una-solucion.js'
 
 // Lessons rewritten in the lesson format of the theory page (spec «Página de
 // teoría», Part 2). Each file holds the new summary and text of one lesson,
 // the new banco problems it introduces and the problem collections its boxes
 // point to. mvpLessons.js applies them as the last layer.
-const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas]
+const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir]
 
 export const THEORY_REWRITES = Object.freeze(Object.fromEntries(LESSONS.map((lesson) => [lesson.pathSlug, lesson])))
 
