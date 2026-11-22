@@ -140,7 +140,7 @@ test('lesson wrappers are absent from route discovery', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Factorización e Identidades', exact: true })).toHaveCount(0)
 })
 
-test('exam folders show competitions and their years', async ({ page }) => {
+test('exam folders show competitions and their years', async ({ page }, testInfo) => {
   const folders = [
     { _id: 'root', name: 'Exámenes', kind: 'exam', parent: null },
     { _id: 'omm', name: 'OMM', kind: 'exam', parent: 'root' },
@@ -160,6 +160,10 @@ test('exam folders show competitions and their years', async ({ page }) => {
   const nav = page.getByRole('navigation', { name: 'Carpetas de exámenes' })
   await expect(nav.getByRole('button', { name: 'TeacherPeri Originals' })).toBeVisible()
   await expect(nav.getByRole('button', { name: 'OMM', exact: true })).toBeVisible()
+  await expect(nav.getByText('Olimpiada Mexicana de Matemáticas.', { exact: true })).toBeVisible()
+  await expect(nav.getByText('Exámenes de práctica originales de TeacherPeri.', { exact: true })).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath('exam-folders.png'), fullPage: true })
+  await assertFits(page)
   await expect(nav.getByRole('button', { name: 'OMMEB' })).toHaveCount(0)
   await expect(nav.getByRole('button', { name: 'OMM Estatal' })).toHaveCount(0)
   await nav.getByRole('button', { name: 'OMM', exact: true }).click()
