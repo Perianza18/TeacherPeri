@@ -26,6 +26,28 @@ const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet'
 const CHIP = 'cursor-pointer rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1 text-xs font-semibold transition-colors hover:bg-tp-yellow-soft has-[:checked]:bg-tp-yellow'
 const EMPTY_FILTERS = { q: '', area: '', topics: '', tags: '', level: '', categories: [], year: [], subject: [], type: [] }
 const titleOf = (type, item) => type === 'exams' ? examTitle(item) : item.title || item.titulo
+const EXAM_FOLDER_DESCRIPTIONS = {
+  'TeacherPeri Originals': 'Exámenes de práctica originales de TeacherPeri.',
+  OMM: 'Olimpiada Mexicana de Matemáticas.',
+  OMMEB: 'Olimpiada Mexicana de Matemáticas para Educación Básica.',
+}
+
+function ExamFolderCard({ name, onOpen }) {
+  return <button type="button" aria-label={name} onClick={onOpen} className="tp-card-soft tp-lift flex min-h-48 w-full flex-col overflow-hidden bg-tp-surface text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-tp-violet">
+    <span className="flex w-full items-center justify-between gap-3 border-b-2 border-tp-ink bg-tp-orange-soft px-5 py-3">
+      <span className="text-xs font-extrabold uppercase tracking-[0.12em]">Carpeta de exámenes</span>
+      <svg aria-hidden="true" viewBox="0 0 48 40" className="h-9 w-11 shrink-0" fill="none">
+        <path d="M3 35V7a3 3 0 0 1 3-3h11l4 5h21a3 3 0 0 1 3 3v23a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3Z" fill="var(--tp-yellow)" stroke="var(--tp-ink)" strokeWidth="2.5" strokeLinejoin="round" />
+        <path d="M3 16h42" stroke="var(--tp-ink)" strokeWidth="2.5" />
+      </svg>
+    </span>
+    <span className="flex flex-1 flex-col items-start px-5 py-4">
+      <span className="font-display text-[21px] font-extrabold leading-tight tracking-[-0.02em]">{name}</span>
+      <span className="mt-2 text-sm leading-6 text-tp-ink-muted">{EXAM_FOLDER_DESCRIPTIONS[name] || 'Explora los exámenes de esta competencia.'}</span>
+      <span aria-hidden="true" className="mt-auto pt-5 text-sm font-bold text-tp-violet">Abrir carpeta →</span>
+    </span>
+  </button>
+}
 
 // What each library tells search engines (usePageMeta).
 const PAGE_META = {
@@ -142,9 +164,11 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
       {type === 'problems' && <FolderFilter categories={metadata.categories} value={filters.categories} onChange={(ids) => change('categories', ids)} />}
       <button onClick={() => { clearAll() }} className="mt-4 text-sm font-bold text-tp-violet underline underline-offset-2">Limpiar filtros</button></>}
     </div>
-    {type === 'exams' && <nav aria-label="Carpetas de exámenes" className="mt-6 rounded-[14px] border-2 border-dashed border-tp-ink bg-tp-paper p-4">
+    {type === 'exams' && <nav aria-label="Carpetas de exámenes" className="mt-6">
       <div className="flex flex-wrap items-center gap-2 text-sm"><button onClick={() => setExamPath([])} className="font-bold text-tp-violet underline-offset-2 hover:underline">Exámenes</button>{examPath.map((name, index) => <span key={index}> › <button onClick={() => setExamPath(examPath.slice(0, index + 1))} className="font-bold hover:underline">{name}</button></span>)}</div>
-      {examNode.children.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{examNode.children.map((child) => <button key={child.name} onClick={() => setExamPath([...examPath, child.name])} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{child.name}<span aria-hidden="true">→</span></button>)}</div>}
+      {examNode.children.length > 0 && (examPath.length === 0
+        ? <div className="mt-4 grid gap-6 sm:grid-cols-2">{examNode.children.map((child) => <ExamFolderCard key={child.name} name={child.name} onOpen={() => setExamPath([child.name])} />)}</div>
+        : <div className="mt-3 flex flex-wrap gap-2">{examNode.children.map((child) => <button key={child.name} onClick={() => setExamPath([...examPath, child.name])} className="tp-pill bg-tp-surface transition-colors hover:bg-tp-yellow">{child.name}<span aria-hidden="true">→</span></button>)}</div>)}
     </nav>}
     {!external && type !== 'exams' && <nav aria-label="Carpetas de la biblioteca" className="mt-6 rounded-[14px] border-2 border-dashed border-tp-ink bg-tp-paper p-4">
       <div className="flex flex-wrap items-center gap-2 text-sm"><button onClick={() => navigateFolder(null)} className="font-bold text-tp-violet underline-offset-2 hover:underline">Todas las carpetas</button>{crumbs.map((c) => <span key={c._id}> › <button onClick={() => navigateFolder(c._id)} className="font-bold hover:underline">{c.name}</button></span>)}</div>
