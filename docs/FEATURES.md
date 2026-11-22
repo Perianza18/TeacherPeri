@@ -43,6 +43,7 @@ A Ruta is an ordered path through existing material. See
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Problemas: search, filters (área, tag, level, year, folder), pagination | Done | 56 problems. A problem opens in a window with its comments |
+| Simpler library filters: an área tree (4 áreas › subtemas) and «Palabras clave» that ignore accents and capitals | In progress | Branch `feature/filtros-opciones`, not live. Two designs to choose from in `npm run dev`: add `?vista=a` (sidebar tree) or `?vista=b` (área tiles, then subtemas) to Problemas, Teoría or Listas. The API already counts subtemas inside their área and searches keywords in text, tags and topic names. **Today:** «Tema curricular» and «Etiqueta» menus |
 | Problemas: hints (each behind its own toggle) and solutions | Done | |
 | Problem page with a stable link | Done | `/entrenamiento/problemas/:id` |
 | Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |

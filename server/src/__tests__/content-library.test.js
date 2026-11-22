@@ -69,6 +69,32 @@ describe('publication visibility', () => {
     expect((await request(app).get('/api/lists?source=otra')).status).toBe(400)
   })
 
+  it('finds keywords without accents or capitals, in text, tags and topics', async () => {
+    const geometry = await Topic.create({ name: 'Geometría' })
+    const triangles = await Topic.create({ name: 'Triángulos', parent: geometry._id })
+    const tag = await Tag.create({ name: 'Máximo común divisor', label: 'Máximo común divisor' })
+    const byTopic = await problemFixture({ codigo: 'KW-1', titulo: 'Uno', topics: [geometry._id, triangles._id] })
+    const byTag = await problemFixture({ codigo: 'KW-2', titulo: 'Dos', tags: [tag._id] })
+    const byText = await problemFixture({ codigo: 'KW-3', titulo: 'Tres', enunciado: 'Una ECUACIÓN cuadrática.' })
+    const found = async (q) => (await request(app).get(`/api/problems?limit=20&q=${encodeURIComponent(q)}`)).body.items.map((item) => item._id)
+    expect(await found('TRIANGULOS')).toEqual([byTopic._id.toString()])
+    expect(await found('maximo comun')).toEqual([byTag._id.toString()])
+    expect(await found('ecuacion')).toEqual([byText._id.toString()])
+    expect(await found('Ecuación')).toEqual([byText._id.toString()])
+  })
+
+  it('includes subtopics when filtering by an área, and counts each topic', async () => {
+    const algebra = await Topic.create({ name: 'Álgebra' })
+    const sequences = await Topic.create({ name: 'Sucesiones', parent: algebra._id })
+    const onlySub = await problemFixture({ codigo: 'AR-1', topics: [sequences._id] })
+    await problemFixture({ codigo: 'AR-2', topics: [] })
+    const items = (await request(app).get(`/api/problems?limit=20&topics=${algebra._id}`)).body.items
+    expect(items.map((item) => item._id)).toEqual([onlySub._id.toString()])
+    const counts = await request(app).get('/api/topics/counts?library=problems')
+    expect(counts.body).toMatchObject({ [algebra._id]: 1, [sequences._id]: 1 })
+    expect((await request(app).get('/api/topics/counts?library=otra')).status).toBe(400)
+  })
+
   it('keeps legacy published Problems visible while hiding explicit draft and archived records', async () => {
     const category = await Category.create({ name: 'Visibilidad' })
     const legacyId = new mongoose.Types.ObjectId()

@@ -43,6 +43,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Función | Estado | Notas |
 | --- | --- | --- |
 | Problemas: búsqueda, filtros (área, etiqueta, nivel, año, carpeta), páginas | Hecho | 56 problemas. Un problema se abre en una ventana con sus comentarios |
+| Filtros más simples en las bibliotecas: árbol de áreas (4 áreas › subtemas) y «Palabras clave» que ignoran acentos y mayúsculas | En progreso | Rama `feature/filtros-opciones`, no está en vivo. Dos diseños para elegir en `npm run dev`: agrega `?vista=a` (árbol lateral) o `?vista=b` (áreas grandes y luego subtemas) a Problemas, Teoría o Listas. La API ya cuenta los subtemas dentro de su área y busca palabras clave en el texto, las etiquetas y los nombres de temas. **Hoy:** menús «Tema curricular» y «Etiqueta» |
 | Problemas: pistas (cada una con su propio botón) y soluciones | Hecho | |
 | Página de problema con enlace estable | Hecho | `/entrenamiento/problemas/:id` |
 | Árbol de carpetas de examen (p. ej. Exámenes › OMM Estatal › Jalisco › 2023), usable como filtro | Hecho | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. «Exámenes» tiene OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO y «Prácticas TeacherPeri» con los 3 exámenes de práctica (14 problemas); se agregaron a la base del sitio el 2026-11-21 |
