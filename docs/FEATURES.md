@@ -42,7 +42,8 @@ A Ruta is an ordered path through existing material. See
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Problemas: search, filters (área, tag, level, year, folder), pagination | Done | 56 problems. A problem opens in a window with its comments |
+| Problemas: search, filters (área › subtema, exam folder), pagination | Done | 56 problems. A problem opens in a window with its comments |
+| Simpler library filters: «Palabras clave» and Área › subtema | Done | Problemas, Teoría and Listas show one card: a keyword box that ignores accents and capitals (it also searches statements, tags and subtema names, and offers matching subtemas as shortcuts), then the 4 áreas as tiles; choosing one opens its subtemas. «Otros temas» holds «Cómo entrenar», «Demostraciones»… when they have items. Exam folders stay under «Buscar por examen o carpeta». The «Tema curricular», «Etiqueta», «Nivel», «Año», «Colección» filters are gone. The API takes `?area=<name>` (matches the Topic tree or the older `tema`) and `GET /api/topics/counts` |
 | Problemas: hints (each behind its own toggle) and solutions | Done | |
 | Problem page with a stable link | Done | `/entrenamiento/problemas/:id` |
 | Exam folder tree (e.g. Exámenes › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM, OMM Estatal, OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |

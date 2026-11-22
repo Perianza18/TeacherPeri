@@ -105,12 +105,12 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | Ruta | Endpoints |
 | --- | --- |
 | `/api/auth` | `POST /signup`, `POST /login`, `GET /me` |
-| `/api/problems` | `GET /` (búsqueda, filtros, páginas), `GET /facets`, `GET /:id` |
+| `/api/problems` | `GET /` (búsqueda, filtros, páginas), `GET /facets`, `GET /:id`. En `/api/problems`, `/api/theory` y `/api/lists`: `?q=` ignora acentos y mayúsculas y también busca en nombres de etiquetas y temas; `?area=<nombre>` toma un área con todos sus subtemas (o el campo viejo `tema`); `?topics=` incluye subtemas |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
 | `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id`. `GET /api/lists?source=teacherperi` o `?source=external` devuelve solo las listas de TeacherPeri o solo los recursos externos |
 | `/api/collections` | `GET /:slug`: las cajas de problemas de una lección. `GET /?codes=A,B`: los problemas de una caja `[[problems:…]]` |
 | `/api/paths` | `GET /` (también `?traversal=a/b` para un camino a través de varias Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
-| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: carpetas, áreas y etiquetas |
+| `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: carpetas, áreas y etiquetas. `GET /api/topics/counts?library=problems\|theory\|lists` cuenta el contenido por área y por tema |
 | `/api/reports` | Editores y admins: `GET /`, `POST /comments/:commentId/dismiss` (con `note` opcional) |
 | `/api/reports/content` | Con sesión: `POST /` («Reportar» un problema o una lección). Editores y admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Con sesión: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |

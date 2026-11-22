@@ -65,7 +65,7 @@ test('problem discovery, pagination, math, solution and comments', async ({ page
   await page.getByRole('button', { name: 'Siguiente', exact: true }).click()
   await expect(page.getByText('2 / 5')).toBeVisible()
   await page.getByRole('searchbox').fill('El ángulo exterior')
-  await expect(page.getByText('1 resultados')).toBeVisible()
+  await expect(page.getByText('1 resultado', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Comentarios', exact: true }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.keyboard.press('Escape')

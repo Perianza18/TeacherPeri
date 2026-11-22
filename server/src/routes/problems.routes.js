@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import Problem from '../models/Problem.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
-import { descendantCategoryIds, difficultyOrBadRequest, idsOrBadRequest, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
+import { descendantCategoryIds, areaCondition, areaOrBadRequest, descendantTopicIds, difficultyOrBadRequest, idsOrBadRequest, keywordConditions, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
 
 const router = Router()
 
@@ -13,8 +13,10 @@ async function problemFilter(req, res) {
   if (!topics || !tags || !categories) return null
   const difficulty = difficultyOrBadRequest(res, req.query.difficulty)
   if (difficulty === undefined) return null
+  const area = areaOrBadRequest(res, req.query.area)
+  if (area === null) return null
   const filter = publishedOrLegacyProblemQuery()
-  if (topics.length) filter.topics = { $in: topics }
+  if (topics.length) filter.topics = { $in: await descendantTopicIds(topics) }
   if (tags.length) filter.tags = { $in: tags }
   if (categories.length) filter.$and = [{ $or: [{ categories: { $in: categories } }, { category: { $in: categories } }] }]
   if (req.query.year) filter.año = { $in: String(req.query.year).split(',') }
@@ -22,10 +24,8 @@ async function problemFilter(req, res) {
   if (req.query.type) filter.tipo = { $in: String(req.query.type).split(',') }
   if (req.query.competition) filter.competition = textSearch(req.query.competition)
   if (difficulty) filter.difficulty = difficulty
-  if (req.query.q) {
-    const search = textSearch(req.query.q)
-    filter.$and = [...(filter.$and || []), { $or: [{ codigo: search }, { titulo: search }, { competition: search }, { tema: search }] }]
-  }
+  if (area) filter.$and = [...(filter.$and || []), await areaCondition(area)]
+  if (req.query.q) filter.$and = [...(filter.$and || []), ...await keywordConditions(req.query.q, ['codigo', 'titulo', 'competition', 'tema', 'enunciado'])]
   return filter
 }
 
