@@ -45,12 +45,12 @@ filtro de Problemas incluye todo lo que está dentro.
 ## Carpetas de examen en la página Exámenes
 
 La página Exámenes agrupa los exámenes publicados por su ruta de carpetas y
-oculta las carpetas principales vacías. Cada competencia es una carpeta
-principal; sus años y demás carpetas aparecen dentro. «OMM Estatal» aparece
-dentro de «OMM». Por ejemplo, los exámenes
-publicados en `OMMEB › 2024` hacen aparecer «OMMEB» como carpeta principal con
-«2024» dentro, sin cambiar código. Los exámenes de TeacherPeri hechos a mano
-aparecen en «TeacherPeri Originals», agrupados por año.
+oculta las carpetas principales vacías. Cada competencia, incluida «OMM
+Estatal», es una carpeta principal. Los años que contienen exámenes directamente se muestran como
+tarjetas de examen, sin un paso adicional; las demás subcarpetas aparecen como
+tarjetas de carpeta. Por ejemplo, los exámenes publicados en `OMMEB › 2024`
+aparecen como tarjetas dentro de «OMMEB», sin cambiar código. Los exámenes de TeacherPeri
+hechos a mano aparecen en «TeacherPeri Originals», ordenados por año.
 
 La carpeta y el `problemNumber` de cada problema son la fuente de verdad; los
 documentos `Exam` de Exámenes los siguen (`server/src/lib/examSync.js`).
