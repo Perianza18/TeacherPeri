@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { buildMvpManifest } from '../../server/src/data/mvpManifest.js'
+import { THEORY_REWRITES } from '../../server/src/data/theory/index.js'
 
 const entries = buildMvpManifest().map((e) => ({ ...e, data: { _id: e._id, ...e.data } }))
 const dataFor = (model) => entries.filter((e) => e.model === model).map((e) => e.data)
@@ -36,6 +37,11 @@ test.beforeEach(async ({ page }) => {
     const model = { problems: 'Problem', theory: 'Theory', lists: 'List', exams: 'Exam', categories: 'Category', topics: 'Topic', tags: 'Tag' }[parts[1]]
     let body
     if (url.pathname === '/api/problems/facets') body = { years: ['2026'], subjects: ['Geometría', 'Álgebra', 'Combinatoria', 'Teoría de Números'], types: ['TeacherPeri'] }
+    else if (parts[1] === 'collections' && parts[2]) {
+      const slug = parts[2]
+      const boxes = dataFor('ProblemCollection').filter((collection) => collection.slug === slug)
+      body = { slug, collections: Object.fromEntries(boxes.map((collection) => [collection.kind, collection.problems.map(({ problem }) => dataFor('Problem').find((item) => item._id === problem)).filter(Boolean)])) }
+    }
     else if (parts[3] === 'comments') body = []
     else if (parts[1] === 'paths' && (parts[2] || url.searchParams.has('traversal'))) body = pathDetail(parts[2] ? [parts[2]] : url.searchParams.get('traversal').split('/'))
     else if (parts[1] === 'paths') body = { items: [{ _id: 'fixture', slug: 'factorizacion-e-identidades', title: 'Factorización e Identidades', kind: 'leaf', lessonOnly: true, level: 'introductorio' }] }
@@ -59,11 +65,11 @@ const assertFits = async (page) => expect(await page.evaluate(() => document.doc
 
 test('problem discovery, pagination, math, solution and comments', async ({ page }, testInfo) => {
   await page.goto('/entrenamiento/problemas')
-  await expect(page.getByText('56 resultados')).toBeVisible()
+  await expect(page.getByText(`${dataFor('Problem').length} resultados`)).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath('problems.png'), fullPage: true })
   await assertFits(page)
   await page.getByRole('button', { name: 'Siguiente', exact: true }).click()
-  await expect(page.getByText('2 / 5')).toBeVisible()
+  await expect(page.getByText(`2 / ${Math.ceil(dataFor('Problem').length / 12)}`)).toBeVisible()
   await page.getByRole('searchbox').fill('El ángulo exterior')
   await expect(page.getByText('1 resultado', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Comentarios', exact: true }).click()
@@ -121,7 +127,7 @@ test('OMM traversal, unfinished cycles and return to the learning Path', async (
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Factorización')
   const crumbs = page.getByRole('navigation', { name: 'Migas' })
   await expect(crumbs).toContainText('Preparación para la OMM')
-  await expect(page.getByRole('link', { name: 'Resolver problema 1' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Resolver problema 1' }).first()).toBeVisible()
   await page.reload()
   await expect(crumbs).toContainText('Álgebra Básica')
   await expect(page.getByText('En la Ruta', { exact: true })).toBeVisible()
@@ -130,7 +136,7 @@ test('OMM traversal, unfinished cycles and return to the learning Path', async (
   await expect(returnLink).toHaveAttribute('href', '/rutas/preparacion-para-la-omm/algebra-basica-para-olimpiadas')
   await page.screenshot({ path: testInfo.outputPath('lesson.png'), fullPage: true })
   await assertFits(page)
-  await page.getByRole('link', { name: 'Resolver problema 1' }).click()
+  await page.getByRole('link', { name: 'Resolver problema 1' }).first().click()
   await expect(page).toHaveURL(/\/entrenamiento\/problemas\/[0-9a-f]{24}\?ruta=preparacion-para-la-omm/)
 })
 
@@ -185,4 +191,27 @@ test('exam folders show competitions and their years', async ({ page }, testInfo
   await page.getByRole('link', { name: 'OMM Estatal · Chiapas', exact: true }).click()
   await expect(page.getByRole('link', { name: 'Problema 3 →' })).toBeVisible()
   await assertFits(page)
+})
+
+
+test('rewritten lesson boxes link to their bank problems', async ({ page }) => {
+  test.setTimeout(240000)
+  for (const [slug, draft] of Object.entries(THEORY_REWRITES)) {
+    const theory = entry('Theory', `${slug}-guia`)
+    await page.goto(`/entrenamiento/teoria/${theory._id}`)
+    const kinds = Object.values(draft.collections)[0]
+    const boxes = page.locator('article section.tp-box-strong')
+    await expect(boxes).toHaveCount(3)
+    for (const [index, kind] of ['ejercicios', 'practice', 'dificiles'].entries()) {
+      const links = boxes.nth(index).locator('ol > li a')
+      await expect(links).toHaveCount(kinds[kind].length)
+      for (const [position, code] of kinds[kind].entries()) {
+        await expect(links.nth(position)).toHaveAttribute('href', `/entrenamiento/problemas/${entry('Problem', code)._id}`)
+      }
+    }
+    const firstCode = kinds.ejercicios[0]
+    await boxes.first().locator('ol > li a').first().click()
+    await expect(page).toHaveURL(new RegExp(`/entrenamiento/problemas/${entry('Problem', firstCode)._id}$`))
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(entry('Problem', firstCode).titulo)
+  }
 })

@@ -32,7 +32,7 @@ describe('MVP atomic import and public journey', () => {
     await problem.save()
     await expect(importMvpContent({ apply: true })).rejects.toThrow('Content conflict')
     expect((await CONTENT_MODELS.Problem.findById(problem._id)).enunciado).toBe('Independent editorial change')
-    expect(await CONTENT_MODELS.Problem.countDocuments()).toBe(56)
+    expect(await CONTENT_MODELS.Problem.countDocuments()).toBe(buildMvpManifest().filter((item) => item.model === 'Problem').length)
   }, 60000)
   it('resolves Paths → Theory → Problems → Lists → Exams publicly and hides draft targets', async () => {
     await importMvpContent({ apply: true })

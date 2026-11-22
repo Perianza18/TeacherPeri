@@ -43,6 +43,7 @@ function PageLoading() {
 
 // Dev-only test lesson with every block of the lesson format; the production
 // build drops it because import.meta.env.DEV is false there.
+const TheoryDraftPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryDraftPage')) : null
 const TheoryTestLessonPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryTestLessonPage')) : null
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           {TheoryTestLessonPage && <Route path="/dev/teoria-prueba" element={<TheoryTestLessonPage />} />}
+          {TheoryDraftPage && <Route path="/dev/teoria-borrador/:slug" element={<TheoryDraftPage />} />}
           <Route path="/rutas" element={<RutasPage />} />
           <Route path="/rutas/*" element={<PathPage />} />
           <Route path="/entrenamiento" element={<EntrenamientoPage />}>

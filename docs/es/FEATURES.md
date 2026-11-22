@@ -42,13 +42,14 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 
 | Función | Estado | Notas |
 | --- | --- | --- |
-| Problemas: búsqueda, filtros (área › subtema, carpeta de examen), páginas | Hecho | 56 problemas. Un problema se abre en una ventana con sus comentarios |
+| Problemas: búsqueda, filtros (área › subtema, carpeta de examen), páginas | Hecho | 330 problemas en el catálogo de contenido; el total publicado puede incluir aportes de la comunidad. Un problema se abre en una ventana con sus comentarios |
 | Filtros más simples en las bibliotecas: «Palabras clave» y Área › subtema | Hecho | Problemas, Teoría y Listas muestran una sola tarjeta: una caja de palabras clave que ignora acentos y mayúsculas (también busca en enunciados, etiquetas y nombres de subtemas, y sugiere subtemas como atajos), y luego las 4 áreas como mosaicos; al elegir una se abren sus subtemas. «Otros temas» agrupa «Cómo entrenar», «Demostraciones»… cuando tienen contenido. Las carpetas de exámenes siguen en «Buscar por examen o carpeta». Se quitaron los filtros «Tema curricular», «Etiqueta», «Nivel», «Año» y «Colección». La API acepta `?area=<nombre>` (coincide con el árbol de Topics o con el campo viejo `tema`) y `GET /api/topics/counts` |
 | Problemas: pistas (cada una con su propio botón) y soluciones | Hecho | |
 | Página de problema con enlace estable | Hecho | `/entrenamiento/problemas/:id` |
 | Árbol de carpetas de examen (p. ej. Exámenes › OMM › OMM Estatal › Jalisco › 2023), usable como filtro | Hecho | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. «Exámenes» tiene OMM (que incluye OMM Estatal), OMMEB, Centroamericana, Iberoamericana, IMO y «Prácticas TeacherPeri» con los 3 exámenes de práctica (14 problemas); se agregaron a la base del sitio el 2026-11-21 |
 | Teoría: 37 lecciones con matemáticas, ejemplos y práctica | Hecho | |
-| Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Parcial | El formato ya funciona y 2 lecciones lo usan («Ángulos, paralelas y perpendiculares», «Principio de casillas»). Las otras 35 siguen con el formato anterior |
+| Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Hecho | Las 37 lecciones tienen el formato nuevo en el código; su publicación en la base requiere ejecutar la revisión de teoría |
+| Vista local de borradores de teoría | En curso | Solo en desarrollo: `/dev/teoria-borrador/<slug-de-lección>` muestra el texto y las colecciones sin base de datos, con la etiqueta curricular y el nivel de la lección |
 | «Sugerir un cambio» y «Reportar» en las lecciones | Hecho | Las mismas dos acciones que en los problemas (ver abajo) |
 | Exámenes: navegación por competencia y subcarpeta | Hecho | La página muestra las carpetas principales como tarjetas descriptivas, solo cuando tienen exámenes publicados, como «TeacherPeri Originals» y «OMM»; «OMM Estatal» está dentro de «OMM». Al abrir una carpeta aparecen directamente sus tarjetas de examen, sin un botón adicional para el año; las demás subcarpetas aparecen como tarjetas de carpeta. Nuevas competencias como OMMEB aparecen automáticamente cuando contienen exámenes publicados. |
 | Exámenes: 3 exámenes de práctica | Hecho | Práctica original de TeacherPeri, no exámenes oficiales de la OMM |

@@ -42,13 +42,14 @@ A Ruta is an ordered path through existing material. See
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Problemas: search, filters (área › subtema, exam folder), pagination | Done | 56 problems. A problem opens in a window with its comments |
+| Problemas: search, filters (área › subtema, exam folder), pagination | Done | 330 problems in the content catalog; the live total may include community additions. A problem opens in a window with its comments |
 | Simpler library filters: «Palabras clave» and Área › subtema | Done | Problemas, Teoría and Listas show one card: a keyword box that ignores accents and capitals (it also searches statements, tags and subtema names, and offers matching subtemas as shortcuts), then the 4 áreas as tiles; choosing one opens its subtemas. «Otros temas» holds «Cómo entrenar», «Demostraciones»… when they have items. Exam folders stay under «Buscar por examen o carpeta». The «Tema curricular», «Etiqueta», «Nivel», «Año», «Colección» filters are gone. The API takes `?area=<name>` (matches the Topic tree or the older `tema`) and `GET /api/topics/counts` |
 | Problemas: hints (each behind its own toggle) and solutions | Done | |
 | Problem page with a stable link | Done | `/entrenamiento/problemas/:id` |
 | Exam folder tree (e.g. Exámenes › OMM › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM (including OMM Estatal), OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |
 | Teoría: 37 lessons with math, examples and practice | Done | |
-| Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Partial | The renderer is live and 2 lessons use it («Ángulos, paralelas y perpendiculares», «Principio de casillas»). The other 35 still use the older format |
+| Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Done | All 37 lessons use the new format in the code; publishing them to the database requires the theory revision |
+| Local theory draft preview | In progress | Development only: `/dev/teoria-borrador/<lesson-slug>` renders rewrite data and collections without a database, with the lesson’s curriculum label and level |
 | «Sugerir un cambio» and «Reportar» on lessons | Done | Same two actions as on problems (see below) |
 | Exámenes: browse by competition and subfolder | Done | The page shows main folders as descriptive cards, only when they contain published exams, such as «TeacherPeri Originals» and «OMM»; «OMM Estatal» is inside «OMM». Opening a folder shows its exam cards directly, without an extra year button; other subfolders appear as folder cards. New competitions such as OMMEB appear automatically when they contain published exams. |
 | Exámenes: 3 practice exams | Done | Original TeacherPeri practice, not official OMM papers |

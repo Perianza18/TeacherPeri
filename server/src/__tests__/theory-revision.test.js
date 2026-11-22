@@ -4,7 +4,7 @@ import app from '../app.js'
 import { importMvpContent, CONTENT_MODELS } from '../migrations/import-mvp-content.js'
 import { reviseTheoryLessons } from '../migrations/revise-theory-lessons.js'
 import { PREVIOUS_THEORY } from '../data/mvpLessons.js'
-import { THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
+import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
 import { EARLIER_THEORY } from '../data/theory/earlier.js'
 
 const { Theory, Path, Problem, ProblemCollection } = CONTENT_MODELS
@@ -27,9 +27,9 @@ describe('Theory lesson revision', () => {
   it('previews, applies once, then finds nothing left to do', async () => {
     await previousRelease()
     const preview = await reviseTheoryLessons()
-    expect(preview.lessons.map((lesson) => [lesson.text, lesson.ruta])).toEqual([['revise', 'revise'], ['revise', 'revise']])
-    expect(preview.problemsAdded).toHaveLength(20)
-    expect(preview.collectionsCreated).toHaveLength(6)
+    expect(preview.lessons.map((lesson) => [lesson.text, lesson.ruta])).toEqual(slugs.map(() => ['revise', 'revise']))
+    expect(preview.problemsAdded).toHaveLength(THEORY_PROBLEMS.length)
+    expect(preview.collectionsCreated).toHaveLength(THEORY_COLLECTIONS.length)
     expect(await Problem.countDocuments({ codigo: 'TP-C07' })).toBe(0)
 
     await reviseTheoryLessons({ apply: true })
@@ -43,7 +43,7 @@ describe('Theory lesson revision', () => {
     expect(boxes.body.collections.dificiles).toHaveLength(2)
 
     const again = await reviseTheoryLessons({ apply: true })
-    expect(again.lessons.map((lesson) => [lesson.text, lesson.ruta])).toEqual([['keep', 'keep'], ['keep', 'keep']])
+    expect(again.lessons.map((lesson) => [lesson.text, lesson.ruta])).toEqual(slugs.map(() => ['keep', 'keep']))
     expect(again.problemsAdded).toEqual([])
     expect(again.collectionsCreated).toEqual([])
     // The content import now agrees with the database.
@@ -59,8 +59,9 @@ describe('Theory lesson revision', () => {
     await Theory.updateOne({ title }, { $set: { content: pilot.content, summary: pilot.summary } })
 
     const preview = await reviseTheoryLessons()
-    const casillasTitle = PREVIOUS_THEORY['principio-de-casillas'].title
-    expect(Object.fromEntries(preview.lessons.map((lesson) => [lesson.title, lesson.text]))).toEqual({ [title]: 'revise', [casillasTitle]: 'keep' })
+    expect(preview.lessons).toHaveLength(slugs.length)
+    expect(preview.lessons.filter((lesson) => lesson.text === 'revise').map((lesson) => lesson.title)).toEqual([title])
+    expect(preview.lessons.filter((lesson) => lesson.text === 'keep')).toHaveLength(slugs.length - 1)
     await reviseTheoryLessons({ apply: true })
     expect((await Theory.findOne({ title }).lean()).content).toBe(THEORY_REWRITES[slug].content)
   }, 120000)
