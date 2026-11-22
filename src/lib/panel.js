@@ -2,7 +2,7 @@
 // every permission; these only decide which links and buttons to show.
 import { useEffect, useState } from 'react'
 import { apiFetch } from './api'
-import { isAtLeast } from './roles'
+import { canReview as roleCanReview, isAtLeast } from './roles'
 
 export const PANEL_PATH = '/panel'
 export const PANEL = {
@@ -16,6 +16,7 @@ export const editLessonPath = (id) => `/panel/teoria/${id}/editar`
 
 export const canEdit = (auth) => Boolean(auth && isAtLeast(auth.user?.role, 'editor'))
 export const isAdmin = (auth) => Boolean(auth && isAtLeast(auth.user?.role, 'admin'))
+export const canReview = (auth) => Boolean(auth && roleCanReview(auth.user?.role))
 
 export const ROLE_NAMES = { user: 'Usuario', editor: 'Editor', admin: 'Admin' }
 

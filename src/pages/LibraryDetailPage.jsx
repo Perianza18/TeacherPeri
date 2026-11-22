@@ -5,7 +5,7 @@ import MathText from '../components/math/MathText'
 import TheoryView from '../components/theory/TheoryView'
 import PageHero from '../components/PageHero'
 import { SkeletonCard } from '../components/Skeleton'
-import FlagButton from '../components/FlagButton'
+import PageFeedback from '../components/PageFeedback'
 import { LIBRARY_BASE, examTitle } from '../lib/libraryPaths'
 import { collectionSlugs } from '../lib/theoryArticle'
 import { hintLabel, splitHints } from '../lib/hints'
@@ -208,7 +208,7 @@ export default function LibraryDetailPage({ type }) {
         <Hints hint={item.hint} />
         {(item.solution || byPlacement(item.images, 'solution').length > 0) && <Solution solution={item.solution} images={item.images} />}
         {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
-          <FlagButton targetType="problem" targetId={item._id} />
+          <PageFeedback targetType="problem" targetId={item._id} />
           {canEdit(auth) && <Link to={editProblemPath(item._id)} className="tp-button bg-tp-surface px-4 text-sm font-bold">Editar problema</Link>}
         </div>}
 
