@@ -4,6 +4,8 @@ import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 import { MY_SUBMISSIONS_PATH, PROPOSE_PATH } from '../lib/submissions'
 import { PANEL_PATH, canEdit } from '../lib/panel'
+import Avatar from './profile/Avatar'
+import { profilePath } from '../lib/profile'
 
 // Main navigation, in the order set by the design guide (DESIGN §6).
 // Universidad, Sobre mí and Contacto stay reachable from the Footer.
@@ -70,15 +72,13 @@ function useNotifications(token, open) {
 
 const fecha = (value) => new Date(value).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
 
-// Logged-in account: a round avatar (first letter of the username until
-// preset avatars exist) that opens a small panel with the account links,
+// Logged-in account: the preset avatar, which opens a small panel with the account links,
 // notifications and «Cerrar sesión».
 function AccountMenu({ user, token, logout }) {
   const [open, setOpen] = useState(false)
   const notifications = useNotifications(token, open)
   const wrapper = useRef(null)
   const button = useRef(null)
-  const initial = (user.username || '?').trim().charAt(0).toUpperCase() || '?'
 
   const close = useCallback(() => {
     setOpen(false)
@@ -102,9 +102,9 @@ function AccountMenu({ user, token, logout }) {
         aria-expanded={open}
         aria-controls="tp-account-panel"
         aria-label={`Cuenta de ${user.username}${notifications.unread ? `, ${notifications.unread} ${notifications.unread === 1 ? 'notificación nueva' : 'notificaciones nuevas'}` : ''}`}
-        className="relative grid h-11 w-11 place-items-center rounded-full border-2 border-tp-ink bg-tp-violet-soft text-lg font-black text-tp-ink"
+        className="relative grid h-11 w-11 place-items-center rounded-full"
       >
-        <span aria-hidden="true">{initial}</span>
+        <Avatar id={user.avatar} />
         {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-tp-ink bg-tp-orange px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
       </button>
       {open && (
@@ -112,6 +112,7 @@ function AccountMenu({ user, token, logout }) {
           <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Sesión iniciada como</p>
           <p className="mt-1 truncate text-base font-bold text-tp-ink">{user.username}</p>
           <nav aria-label="Tu cuenta" className="mt-3 flex flex-col">
+            <Link to={profilePath(user.username)} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Mi Espacio</Link>
             <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Mis envíos</Link>
             <Link to={PROPOSE_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Proponer un problema</Link>
             {canEdit({ user }) && <Link to={PANEL_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Panel del equipo</Link>}

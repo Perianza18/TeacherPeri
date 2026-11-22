@@ -33,6 +33,9 @@ import notificationsRoutes from './routes/notifications.routes.js'
 import editorRoutes from './routes/editor.routes.js'
 import reviewRoutes from './routes/review.routes.js'
 import usersRoutes from './routes/users.routes.js'
+import profilesRoutes from './routes/profiles.routes.js'
+import userListsRoutes from './routes/userLists.routes.js'
+import solvesRoutes from './routes/solves.routes.js'
 import imagesRoutes from './routes/images.routes.js'
 
 const app = express()
@@ -108,6 +111,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/categories', categoriesRoutes)
 app.use('/api/problems', problemsRoutes)
 app.use('/api/problems/:problemId/comments', commentsRoutes)
+app.use('/api/problems/:problemId/solved', solvesRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/topics', topicsRoutes)
 app.use('/api/tags', tagsRoutes)
@@ -124,6 +128,8 @@ app.use('/api/notifications', notificationsRoutes)
 app.use('/api/editor', editorRoutes)
 app.use('/api/review', reviewRoutes)
 app.use('/api/users', usersRoutes)
+app.use('/api/profiles', profilesRoutes)
+app.use('/api/my-lists', userListsRoutes)
 app.use('/api/images', imagesRoutes)
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ese recurso no existe.' }))

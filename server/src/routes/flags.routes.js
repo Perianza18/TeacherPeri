@@ -32,6 +32,32 @@ async function publicTargetExists(targetType, id) {
   return Theory.exists({ _id: id, publicationStatus: 'published' })
 }
 
+// The signed-in person's own suggestions (Mi Espacio › Mis envíos), problems
+// and lessons, newest first. Only their own: never anyone else's.
+router.get('/mine', async (req, res) => {
+  const flags = await Flag.find({ reporter: req.userId }).sort({ createdAt: -1 }).limit(200).lean()
+  const problemIds = flags.filter((f) => f.targetType === 'problem').map((f) => f.target)
+  const theoryIds = flags.filter((f) => f.targetType === 'theory').map((f) => f.target)
+  const [problems, lessons] = await Promise.all([
+    Problem.find({ _id: { $in: problemIds } }).select('codigo titulo').lean(),
+    Theory.find({ _id: { $in: theoryIds } }).select('title').lean(),
+  ])
+  const pages = new Map([
+    ...problems.map((p) => [String(p._id), { label: p.titulo || p.codigo, href: `/entrenamiento/problemas/${p._id}` }]),
+    ...lessons.map((t) => [String(t._id), { label: t.title, href: `/entrenamiento/teoria/${t._id}` }]),
+  ])
+  res.json(flags.map((flag) => ({
+    id: flag._id,
+    targetType: flag.targetType,
+    target: pages.get(String(flag.target)) ?? { label: flag.targetType === 'problem' ? 'Problema' : 'Lección', href: null },
+    message: flag.message,
+    status: flag.status,
+    note: flag.handledNote ?? null,
+    createdAt: flag.createdAt,
+    handledAt: flag.handledAt ?? null,
+  })))
+})
+
 router.post('/', requirePermission('suggestions:create'), async (req, res) => {
   const { targetType, targetId } = req.body ?? {}
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : ''

@@ -35,7 +35,7 @@ A Ruta is an ordered path through existing material. See
 | OMM Ruta: Preparación (18 lessons) and Ciclo 1 (17 lessons) | Done | |
 | OMM Ruta: Ciclo 2 | Partial | 2 of 13 lessons are live (modular arithmetic and linear congruences). The rest show «Próximamente» |
 | OMM Ruta: Ciclos 3–5 | Planned | **Today:** their titles show «Próximamente» |
-| Follow a Ruta, save it for later | Planned | Part of Mi Espacio. **Today:** only completed steps are saved |
+| Follow a Ruta, save it for later | Planned | Part of Mi Espacio. **Today:** only completed steps are saved; lessons can be saved to personal lists |
 | Universidad Ruta (applying to universities in the US and Canada) | Planned | Will use the same Ruta engine. **Today:** `/estudia-en-el-extranjero` is a «Próximamente» page («Universidad» in the footer) |
 
 ## Entrenamiento (libraries)
@@ -62,13 +62,13 @@ A Ruta is an ordered path through existing material. See
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Curated lists inside Entrenamiento, in two tabs | Done | «Listas» (`/entrenamiento/listas`): the 6 TeacherPeri problem lists, with search and filters. «Recursos externos» (`/entrenamiento/recursos`): the 3 links to other publishers (OMM, IMO, NRICH), with search only. The main menu no longer has «Listas»; old `/listas` links redirect |
-| Personal lists («Guardar en lista») | Planned | Part of Mi Espacio. **Today:** users cannot save problems or lessons |
+| Personal lists («Guardar en lista») | Done | On problem pages, the problem window and lessons: tick your lists or create one. Private unless marked «Pública»; rename, make public or private, delete from Mi Espacio › Listas; one list at `/perfil/<username>/listas/<id>`. Problems and lessons only; Experiencias posts and other content come later. See [PROFILES.md](PROFILES.md#lists-guardar-en-lista) |
 
 ## Community
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Comments on problems: replies up to 3 levels, math with `$...$`, role badges | Done | |
+| Comments on problems: replies up to 3 levels, math with `$...$`, role badges | Done | Shown in the problem window and, since Mi Espacio, on the problem page too. Each comment has a link (`#comentario-<id>`) that scrolls to it and highlights it. Usernames link to profiles |
 | Report a comment; delete a comment with a reason | Done | Authors delete their own comments. Editors and admins delete any comment and must give a reason |
 | «@ Mencionar» and «Enlazar problema» buttons in the comment box | Planned | **Today:** the comment box has only the «$ LaTeX» button |
 | Figures in comments | Planned | **Today:** text and math only |
@@ -81,7 +81,7 @@ A Ruta is an ordered path through existing material. See
 | Automatic review when a problem is proposed | Planned | **Today:** automatic checks run when saving; an editor or admin approves or rejects on `/panel/revision` (or with `npm run review`) |
 | Moderation page for reports of inappropriate content | Done | `/panel/moderacion`, editors and admins. Only reports: comments, and problems and lessons reported with «Reportar». A reported problem or lesson links to the page and to «Editar», and is marked resolved or dismissed with an optional note. Reported comments are dismissed with a note, or deleted with a reason. Filters: open, resolved, dismissed. Content corrections are not here: they go to Revisión |
 | Suggest changes to official problems and lessons | Done | «Sugerir un cambio» (message only). Editors and admins see them in Revisión, open «Editar problema» or «Editar lección» from there, and mark each one «Aplicada» or «Descartar» with an optional note |
-| Follow other users | Planned | |
+| Follow other users | Done | «Seguir» / «Siguiendo» on a profile; follower and following lists on each profile. No notification for new followers yet |
 | Threads (a forum separate from problem comments) | Planned | **Today:** discussion happens only in the comments under each problem |
 
 ## Accounts and roles
@@ -100,10 +100,11 @@ A Ruta is an ordered path through existing material. See
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Profile with public parts (username, avatar, role, badges, comments) and private parts (email, lists) | Planned | **Today:** the avatar menu has «Mis envíos», notifications and «Cerrar sesión» |
-| Followed Rutas, saved items, «continue where you left off» | Planned | |
-| Preset avatars | Planned | **Today:** the avatar is the first letter of the username |
-| Earned badges | Planned | |
+| Profile page `/perfil/<username>` («Mi Espacio» in the avatar menu) | Done | Profile card, «En números» and tabs: Actividad, Comentarios, Listas, Mis envíos, Insignias. Visitors see only Comentarios, Listas and Insignias. The email, Actividad, Mis envíos and private lists are only sent to the owner by the server. See [PROFILES.md](PROFILES.md) |
+| «Editar perfil»: preset avatars and a short description | Done | 12 preset avatars (no uploads) and up to 160 characters. Shown in the navbar, on comments and in follower lists |
+| «Lo resolví» on problems | Done | The student marks a problem solved (nothing checks the answer). Counts as «problemas resueltos» |
+| Earned badges | Done | Problems solved (1/10/50), comments (1/10/50), accepted problems (1/5/20), applied suggestions (1/5/20), and Editor/Admin. Never taken away. See [PROFILES.md](PROFILES.md#lo-resolví-and-badges) |
+| Followed Rutas, «continue where you left off» | Planned | **Today:** Actividad lists your recent comments, saves, solves, proposals and suggestions |
 
 ## Other pages
 

@@ -17,8 +17,8 @@ can train without hunting for material.
 | Inicio | Home page with «Problema del día» | Done |
 | Rutas | Ordered study paths with progress. The OMM Ruta has Preparación and 5 ciclos | Partial: Preparación and Ciclo 1 are complete; Ciclo 2 has 2 lessons |
 | Entrenamiento | Libraries: Problemas (56), Teoría (37 lessons), Exámenes (3), Listas (6) and Recursos externos (3) | Done. New lesson format and a visual refresh in progress |
-| Community | Comments, proposing problems, error reports | Partial: moderation and editor screens are planned |
-| Mi Espacio | Profile, saved items, badges | Planned |
+| Community | Comments, proposing problems, suggestions and reports, moderation and review | Done. Forum and @mentions are planned |
+| Mi Espacio | Profile, personal lists, following, «Lo resolví», badges | Done ([PROFILES.md](docs/PROFILES.md)) |
 | Experiencias, Equipo, Universidad | Blog, team, university guides | Planned («Próximamente» today) |
 
 Every feature, with what works today and what is planned:
@@ -50,6 +50,7 @@ Setup, tests and every npm script: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | [FEATURES.md](docs/FEATURES.md) | Every feature, done or planned, and how the site works today |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the code is split: folders, pages, API, data model |
 | [ROLES.md](docs/ROLES.md) | User, Editor and Admin: who can do what |
+| [PROFILES.md](docs/PROFILES.md) | Mi Espacio: profiles, privacy, personal lists, following and badges |
 | [SUBMISSIONS.md](docs/SUBMISSIONS.md) | Community problems, exam folders, error reports and their review |
 | [CONTENT.md](docs/CONTENT.md) | How lessons, problems, lists, exams and Rutas are written and published |
 | [CONTENT_IMPORT.md](docs/CONTENT_IMPORT.md) | Loading official content into a database |

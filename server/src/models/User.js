@@ -18,6 +18,7 @@
 
 import mongoose from 'mongoose'
 import { DEFAULT_ROLE, LEGACY_ROLES, ROLES } from '../lib/permissions.js'
+import { AVATAR_IDS, BIO_MAX } from '../lib/profile.js'
 
 const userSchema = new mongoose.Schema(
   {
@@ -59,6 +60,13 @@ const userSchema = new mongoose.Schema(
       default: DEFAULT_ROLE,
       required: true,
     },
+
+    // Mi Espacio: una descripción corta (texto simple) y un avatar elegido
+    // de la lista fija (no hay fotos subidas). Sin avatar guardado, el sitio
+    // usa uno fijo calculado del id (ver avatarOf en lib/profile.js), así que
+    // las cuentas viejas no necesitan migración.
+    bio: { type: String, trim: true, maxlength: BIO_MAX, default: '' },
+    avatar: { type: String, enum: [...AVATAR_IDS, null], default: null },
   },
   { timestamps: true }, // agrega automáticamente createdAt y updatedAt
 )

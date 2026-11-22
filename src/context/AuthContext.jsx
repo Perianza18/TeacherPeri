@@ -40,6 +40,16 @@ export function AuthProvider({ children }) {
     setModalAbierto(false)
   }
 
+  // After «Editar perfil»: keeps the navbar avatar in step without a reload.
+  const updateUser = (changes) => {
+    setAuth((actual) => {
+      if (!actual) return actual
+      const siguiente = { ...actual, user: { ...actual.user, ...changes } }
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(siguiente))
+      return siguiente
+    })
+  }
+
   const logout = () => {
     setAuth(null)
     localStorage.removeItem(AUTH_STORAGE_KEY)
@@ -77,6 +87,7 @@ export function AuthProvider({ children }) {
     auth,
     login,
     logout,
+    updateUser,
     // abrirModal('signup') abre directo en «Crear cuenta». Cualquier otro
     // argumento (o el evento de un onClick={abrirModal}) abre en «Iniciar sesión».
     abrirModal: (modo) => setModalAbierto(modo === 'signup' ? 'signup' : 'login'),

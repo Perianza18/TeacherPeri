@@ -12,7 +12,12 @@ The server checks the role on every request; the website only hides buttons.
 | **Admin** | + restore deleted problems; name editors; get notified when an editor changes or reviews something | Done, except restoring: Usuarios (`/panel/usuarios`), Cambios de editores (`/panel/cambios`) and a notification for every editor change or review decision. Restoring deleted problems is still only `npm run review -- restore` ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
 Role badges: comments show «Editor» or «Admin» next to the username. Users get
-no badge.
+no badge. Profiles show every role as a pill (Usuario, Editor, Admin), and
+editors and admins earn a role badge in Insignias.
+
+Profiles have fixed privacy, the same for every role: the email, Actividad,
+Mis envíos and private lists are only for their owner, including for editors
+and admins. See [PROFILES.md](PROFILES.md).
 
 ## Where it lives in the code
 

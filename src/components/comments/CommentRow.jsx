@@ -1,16 +1,11 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { profilePath } from '../../lib/profile'
+import Avatar from '../profile/Avatar'
 import MathText from '../math/MathText'
 import RoleBadge from '../RoleBadge'
 import CommentComposer from './CommentComposer'
 import ReasonForm from './ReasonForm'
-
-const AVATAR_FILLS = ['#e8ddff', '#d9f1ff', '#ffe2c4', '#d8f5e8']
-
-function avatarFill(name) {
-  let sum = 0
-  for (const char of name) sum += char.charCodeAt(0)
-  return AVATAR_FILLS[sum % AVATAR_FILLS.length]
-}
 
 function formatDate(value) {
   return new Date(value).toLocaleString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
@@ -20,15 +15,17 @@ const actionClass = 'inline-flex min-h-11 items-center px-1 text-sm font-semibol
 
 // Una fila del hilo. `panel` decide qué se abre debajo: responder, reportar,
 // eliminar (con motivo si eres editor o admin) o confirmar tu propia eliminación.
-export default function CommentRow({ comment, viewer, onReply, onReport, onDelete }) {
+// `highlighted`: the comment a link pointed at (#comentario-<id>); it glows briefly.
+export default function CommentRow({ comment, viewer, onReply, onReport, onDelete, highlighted = false }) {
   const [panel, setPanel] = useState(null)
   const [notice, setNotice] = useState(null)
   const indent = { '--depth': comment.depth }
-  const indentClass = 'pl-[calc(var(--depth)*1.25rem)] sm:pl-[calc(var(--depth)*3.25rem)]'
+  const indentClass = `scroll-mt-28 pl-[calc(var(--depth)*1.25rem)] sm:pl-[calc(var(--depth)*3.25rem)] ${highlighted ? 'tp-flash' : ''}`
+  const anchor = `comentario-${comment._id}`
 
   if (comment.deleted) {
     return (
-      <li className={`py-2 ${indentClass}`} style={indent}>
+      <li id={anchor} className={`py-2 ${indentClass}`} style={indent}>
         <p className="text-sm italic text-brand-600">
           {comment.deletedAs === 'moderacion' ? 'Comentario eliminado por moderación' : 'Comentario eliminado por su autor'}
         </p>
@@ -48,18 +45,14 @@ export default function CommentRow({ comment, viewer, onReply, onReport, onDelet
   }
 
   return (
-    <li className={`py-2 ${indentClass}`} style={indent}>
+    <li id={anchor} className={`py-2 ${indentClass}`} style={indent}>
       <div className="flex gap-3">
-        <span
-          aria-hidden="true"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-black text-sm font-black text-brand-900"
-          style={{ backgroundColor: avatarFill(username) }}
-        >
-          {username.charAt(0).toUpperCase()}
-        </span>
+        <Avatar id={comment.author?.avatar} size="sm" />
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-            <strong className="font-bold text-brand-900">{username}</strong>
+            {comment.author?.username
+              ? <Link to={profilePath(comment.author.username)} className="font-bold text-brand-900 hover:text-tp-violet hover:underline">{username}</Link>
+              : <strong className="font-bold text-brand-900">{username}</strong>}
             <RoleBadge role={comment.author?.role} />
             <time dateTime={comment.createdAt} className="text-brand-600">{formatDate(comment.createdAt)}</time>
           </p>

@@ -10,6 +10,10 @@ export default function useDialog(onClose) {
     const focusable = () => [...(ref.current?.querySelectorAll(selectors) || [])].filter((node) => node.getClientRects().length)
     ;(ref.current?.querySelector('input') || focusable()[0])?.focus()
     const keydown = (event) => {
+      // A dialog opened on top of this one (e.g. «Guardar en lista» inside the
+      // problem window) handles its own keys.
+      const top = document.activeElement?.closest?.('[aria-modal="true"]')
+      if (top && ref.current && top !== ref.current) return
       if (event.key === 'Escape') { event.preventDefault(); onClose() }
       if (event.key !== 'Tab') return
       const nodes = focusable()
