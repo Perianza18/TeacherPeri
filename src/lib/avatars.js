@@ -1,6 +1,10 @@
 // Preset avatars for Mi Espacio (DESIGN §4: circles, 2px ink border, pastel
-// fill; presets only, no uploads). Each one is a simple math shape drawn in
-// ink on a 40×40 grid. The server knows only the ids (server/src/lib/profile.js).
+// fill; presets only, no uploads). The first twelve are simple math shapes
+// drawn in ink on a 40×40 grid; the rest are illustrated drawings, 256 px
+// square WebP with a transparent background (src/assets/avatars/). The server
+// knows only the ids (server/src/lib/profile.js).
+
+const DRAWINGS = import.meta.glob('../assets/avatars/*.webp', { eager: true, import: 'default' })
 
 const FILLS = ['#eee7ff', '#e5f1ff', '#fff4cc', '#d8f5e8', '#ffe4e1', '#e8ddff']
 
@@ -17,7 +21,41 @@ export const AVATARS = [
   { id: 'a10', name: 'Cuadrado con diagonal', paths: ['M10 10 H30 V30 H10 Z', 'M10 30 L30 10'] },
   { id: 'a11', name: 'Integral', paths: ['M24 9 q-4 -1 -4 4 V27 q0 5 -4 4'] },
   { id: 'a12', name: 'Ángulo', paths: ['M9 30 H31', 'M9 30 L27 12', 'M17 30 a8 8 0 0 0 -2.3 -5.7'] },
-].map((avatar, index) => ({ ...avatar, fill: FILLS[index % FILLS.length] }))
+  { id: 'pinguino-compu', name: 'Pingüino en la compu' },
+  { id: 'ajolote-matematico', name: 'Ajolote matemático' },
+  { id: 'de-hecho', name: 'Gato «de hecho»' },
+  { id: 'gato-programador', name: 'Gato programador' },
+  { id: 'hamster-rapido', name: 'Hámster escribiendo rápido' },
+  { id: 'gato-estresado', name: 'Gato estresado' },
+  { id: 'gato-llorando', name: 'Gato llorando' },
+  { id: 'gato-dormido', name: 'Gato dormido sobre la tarea' },
+  { id: 'mucha-tarea', name: 'Perrito con mucha tarea' },
+  { id: 'ternurin-cansado', name: 'Ternurín cansado' },
+  { id: 'vaquita-enojada', name: 'Vaquita enojada' },
+  { id: 'gatito-batalla', name: 'Gatito listo para la batalla' },
+].map((avatar, index) => ({
+  ...avatar,
+  fill: FILLS[index % FILLS.length],
+  ...(avatar.paths ? {} : { src: DRAWINGS[`../assets/avatars/${avatar.id}.webp`] }),
+}))
+
+export const SHAPE_AVATARS = AVATARS.filter((avatar) => avatar.paths)
+export const DRAWING_AVATARS = AVATARS.filter((avatar) => avatar.src)
+
+// Backgrounds a person can pick for any avatar in «Editar perfil». Without one
+// (null), the avatar keeps its own fill.
+export const AVATAR_COLORS = [
+  { id: 'amarillo', name: 'Amarillo', value: 'var(--tp-yellow)' },
+  { id: 'cielo', name: 'Cielo', value: 'var(--tp-sky)' },
+  { id: 'menta', name: 'Menta', value: 'var(--tp-mint)' },
+  { id: 'lila', name: 'Lila', value: 'var(--tp-tint-violet)' },
+  { id: 'naranja', name: 'Naranja', value: 'var(--tp-orange)' },
+  { id: 'durazno', name: 'Durazno', value: 'var(--tp-tint-orange)' },
+]
+const COLOR_BY_ID = new Map(AVATAR_COLORS.map((color) => [color.id, color.value]))
+
+// The circle's background: the chosen colour, or the avatar's own fill.
+export const avatarFill = (avatar, colorId) => COLOR_BY_ID.get(colorId) ?? avatar.fill
 
 const BY_ID = new Map(AVATARS.map((avatar) => [avatar.id, avatar]))
 

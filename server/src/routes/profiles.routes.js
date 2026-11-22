@@ -1,7 +1,7 @@
 // Mi Espacio (profiles)
 //
 // GET    /api/profiles/:username              public; `email` only for the owner
-// PUT    /api/profiles/me                     signed in: { avatar, bio }
+// PUT    /api/profiles/me                     signed in: { avatar, avatarColor, bio }
 // GET    /api/profiles/:username/followers    public, 50 per page (?page=)
 // GET    /api/profiles/:username/following    public, 50 per page
 // PUT    /api/profiles/:username/follow       signed in, not yourself
@@ -28,7 +28,7 @@ import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { requireAuth } from '../middleware/auth.js'
 import { optionalAuth } from '../middleware/optionalAuth.js'
 import { roleOf } from '../lib/permissions.js'
-import { AVATAR_IDS, avatarOf, isOwner, parseBio } from '../lib/profile.js'
+import { AVATAR_COLORS, AVATAR_IDS, avatarColorOf, avatarOf, isOwner, parseBio } from '../lib/profile.js'
 import { awardBadges, publicCommentFilter } from '../lib/badges.js'
 import { contentNames, problemHref } from '../lib/profileContent.js'
 import { ownSubmissionViews } from '../lib/submissions.js'
@@ -40,11 +40,11 @@ const COMMENT_PAGE = 20
 const ACTIVITY_LIMIT = 30
 
 const page = (value) => Math.max(1, Math.min(1000, Number.parseInt(value, 10) || 1))
-export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), role: roleOf(user) })
+export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), avatarColor: avatarColorOf(user), role: roleOf(user) })
 
 async function findProfile(req, res) {
   const username = typeof req.params.username === 'string' ? req.params.username : ''
-  const user = username ? await User.findOne({ username }).select('username email role bio avatar createdAt').lean() : null
+  const user = username ? await User.findOne({ username }).select('username email role bio avatar avatarColor createdAt').lean() : null
   if (!user) res.status(404).json({ error: 'Ese perfil no existe.' })
   return user
 }
@@ -60,12 +60,16 @@ router.put('/me', requireAuth, async (req, res) => {
     if (!AVATAR_IDS.includes(req.body.avatar)) return res.status(400).json({ error: 'Elige uno de los avatares.' })
     update.avatar = req.body.avatar
   }
+  if ('avatarColor' in req.body) {
+    if (req.body.avatarColor !== null && !AVATAR_COLORS.includes(req.body.avatarColor)) return res.status(400).json({ error: 'Elige uno de los colores.' })
+    update.avatarColor = req.body.avatarColor
+  }
   if ('bio' in req.body) {
     const bio = parseBio(req.body.bio)
     if (bio.error) return res.status(400).json({ error: bio.error })
     update.bio = bio.value
   }
-  const user = await User.findByIdAndUpdate(req.userId, update, { new: true, runValidators: true }).select('username role bio avatar').lean()
+  const user = await User.findByIdAndUpdate(req.userId, update, { new: true, runValidators: true }).select('username role bio avatar avatarColor').lean()
   res.json({ ...personView(user), bio: user.bio ?? '' })
 })
 
@@ -100,7 +104,7 @@ async function followList(req, res, field, other) {
   const filter = { [field]: user._id }
   const [total, rows] = await Promise.all([
     Follow.countDocuments(filter),
-    Follow.find(filter).sort({ createdAt: -1 }).skip((current - 1) * FOLLOW_PAGE).limit(FOLLOW_PAGE).populate(other, 'username role avatar').lean(),
+    Follow.find(filter).sort({ createdAt: -1 }).skip((current - 1) * FOLLOW_PAGE).limit(FOLLOW_PAGE).populate(other, 'username role avatar avatarColor').lean(),
   ])
   res.json({ total, page: current, pageSize: FOLLOW_PAGE, items: rows.filter((row) => row[other]).map((row) => personView(row[other])) })
 }

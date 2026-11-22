@@ -104,7 +104,7 @@ function AccountMenu({ user, token, logout }) {
         aria-label={`Cuenta de ${user.username}${notifications.unread ? `, ${notifications.unread} ${notifications.unread === 1 ? 'notificación nueva' : 'notificaciones nuevas'}` : ''}`}
         className="relative grid h-11 w-11 place-items-center rounded-full"
       >
-        <Avatar id={user.avatar} />
+        <Avatar id={user.avatar} color={user.avatarColor} />
         {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-tp-ink bg-tp-orange px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
       </button>
       {open && (

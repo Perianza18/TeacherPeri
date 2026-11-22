@@ -116,7 +116,7 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/reports/content` | Con sesión: `POST /` («Reportar» un problema o una lección). Editores y admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Con sesión: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
 | `/api/flags` | Sugerencias. Con sesión: `POST /`, `GET /mine` (las tuyas). Editores y admins: `GET /`, `POST /:id/status` |
-| `/api/profiles` | Público: `GET /:username` (`email` solo para el dueño), `GET /:username/followers`, `/following`, `/comments`, `/lists` (las privadas solo para el dueño), `/badges`. Solo el dueño: `GET /:username/activity` (404 para cualquier otra persona). Con sesión: `PUT /me` (`avatar`, `bio`), `PUT`/`DELETE /:username/follow` |
+| `/api/profiles` | Público: `GET /:username` (`email` solo para el dueño), `GET /:username/followers`, `/following`, `/comments`, `/lists` (las privadas solo para el dueño), `/badges`. Solo el dueño: `GET /:username/activity` (404 para cualquier otra persona). Con sesión: `PUT /me` (`avatar`, `avatarColor`, `bio`), `PUT`/`DELETE /:username/follow` |
 | `/api/my-lists` | Listas personales. Con sesión: `GET /containing?itemType=&item=`, `POST /`. Dueño: `PATCH /:id`, `DELETE /:id`, `POST /:id/items`, `DELETE /:id/items/:itemType/:item`. `GET /:id`: el dueño, o cualquiera si la lista es pública (si no, 404) |
 | `/api/problems/:problemId/solved` | Con sesión: `GET`, `PUT`, `DELETE` («Lo resolví») |
 | `/api/notifications` | Con sesión: `GET /`, `POST /read` |
@@ -166,7 +166,8 @@ Los modelos están en `server/src/models/`.
   `ContentRevision` (un cambio directo de un editor o admin, con cada campo antes
   y después, o una decisión tomada en Revisión), `ContactMessage`.
 - **Los usuarios** (`User`) tienen un rol: `user`, `editor` o `admin`, además de
-  un `avatar` prediseñado y una descripción corta (`bio`).
+  un `avatar` prediseñado con su color de fondo (`avatarColor`) y una
+  descripción corta (`bio`).
 - **Mi Espacio:** `Follow` (quién sigue a quién), `UserList` y `UserListItem`
   (listas personales de problemas y lecciones), `ProblemSolve` («Lo resolví») y
   `UserBadge` (insignias ganadas, nunca se quitan). Ver [PROFILES.md](PROFILES.md).

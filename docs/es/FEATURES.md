@@ -102,7 +102,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Función | Estado | Notas |
 | --- | --- | --- |
 | Página de perfil `/perfil/<usuario>` («Mi Espacio» en el menú del avatar) | Hecho | Tarjeta del perfil, «En números» y pestañas: Actividad, Comentarios, Listas, Mis envíos, Insignias. Los visitantes solo ven Comentarios, Listas e Insignias. El servidor solo manda al dueño el correo, la Actividad, Mis envíos y las listas privadas. Ver [PROFILES.md](PROFILES.md) |
-| «Editar perfil»: avatares prediseñados y una descripción corta | Hecho | 12 avatares prediseñados (sin fotos) y hasta 160 caracteres. Se ven en la barra, en los comentarios y en las listas de seguidores |
+| «Editar perfil»: avatares prediseñados y una descripción corta | Hecho | 24 avatares prediseñados (12 dibujos y 12 figuras matemáticas, sin fotos), un color de fondo para ellos y hasta 160 caracteres. Se ven en la barra, en los comentarios y en las listas de seguidores |
 | «Lo resolví» en los problemas | Hecho | El estudiante marca un problema como resuelto (nada revisa la respuesta). Cuenta como «problemas resueltos» |
 | Insignias ganadas | Hecho | Problemas resueltos (1/10/50), comentarios (1/10/50), problemas aceptados (1/5/20), sugerencias aplicadas (1/5/20), y Editor/Admin. Nunca se pierden. Ver [PROFILES.md](PROFILES.md#lo-resolví-e-insignias) |
 | Rutas que sigues, «continúa donde te quedaste» | Planeado | **Hoy:** Actividad muestra tus comentarios, cosas guardadas, problemas resueltos, propuestas y sugerencias recientes |
