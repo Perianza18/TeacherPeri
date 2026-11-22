@@ -80,7 +80,9 @@ All routes are in `src/App.jsx`. Every visible text is in Spanish.
 | `/entrenamiento/problemas/proponer` | Propose a problem |
 | `/entrenamiento/teoria`, `/entrenamiento/teoria/:id` | Lesson library and lesson page |
 | `/entrenamiento/examenes`, `/entrenamiento/examenes/:id` | Exam library and exam page |
-| `/listas`, `/listas/:id` | Lists. Old `/entrenamiento/listas` links redirect here |
+| `/entrenamiento/listas`, `/entrenamiento/listas/:id` | «Listas» tab: TeacherPeri's problem lists, and a list page |
+| `/entrenamiento/recursos`, `/entrenamiento/recursos/:id` | «Recursos externos» tab: links to other publishers (OMM, IMO, NRICH), and a resource page |
+| `/listas`, `/listas/:id` | Old addresses: redirect to `/entrenamiento/listas` |
 | `/mis-envios`, `/mis-envios/:id` | The user's proposals, and the page to edit one |
 | `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Team pages for editors and admins (see [ROLES.md](ROLES.md#where-the-team-pages-are)) |
 | `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Team pages for admins only |
@@ -104,7 +106,7 @@ needs a signed-in user, and the server checks the role on every request (see
 | `/api/auth` | `POST /signup`, `POST /login`, `GET /me` |
 | `/api/problems` | `GET /` (search, filters, pages), `GET /facets`, `GET /:id` |
 | `/api/problems/:problemId/comments` | `GET /`, `POST /`, `DELETE /:commentId`, `POST /:commentId/reports` |
-| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id` |
+| `/api/theory`, `/api/lists`, `/api/exams` | `GET /`, `GET /:id`. `GET /api/lists?source=teacherperi` or `?source=external` returns only TeacherPeri lists or only external resources |
 | `/api/collections` | `GET /:slug`: the problem boxes of one lesson. `GET /?codes=A,B`: the problems of a `[[problems:…]]` box |
 | `/api/paths` | `GET /` (also `?traversal=a/b` for a path through several Rutas), `GET /:slug`, `GET /:slug/progress`, `PUT /:slug/completion` |
 | `/api/categories`, `/api/topics`, `/api/tags` | `GET /`: folders, áreas and tags |

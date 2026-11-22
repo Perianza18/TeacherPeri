@@ -16,8 +16,7 @@ can train without hunting for material.
 | --- | --- | --- |
 | Inicio | Home page with «Problema del día» | Done |
 | Rutas | Ordered study paths with progress. The OMM Ruta has Preparación and 5 ciclos | Partial: Preparación and Ciclo 1 are complete; Ciclo 2 has 2 lessons |
-| Entrenamiento | Libraries: Problemas (56), Teoría (37 lessons), Exámenes (3) | Done. New lesson format and a visual refresh in progress |
-| Listas | 6 problem lists and 3 external resources | Done |
+| Entrenamiento | Libraries: Problemas (56), Teoría (37 lessons), Exámenes (3), Listas (6) and Recursos externos (3) | Done. New lesson format and a visual refresh in progress |
 | Community | Comments, proposing problems, error reports | Partial: moderation and editor screens are planned |
 | Mi Espacio | Profile, saved items, badges | Planned |
 | Experiencias, Equipo, Universidad | Blog, team, university guides | Planned («Próximamente» today) |

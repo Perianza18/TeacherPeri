@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import HomePage from './pages/HomePage'
-import ListasPage, { RedirectToListas } from './pages/ListasPage'
+import RedirectToEntrenamientoListas from './pages/ListasPage'
 
 // Every page but Inicio loads on demand, so the first visit downloads only
 // what Inicio needs; each page's code arrives when someone opens it.
@@ -62,13 +62,13 @@ function App() {
             <Route path="teoria/:id" element={<LibraryDetailPage type="teoria" />} />
             <Route path="examenes" element={<LibraryCollection type="exams" title="Exámenes" subtitle="Exámenes que reutilizan Problemas existentes en su orden original." />} />
             <Route path="examenes/:id" element={<LibraryDetailPage type="examenes" />} />
+            <Route path="listas" element={<LibraryCollection key="listas" type="lists" source="teacherperi" title="Listas" subtitle="Colecciones de problemas de TeacherPeri para practicar un tema a la vez." />} />
+            <Route path="listas/:id" element={<LibraryDetailPage type="listas" />} />
+            <Route path="recursos" element={<LibraryCollection key="recursos" type="lists" source="external" title="Recursos externos" subtitle="Materiales de otras organizaciones, enlazados a su fuente original." />} />
+            <Route path="recursos/:id" element={<LibraryDetailPage type="listas" />} />
           </Route>
-          <Route path="/entrenamiento/listas" element={<RedirectToListas />} />
-          <Route path="/entrenamiento/listas/:id" element={<RedirectToListas />} />
-          <Route path="/listas" element={<ListasPage />}>
-            <Route index element={<LibraryCollection type="lists" eyebrow="Listas" title="Listas" subtitle="Colecciones de problemas para practicar y recursos externos enlazados a su fuente original." />} />
-            <Route path=":id" element={<LibraryDetailPage type="listas" />} />
-          </Route>
+          <Route path="/listas" element={<RedirectToEntrenamientoListas />} />
+          <Route path="/listas/:id" element={<RedirectToEntrenamientoListas />} />
           <Route path="/mis-envios" element={<MisEnviosPage />} />
           <Route path="/mis-envios/:id" element={<EditarEnvioPage />} />
           <Route path="/panel" element={<PanelPage />} />
