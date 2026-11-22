@@ -30,11 +30,24 @@ export default function CommentSection({ problemId, auth, onAuthExpired, signIn 
   // If it is gone, the page opens at the comments.
   const { hash } = useLocation()
   const linked = hash.startsWith('#comentario-') ? hash.slice('#comentario-'.length) : null
+  // The page above may still grow while it loads (content, images), so the
+  // scroll is checked again twice and corrected; it stops as soon as the
+  // person scrolls or types.
   useEffect(() => {
     if (!linked || loading) return
-    const target = document.getElementById(`comentario-${linked}`) || document.getElementById(`comentarios-${problemId}`)
+    const target = () => document.getElementById(`comentario-${linked}`) || document.getElementById(`comentarios-${problemId}`)
     const smooth = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    target?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' })
+    const go = (behavior) => target()?.scrollIntoView({ behavior, block: 'center' })
+    const offScreen = () => {
+      const rect = target()?.getBoundingClientRect()
+      return rect && (rect.top < 0 || rect.bottom > window.innerHeight)
+    }
+    go(smooth ? 'smooth' : 'auto')
+    const timers = [500, 1200].map((delay) => setTimeout(() => { if (offScreen()) go('auto') }, delay))
+    const stop = () => timers.forEach(clearTimeout)
+    const events = ['wheel', 'touchstart', 'keydown']
+    events.forEach((name) => window.addEventListener(name, stop, { once: true, passive: true }))
+    return () => { stop(); events.forEach((name) => window.removeEventListener(name, stop)) }
   }, [linked, loading, problemId])
 
   useEffect(() => {
