@@ -99,7 +99,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
       <h3 className="font-display text-[21px] font-extrabold leading-tight tracking-[-0.02em]"><Link to={`${LIBRARY_BASE[type]}/${item._id}`} className="hover:text-tp-violet">{titleOf(type, item)}</Link></h3>
       {item.enunciado ? <MathText text={item.enunciado} className="mt-3 line-clamp-4 text-sm leading-6 text-tp-ink-muted" /> : item.summary && <p className="mt-3 line-clamp-4 text-sm leading-6 text-tp-ink-muted">{item.summary}</p>}
       {item.sourceOrganization && <p className="mt-4 text-xs text-tp-ink-muted">Fuente: {item.sourceOrganization}</p>}
-      {type === 'exams' && <p className="mt-4 text-xs text-tp-ink-muted">{item.problems?.length || 0} problemas · {item.durationMinutes || 'Sin límite de'} minutos</p>}
+      {type === 'exams' && <p className="mt-4 text-xs text-tp-ink-muted">{item.problems?.length === 1 ? '1 problema' : `${item.problems?.length || 0} problemas`} · {item.durationMinutes || 'Sin límite de'} minutos</p>}
       <div className="mt-auto flex flex-wrap items-center gap-4 pt-6 text-sm font-bold"><Link to={`${LIBRARY_BASE[type]}/${item._id}`} className="rounded-lg border-2 border-tp-ink bg-tp-mint px-3 py-1.5 transition-colors hover:bg-tp-yellow">Abrir →</Link>{onOpen && <button onClick={() => onOpen(item)} className="text-tp-violet underline-offset-2 hover:underline">Comentarios</button>}</div>
       </div>
     </article>)}</div>}

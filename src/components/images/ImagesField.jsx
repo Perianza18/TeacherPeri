@@ -44,7 +44,7 @@ export default function ImagesField({ value, onChange, token, allowSolution = fa
     <div className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-bold">Imágenes (opcional)</p>
-        <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">Hasta {IMAGES_PER_PROBLEM}: PNG, JPG o WebP de máximo 5 MB. Cada una necesita una descripción para quien no puede verla, por ejemplo «Triángulo $ABC$ con $\angle A = 90^\circ$». La descripción no aparece en la página: la leen los lectores de pantalla. Puedes usar $…$ para las fórmulas.</p>
+        <p id={`${id}-ayuda`} className="mt-1 text-sm text-tp-ink-muted">Hasta {IMAGES_PER_PROBLEM}: PNG, JPG o WebP de máximo 5 MB. Cada una necesita una descripción para quien no puede verla, por ejemplo «Triángulo $ABC$ con la altura desde $A$ marcada». La descripción no aparece en la página: la leen los lectores de pantalla. Puedes usar $…$ para las fórmulas.</p>
       </div>
       <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/webp" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
       {value.length > 0 && (
