@@ -1,19 +1,24 @@
-import { useDeferredValue, useId, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useDeferredValue, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import PanelShell, { LoadState, Segmented } from '../../components/panel/PanelShell'
 import ArticleText from '../../components/training/ArticleText'
 import { apiFetch } from '../../lib/api'
-import { parseArticle } from '../../lib/theoryArticle'
+import { codesOfKey, parseArticle } from '../../lib/theoryArticle'
+import { insertSnippet } from '../../lib/lessonMarkup'
+import ToolbarA from '../../components/lessonEditor/ToolbarA'
+import ToolbarB from '../../components/lessonEditor/ToolbarB'
 import { useApiData } from '../../lib/panel'
 
 const LIMITS = { title: 200, summary: 600, content: 200000 }
 
 // Problem boxes ([[collection:…]]) need data from the bank; the preview
 // shows where they go instead.
+const BOX_NAMES = { ejercicios: 'Ejercicios', practice: 'Práctica', dificiles: 'Reto' }
 function CollectionPlaceholder(slug, kind) {
+  const codes = codesOfKey(slug)
   return (
     <div className="tp-card-quiet bg-tp-yellow-soft p-4 font-sans text-sm">
-      <strong>Caja de problemas</strong> «{slug}» ({kind}). En la lección publicada aquí aparecen sus problemas.
+      <strong>Caja de problemas · {BOX_NAMES[kind] ?? kind}</strong> {codes ? codes.join(', ') : `«${slug}»`}. En la lección publicada aquí aparecen sus problemas.
     </div>
   )
 }
@@ -40,10 +45,35 @@ function LessonForm({ initial, token }) {
   const [base, setBase] = useState(initial)
   const [form, setForm] = useState({ title: initial.title, summary: initial.summary, content: initial.content })
   const [view, setView] = useState('write')
+  const textarea = useRef(null)
+  const pendingSelection = useRef(null)
+  // While the two toolbar designs are in review: ?variante=a (default) or b.
+  const [params, setParams] = useSearchParams()
+  const variante = params.get('variante') === 'b' ? 'b' : 'a'
   const [state, setState] = useState({ busy: false, error: null, saved: null })
   const deferred = useDeferredValue(form.content)
   const article = useMemo(() => parseArticle(deferred), [deferred])
   const set = (field, value) => setForm((current) => ({ ...current, [field]: value }))
+
+  // Toolbar: build(selected) → snippet, written at the cursor (or around the
+  // selection); then the new text stays selected so the author types over it.
+  const insert = (build) => {
+    const el = textarea.current
+    if (!el) return
+    const { selectionStart: start, selectionEnd: end } = el
+    const next = insertSnippet(form.content, start, end, build(form.content.slice(start, end)))
+    pendingSelection.current = [next.start, next.end]
+    set('content', next.value)
+  }
+  // After the new text is on screen, put the cursor on the inserted part.
+  useLayoutEffect(() => {
+    const el = textarea.current
+    if (!el || !pendingSelection.current) return
+    const [start, end] = pendingSelection.current
+    pendingSelection.current = null
+    el.focus()
+    el.setSelectionRange(start, end)
+  }, [form.content])
 
   const save = async (event) => {
     event.preventDefault()
@@ -74,13 +104,21 @@ function LessonForm({ initial, token }) {
         </label>
       </section>
 
+      <div className="tp-card-quiet flex flex-col gap-2 bg-tp-yellow-soft p-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm font-semibold">Diseño de la barra (en revisión)</p>
+        <Segmented label="Diseño de la barra" value={variante} onChange={(value) => setParams((current) => { const next = new URLSearchParams(current); next.set('variante', value); return next }, { replace: true })} options={[{ value: 'a', label: 'Opción A' }, { value: 'b', label: 'Opción B' }]} />
+      </div>
       <div className="xl:hidden">
         <Segmented label="Vista" value={view} onChange={setView} options={[{ value: 'write', label: 'Escribir' }, { value: 'preview', label: 'Vista previa' }]} />
       </div>
       <div className="grid gap-6 xl:grid-cols-2">
-        <div className={`flex flex-col gap-2 ${view === 'write' ? '' : 'hidden xl:flex'}`}>
+        <div className={`flex min-w-0 flex-col gap-2 ${view === 'write' ? '' : 'hidden xl:flex'}`}>
           <label htmlFor={`${id}-texto`} className="text-sm font-bold">Texto de la lección</label>
-          <textarea id={`${id}-texto`} value={form.content} onChange={(event) => set('content', event.target.value)} maxLength={LIMITS.content} spellCheck className="tp-input min-h-[70vh] font-mono text-sm leading-6" />
+          {variante === 'a' && <ToolbarA insert={insert} />}
+          <div className={variante === 'b' ? 'flex min-w-0 flex-col gap-3 md:flex-row' : ''}>
+            {variante === 'b' && <ToolbarB insert={insert} />}
+            <textarea ref={textarea} id={`${id}-texto`} value={form.content} onChange={(event) => set('content', event.target.value)} maxLength={LIMITS.content} spellCheck className="tp-input min-h-[70vh] w-full min-w-0 font-mono text-sm leading-6" />
+          </div>
           <p className="text-xs text-tp-ink-muted">{form.content.length.toLocaleString('es-MX')} caracteres</p>
         </div>
         <section aria-label="Vista previa" className={`tp-card-soft min-w-0 bg-tp-paper p-5 sm:p-7 ${view === 'preview' ? '' : 'hidden xl:block'} xl:max-h-[calc(70vh+44px)] xl:overflow-y-auto`}>
