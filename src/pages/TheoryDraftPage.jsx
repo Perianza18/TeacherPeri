@@ -17,7 +17,10 @@ export default function TheoryDraftPage() {
       .map((problem) => ({ ...problem, _id: problem.codigo, href: null }))
     return entries.length ? <PracticeBox kind={kind} problems={entries} fullStatements /> : null
   }
-  const isProofTechnique = OMM_CURRICULUM.references.some((ref) => ref.parentSlug === 'tecnicas-de-demostracion' && ref.childSlug === slug)
-  const item = { ...lesson.theory, _id: slug, level: 'basico', topics: [{ name: isProofTechnique ? 'Técnicas de demostración' : 'Ciclo 1' }] }
+  const containsLesson = (path) => path.slug === slug || path.children.some(containsLesson)
+  const rootEntry = OMM_CURRICULUM.rootEntries.find(({ child }) => containsLesson(child))
+  const section = OMM_CURRICULUM.sections.find(({ key }) => key === rootEntry?.sectionKey)
+  const topic = section ? section.title.split(' — ')[0] : rootEntry?.child.title
+  const item = { ...lesson.theory, _id: slug, level: 'basico', topics: topic ? [{ name: topic }] : [] }
   return <TheoryView item={item} problems={[]} renderCollection={collection} />
 }
