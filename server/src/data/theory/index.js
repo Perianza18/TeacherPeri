@@ -34,12 +34,13 @@ import bases from './representacion-en-distintas-bases.js'
 import digitos from './problemas-de-digitos.js'
 import mixto from './entrenamiento-mixto-ciclo-1.js'
 import modular from './aritmetica-modular.js'
+import inversos from './inversos-y-congruencias-lineales.js'
 
 // Lessons rewritten in the lesson format of the theory page (spec «Página de
 // teoría», Part 2). Each file holds the new summary and text of one lesson,
 // the new banco problems it introduces and the problem collections its boxes
 // point to. mvpLessons.js applies them as the last layer.
-const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir, organizar, atasco, aprender, recursos, revisar, elegir, bases, digitos, mixto, modular]
+const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir, organizar, atasco, aprender, recursos, revisar, elegir, bases, digitos, mixto, modular, inversos]
 
 export const THEORY_REWRITES = Object.freeze(Object.fromEntries(LESSONS.map((lesson) => [lesson.pathSlug, lesson])))
 
