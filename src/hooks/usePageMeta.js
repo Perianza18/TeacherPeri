@@ -6,6 +6,7 @@ import { plainMathText } from '../lib/mathAlt'
 // the same defaults for crawlers that do not run JavaScript, so keep
 // DEFAULT_TITLE and DEFAULT_DESCRIPTION in step with it.
 //   title:       the page's own title; « | TeacherPeri» is added after it
+//   fullTitle:   true to use `title` as it is, without « | TeacherPeri»
 //   description: one or two sentences; $…$ math becomes plain text
 //                («90^\circ» → «90°») and it is cut near 160 characters,
 //                the length Google shows
@@ -50,9 +51,9 @@ function setNoindex(on) {
     .setAttribute('content', 'noindex')
 }
 
-export function usePageMeta({ title, description, noindex = false } = {}) {
+export function usePageMeta({ title, description, noindex = false, fullTitle = false } = {}) {
   useEffect(() => {
-    document.title = title ? `${title} | TeacherPeri` : DEFAULT_TITLE
+    document.title = title ? (fullTitle ? title : `${title} | TeacherPeri`) : DEFAULT_TITLE
     setDescription(description ? summarize(description) : DEFAULT_DESCRIPTION)
     setCanonical(noindex ? null : `${window.location.origin}${window.location.pathname}`)
     setNoindex(noindex)
@@ -62,5 +63,5 @@ export function usePageMeta({ title, description, noindex = false } = {}) {
       setCanonical(null)
       setNoindex(false)
     }
-  }, [title, description, noindex])
+  }, [title, description, noindex, fullTitle])
 }
