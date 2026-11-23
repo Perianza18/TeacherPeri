@@ -49,6 +49,23 @@ apply with the database name confirmed. Try them on the test database
 `teacherperi` before `teacherperi_prod`. Take a backup before a large change.
 Never run `db:reset:dev` against Atlas.
 
+## Sitemap
+
+`npm run build` generates `dist/sitemap.xml` after Vite. Production builds
+(`VERCEL_ENV=production`) read the public API and include problems, lessons,
+exams, lists, resources and public Rutas, with modification dates when available.
+All result pages are fetched and duplicate addresses are removed. Lesson-only
+Rutas are omitted, matching the catalog.
+
+Preview builds keep `public/sitemap.xml`. To test the full sitemap locally, run
+`SITEMAP=1 npm run build`. `VITE_API_URL` selects the API and `SITE_URL` selects
+the canonical domain; both default to production. If the API fails after two
+attempts, the static sitemap remains and deployment continues. New content is
+included on the next production deployment.
+
+After deployment, check `https://www.teacherperi.com/sitemap.xml` and submit that
+URL in Search Console. Tests are included in `npm run test:unit`.
+
 ## After a deploy
 
 Open https://www.teacherperi.com on a computer and a phone and check: the

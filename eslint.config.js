@@ -22,7 +22,7 @@ export default defineConfig([
   // variables globales distintas (process, etc.) y no tiene componentes de
   // React, así que apaga las reglas específicas de React para esta carpeta.
   {
-    files: ['server/**/*.js'],
+    files: ['server/**/*.js', 'scripts/**/*.js'],
     languageOptions: {
       globals: globals.node,
     },
