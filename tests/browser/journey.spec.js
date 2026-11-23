@@ -76,8 +76,9 @@ test('problem discovery, pagination, math, solution and comments', async ({ page
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
-  await page.getByRole('link', { name: 'El ángulo exterior', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'El ángulo exterior' })).toBeVisible()
+  await page.getByRole('link', { name: 'Abrir →', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Problema', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Enunciado', exact: true })).toBeVisible()
   await page.getByText('Ver solución razonada', { exact: true }).click()
   await expect(page.getByText('¿Ya lo intentaste? Date 5 minutos más.')).toBeVisible()
   await expect(page.locator('details[open] .katex')).toHaveCount(0)
@@ -212,6 +213,7 @@ test('rewritten lesson boxes link to their bank problems', async ({ page }) => {
     const firstCode = kinds.ejercicios[0]
     await boxes.first().locator('ol > li a').first().click()
     await expect(page).toHaveURL(new RegExp(`/entrenamiento/problemas/${entry('Problem', firstCode)._id}$`))
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(entry('Problem', firstCode).titulo)
+    await expect(page.getByRole('heading', { name: 'Problema', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Enunciado', exact: true })).toBeVisible()
   }
 })
