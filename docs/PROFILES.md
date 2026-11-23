@@ -33,9 +33,10 @@ of its answers, so it never reaches another person's browser.
   follower count shows that list instead (`?ver=seguidores` or
   `?ver=siguiendo`), with no tab selected and a «Volver» link.
 - **Editar perfil:** one of 24 preset avatars (no uploads): 12 illustrated
-  drawings and 12 math shapes. A background colour for it (yellow, sky, mint,
-  lilac, orange or peach, or «Original», the avatar's own fill). And a
-  description of up to 160 characters. Accounts that never chose an avatar
+  drawings and 12 math shapes. One of 13 light background colours for it
+  (`AVATAR_COLORS` in `src/lib/avatars.js`), or «Original», the avatar's own
+  fill. Dark backgrounds are left out because they show a white halo around
+  the drawings. And a description of up to 160 characters. Accounts that never chose an avatar
   get a fixed math shape picked from their id.
 
 ## Lists («Guardar en lista»)

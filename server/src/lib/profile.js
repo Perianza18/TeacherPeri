@@ -12,7 +12,10 @@ export const DRAWING_AVATAR_IDS = Object.freeze([
 export const AVATAR_IDS = Object.freeze([...SHAPE_AVATAR_IDS, ...DRAWING_AVATAR_IDS])
 // Background a person may choose for any avatar. Without one (null), each
 // avatar keeps its own pastel fill.
-export const AVATAR_COLORS = Object.freeze(['amarillo', 'cielo', 'menta', 'lila', 'naranja', 'durazno'])
+export const AVATAR_COLORS = Object.freeze([
+  'blanco', 'crema', 'amarillo', 'durazno', 'naranja', 'rosa', 'lila',
+  'celeste', 'cielo', 'turquesa', 'menta', 'salvia', 'arena',
+])
 export const BIO_MAX = 160
 
 // The saved avatar, or a stable one picked from the account id. The fallback

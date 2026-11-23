@@ -42,15 +42,23 @@ export const AVATARS = [
 export const SHAPE_AVATARS = AVATARS.filter((avatar) => avatar.paths)
 export const DRAWING_AVATARS = AVATARS.filter((avatar) => avatar.src)
 
-// Backgrounds a person can pick for any avatar in «Editar perfil». Without one
-// (null), the avatar keeps its own fill.
+// Backgrounds a person can pick for any avatar in «Editar perfil», light
+// enough for the drawings' soft edges (dark ones showed a white halo around
+// them). Without one (null), the avatar keeps its own fill.
 export const AVATAR_COLORS = [
+  { id: 'blanco', name: 'Blanco', value: '#ffffff' },
+  { id: 'crema', name: 'Crema', value: 'var(--tp-yellow-soft)' },
   { id: 'amarillo', name: 'Amarillo', value: 'var(--tp-yellow)' },
-  { id: 'cielo', name: 'Cielo', value: 'var(--tp-sky)' },
-  { id: 'menta', name: 'Menta', value: 'var(--tp-mint)' },
-  { id: 'lila', name: 'Lila', value: 'var(--tp-tint-violet)' },
-  { id: 'naranja', name: 'Naranja', value: 'var(--tp-orange)' },
   { id: 'durazno', name: 'Durazno', value: 'var(--tp-tint-orange)' },
+  { id: 'naranja', name: 'Naranja', value: 'var(--tp-orange)' },
+  { id: 'rosa', name: 'Rosa', value: '#ffd3dd' },
+  { id: 'lila', name: 'Lila', value: 'var(--tp-tint-violet)' },
+  { id: 'celeste', name: 'Celeste', value: 'var(--tp-tint-sky)' },
+  { id: 'cielo', name: 'Cielo', value: 'var(--tp-sky)' },
+  { id: 'turquesa', name: 'Turquesa', value: '#9fe3dc' },
+  { id: 'menta', name: 'Menta', value: 'var(--tp-mint)' },
+  { id: 'salvia', name: 'Salvia', value: '#d4e6c9' },
+  { id: 'arena', name: 'Arena', value: '#efe3cf' },
 ]
 const COLOR_BY_ID = new Map(AVATAR_COLORS.map((color) => [color.id, color.value]))
 
