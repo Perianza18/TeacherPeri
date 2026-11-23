@@ -8,7 +8,7 @@ import Theory from '../models/Theory.js'
 import Path from '../models/Path.js'
 import { buildMvpManifest, contentId } from '../data/mvpManifest.js'
 import { PREVIOUS_THEORY } from '../data/mvpLessons.js'
-import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
+import { THEORY_REWRITES } from '../data/theory/index.js'
 import { EARLIER_THEORY } from '../data/theory/earlier.js'
 import { matches } from './import-mvp-content.js'
 
@@ -24,10 +24,15 @@ import { matches } from './import-mvp-content.js'
 mongoose.set('transactionAsyncLocalStorage', true)
 
 const MODELS = { Category, Topic, Tag, Problem, ProblemCollection, Theory, Path }
-const REWRITTEN = new Set(Object.keys(THEORY_REWRITES))
-const NEW_CODES = new Set(THEORY_PROBLEMS.map((problem) => problem.codigo))
-const BOX_CODES = new Set(THEORY_COLLECTIONS.flatMap((collection) => collection.problemCodes))
-const BOX_KEYS = new Set(THEORY_COLLECTIONS.map(({ slug, kind }) => `${slug}:${kind}`))
+// Only lessons that replace an earlier text are revised here. Lessons that
+// are new in the release (no PREVIOUS_THEORY) reach a database through the
+// additive content import, together with their problems and boxes.
+const REVISED = Object.values(THEORY_REWRITES).filter((lesson) => PREVIOUS_THEORY[lesson.pathSlug])
+const REWRITTEN = new Set(REVISED.map((lesson) => lesson.pathSlug))
+const NEW_CODES = new Set(REVISED.flatMap((lesson) => lesson.problems.map((problem) => problem.codigo)))
+const BOXES = REVISED.flatMap((lesson) => Object.entries(lesson.collections).flatMap(([slug, kinds]) => Object.entries(kinds).map(([kind, problemCodes]) => ({ slug, kind, problemCodes }))))
+const BOX_CODES = new Set(BOXES.flatMap((collection) => collection.problemCodes))
+const BOX_KEYS = new Set(BOXES.map(({ slug, kind }) => `${slug}:${kind}`))
 
 function needed(entry) {
   if (['Category', 'Topic', 'Tag'].includes(entry.model)) return true

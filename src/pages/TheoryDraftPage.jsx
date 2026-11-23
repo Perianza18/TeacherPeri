@@ -3,7 +3,7 @@ import TheoryView from '../components/theory/TheoryView'
 import PracticeBox from '../components/content/PracticeBox'
 import { MVP_LESSONS } from '../../server/src/data/mvpLessons'
 import { MVP_PROBLEMS } from '../../server/src/data/mvpProblems'
-import { THEORY_REWRITES } from '../../server/src/data/theory/index'
+import { THEORY_PROBLEMS, THEORY_REWRITES } from '../../server/src/data/theory/index'
 import { OMM_CURRICULUM } from '../../server/src/data/ommCurriculum'
 
 export default function TheoryDraftPage() {
@@ -11,7 +11,7 @@ export default function TheoryDraftPage() {
   const draft = THEORY_REWRITES[slug]
   const lesson = MVP_LESSONS.find((entry) => entry.pathSlug === slug)
   if (!draft || !lesson) return <p>Lección no encontrada.</p>
-  const byCode = new Map([...MVP_PROBLEMS, ...draft.problems].map((problem) => [problem.codigo, problem]))
+  const byCode = new Map([...MVP_PROBLEMS, ...THEORY_PROBLEMS].map((problem) => [problem.codigo, problem]))
   const collection = (name, kind) => {
     const entries = (draft.collections[name]?.[kind] || []).map((code) => byCode.get(code)).filter(Boolean)
       .map((problem) => ({ ...problem, _id: problem.codigo, href: null }))

@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
-import { MVP_LESSONS, PREVIOUS_THEORY } from '../data/mvpLessons.js'
+import { MVP_LESSONS, NEW_THEORY_SLUGS, PREVIOUS_THEORY } from '../data/mvpLessons.js'
 import { MVP_PROBLEMS } from '../data/mvpProblems.js'
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from '../data/ommLaunchContent.js'
 import { decide, heldPrevious } from '../migrations/revise-theory-lessons.js'
@@ -102,8 +102,19 @@ describe('Rewritten theory lessons', () => {
     }
   })
 
+  it('adds lessons without an earlier text as new lessons, outside the guarded revision', () => {
+    for (const slug of NEW_THEORY_SLUGS) {
+      const lesson = THEORY_REWRITES[slug]
+      expect(PREVIOUS_THEORY[slug]).toBeUndefined()
+      expect(lesson.lesson).toMatchObject({ title: expect.any(String), area: expect.any(String), level: expect.any(String) })
+      const released = MVP_LESSONS.find((entry) => entry.pathSlug === slug)
+      expect(released.theory).toMatchObject({ title: lesson.lesson.title, summary: lesson.summary, content: lesson.content })
+      expect(released.steps.flatMap((step) => step.problemCodes)).toEqual(Object.values(lesson.collections)[0].ejercicios.concat(Object.values(lesson.collections)[0].practice, Object.values(lesson.collections)[0].dificiles))
+    }
+  })
+
   it('is the last layer: the release uses the new text and keeps the exact previous one', () => {
-    for (const lesson of lessons) {
+    for (const lesson of lessons.filter((entry) => !NEW_THEORY_SLUGS.includes(entry.pathSlug))) {
       const base = OMM_LAUNCH_CONTENT_BATCH_1.lessons.find((entry) => entry.pathSlug === lesson.pathSlug)?.theory ?? PREVIOUS_THEORY[lesson.pathSlug]
       expect(base).toBeDefined()
       const released = MVP_LESSONS.find((entry) => entry.pathSlug === lesson.pathSlug).theory

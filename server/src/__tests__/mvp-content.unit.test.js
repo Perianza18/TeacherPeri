@@ -3,11 +3,16 @@ import { buildMvpManifest, contentId, MVP_EXAMS } from '../data/mvpManifest.js'
 import { validateMvpContent } from '../data/validateMvpContent.js'
 import { MVP_PROBLEMS } from '../data/mvpProblems.js'
 import { importTarget } from '../scripts/import-mvp-content.js'
+import { NEW_THEORY_SLUGS } from '../data/mvpLessons.js'
+import { THEORY_REWRITES } from '../data/theory/index.js'
 
 const entries = buildMvpManifest()
 describe('MVP release integrity', () => {
   it('renders every math expression strictly and resolves canonical references', () => {
-    expect(validateMvpContent()).toMatchObject({ Problem: 330, ProblemCollection: 111, Theory: 37, List: 9, Exam: 3, PathSection: 5 })
+    // 37 lessons, 330 problems and 111 boxes before the new Ciclo 2 lessons;
+    // each new lesson adds its own problems and three boxes.
+    const added = NEW_THEORY_SLUGS.map((slug) => THEORY_REWRITES[slug])
+    expect(validateMvpContent()).toMatchObject({ Problem: 330 + added.reduce((sum, lesson) => sum + lesson.problems.length, 0), ProblemCollection: 111 + 3 * added.length, Theory: 37 + added.length, List: 9, Exam: 3, PathSection: 5 })
   })
   it('keeps identity stable across lists, Steps and examinations', () => {
     const problem = entries.find((e) => e.model === 'Problem' && e.key === 'TP-C05')
