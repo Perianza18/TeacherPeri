@@ -4,7 +4,7 @@
 
 Todo lo que TeacherPeri hace hoy o quiere hacer. Cada función tiene un estado:
 
-- **Hecho:** ya está en https://teacherperi.vercel.app.
+- **Hecho:** ya está en https://www.teacherperi.com.
 - **En curso:** se está construyendo; la nota dice dónde (rama o pull request).
 - **Parcial:** una parte ya está publicada; la nota dice cuál.
 - **Planeado:** acordado, sin empezar. **Hoy** explica qué hace el sitio mientras tanto.
@@ -126,4 +126,4 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Sistema de diseño «Cómic refinado» | Hecho | Colores, fuentes y estilos compartidos en `src/index.css`. Reglas en [DESIGN.md](DESIGN.md) |
 | Funciona en celulares (desde 375 px) | Hecho | |
 | Hospedaje: Vercel (sitio), Render (API), MongoDB Atlas (base de datos) | Hecho | Ver [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Dominio propio | Planeado | **Hoy:** teacherperi.vercel.app |
+| Dominio propio | Hecho | https://www.teacherperi.com. `teacherperi.com` y `teacherperi.vercel.app` redirigen ahí |

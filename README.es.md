@@ -8,7 +8,7 @@ Matemáticas (OMM). Reúne teoría, problemas, exámenes de práctica y rutas de
 estudio guiadas en un solo lugar, para que cualquiera pueda entrenar sin andar
 buscando material.
 
-- **Sitio:** https://teacherperi.vercel.app
+- **Sitio:** https://www.teacherperi.com
 - **API:** https://teacherperi-api.onrender.com (por ejemplo `/api/problems`)
 
 ## Qué hay en el sitio

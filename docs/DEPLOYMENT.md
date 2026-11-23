@@ -7,7 +7,7 @@ automatically.
 
 | Part | Host | Address |
 | --- | --- | --- |
-| Website | Vercel (Hobby plan), project `teacherperi` | https://teacherperi.vercel.app |
+| Website | Vercel (Hobby plan), project `teacherperi` | https://www.teacherperi.com (`teacherperi.com` and `teacherperi.vercel.app` redirect to it) |
 | API | Render (free plan, US East), service `teacherperi-api` | https://teacherperi-api.onrender.com |
 | Database | MongoDB Atlas (free M0 cluster), database `teacherperi_prod` | — |
 
@@ -24,7 +24,7 @@ request or a `VITE_*` variable.
 
 **Render (API):** `NODE_ENV=production`, `MONGO_URI` (a database user that can
 only read and write `teacherperi_prod`), `JWT_SECRET`,
-`CLIENT_ORIGIN=https://teacherperi.vercel.app` and `TRUST_PROXY_HOPS=3`.
+`CLIENT_ORIGIN=https://www.teacherperi.com` and `TRUST_PROXY_HOPS=3`.
 Build with `npm ci`; start with `npm start`.
 
 `TRUST_PROXY_HOPS` tells the API how many proxies sit in front of it, so the
@@ -51,10 +51,6 @@ Never run `db:reset:dev` against Atlas.
 
 ## After a deploy
 
-Open https://teacherperi.vercel.app on a computer and a phone and check: the
+Open https://www.teacherperi.com on a computer and a phone and check: the
 libraries load with their math, a Ruta opens from a direct link, an unknown
 address shows «Página no encontrada», and the browser console has no errors.
-
-## Planned
-
-- Own domain instead of `teacherperi.vercel.app`.

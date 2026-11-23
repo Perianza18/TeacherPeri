@@ -7,7 +7,7 @@ olympiads, starting with the Mexican Math Olympiad (OMM). It brings theory,
 problems, practice exams and guided study paths together in one place, so anyone
 can train without hunting for material.
 
-- **Live site:** https://teacherperi.vercel.app
+- **Live site:** https://www.teacherperi.com
 - **API:** https://teacherperi-api.onrender.com (for example `/api/problems`)
 
 ## What's on the site

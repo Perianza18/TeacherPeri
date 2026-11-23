@@ -4,7 +4,7 @@ English · **[Español](es/FEATURES.md)**
 
 Everything TeacherPeri does today or aims to do. Each feature has a status:
 
-- **Done:** live on https://teacherperi.vercel.app.
+- **Done:** live on https://www.teacherperi.com.
 - **In progress:** being built; the note says where (branch or pull request).
 - **Partial:** part of it is live; the note says which part.
 - **Planned:** agreed, not started. **Today** says what the site does instead.
@@ -126,4 +126,4 @@ A Ruta is an ordered path through existing material. See
 | «Cómic refinado» design system | Done | Colors, fonts and shared styles in `src/index.css`. Rules in [DESIGN.md](DESIGN.md) |
 | Works on phones (375 px and up) | Done | |
 | Hosting: Vercel (website), Render (API), MongoDB Atlas (database) | Done | See [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Own domain | Planned | **Today:** teacherperi.vercel.app |
+| Own domain | Done | https://www.teacherperi.com. `teacherperi.com` and `teacherperi.vercel.app` redirect to it |
