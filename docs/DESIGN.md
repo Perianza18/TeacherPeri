@@ -86,6 +86,11 @@ Fonts load from Google Fonts in `index.html`:
 - Layout: content max-width 1120px, 24px side padding. Reading column max 840px.
   Sidebar 260–300px; it wraps below the content on mobile and is never sticky.
 - Touch targets are at least 44px tall.
+- Two mascots: **Peri**, the penguin with a graph on its back (`PeriPenguin`, also the logo), and **Cath**, the
+  cat (`CathCat`). Both are decoration only. They stand together, labelled «TeacherPeri» and «TeacherCath», in «Sobre TeacherPeri» on Inicio and in the link
+  preview image. The big footer word takes turns at random between TeacherPeri (Cath on the «T», Peri on the «i»)
+  and TeacherCath (Peri on the «T», Cath on the «h»); on the 404 page and «no results» notes
+  one of them appears at random (`RandomMascot`).
 - Avatars are circles with a 2px ink border and a pastel fill. Users will pick
   from preset avatars only (no uploads).
 

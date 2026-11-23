@@ -6,4 +6,4 @@ Disallow: /mis-envios
 Disallow: /entrenamiento/problemas/proponer
 Disallow: /dev/
 
-Sitemap: https://teacherperi.vercel.app/sitemap.xml
+Sitemap: https://www.teacherperi.com/sitemap.xml

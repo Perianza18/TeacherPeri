@@ -4,7 +4,7 @@
 
 Todo lo que TeacherPeri hace hoy o quiere hacer. Cada función tiene un estado:
 
-- **Hecho:** ya está en https://teacherperi.vercel.app.
+- **Hecho:** ya está en https://www.teacherperi.com.
 - **En curso:** se está construyendo; la nota dice dónde (rama o pull request).
 - **Parcial:** una parte ya está publicada; la nota dice cuál.
 - **Planeado:** acordado, sin empezar. **Hoy** explica qué hace el sitio mientras tanto.
@@ -57,6 +57,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Imágenes en los problemas (geometría) | Hecho | Hasta 4 por problema, cada una con descripción obligatoria en español. Los usuarios las agregan al proponer; editores y admins las ven en Revisión; los editores las agregan, reemplazan o quitan (enunciado o solución). La descripción acepta fórmulas con $…$: quien escribe ve una vista previa, quien revisa la ve renderizada junto a cada imagen, y la página nunca la muestra (el texto `alt` recibe una versión en texto simple). Se guardan en MongoDB como WebP (máximo 1200 px), unos 12 KB por figura. Ver [SUBMISSIONS.md](SUBMISSIONS.md#imágenes-en-los-problemas) |
 | Búsqueda global en todas las bibliotecas | Planeado | **Hoy:** cada biblioteca tiene su propia búsqueda |
 | Renovación visual de Inicio, Rutas, Entrenamiento, Listas, Contacto y lecciones (estilo «cómic», logo del pingüino) | Hecho | Pull requests #18, #20 y #21 |
+| Dos mascotas: TeacherPeri (pingüino) y TeacherCath (gatita) | Hecho | Juntas en «Sobre TeacherPeri» y la vista previa de links; la palabra del pie de página se turna entre TeacherPeri y TeacherCath; se turnan en la página 404 y en los avisos sin resultados. Ver [DESIGN.md](DESIGN.md) |
 
 ## Listas
 
@@ -125,4 +126,4 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Sistema de diseño «Cómic refinado» | Hecho | Colores, fuentes y estilos compartidos en `src/index.css`. Reglas en [DESIGN.md](DESIGN.md) |
 | Funciona en celulares (desde 375 px) | Hecho | |
 | Hospedaje: Vercel (sitio), Render (API), MongoDB Atlas (base de datos) | Hecho | Ver [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Dominio propio | Planeado | **Hoy:** teacherperi.vercel.app |
+| Dominio propio | Hecho | https://www.teacherperi.com. `teacherperi.com` y `teacherperi.vercel.app` redirigen ahí |

@@ -7,7 +7,7 @@ automáticamente.
 
 | Parte | Servicio | Dirección |
 | --- | --- | --- |
-| Sitio | Vercel (plan Hobby), proyecto `teacherperi` | https://teacherperi.vercel.app |
+| Sitio | Vercel (plan Hobby), proyecto `teacherperi` | https://www.teacherperi.com (`teacherperi.com` y `teacherperi.vercel.app` redirigen ahí) |
 | API | Render (plan gratuito, este de EE. UU.), servicio `teacherperi-api` | https://teacherperi-api.onrender.com |
 | Base de datos | MongoDB Atlas (clúster gratuito M0), base `teacherperi_prod` | — |
 
@@ -24,7 +24,7 @@ en un pull request ni en una variable `VITE_*`.
 
 **Render (API):** `NODE_ENV=production`, `MONGO_URI` (un usuario de base de datos
 que solo puede leer y escribir `teacherperi_prod`), `JWT_SECRET`,
-`CLIENT_ORIGIN=https://teacherperi.vercel.app` y `TRUST_PROXY_HOPS=3`. Se
+`CLIENT_ORIGIN=https://www.teacherperi.com` y `TRUST_PROXY_HOPS=3`. Se
 construye con `npm ci` y arranca con `npm start`.
 
 `TRUST_PROXY_HOPS` le dice a la API cuántos proxies hay delante de ella, para que
@@ -52,11 +52,7 @@ que en `teacherperi_prod`. Haz un respaldo antes de un cambio grande. Nunca corr
 
 ## Después de publicar
 
-Abre https://teacherperi.vercel.app en una computadora y en un celular y revisa:
+Abre https://www.teacherperi.com en una computadora y en un celular y revisa:
 las bibliotecas cargan con sus matemáticas, una Ruta abre desde un enlace
 directo, una dirección que no existe muestra «Página no encontrada» y la consola
 del navegador no tiene errores.
-
-## Planeado
-
-- Dominio propio en lugar de `teacherperi.vercel.app`.

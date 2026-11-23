@@ -4,7 +4,7 @@ English · **[Español](es/FEATURES.md)**
 
 Everything TeacherPeri does today or aims to do. Each feature has a status:
 
-- **Done:** live on https://teacherperi.vercel.app.
+- **Done:** live on https://www.teacherperi.com.
 - **In progress:** being built; the note says where (branch or pull request).
 - **Partial:** part of it is live; the note says which part.
 - **Planned:** agreed, not started. **Today** says what the site does instead.
@@ -57,6 +57,7 @@ A Ruta is an ordered path through existing material. See
 | Images in problems (geometry) | Done | Up to 4 per problem, each with a required Spanish description. Users add them when proposing; editors and admins see them in Revisión; editors add, replace or remove them (statement or solution). The description can use $…$ math: writers see a live preview, reviewers see it rendered next to each image, and the page never shows it (the `alt` text gets a plain version). Stored in MongoDB as WebP (max 1200 px), about 12 KB per figure. See [SUBMISSIONS.md](SUBMISSIONS.md#images-in-problems) |
 | Global search across all libraries | Planned | **Today:** each library has its own search |
 | Visual refresh of Inicio, Rutas, Entrenamiento, Listas, Contacto and lessons («cómic» style, penguin logo) | Done | Pull requests #18, #20 and #21 |
+| Two mascots: TeacherPeri (penguin) and TeacherCath (cat) | Done | Together in «Sobre TeacherPeri» and the link preview; the footer word takes turns between TeacherPeri and TeacherCath; they take turns on the 404 page and «no results» notes. See [DESIGN.md](DESIGN.md) |
 
 ## Listas
 
@@ -125,4 +126,4 @@ A Ruta is an ordered path through existing material. See
 | «Cómic refinado» design system | Done | Colors, fonts and shared styles in `src/index.css`. Rules in [DESIGN.md](DESIGN.md) |
 | Works on phones (375 px and up) | Done | |
 | Hosting: Vercel (website), Render (API), MongoDB Atlas (database) | Done | See [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Own domain | Planned | **Today:** teacherperi.vercel.app |
+| Own domain | Done | https://www.teacherperi.com. `teacherperi.com` and `teacherperi.vercel.app` redirect to it |
