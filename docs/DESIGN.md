@@ -16,6 +16,12 @@ Every screen follows this guide. It builds on the comic-workbook style already i
 4. **Spanish UI.** All visible text is in Spanish (Mexico): «Ver solución»,
    «Guardar en lista», «Responder», «Reportar».
 
+Problem cards use the area-colored strip for the full area and one available
+subtopic in uppercase text, separated by a dot (for example, «COMBINATORIA ·
+PRINCIPIO DE CASILLAS»). Allow wrapping rather than abbreviating topic names.
+Do not display internal codes, difficulty labels, or generic titles on the card.
+An exam heading identifies its source, year and problem number.
+
 ## 2. Color tokens
 
 These are CSS variables in `src/index.css` (Tailwind v4 `@theme`). Use the

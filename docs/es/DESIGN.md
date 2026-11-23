@@ -18,6 +18,12 @@ que ya está en `src/index.css` (`.tp-card`, `.tp-button`, `.tp-kicker`,
 4. **Interfaz en español.** Todo el texto visible está en español de México:
    «Ver solución», «Guardar en lista», «Responder», «Reportar».
 
+Las tarjetas de problemas usan la franja de color del área para escribir el área
+y un subtema disponible en mayúsculas, separados por un punto (por ejemplo,
+«COMBINATORIA · PRINCIPIO DE CASILLAS»). Conserva los nombres completos y permite
+que ocupen más de una línea. No muestres códigos internos, dificultad ni títulos
+genéricos en la tarjeta. Un encabezado de examen identifica fuente, año y número.
+
 ## 2. Colores
 
 Son variables CSS en `src/index.css` (`@theme` de Tailwind v4). En los
