@@ -7,7 +7,7 @@ import { EmptyCard, LINK, PanelStatus, SoloTu } from './shared'
 
 const ACTION = `${LINK} inline-flex min-h-11 items-center text-sm`
 
-// Small form for a list name: used by «Nueva lista» and «Renombrar».
+// Small form for a collection name: used by «Nueva colección» and «Renombrar».
 export function ListNameForm({ initial = '', submitLabel, withPrivacy = false, onSubmit, onCancel }) {
   const id = useId()
   const [name, setName] = useState(initial)
@@ -24,7 +24,7 @@ export function ListNameForm({ initial = '', submitLabel, withPrivacy = false, o
   }
   return (
     <form onSubmit={submit} className="flex flex-col gap-3">
-      <label htmlFor={`${id}-name`} className="text-sm font-bold">Nombre de la lista</label>
+      <label htmlFor={`${id}-name`} className="text-sm font-bold">Nombre de la colección</label>
       <input id={`${id}-name`} value={name} onChange={(e) => setName(e.target.value)} maxLength={80} required autoFocus className="tp-input" placeholder="Por ejemplo: Geometría para el estatal" />
       {withPrivacy && (
         <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
@@ -71,7 +71,7 @@ function ListCard({ list, owner, token, onChanged }) {
           <button type="button" className={ACTION} onClick={() => call('PATCH', { isPublic: !list.isPublic })}>{list.isPublic ? 'Hacer privada' : 'Hacer pública'}</button>
           {mode === 'delete'
             ? <span className="flex flex-wrap items-center gap-x-3 text-sm">
-              <span className="font-semibold">¿Eliminar la lista?</span>
+              <span className="font-semibold">¿Eliminar la colección?</span>
               <button type="button" className="min-h-11 font-bold text-red-700 underline underline-offset-2" onClick={() => call('DELETE')}>Sí, eliminar</button>
               <button type="button" className="min-h-11 font-semibold text-tp-ink-muted underline underline-offset-2" onClick={() => setMode(null)}>No</button>
             </span>
@@ -92,10 +92,10 @@ export default function ListsPanel({ profile, token }) {
   return (
     <div className="flex flex-col gap-4">
       {owner && (creating
-        ? <div className="tp-card-soft bg-tp-surface p-5"><ListNameForm submitLabel="Crear lista" withPrivacy onCancel={() => setCreating(false)} onSubmit={(body) => apiFetch('/api/my-lists', { method: 'POST', token, body }).then(() => { setCreating(false); refresh() })} /></div>
-        : <button type="button" onClick={() => setCreating(true)} className="tp-button self-start bg-tp-mint px-5 font-bold text-tp-ink">Nueva lista</button>)}
+        ? <div className="tp-card-soft bg-tp-surface p-5"><ListNameForm submitLabel="Crear colección" withPrivacy onCancel={() => setCreating(false)} onSubmit={(body) => apiFetch('/api/my-lists', { method: 'POST', token, body }).then(() => { setCreating(false); refresh() })} /></div>
+        : <button type="button" onClick={() => setCreating(true)} className="tp-button self-start bg-tp-mint px-5 font-bold text-tp-ink">Nueva colección</button>)}
       {(loading || error) ? <PanelStatus loading={loading} error={error} /> : data.items.length === 0
-        ? <EmptyCard kicker="Sin listas">{owner ? 'Crea una lista y usa «Guardar en lista» en problemas y lecciones de teoría.' : `@${profile.username} no tiene listas públicas.`}</EmptyCard>
+        ? <EmptyCard kicker="Sin colecciones">{owner ? 'Crea una colección y usa «Guardar» en problemas y lecciones de teoría.' : `@${profile.username} no tiene colecciones públicas.`}</EmptyCard>
         : <ul className="grid gap-4 sm:grid-cols-2">{data.items.map((list) => <ListCard key={list.id} list={list} owner={owner} token={token} onChanged={refresh} />)}</ul>}
     </div>
   )

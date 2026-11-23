@@ -335,7 +335,7 @@ describe('Theory page', () => {
     expect(html).not.toContain('En la Ruta')
     expect(html).not.toContain('Marcar paso como completado')
     expect(html).not.toContain('Paso anterior')
-    expect(html).toContain('Guardar en lista')
+    expect(html).toContain('>Guardar</button>')
     expect(html).toContain('Continúa en una Ruta')
     expect(html).toContain('href="/entrenamiento/problemas/p1"')
   })

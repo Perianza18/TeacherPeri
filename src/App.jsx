@@ -27,6 +27,7 @@ const MisEnviosPage = lazy(() => import('./pages/MisEnviosPage'))
 const EditarEnvioPage = lazy(() => import('./pages/MisEnviosPage').then((module) => ({ default: module.EditarEnvioPage })))
 const PerfilPage = lazy(() => import('./pages/PerfilPage'))
 const UserListPage = lazy(() => import('./pages/UserListPage'))
+const RedirectToCollection = lazy(() => import('./pages/UserListPage').then((module) => ({ default: module.RedirectToCollection })))
 // Team pages (editors and admins). The server checks every permission.
 const PanelPage = lazy(() => import('./pages/panel/PanelPage'))
 const ModeracionPage = lazy(() => import('./pages/panel/ModeracionPage'))
@@ -80,7 +81,8 @@ function App() {
           <Route path="/listas/:id" element={<RedirectToEntrenamientoListas />} />
           <Route path="/mis-envios" element={<MisEnviosPage />} />
           <Route path="/perfil/:username" element={<PerfilPage />} />
-          <Route path="/perfil/:username/listas/:id" element={<UserListPage />} />
+          <Route path="/perfil/:username/colecciones/:id" element={<UserListPage />} />
+          <Route path="/perfil/:username/listas/:id" element={<RedirectToCollection />} />
           <Route path="/mis-envios/:id" element={<EditarEnvioPage />} />
           <Route path="/panel" element={<PanelPage />} />
           <Route path="/panel/moderacion" element={<ModeracionPage />} />
