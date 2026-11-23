@@ -101,9 +101,9 @@ Los primeros dos términos tienen factor $x^2$ y los últimos dos tienen factor 
 
 ## Agregados culturales
 
-- En el siglo IX, Al-Juarismi escribió un tratado cuyo título incluye *al-jabr*. De esa palabra procede «álgebra»; el tratado estudia métodos para resolver ecuaciones.
+- En octubre de 1903, en una reunión de la Sociedad Matemática Estadounidense, Frank Nelson Cole calculó $2^{67}-1$ en el pizarrón y después, en otro, el producto $193\,707\,721\cdot761\,838\,257\,287$. Los dos resultados coincidían. Sin decir una palabra, mostró así que $2^{67}-1$ no es primo; contó después que encontrar esa factorización le había llevado «los domingos de tres años».
 - La tercera Olimpiada Internacional de Matemáticas tuvo lugar en Veszprém, Hungría, en 1961. Participaron $48$ estudiantes.
-- Según la NASA, Mercurio tarda aproximadamente $88$ días terrestres en completar una órbita alrededor del Sol. Ese número se factoriza como $88=8\cdot11$; la duración es aproximada, aunque la igualdad entre enteros es exacta.
+- Según la NASA, Mercurio tarda unos $88$ días terrestres en dar una vuelta alrededor del Sol, pero unos $59$ en girar una vez sobre su eje. Al combinar los dos movimientos, de un amanecer al siguiente en Mercurio pasan unos $176$ días terrestres, el doble de su año.
 
 ## Ejercicios
 

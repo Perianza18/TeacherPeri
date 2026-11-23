@@ -61,7 +61,7 @@ La revisión no promete detectar cualquier error de inmediato. Sí ofrece pregun
 
 ## Agregados culturales
 
-- Srinivasa Ramanujan registró resultados matemáticos en cuadernos durante sus investigaciones. Trabajó en temas como teoría de números y series infinitas.
+- En 1998, Thomas Hales presentó una demostración de que ninguna forma de apilar esferas iguales ocupa más espacio que la pila de naranjas de los mercados; la pregunta venía de Johannes Kepler, en 1611. La prueba usaba muchos cálculos por computadora y los revisores no pudieron comprobarla por completo. En agosto de 2014, el proyecto Flyspeck terminó una versión verificada paso a paso por programas de computadora.
 - La novena Olimpiada Internacional de Matemáticas se celebró en Cetinje, entonces Yugoslavia, en 1967. Participaron $99$ estudiantes de $13$ países.
 - Los anillos de Saturno están formados por numerosas partículas, principalmente de hielo, junto con roca y polvo. Aunque en algunas imágenes parezcan sólidos, no son una sola pieza rígida.
 

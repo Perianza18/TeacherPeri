@@ -74,7 +74,7 @@ Al terminar un intento, registrar una idea concreta junto con la siguiente pregu
 
 ## Agregados culturales
 
-- Sophie Germain investigó en teoría de números y también trabajó en problemas de elasticidad. Sus preguntas abarcaron tanto demostraciones aritméticas como modelos de fenómenos físicos.
+- En enero de 1816, Sophie Germain se convirtió en la primera mujer en ganar un premio de la Academia de Ciencias de París, por su estudio matemático de las vibraciones de placas elásticas. Lo consiguió en su tercer intento, después de que sus dos primeras memorias fueran rechazadas; también hizo aportes a la teoría de números.
 - Pablo Soberón Bravo representó a México en la Olimpiada Internacional de Matemáticas de 2006 y recibió una medalla de oro. El registro de la competencia también muestra su participación de 2005.
 - El colibrí garganta rubí bate las alas unas $53$ veces por segundo durante el vuelo. El número es aproximado y describe una especie concreta.
 

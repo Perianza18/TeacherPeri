@@ -89,9 +89,9 @@ Al terminar una prueba por casos, releer la lista de casos junto con el dominio:
 
 ## Agregados culturales
 
-- George Pólya publicó la primera edición de *How to Solve It* en 1945. En el libro estudió maneras de abordar problemas matemáticos y revisar sus soluciones.
+- El teorema de los cuatro colores dice que cualquier mapa en el plano se puede colorear con cuatro colores sin que dos regiones vecinas compartan color. Se conjeturó en 1852 y Kenneth Appel y Wolfgang Haken lo demostraron en 1976 con una prueba por casos gigantesca: reunieron cerca de $1\,500$ configuraciones y una computadora revisó cada una.
 - La decimocuarta Olimpiada Internacional de Matemáticas se celebró en 1972 en Toruń, Polonia. Participaron $107$ estudiantes de $14$ países.
-- Según la NASA, las alas de un colibrí pueden batir aproximadamente $50$ veces por segundo. La frecuencia depende del ave y de sus condiciones de vuelo.
+- El ajolote vive en estado silvestre solo en los canales de Xochimilco y aguas cercanas, al sur de la Ciudad de México, y la Unión Internacional para la Conservación de la Naturaleza lo clasifica en peligro crítico. Puede regenerar sus extremidades, su médula espinal y partes de su corazón y de su cerebro sin dejar cicatriz, por lo que laboratorios de todo el mundo lo estudian.
 
 ## Ejercicios
 
