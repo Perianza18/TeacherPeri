@@ -9,7 +9,6 @@ const LINKS = [
   ['Experiencias', '/experiencias'],
   ['Equipo', '/equipo'],
   ['Universidad', '/estudia-en-el-extranjero'],
-  ['Sobre mí', '/sobre-mi'],
   ['Contacto', '/contacto'],
 ]
 

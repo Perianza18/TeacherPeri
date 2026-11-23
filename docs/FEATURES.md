@@ -116,8 +116,7 @@ A Ruta is an ordered path through existing material. See
 | Contacto | Partial | The contact form works for signed-in users. The «Correo» link and the Instagram and LinkedIn icons below it still point to placeholder addresses |
 | Colabora (how to collaborate) | Planned | **Today:** use Contacto |
 | Experiencias (blog by past olympians) | Planned | **Today:** «Próximamente» page |
-| Equipo (team page) | Planned | **Today:** «Próximamente» page |
-| Sobre mí | Planned | **Today:** «Próximamente» page, linked from Inicio and the footer |
+| Equipo (team page) | Done | `/equipo`: two cards, Elías (TeacherPeri) and Catherine (TeacherCath), each opening their own page (`/equipo/elias`, `/equipo/catherine`, one file each in `src/pages/equipo/`), which each of them decorates. Linked from «Conócenos» in Inicio |
 
 ## Site and hosting
 

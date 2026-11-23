@@ -116,8 +116,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Contacto | Parcial | El formulario funciona con sesión iniciada. El enlace «Correo» y los íconos de Instagram y LinkedIn de abajo todavía llevan a direcciones de ejemplo |
 | Colabora (cómo colaborar) | Planeado | **Hoy:** usa Contacto |
 | Experiencias (blog de exolímpicos) | Planeado | **Hoy:** página «Próximamente» |
-| Equipo | Planeado | **Hoy:** página «Próximamente» |
-| Sobre mí | Planeado | **Hoy:** página «Próximamente», enlazada desde Inicio y el pie de página |
+| Equipo | Hecho | `/equipo`: dos tarjetas, Elías (TeacherPeri) y Catherine (TeacherCath), y cada una abre su propia página (`/equipo/elias`, `/equipo/catherine`, un archivo por persona en `src/pages/equipo/`), que cada quien decora. Enlazada desde «Conócenos» en Inicio |
 
 ## Sitio y hospedaje
 

@@ -8,7 +8,7 @@ import Avatar from './profile/Avatar'
 import { profilePath } from '../lib/profile'
 
 // Main navigation, in the order set by the design guide (DESIGN §6).
-// Universidad, Sobre mí and Contacto stay reachable from the Footer.
+// Universidad and Contacto stay reachable from the Footer.
 const NAV_LINKS = [
   { path: '/', label: 'Inicio' },
   { path: '/rutas', label: 'Rutas' },
@@ -26,7 +26,6 @@ const linkClass = ({ isActive }, big = false) => big
 // Secondary pages, only in the mobile menu (desktop reaches them from the Footer).
 const MORE_LINKS = [
   { path: '/estudia-en-el-extranjero', label: 'Universidad' },
-  { path: '/sobre-mi', label: 'Sobre mí' },
   { path: '/contacto', label: 'Contacto' },
 ]
 
