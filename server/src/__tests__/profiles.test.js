@@ -64,6 +64,28 @@ describe('Mi Espacio: perfil público y privado', () => {
     expect((await get('/api/auth/me', ana.token)).body.user).toMatchObject({ avatar: 'a07', bio: 'Me gusta la geometría.' })
   })
 
+  it('editar perfil: un dibujo y su color de fondo, que se ven en la cuenta, el perfil y los comentarios', async () => {
+    const ana = await account('ana')
+    const put = (body) => request(app).put('/api/profiles/me').set(as(ana.token)).send(body)
+    const ok = await put({ avatar: 'de-hecho', avatarColor: 'menta' })
+    expect(ok.status).toBe(200)
+    expect(ok.body).toMatchObject({ avatar: 'de-hecho', avatarColor: 'menta' })
+    expect((await get('/api/auth/me', ana.token)).body.user).toMatchObject({ avatar: 'de-hecho', avatarColor: 'menta' })
+    expect((await get('/api/profiles/ana')).body).toMatchObject({ avatar: 'de-hecho', avatarColor: 'menta' })
+
+    const { problem } = await content()
+    await request(app).post(`/api/problems/${problem._id}/comments`).set(as(ana.token)).send({ body: 'Hola' })
+    const thread = await get(`/api/problems/${problem._id}/comments`)
+    expect(thread.body[0].author).toMatchObject({ username: 'ana', avatar: 'de-hecho', avatarColor: 'menta' })
+
+    // Cambiar solo el avatar conserva el color; null regresa al color propio del avatar.
+    expect((await put({ avatar: 'a03' })).body).toMatchObject({ avatar: 'a03', avatarColor: 'menta' })
+    expect((await put({ avatarColor: null })).body).toMatchObject({ avatar: 'a03', avatarColor: null })
+    expect((await put({ avatarColor: '#ff0000' })).status).toBe(400)
+    expect((await put({ avatarColor: 'rojo' })).status).toBe(400)
+    expect((await User.findOne({ username: 'ana' }).lean()).avatarColor).toBeNull()
+  })
+
   it('comentarios públicos: solo visibles y en problemas publicados, con enlace al comentario', async () => {
     const { problem, other, draft } = await content()
     const ana = await account('ana')

@@ -104,7 +104,7 @@ function AccountMenu({ user, token, logout }) {
         aria-label={`Cuenta de ${user.username}${notifications.unread ? `, ${notifications.unread} ${notifications.unread === 1 ? 'notificación nueva' : 'notificaciones nuevas'}` : ''}`}
         className="relative grid h-11 w-11 place-items-center rounded-full"
       >
-        <Avatar id={user.avatar} />
+        <Avatar id={user.avatar} color={user.avatarColor} />
         {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-tp-ink bg-tp-orange px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
       </button>
       {open && (
@@ -190,9 +190,9 @@ export default function Navbar({ activePath } = {}) {
     <header className="fixed inset-x-0 top-0 z-50 border-b-3 border-tp-ink bg-tp-surface">
       <nav aria-label="Principal">
         <div className="tp-container flex h-[69px] items-center justify-between gap-4">
-          {/* The logo mark is the penguin drawing with the graph on its back,
-              traced to SVG. public/logo-seal.svg is the same penguin as the
-              favicon, on the blue seal. */}
+          {/* The logo mark is Peri, the penguin with the graph on its back
+              (traced to SVG), from its head down to the graph on the blue seal
+              (public/logo-seal.svg). The favicon is the whole penguin. */}
           <Link to="/" className="tp-logo group inline-flex min-h-11 shrink-0 items-center gap-2.5 text-tp-ink">
             <span aria-hidden="true" className="block size-11 shrink-0 -rotate-3 overflow-hidden rounded-[12px] border-[2.5px] border-tp-ink bg-tp-blue shadow-[2.5px_2.5px_0_var(--tp-ink)] transition-transform duration-200 group-hover:rotate-3 motion-reduce:transition-none">
               <img src="/logo-seal.svg" alt="" width="44" height="44" className="block size-full" />

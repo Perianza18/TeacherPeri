@@ -7,7 +7,7 @@ automatically.
 
 | Part | Host | Address |
 | --- | --- | --- |
-| Website | Vercel (Hobby plan), project `teacherperi` | https://teacherperi.vercel.app |
+| Website | Vercel (Hobby plan), project `teacherperi` | https://www.teacherperi.com (`teacherperi.com` and `teacherperi.vercel.app` redirect to it) |
 | API | Render (free plan, US East), service `teacherperi-api` | https://teacherperi-api.onrender.com |
 | Database | MongoDB Atlas (free M0 cluster), database `teacherperi_prod` | — |
 
@@ -24,7 +24,7 @@ request or a `VITE_*` variable.
 
 **Render (API):** `NODE_ENV=production`, `MONGO_URI` (a database user that can
 only read and write `teacherperi_prod`), `JWT_SECRET`,
-`CLIENT_ORIGIN=https://teacherperi.vercel.app` and `TRUST_PROXY_HOPS=3`.
+`CLIENT_ORIGIN=https://www.teacherperi.com` and `TRUST_PROXY_HOPS=3`.
 Build with `npm ci`; start with `npm start`.
 
 `TRUST_PROXY_HOPS` tells the API how many proxies sit in front of it, so the
@@ -49,12 +49,25 @@ apply with the database name confirmed. Try them on the test database
 `teacherperi` before `teacherperi_prod`. Take a backup before a large change.
 Never run `db:reset:dev` against Atlas.
 
+## Sitemap
+
+`npm run build` generates `dist/sitemap.xml` after Vite. Production builds
+(`VERCEL_ENV=production`) read the public API and include problems, lessons,
+exams, lists, resources and public Rutas, with modification dates when available.
+All result pages are fetched and duplicate addresses are removed. Lesson-only
+Rutas are omitted, matching the catalog.
+
+Preview builds keep `public/sitemap.xml`. To test the full sitemap locally, run
+`SITEMAP=1 npm run build`. `VITE_API_URL` selects the API and `SITE_URL` selects
+the canonical domain; both default to production. If the API fails after two
+attempts, the static sitemap remains and deployment continues. New content is
+included on the next production deployment.
+
+After deployment, check `https://www.teacherperi.com/sitemap.xml` and submit that
+URL in Search Console. Tests are included in `npm run test:unit`.
+
 ## After a deploy
 
-Open https://teacherperi.vercel.app on a computer and a phone and check: the
+Open https://www.teacherperi.com on a computer and a phone and check: the
 libraries load with their math, a Ruta opens from a direct link, an unknown
 address shows «Página no encontrada», and the browser console has no errors.
-
-## Planned
-
-- Own domain instead of `teacherperi.vercel.app`.

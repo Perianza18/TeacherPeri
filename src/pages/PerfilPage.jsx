@@ -81,7 +81,7 @@ export default function PerfilPage() {
             onSignIn={() => abrirModal()}
             onChange={setProfile}
             onShowPeople={(which) => setParams({ ver: which })}
-            onProfileSaved={(saved) => { setProfile({ avatar: saved.avatar, bio: saved.bio }); updateUser({ avatar: saved.avatar, bio: saved.bio }) }}
+            onProfileSaved={(saved) => { setProfile({ avatar: saved.avatar, avatarColor: saved.avatarColor, bio: saved.bio }); updateUser({ avatar: saved.avatar, avatarColor: saved.avatarColor, bio: saved.bio }) }}
           />
           <NumbersCard stats={profile.stats} />
         </div>

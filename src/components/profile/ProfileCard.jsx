@@ -38,7 +38,7 @@ export default function ProfileCard({ profile, auth, onSignIn, onChange, onShowP
 
   return (
     <section aria-labelledby="perfil-usuario" className="tp-card flex flex-col items-center gap-3 bg-tp-surface px-6 py-7 text-center">
-      <Avatar id={profile.avatar} size="lg" />
+      <Avatar id={profile.avatar} color={profile.avatarColor} size="lg" />
       <h1 id="perfil-usuario" className="max-w-full break-words font-display text-[28px] font-extrabold leading-tight tracking-[-0.02em]">@{profile.username}</h1>
       <span className="tp-pill bg-tp-violet-soft text-xs">{roleName(profile.role)}</span>
       {profile.bio

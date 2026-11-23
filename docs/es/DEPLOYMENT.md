@@ -7,7 +7,7 @@ automáticamente.
 
 | Parte | Servicio | Dirección |
 | --- | --- | --- |
-| Sitio | Vercel (plan Hobby), proyecto `teacherperi` | https://teacherperi.vercel.app |
+| Sitio | Vercel (plan Hobby), proyecto `teacherperi` | https://www.teacherperi.com (`teacherperi.com` y `teacherperi.vercel.app` redirigen ahí) |
 | API | Render (plan gratuito, este de EE. UU.), servicio `teacherperi-api` | https://teacherperi-api.onrender.com |
 | Base de datos | MongoDB Atlas (clúster gratuito M0), base `teacherperi_prod` | — |
 
@@ -24,7 +24,7 @@ en un pull request ni en una variable `VITE_*`.
 
 **Render (API):** `NODE_ENV=production`, `MONGO_URI` (un usuario de base de datos
 que solo puede leer y escribir `teacherperi_prod`), `JWT_SECRET`,
-`CLIENT_ORIGIN=https://teacherperi.vercel.app` y `TRUST_PROXY_HOPS=3`. Se
+`CLIENT_ORIGIN=https://www.teacherperi.com` y `TRUST_PROXY_HOPS=3`. Se
 construye con `npm ci` y arranca con `npm start`.
 
 `TRUST_PROXY_HOPS` le dice a la API cuántos proxies hay delante de ella, para que
@@ -50,13 +50,26 @@ nombre de la base confirmado. Pruébalos en la base de pruebas `teacherperi` ant
 que en `teacherperi_prod`. Haz un respaldo antes de un cambio grande. Nunca corras
 `db:reset:dev` contra Atlas.
 
+## Sitemap
+
+`npm run build` genera `dist/sitemap.xml` después de Vite. En producción
+(`VERCEL_ENV=production`) consulta la API pública e incluye problemas, lecciones,
+exámenes, listas, recursos y Rutas públicas, con su última fecha de modificación
+cuando está disponible. Recorre todas las páginas de resultados y evita duplicados.
+Las Rutas que solo agrupan lecciones se omiten, igual que en el catálogo.
+
+En vistas previas conserva `public/sitemap.xml`. Para probar el contenido completo
+localmente: `SITEMAP=1 npm run build`. Usa `VITE_API_URL` para la API y `SITE_URL`
+para el dominio; por defecto usa las direcciones de producción. Si la API falla
+tras dos intentos, conserva el sitemap estático y no bloquea el despliegue.
+El contenido nuevo se incorpora en el siguiente despliegue de producción.
+
+Después de publicar, revisa `https://www.teacherperi.com/sitemap.xml` y envía esa
+dirección en Search Console. Las pruebas están incluidas en `npm run test:unit`.
+
 ## Después de publicar
 
-Abre https://teacherperi.vercel.app en una computadora y en un celular y revisa:
+Abre https://www.teacherperi.com en una computadora y en un celular y revisa:
 las bibliotecas cargan con sus matemáticas, una Ruta abre desde un enlace
 directo, una dirección que no existe muestra «Página no encontrada» y la consola
 del navegador no tiene errores.
-
-## Planeado
-
-- Dominio propio en lugar de `teacherperi.vercel.app`.

@@ -153,7 +153,7 @@ export function PeoplePanel({ profile, which, onBack }) {
           <ul className="tp-card-soft bg-tp-surface p-5 sm:p-6">
             {data.items.map((person) => (
               <li key={person.username} className="flex items-center gap-3 border-t-2 border-dashed border-tp-rule py-3 first:border-t-0 first:pt-0 last:pb-0">
-                <Avatar id={person.avatar} />
+                <Avatar id={person.avatar} color={person.avatarColor} />
                 <span className="min-w-0 flex-1 truncate font-bold">@{person.username}</span>
                 <Link to={profilePath(person.username)} className={`${LINK} inline-flex min-h-11 items-center text-sm`}>Ver perfil</Link>
               </li>

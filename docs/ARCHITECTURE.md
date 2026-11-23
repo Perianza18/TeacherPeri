@@ -115,7 +115,7 @@ needs a signed-in user, and the server checks the role on every request (see
 | `/api/reports/content` | Signed in: `POST /` («Reportar» a problem or lesson). Editors and admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Signed in: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
 | `/api/flags` | Suggestions. Signed in: `POST /`, `GET /mine` (your own). Editors and admins: `GET /`, `POST /:id/status` |
-| `/api/profiles` | Public: `GET /:username` (`email` only for the owner), `GET /:username/followers`, `/following`, `/comments`, `/lists` (private lists only for the owner), `/badges`. Owner only: `GET /:username/activity` (404 for anyone else). Signed in: `PUT /me` (`avatar`, `bio`), `PUT`/`DELETE /:username/follow` |
+| `/api/profiles` | Public: `GET /:username` (`email` only for the owner), `GET /:username/followers`, `/following`, `/comments`, `/lists` (private lists only for the owner), `/badges`. Owner only: `GET /:username/activity` (404 for anyone else). Signed in: `PUT /me` (`avatar`, `avatarColor`, `bio`), `PUT`/`DELETE /:username/follow` |
 | `/api/my-lists` | Personal lists. Signed in: `GET /containing?itemType=&item=`, `POST /`. Owner: `PATCH /:id`, `DELETE /:id`, `POST /:id/items`, `DELETE /:id/items/:itemType/:item`. `GET /:id`: the owner, or anyone if the list is public (otherwise 404) |
 | `/api/problems/:problemId/solved` | Signed in: `GET`, `PUT`, `DELETE` («Lo resolví») |
 | `/api/notifications` | Signed in: `GET /`, `POST /read` |
@@ -163,7 +163,7 @@ Models live in `server/src/models/`.
   decision taken in Revisión),
   `ContactMessage`.
 - **Users** (`User`) have one role: `user`, `editor` or `admin`, plus a preset
-  `avatar` and a short `bio`.
+  `avatar` with its background colour (`avatarColor`) and a short `bio`.
 - **Mi Espacio:** `Follow` (who follows whom), `UserList` and `UserListItem`
   (personal lists of problems and lessons), `ProblemSolve` («Lo resolví») and
   `UserBadge` (earned badges, never removed). See [PROFILES.md](PROFILES.md).

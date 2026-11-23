@@ -50,7 +50,7 @@ export default function UserListPage() {
           <span className="tp-kicker self-start bg-tp-coral">Lista</span>
           <h1 className="break-words font-display text-[34px] font-extrabold leading-tight tracking-[-0.02em] sm:text-[44px]">{list.name}</h1>
           <p className="flex flex-wrap items-center gap-2 text-sm text-tp-ink-muted">
-            <Avatar id={list.owner.avatar} size="sm" />
+            <Avatar id={list.owner.avatar} color={list.owner.avatarColor} size="sm" />
             <Link to={profilePath(list.owner.username)} className={LINK}>@{list.owner.username}</Link>
             <span>· {plural(list.count, 'elemento', 'elementos')}</span>
             {list.isPublic ? <span>· Pública</span> : <SoloTu />}

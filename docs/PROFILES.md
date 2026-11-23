@@ -32,9 +32,12 @@ of its answers, so it never reaches another person's browser.
   tabs are a real tablist: ←/→ move (and wrap), Home and End jump. Clicking a
   follower count shows that list instead (`?ver=seguidores` or
   `?ver=siguiendo`), with no tab selected and a «Volver» link.
-- **Editar perfil:** one of 12 preset avatars (no uploads) and a description of
-  up to 160 characters. Accounts that never chose an avatar get a fixed one
-  picked from their id.
+- **Editar perfil:** one of 24 preset avatars (no uploads): 12 illustrated
+  drawings and 12 math shapes. One of 13 light background colours for it
+  (`AVATAR_COLORS` in `src/lib/avatars.js`), or «Original», the avatar's own
+  fill. Dark backgrounds are left out because they show a white halo around
+  the drawings. And a description of up to 160 characters. Accounts that never chose an avatar
+  get a fixed math shape picked from their id.
 
 ## Lists («Guardar en lista»)
 
@@ -81,13 +84,14 @@ comments.
 ## Code and API
 
 - Pages: `src/pages/PerfilPage.jsx`, `src/pages/UserListPage.jsx`; pieces in
-  `src/components/profile/`. Avatars: `src/lib/avatars.js`.
+  `src/components/profile/`. Avatars: `src/lib/avatars.js`, drawings in
+  `src/assets/avatars/` (256 px square WebP with a transparent background).
 - API: `server/src/routes/profiles.routes.js` (`/api/profiles`),
   `userLists.routes.js` (`/api/my-lists`), `solves.routes.js`
   (`/api/problems/:id/solved`) and `GET /api/flags/mine`. See
   [ARCHITECTURE.md](ARCHITECTURE.md#api).
 - Models: `Follow`, `UserList`, `UserListItem`, `ProblemSolve`, `UserBadge`, and
-  `bio` and `avatar` on `User`. **No migration is needed:** the new fields have
+  `bio`, `avatar` and `avatarColor` on `User`. **No migration is needed:** the new fields have
   defaults and the API creates the new collections and indexes when it starts.
 - Tests: `server/src/__tests__/profiles.test.js`, `user-lists.test.js`,
   `badges.test.js`, `badge-rules.unit.test.js`, `profile-ui.unit.test.js`, and

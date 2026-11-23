@@ -18,7 +18,7 @@
 
 import mongoose from 'mongoose'
 import { DEFAULT_ROLE, LEGACY_ROLES, ROLES } from '../lib/permissions.js'
-import { AVATAR_IDS, BIO_MAX } from '../lib/profile.js'
+import { AVATAR_COLORS, AVATAR_IDS, BIO_MAX } from '../lib/profile.js'
 
 const userSchema = new mongoose.Schema(
   {
@@ -67,6 +67,8 @@ const userSchema = new mongoose.Schema(
     // las cuentas viejas no necesitan migración.
     bio: { type: String, trim: true, maxlength: BIO_MAX, default: '' },
     avatar: { type: String, enum: [...AVATAR_IDS, null], default: null },
+    // Fondo del avatar elegido en «Editar perfil»; null = el color propio del avatar.
+    avatarColor: { type: String, enum: [...AVATAR_COLORS, null], default: null },
   },
   { timestamps: true }, // agrega automáticamente createdAt y updatedAt
 )

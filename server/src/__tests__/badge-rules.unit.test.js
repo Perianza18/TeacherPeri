@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { BADGE_IDS, badgeView, dueBadges } from '../lib/badgeRules.js'
-import { AVATAR_IDS, avatarOf, parseBio, parseListName } from '../lib/profile.js'
+import { AVATAR_IDS, SHAPE_AVATAR_IDS, avatarColorOf, avatarOf, parseBio, parseListName } from '../lib/profile.js'
 
 describe('reglas de insignias', () => {
   it('cada nivel usa la fecha de su elemento N; el rol usa ahora', () => {
@@ -30,6 +30,19 @@ describe('perfil', () => {
     const a = avatarOf({ _id: '65f0c0ffee00000000000abc' })
     expect(AVATAR_IDS).toContain(a)
     expect(avatarOf({ _id: '65f0c0ffee00000000000abc', avatar: 'nope' })).toBe(a)
+  })
+
+  it('sin avatar guardado, el fijo sale solo de las figuras, así que no cambia al sumar dibujos', () => {
+    for (const id of ['65f0c0ffee00000000000abc', '65f0c0ffee0000000000000b', '65f0c0ffee00000000ffffff']) {
+      expect(SHAPE_AVATAR_IDS).toContain(avatarOf({ _id: id }))
+    }
+    expect(avatarOf({ avatar: 'gato-dormido' })).toBe('gato-dormido')
+  })
+
+  it('color de fondo: el guardado si existe, o null', () => {
+    expect(avatarColorOf({ avatarColor: 'menta' })).toBe('menta')
+    expect(avatarColorOf({ avatarColor: 'rojo' })).toBeNull()
+    expect(avatarColorOf({})).toBeNull()
   })
 
   it('descripción y nombre de lista: una línea, con límite', () => {

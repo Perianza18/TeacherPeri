@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { nextTabIndex, plural, profilePath, relativeTime, tabsFor } from '../../../src/lib/profile.js'
-import { AVATARS } from '../../../src/lib/avatars.js'
-import { AVATAR_IDS } from '../lib/profile.js'
+import { AVATARS, AVATAR_COLORS, DRAWING_AVATARS, avatarById, avatarFill } from '../../../src/lib/avatars.js'
+import { AVATAR_COLORS as COLOR_IDS, AVATAR_IDS } from '../lib/profile.js'
 
 describe('Mi Espacio en el sitio', () => {
   it('visitantes ven Comentarios, Listas e Insignias; el dueño ve las cinco pestañas', () => {
@@ -35,5 +35,18 @@ describe('Mi Espacio en el sitio', () => {
 
   it('el sitio dibuja exactamente los avatares que el servidor acepta', () => {
     expect(AVATARS.map((a) => a.id)).toEqual([...AVATAR_IDS])
+    expect(AVATAR_COLORS.map((c) => c.id)).toEqual([...COLOR_IDS])
+  })
+
+  it('cada dibujo tiene su imagen y cada figura sus trazos', () => {
+    expect(DRAWING_AVATARS).toHaveLength(12)
+    for (const avatar of AVATARS) expect(avatar.src || avatar.paths?.length, avatar.id).toBeTruthy()
+  })
+
+  it('el fondo es el color elegido, o el propio del avatar', () => {
+    const avatar = avatarById('de-hecho')
+    expect(avatarFill(avatar, 'menta')).toBe('var(--tp-mint)')
+    expect(avatarFill(avatar, null)).toBe(avatar.fill)
+    expect(avatarFill(avatar, 'rojo')).toBe(avatar.fill)
   })
 })

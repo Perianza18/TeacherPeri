@@ -3,11 +3,12 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import PageHero from './PageHero'
 import { Burst, Highlight } from './decor/Decor'
+import Mascot from './decor/Mascot'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 // Empty state / «Próximamente» page (DESIGN §6): the page title in a yellow
-// band, then a white card with a kicker and one sentence. No placeholder
-// people, posts or illustrations.
+// band, then a white card with a kicker and one sentence, with Cath lying on
+// top of it (nothing here yet). No placeholder people or posts.
 export default function PagePlaceholder({ title, description, kicker = 'Próximamente' }) {
   usePageMeta({ title, description })
   return (
@@ -15,10 +16,11 @@ export default function PagePlaceholder({ title, description, kicker = 'Próxima
       <Navbar />
       <main className="min-h-[80vh] bg-tp-paper pt-[72px] text-tp-ink">
         <PageHero id="pagina-titulo" tone="yellow" title={<Highlight color="var(--tp-sky)" delay={250}>{title}</Highlight>} className="lg:pb-20 lg:pt-20" />
-        <div className="tp-container pb-24 pt-14">
+        <div className="tp-container pb-24 pt-20 sm:pt-24">
           <section className="tp-card relative max-w-[760px] bg-tp-surface p-7 sm:p-9">
+            <Mascot pose="cath-acostada" className="absolute bottom-[calc(100%-6px)] left-6 h-[62px] sm:left-10 sm:h-[82px]" />
             {kicker === 'Próximamente' && (
-              <span aria-hidden="true" className="absolute -right-5 -top-12 rotate-12 sm:-right-8">
+              <span aria-hidden="true" className="absolute -right-2 -top-12 rotate-12 sm:-right-8">
                 <Burst className="size-[108px]" color="var(--tp-orange)">
                   <span className="font-display text-[15px] font-extrabold leading-none">¡Pronto!</span>
                 </Burst>
