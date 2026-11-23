@@ -15,7 +15,7 @@ mano en el sitio. Así cada cambio se revisa en un pull request.
 | --- | --- | --- |
 | Problemas, lecciones, listas, exámenes y la Ruta OMM (primera versión) | `server/src/data/` (`mvpManifest.js`, `mvpLessons.js`, `mvpProblems.js`, `ommCurriculum.js`, `ommLaunchContent*.js`) | `npm run content:import` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | Lecciones reescritas y los problemas que agregan | `server/src/data/theory/`, un archivo por lección | `npm run content:revise-theory` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revisar-lecciones-reescritas)) |
-| Lecciones nuevas sin texto anterior (definen `lesson: { title, area, level }`) | `server/src/data/theory/`, un archivo por lección | `npm run content:import` |
+| Lecciones nuevas sin texto anterior (definen `lesson: { title, area, level }`) | `server/src/data/theory/`, un archivo por lección | `npm run content:revise-theory` (las crea) |
 | Figuras de las lecciones | `public/figuras/*.svg` | Se publican con el sitio |
 | Problemas y carpetas de examen de la comunidad | Se proponen en el sitio | Revisión de un admin ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
