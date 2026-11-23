@@ -33,9 +33,10 @@ privados de sus respuestas, así que nunca llegan al navegador de otra persona.
   saltan. Al hacer clic en seguidores o siguiendo se muestra esa lista
   (`?ver=seguidores` o `?ver=siguiendo`), sin pestaña marcada y con «Volver».
 - **Editar perfil:** uno de 24 avatares prediseñados (sin fotos): 12 dibujos
-  ilustrados y 12 figuras matemáticas. Un color de fondo para él (amarillo,
-  cielo, menta, lila, naranja o durazno, u «Original», el relleno propio del
-  avatar). Y una descripción de hasta 160 caracteres. Las cuentas que nunca
+  ilustrados y 12 figuras matemáticas. Uno de 13 colores de fondo claros para
+  él (`AVATAR_COLORS` en `src/lib/avatars.js`), u «Original», el relleno
+  propio del avatar. No hay fondos oscuros porque dejan un borde blanco
+  alrededor de los dibujos. Y una descripción de hasta 160 caracteres. Las cuentas que nunca
   eligieron avatar tienen una figura fija, calculada de su id.
 
 ## Listas («Guardar en lista»)
