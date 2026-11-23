@@ -15,6 +15,7 @@ import fotoHackathons from '../../assets/equipo/hackathons.webp'
 import fotoClases from '../../assets/equipo/clases.webp'
 import fotoFueraDeMate from '../../assets/equipo/fuera-de-mate.webp'
 import fotoDiscurso from '../../assets/equipo/discurso.webp'
+import borregaBolita from '../../assets/equipo/borrega-bolita.webp'
 
 // Catherine's own page (TeacherCath), linked from Equipo and opened in its own
 // tab, without the site menu. Everything on it lives in this file, so changes
@@ -304,6 +305,64 @@ function Bow({ className = '' }) {
     </svg>
   )
 }
+
+// ---------- The ending: checkered paper with flowers, then a meadow ----------
+
+const CHECKER = { background: `repeating-conic-gradient(#ebe4fb 0 25%, #fff8ec 0 50%) 0 0 / 112px 112px` }
+const ORANGE = '#f5a524'
+
+// A soft pink five-petal flower with a red dot in the middle (no outline).
+function PetalFlower({ color = '#f7a8c4', className = '' }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 60 60" className={className}>
+      {[0, 72, 144, 216, 288].map((a) => <ellipse key={a} cx="30" cy="15" rx="10" ry="14" fill={color} transform={`rotate(${a} 30 30)`} />)}
+      <circle cx="30" cy="30" r="6" fill="#ea4a2f" />
+    </svg>
+  )
+}
+
+// A smiling daisy with an orange outline.
+function Daisy({ petals = C.lilacSoft, className = '' }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 100 100" className={className}>
+      {Array.from({ length: 10 }, (_, i) => <ellipse key={i} cx="50" cy="19" rx="10" ry="17" fill={petals} stroke={ORANGE} strokeWidth="3.5" transform={`rotate(${i * 36} 50 50)`} />)}
+      <circle cx="50" cy="50" r="19" fill="#fff3c9" stroke={ORANGE} strokeWidth="3.5" />
+      <path d="M43 44 v4 M57 44 v4" stroke={ORANGE} strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M41 54 C 45 61, 55 61, 59 54" fill="none" stroke={ORANGE} strokeWidth="3.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+// A four-point sparkle: solid orange, or pastel inside an orange outline.
+function Sparkle({ outline = false, className = '' }) {
+  const d = 'M20 1 C 21.5 13, 27 18.5, 39 20 C 27 21.5, 21.5 27, 20 39 C 18.5 27, 13 21.5, 1 20 C 13 18.5, 18.5 13, 20 1 Z'
+  return (
+    <svg aria-hidden="true" viewBox="0 0 40 40" className={className}>
+      {outline ? <><path d={d} fill={C.lilacSoft} stroke={ORANGE} strokeWidth="2.6" strokeLinejoin="round" /><path d="M20 10 C 20.8 16, 24 19.2, 30 20 C 24 20.8, 20.8 24, 20 30 C 19.2 24, 16 20.8, 10 20 C 16 19.2, 19.2 16, 20 10 Z" fill="#ffd6e7" /></> : <path d={d} fill={ORANGE} />}
+    </svg>
+  )
+}
+
+// A little tulip-like flower for the meadow: three round petals on two stems.
+function MeadowFlower({ color, className = '', style }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 40 40" className={className} style={style}>
+      <path d="M14 22 L12 38 M26 22 L28 38 M20 24 V38" stroke="#6f9f4f" strokeWidth="3" strokeLinecap="round" />
+      <ellipse cx="10" cy="16" rx="6" ry="8" fill={color} />
+      <ellipse cx="20" cy="13" rx="6" ry="8.5" fill={color} />
+      <ellipse cx="30" cy="16" rx="6" ry="8" fill={color} />
+    </svg>
+  )
+}
+
+// Where the meadow flowers grow: [left, bottom, colour, width].
+const MEADOW = [
+  ['3%', '10px', '#f6b3c3', '51px'], ['9%', '57px', '#ffd75e', '42px'], ['20%', '18px', '#bfa8f0', '54px'],
+  ['30%', '66px', '#9fd8f5', '39px'], ['37%', '7px', '#f6b3c3', '48px'], ['46%', '42px', '#ffd75e', '45px'],
+  ['55%', '13px', '#9fd8f5', '54px'], ['63%', '62px', '#bfa8f0', '39px'], ['70%', '24px', '#f6b3c3', '51px'],
+  ['78%', '78px', '#9fd8f5', '36px'], ['84%', '9px', '#ffd75e', '51px'], ['91%', '50px', '#f6b3c3', '45px'],
+  ['96%', '18px', '#bfa8f0', '42px'],
+]
 
 // Little stickers drawn here, used instead of emojis: candy colours with the
 // navy outline, so they match the page.
@@ -853,8 +912,22 @@ export default function CatherinePage() {
           </ul>
         </section>
 
-        {/* ---------- Outside math ---------- */}
-        <section aria-labelledby="fuera" className="relative mx-auto max-w-[900px] px-4 py-20 text-center sm:px-6">
+        {/* ---------- Outside math: a white sheet on checkered paper, flowers at its corners ---------- */}
+        <div className="relative overflow-hidden px-3 pb-24 pt-16 sm:px-6 sm:pb-36 sm:pt-24" style={CHECKER}>
+          <Daisy className="absolute -left-10 top-6 w-28 sm:-left-6 sm:w-40" />
+          <Daisy petals="#fbd3ea" className="absolute -left-8 top-40 hidden w-24 sm:block" />
+          <Daisy petals="#fbd3ea" className="absolute -right-12 bottom-[38%] w-28 sm:-right-8 sm:w-36" />
+          <Sparkle className="absolute right-[14%] top-8 w-6 sm:w-8" />
+          <Sparkle outline className="absolute right-[5%] top-12 w-12 sm:w-20" />
+          <Sparkle className="absolute right-[3%] top-36 hidden w-7 sm:block" />
+          <Sparkle outline className="absolute -left-3 bottom-16 w-16 sm:left-[2%] sm:w-24" />
+          <Sparkle className="absolute bottom-6 left-[16%] w-8 sm:w-10" />
+          <Sparkle className="absolute bottom-40 left-[10%] hidden w-6 sm:block" />
+        <section aria-labelledby="fuera" className="relative mx-auto max-w-[900px] rounded-[28px] border-[3px] bg-white px-5 py-14 text-center shadow-[6px_8px_0_rgba(185,156,240,.35)] sm:px-12 sm:py-16" style={{ borderColor: '#f7a8c4' }}>
+          <PetalFlower className="absolute -left-6 -top-6 w-16 sm:-left-8 sm:-top-8 sm:w-20" />
+          <PetalFlower className="absolute -right-6 -top-6 w-16 rotate-12 sm:-right-8 sm:-top-8 sm:w-20" />
+          <PetalFlower className="absolute -bottom-6 -left-6 w-16 rotate-6 sm:-bottom-8 sm:-left-8 sm:w-20" />
+          <PetalFlower className="absolute -bottom-6 -right-6 w-16 -rotate-12 sm:-bottom-8 sm:-right-8 sm:w-20" />
           <h2 id="fuera" className="sr-only">Fuera de las mates</h2>
           <p className="text-[clamp(22px,3.4vw,34px)] font-semibold leading-[1.4]" style={ROUND}>
             Aunque las matemáticas ocupan una parte enorme de mi vida, también me gusta mucho <span className="text-[1.15em]" style={{ ...SCRIPT, color: C.hot }}>escribir</span> <Icon name="pencil" className="h-[0.9em] w-[0.9em]" />,{' '}
@@ -883,19 +956,24 @@ export default function CatherinePage() {
             <Polaroid src={fotoFueraDeMate} alt="Catherine afuera de una cafetería" pos="center 45%" caption="fuera de las mates ♡" tilt="-rotate-3" tape={C.yellow} />
             <Polaroid src={fotoDiscurso} alt="Catherine dando un discurso en un podio" pos="center 40%" caption="con micrófono" tilt="rotate-2" tape={C.pink} />
           </div>
-          <StarRow className="mt-14" />
         </section>
+        </div>
       </main>
 
       {/* ---------- Footer ---------- */}
-      <footer className="relative" style={{ background: C.blue }}>
-        <div style={{ background: C.cream }}><Scallops color={C.blue} flip /></div>
-        <Mascot pose="cath-acostada" className="absolute -top-[40px] right-6 h-[60px] sm:right-16" />
-        <div className="mx-auto flex max-w-[1080px] flex-col gap-8 px-4 pb-10 pt-8 text-white sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      {/* A meadow under a light sky, with the lamb grazing on the hill. */}
+      <footer className="relative" style={{ background: 'linear-gradient(#a6dcf7, #cdebfb)' }}>
+        <div aria-hidden="true" className="absolute inset-x-0 -top-[46px] h-[47px] sm:-top-[62px] sm:h-[63px]" style={{ background: 'radial-gradient(ellipse 50% 100% at 50% 100%, #a6dcf7 calc(100% - 1px), transparent 100%) 0 0 / var(--bump) 100% repeat-x', '--bump': 'clamp(110px, 12vw, 170px)' }} />
+        <div className="absolute inset-0 overflow-hidden">
+          <Cloud className="-left-6 top-10 w-32 sm:w-44" />
+          <Cloud className="right-[4%] top-6 w-28 opacity-95 sm:w-40" />
+          <Cloud className="left-[44%] top-24 hidden w-24 opacity-80 md:block" />
+        </div>
+        <div className="relative mx-auto flex max-w-[1080px] flex-col gap-8 px-4 pb-6 pt-16 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
-            <p className="text-[56px] leading-none" style={{ ...SCRIPT, color: C.cream }}>TeacherCath ♡</p>
+            <p className="text-[56px] leading-none" style={{ ...SCRIPT, color: C.hot }}>TeacherCath ♡</p>
             <p className="mt-2 max-w-[420px] text-[16px] font-semibold leading-6">¿Te preparas para la olimpiada o quieres platicar? ¡Escríbeme por LinkedIn!</p>
-            <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold"><Icon name="pin" className="h-5 w-5" />De Guerrero, ahora en Monterrey · <Icon name="cap" className="h-5 w-5" />Tec de Monterrey</p>
+            <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold"><span className="flex items-center gap-1.5"><Icon name="pin" className="h-5 w-5" />De Guerrero, ahora en Monterrey</span><span className="flex items-center gap-1.5"><Icon name="cap" className="h-5 w-5" />Tec de Monterrey</span></p>
           </div>
           <nav aria-label="Mis enlaces" className="flex flex-wrap gap-4">
             {LINKS.map(({ label, href, color, tilt }) => {
@@ -906,6 +984,15 @@ export default function CatherinePage() {
               return <a key={label} href={href} target="_blank" rel="noreferrer" className={cls} style={style}>{label} ↗</a>
             })}
           </nav>
+        </div>
+        <div aria-hidden="true" className="relative h-[170px] sm:h-[200px]">
+          <svg viewBox="0 0 1440 260" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
+            <path d="M0 120 C 260 60, 520 70, 760 110 C 1000 150, 1220 70, 1440 50 V260 H0 Z" fill="#a3c97e" />
+            <path d="M0 175 C 300 140, 640 160, 900 185 C 1120 205, 1300 170, 1440 150 V260 H0 Z" fill="#94bd6d" />
+          </svg>
+          {MEADOW.map(([left, bottom, color, size]) => <MeadowFlower key={`${left}-${bottom}`} color={color} className="absolute" style={{ left, bottom, width: size }} />)}
+          {/* Catherine is a borrega, the Tec's mascot */}
+          <img src={borregaBolita} alt="" loading="lazy" draggable="false" className="absolute bottom-5 left-1/2 h-[120px] w-auto -translate-x-1/2 drop-shadow-[0_4px_0_rgba(80,120,50,.25)] sm:bottom-8 sm:left-[14%] sm:h-[150px] sm:translate-x-0" />
         </div>
       </footer>
 
