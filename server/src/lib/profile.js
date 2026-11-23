@@ -50,9 +50,9 @@ export const MAX_ITEMS_PER_LIST = 500
 export const LIST_ITEM_TYPES = Object.freeze(['problem', 'theory'])
 
 export function parseListName(value) {
-  if (typeof value !== 'string') return { error: 'Escribe un nombre para la lista.' }
+  if (typeof value !== 'string') return { error: 'Escribe un nombre para la colección.' }
   const text = value.replace(/\s+/g, ' ').trim()
-  if (!text) return { error: 'Escribe un nombre para la lista.' }
+  if (!text) return { error: 'Escribe un nombre para la colección.' }
   if (text.length > LIST_NAME_MAX) return { error: `El nombre puede tener hasta ${LIST_NAME_MAX} caracteres.` }
   return { value: text }
 }

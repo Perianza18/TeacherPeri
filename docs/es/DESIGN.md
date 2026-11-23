@@ -16,7 +16,7 @@ que ya está en `src/index.css` (`.tp-card`, `.tp-button`, `.tp-kicker`,
    840px. El estilo de cómic fuerte va en encabezados, tarjetas y botones, no en
    los párrafos.
 4. **Interfaz en español.** Todo el texto visible está en español de México:
-   «Ver solución», «Guardar en lista», «Responder», «Reportar».
+   «Ver solución», «Guardar», «Responder», «Reportar».
 
 Las tarjetas de problemas usan la franja de color del área para escribir el área
 y un subtema disponible en mayúsculas, separados por un punto (por ejemplo,

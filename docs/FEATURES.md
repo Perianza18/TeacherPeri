@@ -35,7 +35,7 @@ A Ruta is an ordered path through existing material. See
 | OMM Ruta: Preparación (18 lessons) and Ciclo 1 (17 lessons) | Done | |
 | OMM Ruta: Ciclo 2 | Partial | 2 of 13 lessons are live (modular arithmetic and linear congruences). The rest show «Próximamente» |
 | OMM Ruta: Ciclos 3–5 | Planned | **Today:** their titles show «Próximamente» |
-| Follow a Ruta, save it for later | Planned | Part of Mi Espacio. **Today:** only completed steps are saved; lessons can be saved to personal lists |
+| Follow a Ruta, save it for later | Planned | Part of Mi Espacio. **Today:** only completed steps are saved; lessons can be saved to collections («Guardados» in Mi Espacio) |
 | Universidad Ruta (applying to universities in the US and Canada) | Planned | Will use the same Ruta engine. **Today:** `/estudia-en-el-extranjero` is a «Próximamente» page («Universidad» in the footer) |
 
 ## Entrenamiento (libraries)
@@ -66,7 +66,7 @@ A Ruta is an ordered path through existing material. See
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Exercise lists inside Entrenamiento | Done | «Listas» (`/entrenamiento/listas`) groups direct applications of theory by topic, with statements, hints and solutions in an ordered list. An exercise may appear in several lists. «Problemas» excludes classified exercises, while direct links and exam references continue to work. «Recursos externos» keeps links to other publishers. See [EXERCISE_LISTS.md](EXERCISE_LISTS.md) for classification and maintenance. |
-| Personal lists («Guardar en lista») | Done | On problem pages, the problem window and lessons: tick your lists or create one. Private unless marked «Pública»; rename, make public or private, delete from Mi Espacio › Listas; one list at `/perfil/<username>/listas/<id>`. Problems and lessons only; Experiencias posts and other content come later. See [PROFILES.md](PROFILES.md#lists-guardar-en-lista) |
+| Collections («Guardar») | Done | «Guardar» on problem pages, the problem window and lessons opens «Guardar en una colección»: tick your collections or create one. Private unless marked «Pública»; rename, make public or private, delete from Mi Espacio › Guardados; one collection at `/perfil/<username>/colecciones/<id>` (old `/listas/` links redirect). The word «lista» is kept for the Listas page only. Problems and lessons only; Experiencias posts come later. See [PROFILES.md](PROFILES.md#guardados-collections) |
 
 ## Community
 
@@ -104,9 +104,10 @@ A Ruta is an ordered path through existing material. See
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Profile page `/perfil/<username>` («Mi Espacio» in the avatar menu) | Done | Profile card, «En números» and tabs: Actividad, Comentarios, Listas, Mis envíos, Insignias. Visitors see only Comentarios, Listas and Insignias. The email, Actividad, Mis envíos and private lists are only sent to the owner by the server. See [PROFILES.md](PROFILES.md) |
+| Profile page `/perfil/<username>` («Mi Espacio» in the avatar menu) | Done | Profile card, «En números» and tabs: Actividad, Comentarios, Guardados, Mis envíos, Insignias. Visitors see only Comentarios, Guardados and Insignias. The email, Actividad, the solved list, Mis envíos and private collections are only sent to the owner by the server. See [PROFILES.md](PROFILES.md) |
 | «Editar perfil»: preset avatars and a short description | Done | 12 preset avatars (no uploads) and up to 160 characters. Shown in the navbar, on comments and in follower lists |
-| «Lo resolví» on problems | Done | The student marks a problem solved (nothing checks the answer). Counts as «problemas resueltos» |
+| «Lo resolví» on problems | Done | The student marks a problem solved (nothing checks the answer). Counts as «problemas resueltos». The owner clicks that number to see which ones (statement, área, date; filter by área); visitors only see the number |
+| «Buscar usuarios» on every profile | Done | Username search from 2 characters (prefix, any case), up to 20 results with avatar, role and «Ver perfil». Public fields only, rate limited. See [PROFILES.md](PROFILES.md#buscar-usuarios) |
 | Earned badges | Done | Problems solved (1/10/50), comments (1/10/50), accepted problems (1/5/20), applied suggestions (1/5/20), and Editor/Admin. Never taken away. See [PROFILES.md](PROFILES.md#lo-resolví-and-badges) |
 | Followed Rutas, «continue where you left off» | Planned | **Today:** Actividad lists your recent comments, saves, solves, proposals and suggestions |
 

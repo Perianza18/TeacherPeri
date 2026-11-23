@@ -3,7 +3,8 @@
 // formats dates and labels.
 
 export const profilePath = (username) => `/perfil/${encodeURIComponent(username)}`
-export const userListPath = (username, id) => `${profilePath(username)}/listas/${id}`
+// A collection («Guardados» tab). The old /listas/ address still redirects.
+export const userListPath = (username, id) => `${profilePath(username)}/colecciones/${id}`
 
 const ROLE_NAMES = { user: 'Usuario', editor: 'Editor', admin: 'Admin' }
 export const roleName = (role) => ROLE_NAMES[role] ?? 'Usuario'
@@ -35,7 +36,7 @@ export const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 export const PROFILE_TABS = [
   { id: 'actividad', label: 'Actividad', color: 'bg-tp-yellow', ownerOnly: true },
   { id: 'comentarios', label: 'Comentarios', color: 'bg-tp-sky' },
-  { id: 'listas', label: 'Listas', color: 'bg-tp-coral' },
+  { id: 'guardados', label: 'Guardados', color: 'bg-tp-coral' },
   { id: 'envios', label: 'Mis envíos', color: 'bg-tp-mint', ownerOnly: true },
   { id: 'insignias', label: 'Insignias', color: 'bg-tp-yellow' },
 ]
@@ -69,4 +70,14 @@ export function nextTabIndex(key, index, count) {
   if (key === 'Home') return 0
   if (key === 'End') return count - 1
   return null
+}
+
+// Área pills on «Problemas resueltos» (same colors as the problem cards).
+export const AREA_PILLS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
+
+// «Buscar usuarios»: what is sent to the server, or '' while it is too short.
+export const SEARCH_MIN = 2
+export function userQuery(text) {
+  const value = String(text ?? '').trim().replace(/^@/, '').slice(0, 30)
+  return value.length >= SEARCH_MIN ? value : ''
 }

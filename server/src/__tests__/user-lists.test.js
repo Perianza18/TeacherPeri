@@ -80,6 +80,6 @@ describe('Listas personales', () => {
     const list = (await create(ana.token, { name: 'Teoría' })).body
     await add(ana.token, list.id, { itemType: 'theory', item: String(lesson._id) })
     const activity = await request(app).get('/api/profiles/ana/activity').set(as(ana.token))
-    expect(activity.body.items[0]).toMatchObject({ kind: 'saved', target: { label: 'Principio de casillas' }, list: { name: 'Teoría', href: `/perfil/ana/listas/${list.id}` } })
+    expect(activity.body.items[0]).toMatchObject({ kind: 'saved', target: { label: 'Principio de casillas' }, list: { name: 'Teoría', href: `/perfil/ana/colecciones/${list.id}` } })
   })
 })

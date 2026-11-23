@@ -1,5 +1,6 @@
 // Mi Espacio (profiles)
 //
+// GET    /api/profiles?q=                     public search: username prefix (2+ chars), 20 max, public fields only
 // GET    /api/profiles/:username              public; `email` only for the owner
 // PUT    /api/profiles/me                     signed in: { avatar, avatarColor, bio }
 // GET    /api/profiles/:username/followers    public, 50 per page (?page=)
@@ -8,14 +9,16 @@
 // DELETE /api/profiles/:username/follow       signed in
 // GET    /api/profiles/:username/comments     public, 20 per page
 // GET    /api/profiles/:username/activity     owner only (404 for anyone else)
+// GET    /api/profiles/:username/solved       owner only (404 for anyone else)
 // GET    /api/profiles/:username/lists        public lists; the owner also gets private ones
 // GET    /api/profiles/:username/badges       public
 //
-// Privacy is fixed: activity, «Mis envíos», private lists and the email are
+// Privacy is fixed: activity, solved problems, «Mis envíos», private lists and the email are
 // only for the owner. They are filtered here, in the query, never sent and
 // hidden in the page.
 
 import { Router } from 'express'
+import rateLimit from 'express-rate-limit'
 import Comment from '../models/Comment.js'
 import Flag from '../models/Flag.js'
 import Follow from '../models/Follow.js'
@@ -39,8 +42,36 @@ const FOLLOW_PAGE = 50
 const COMMENT_PAGE = 20
 const ACTIVITY_LIMIT = 30
 
+export const SEARCH_MIN = 2
+export const SEARCH_MAX = 30
+export const SEARCH_LIMIT = 20
+
 const page = (value) => Math.max(1, Math.min(1000, Number.parseInt(value, 10) || 1))
 export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), avatarColor: avatarColorOf(user), role: roleOf(user) })
+
+// «Buscar usuarios» has its own budget per IP on top of the general /api one.
+export const searchLimiter = ({ max = 60, windowMs = 60 * 1000 } = {}) => rateLimit({
+  windowMs,
+  max,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas búsquedas. Espera un momento e intenta de nuevo.' },
+})
+
+// A username prefix: a leading «@» is ignored; regex characters are escaped.
+export function parseUserQuery(value) {
+  const text = typeof value === 'string' ? value.trim().replace(/^@/, '') : ''
+  if (text.length < SEARCH_MIN) return { error: `Escribe al menos ${SEARCH_MIN} caracteres.` }
+  if (text.length > SEARCH_MAX) return { error: `Escribe hasta ${SEARCH_MAX} caracteres.` }
+  return { value: text, pattern: new RegExp(`^${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i') }
+}
+
+router.get('/', searchLimiter(), async (req, res) => {
+  const query = parseUserQuery(req.query.q)
+  if (query.error) return res.status(400).json({ error: query.error })
+  const users = await User.find({ username: query.pattern }).sort({ username: 1 }).limit(SEARCH_LIMIT).select('username role avatar avatarColor').lean()
+  res.json({ items: users.map(personView) })
+})
 
 async function findProfile(req, res) {
   const username = typeof req.params.username === 'string' ? req.params.username : ''
@@ -188,7 +219,7 @@ router.get('/:username/activity', optionalAuth, async (req, res) => {
   }
   for (const s of saved) {
     const target = nameOf(s.itemType, s.item)
-    if (target && s.list) events.push({ kind: 'saved', at: s.createdAt, target: { label: target.label, href: target.href }, list: { name: s.list.name, href: `/perfil/${encodeURIComponent(user.username)}/listas/${s.list._id}` } })
+    if (target && s.list) events.push({ kind: 'saved', at: s.createdAt, target: { label: target.label, href: target.href }, list: { name: s.list.name, href: `/perfil/${encodeURIComponent(user.username)}/colecciones/${s.list._id}` } })
   }
   for (const s of solves) {
     const problem = nameOf('problem', s.problem)
@@ -199,6 +230,24 @@ router.get('/:username/activity', optionalAuth, async (req, res) => {
   }
   events.sort((a, b) => new Date(b.at) - new Date(a.at))
   res.json({ items: events.slice(0, limit) })
+})
+
+// «Problemas resueltos» from «En números»: only published problems, the same
+// ones the count includes, newest first. Owner only.
+router.get('/:username/solved', optionalAuth, async (req, res) => {
+  const user = await findProfile(req, res)
+  if (!user) return
+  if (!isOwner(req.userId, user)) return res.status(404).json({ error: 'Ese perfil no existe.' })
+  const solves = await ProblemSolve.find({ user: user._id }).sort({ createdAt: -1 }).select('problem createdAt').lean()
+  const problems = solves.length
+    ? await Problem.find({ _id: { $in: solves.map((s) => s.problem) }, ...publishedOrLegacyProblemQuery() }).select('enunciado tema').lean()
+    : []
+  const byId = new Map(problems.map((p) => [String(p._id), p]))
+  const items = solves.filter((s) => byId.has(String(s.problem))).map((s) => {
+    const problem = byId.get(String(s.problem))
+    return { id: problem._id, preview: problem.enunciado, area: problem.tema ?? null, solvedAt: s.createdAt, href: problemHref(problem._id) }
+  })
+  res.json({ items })
 })
 
 router.get('/:username/lists', optionalAuth, async (req, res) => {

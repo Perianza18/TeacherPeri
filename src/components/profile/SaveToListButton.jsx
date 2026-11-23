@@ -42,11 +42,11 @@ function SaveDialog({ itemType, itemId, token, onClose }) {
   return createPortal((
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-tp-ink/40 sm:items-center sm:p-6" onPointerDown={(event) => { if (event.target === event.currentTarget) close() }}>
       <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="tp-card max-h-[90vh] w-full max-w-[480px] overflow-y-auto bg-tp-surface p-6 font-sans text-tp-ink">
-        <h2 id={`${id}-title`} className="font-display text-[22px] font-extrabold tracking-[-0.02em]">Guardar en lista</h2>
-        {state.lists == null ? <p className="mt-4 text-tp-ink-muted">Cargando tus listas…</p> : (
+        <h2 id={`${id}-title`} className="font-display text-[22px] font-extrabold tracking-[-0.02em]">Guardar en una colección</h2>
+        {state.lists == null ? <p className="mt-4 text-tp-ink-muted">Cargando tus colecciones…</p> : (
           <fieldset className="mt-4">
-            <legend className="sr-only">Tus listas</legend>
-            {state.lists.length === 0 && !creating && <p className="text-tp-ink-soft">Aún no tienes listas. Crea la primera.</p>}
+            <legend className="sr-only">Tus colecciones</legend>
+            {state.lists.length === 0 && !creating && <p className="text-tp-ink-soft">Aún no tienes colecciones. Crea la primera.</p>}
             <ul className="flex flex-col">
               {state.lists.map((list) => (
                 <li key={list.id} className="border-t-2 border-dashed border-tp-rule first:border-t-0">
@@ -65,7 +65,7 @@ function SaveDialog({ itemType, itemId, token, onClose }) {
           {creating
             ? <ListNameForm submitLabel="Crear y guardar" withPrivacy onCancel={() => setCreating(false)} onSubmit={create} />
             : <div className="flex flex-wrap items-center gap-3">
-              <button type="button" onClick={() => setCreating(true)} className="tp-button bg-tp-mint px-4 text-sm font-bold text-tp-ink">Nueva lista</button>
+              <button type="button" onClick={() => setCreating(true)} className="tp-button bg-tp-mint px-4 text-sm font-bold text-tp-ink">Nueva colección</button>
               <button type="button" onClick={close} className="tp-button bg-tp-surface px-4 text-sm font-bold text-tp-ink">Listo</button>
             </div>}
         </div>
@@ -74,13 +74,13 @@ function SaveDialog({ itemType, itemId, token, onClose }) {
   ), document.body)
 }
 
-// «Guardar en lista» on a problem or a lesson. Signed out: opens sign-in.
+// «Guardar» on a problem or a lesson: opens «Guardar en una colección». Signed out: opens sign-in.
 export default function SaveToListButton({ itemType, itemId, className = '' }) {
   const { auth, abrirModal } = useAuth()
   const [open, setOpen] = useState(false)
   return (
     <>
-      <button type="button" onClick={() => (auth ? setOpen(true) : abrirModal())} className={`tp-button bg-tp-surface px-4 text-sm font-bold text-tp-ink ${className}`}>Guardar en lista</button>
+      <button type="button" onClick={() => (auth ? setOpen(true) : abrirModal())} className={`tp-button bg-tp-surface px-4 text-sm font-bold text-tp-ink ${className}`}>Guardar</button>
       {open && auth && <SaveDialog itemType={itemType} itemId={itemId} token={auth.token} onClose={() => setOpen(false)} />}
     </>
   )

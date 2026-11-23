@@ -1,4 +1,4 @@
-// Personal lists («Guardar en lista», Mi Espacio › Listas)
+// Personal lists, shown as «colecciones» («Guardar», Mi Espacio › Guardados)
 //
 // GET    /api/my-lists/containing?itemType=&item=   signed in: your lists, each with `contains`
 // POST   /api/my-lists                              signed in: { name, isPublic }
@@ -24,11 +24,11 @@ import { contentNames, publicItemExists } from '../lib/profileContent.js'
 
 const router = Router()
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
-const notFound = (res) => res.status(404).json({ error: 'Esa lista no existe.' })
+const notFound = (res) => res.status(404).json({ error: 'Esa colección no existe.' })
 
-const listHref = (owner, id) => `/perfil/${encodeURIComponent(owner.username)}/listas/${id}`
+const listHref = (owner, id) => `/perfil/${encodeURIComponent(owner.username)}/colecciones/${id}`
 
-// Cards for the Listas tab: name, privacy and how many items each list has.
+// Cards for the Guardados tab: name, privacy and how many items each list has.
 export async function listSummaries(lists, owner) {
   if (!lists.length) return []
   const counts = await UserListItem.aggregate([{ $match: { list: { $in: lists.map((l) => l._id) } } }, { $group: { _id: '$list', count: { $sum: 1 } } }])
@@ -55,7 +55,7 @@ router.post('/', requireAuth, async (req, res) => {
   const name = parseListName(req.body.name)
   if (name.error) return res.status(400).json({ error: name.error })
   if (await UserList.countDocuments({ owner: req.userId }) >= MAX_LISTS_PER_USER) {
-    return res.status(409).json({ error: `Puedes tener hasta ${MAX_LISTS_PER_USER} listas.` })
+    return res.status(409).json({ error: `Puedes tener hasta ${MAX_LISTS_PER_USER} colecciones.` })
   }
   const list = await UserList.create({ owner: req.userId, name: name.value, isPublic: req.body.isPublic === true })
   const owner = await User.findById(req.userId).select('username').lean()
@@ -98,7 +98,7 @@ router.patch('/:id', requireAuth, async (req, res) => {
     list.name = name.value
   }
   if ('isPublic' in req.body) {
-    if (typeof req.body.isPublic !== 'boolean') return res.status(400).json({ error: 'Elige si la lista es pública o privada.' })
+    if (typeof req.body.isPublic !== 'boolean') return res.status(400).json({ error: 'Elige si la colección es pública o privada.' })
     list.isPublic = req.body.isPublic
   }
   await list.save()
@@ -123,7 +123,7 @@ router.post('/:id/items', requireAuth, async (req, res) => {
   if (!await publicItemExists(itemType, item)) return res.status(404).json({ error: 'Eso no existe o no está publicado.' })
   if (await UserListItem.exists({ list: list._id, itemType, item })) return res.status(200).json({ saved: true })
   if (await UserListItem.countDocuments({ list: list._id }) >= MAX_ITEMS_PER_LIST) {
-    return res.status(409).json({ error: `Una lista puede tener hasta ${MAX_ITEMS_PER_LIST} elementos.` })
+    return res.status(409).json({ error: `Una colección puede tener hasta ${MAX_ITEMS_PER_LIST} elementos.` })
   }
   try {
     await UserListItem.create({ list: list._id, owner: req.userId, itemType, item })
