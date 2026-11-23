@@ -14,7 +14,7 @@ Every screen follows this guide. It builds on the comic-workbook style already i
 3. **Reading first.** Long text sits in a calm column no wider than 840px. The
    heavy comic style goes on headers, cards and buttons, not on paragraphs.
 4. **Spanish UI.** All visible text is in Spanish (Mexico): «Ver solución»,
-   «Guardar en lista», «Responder», «Reportar».
+   «Guardar», «Responder», «Reportar».
 
 Problem cards use the area-colored strip for the full area and one available
 subtopic in uppercase text, separated by a dot (for example, «COMBINATORIA ·

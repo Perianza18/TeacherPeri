@@ -18,7 +18,7 @@ can train without hunting for material.
 | Rutas | Ordered study paths with progress. The OMM Ruta has Preparación and 5 ciclos | Partial: Preparación and Ciclo 1 are complete; all 14 Ciclo 2 lessons are written in the new format in the code and wait to be published |
 | Entrenamiento | Libraries: Problemas (56), Teoría (37 lessons), Exámenes (3), Listas (6) and Recursos externos (3) | Done. The code holds 49 lessons in the new lesson format (everything before Ciclo 3); the live site shows them once they are published |
 | Community | Comments, proposing problems, suggestions and reports, moderation and review | Done. Forum and @mentions are planned |
-| Mi Espacio | Profile, personal lists, following, «Lo resolví», badges | Done ([PROFILES.md](docs/PROFILES.md)) |
+| Mi Espacio | Profile, «Guardados» (collections), following, «Lo resolví» and the solved list, «Buscar usuarios», badges | Done ([PROFILES.md](docs/PROFILES.md)) |
 | Experiencias, Equipo, Universidad | Blog, team, university guides | Planned («Próximamente» today) |
 
 Every feature, with what works today and what is planned:
@@ -50,7 +50,7 @@ Setup, tests and every npm script: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 | [FEATURES.md](docs/FEATURES.md) | Every feature, done or planned, and how the site works today |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the code is split: folders, pages, API, data model |
 | [ROLES.md](docs/ROLES.md) | User, Editor and Admin: who can do what |
-| [PROFILES.md](docs/PROFILES.md) | Mi Espacio: profiles, privacy, personal lists, following and badges |
+| [PROFILES.md](docs/PROFILES.md) | Mi Espacio: profiles, privacy, «Guardados» (collections), solved problems, user search, following and badges |
 | [SUBMISSIONS.md](docs/SUBMISSIONS.md) | Community problems, exam folders, error reports and their review |
 | [CONTENT.md](docs/CONTENT.md) | How lessons, problems, lists, exams and Rutas are written and published |
 | [CONTENT_IMPORT.md](docs/CONTENT_IMPORT.md) | Loading official content into a database |

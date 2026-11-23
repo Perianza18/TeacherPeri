@@ -14,8 +14,9 @@ of its answers, so it never reaches another person's browser.
 | --- | --- | --- |
 | @username, avatar, role, description, follower counts, «En números» | ✓ | ✓ |
 | Comentarios (visible comments on public problems) | ✓ | ✓ |
-| Listas: public lists | ✓ | ✓ |
-| Listas: private lists («Solo tú») | ✓ | – (404) |
+| Guardados: public collections | ✓ | ✓ |
+| Guardados: private collections («Solo tú») | ✓ | – (404) |
+| «Problemas resueltos» (which problems) | ✓ | – (404; visitors see only the number) |
 | Insignias | ✓ | ✓ |
 | Email | ✓ | – |
 | Actividad | ✓ | – (404) |
@@ -25,13 +26,17 @@ of its answers, so it never reaches another person's browser.
 
 - **Left:** the profile card (avatar, @username, role, description, «N seguidores»
   and «N siguiendo», «Editar perfil» or «Seguir»/«Siguiendo», and the email for
-  the owner only), then «En números»: problems solved, comments, proposed
-  problems (published ones) and badges.
+  the owner only), then «Buscar usuarios», then «En números»: problems solved,
+  comments, proposed problems (published ones) and badges. For the owner the
+  solved number is a button that opens «Problemas resueltos».
 - **Right:** tabs (`?tab=` in the address). Owner: Actividad, Comentarios,
-  Listas, Mis envíos, Insignias. Visitors: Comentarios, Listas, Insignias. The
+  Guardados, Mis envíos, Insignias. Visitors: Comentarios, Guardados, Insignias.
+  Old links with `?tab=listas` open Guardados. The
   tabs are a real tablist: ←/→ move (and wrap), Home and End jump. Clicking a
   follower count shows that list instead (`?ver=seguidores` or
-  `?ver=siguiendo`), with no tab selected and a «Volver» link.
+  `?ver=siguiendo`), with no tab selected and a «Volver» link. The same happens
+  for «Problemas resueltos» (`?ver=resueltos`, owner only) and for search
+  results (`?buscar=`).
 - **Editar perfil:** one of 24 preset avatars (no uploads): 12 illustrated
   drawings and 12 math shapes. One of 13 light background colours for it
   (`AVATAR_COLORS` in `src/lib/avatars.js`), or «Original», the avatar's own
@@ -39,19 +44,45 @@ of its answers, so it never reaches another person's browser.
   the drawings. And a description of up to 160 characters. Accounts that never chose an avatar
   get a fixed math shape picked from their id.
 
-## Lists («Guardar en lista»)
+## Guardados (collections)
 
-- «Guardar en lista» is on every problem page, in the problem window of the
-  library and on every lesson. It opens your lists as checkboxes, plus «Nueva
-  lista». Signed out, it opens sign-in.
-- Lists hold problems and lessons today. Experiencias posts and other content
-  will be added when they exist.
-- A list is private when created unless you tick «Pública». The owner renames,
-  makes public or private, and deletes lists from the Listas tab. One list:
-  `/perfil/<username>/listas/<id>`.
-- Limits: 50 lists per person, 500 items per list, names up to 80 characters.
-  Only published content can be saved; content that is later unpublished is
-  hidden from the list.
+«Listas» is the name of the Listas page in Entrenamiento, so the profile and the
+save flow never use that word: the tab is «Guardados» and each named group is a
+«colección». In the code they are still personal lists (`UserList`,
+`UserListItem`, `/api/my-lists`).
+
+- «Guardar» is on every problem page, in the problem window of the library and
+  on every lesson. It opens «Guardar en una colección»: your collections as
+  checkboxes, plus «Nueva colección». Signed out, it opens sign-in.
+- Collections hold problems and lessons today. Experiencias posts have no
+  «Guardar» yet; they will use the same button when they can be saved.
+- A collection is private when created unless you tick «Pública». The owner
+  renames, makes public or private, and deletes collections from the Guardados
+  tab. One collection: `/perfil/<username>/colecciones/<id>` (old
+  `/perfil/<username>/listas/<id>` links redirect there).
+- Limits: 50 collections per person, 500 items per collection, names up to 80
+  characters. Only published content can be saved; content that is later
+  unpublished is hidden from the collection.
+
+## Problemas resueltos
+
+- Only the owner can open it: the solved number in «En números» is a button
+  (keyboard too). Visitors see the plain number, and the API answers 404 to
+  anyone but the owner.
+- Rows: the statement (no title), the área pill and the date solved, newest
+  first, each linking to the problem. Chips at the top filter by área. Only
+  published problems are listed, the same ones the number counts.
+
+## Buscar usuarios
+
+- A search box on every profile, between the profile card and «En números».
+  Type part of a username (from the start, upper or lower case; a leading «@»
+  is ignored). It searches from 2 characters, 300 ms after you stop typing.
+- Up to 20 results in the right column, the same rows as followers (avatar,
+  @username, role, «Ver perfil»), with «Volver». No match: «No encontramos a
+  nadie con ese usuario.»
+- The API (`GET /api/profiles?q=`) only returns username, avatar and role,
+  never the email. It allows 60 searches per minute from one address.
 
 ## «Lo resolví» and badges
 
@@ -86,14 +117,16 @@ comments.
 - Pages: `src/pages/PerfilPage.jsx`, `src/pages/UserListPage.jsx`; pieces in
   `src/components/profile/`. Avatars: `src/lib/avatars.js`, drawings in
   `src/assets/avatars/` (256 px square WebP with a transparent background).
-- API: `server/src/routes/profiles.routes.js` (`/api/profiles`),
+- API: `server/src/routes/profiles.routes.js` (`/api/profiles`, including the
+  search and `/:username/solved`),
   `userLists.routes.js` (`/api/my-lists`), `solves.routes.js`
   (`/api/problems/:id/solved`) and `GET /api/flags/mine`. See
   [ARCHITECTURE.md](ARCHITECTURE.md#api).
 - Models: `Follow`, `UserList`, `UserListItem`, `ProblemSolve`, `UserBadge`, and
   `bio`, `avatar` and `avatarColor` on `User`. **No migration is needed:** the new fields have
   defaults and the API creates the new collections and indexes when it starts.
-- Tests: `server/src/__tests__/profiles.test.js`, `user-lists.test.js`,
+- Tests: `server/src/__tests__/profiles.test.js`, `profile-solved-search.test.js`,
+  `no-lista-text.unit.test.js`, `user-lists.test.js`,
   `badges.test.js`, `badge-rules.unit.test.js`, `profile-ui.unit.test.js`, and
   `tests/browser/mi-espacio.spec.js`.
 

@@ -85,7 +85,7 @@ Todas las rutas están en `src/App.jsx`. Todo el texto visible está en español
 | `/entrenamiento/recursos`, `/entrenamiento/recursos/:id` | Pestaña «Recursos externos»: enlaces a otras organizaciones (OMM, IMO, NRICH), y la página de un recurso |
 | `/listas`, `/listas/:id` | Direcciones viejas: redirigen a `/entrenamiento/listas` |
 | `/mis-envios`, `/mis-envios/:id` | Las propuestas del usuario y la página para editar una |
-| `/perfil/:username`, `/perfil/:username/listas/:id` | Mi Espacio: un perfil (pestañas en `?tab=`, seguidores en `?ver=`) y una lista personal (ver [PROFILES.md](PROFILES.md)) |
+| `/perfil/:username`, `/perfil/:username/colecciones/:id` | Mi Espacio: un perfil (pestañas en `?tab=`; seguidores, siguiendo y los resueltos del dueño en `?ver=`; búsqueda de usuarios en `?buscar=`) y una colección (ver [PROFILES.md](PROFILES.md)). Los enlaces viejos `/perfil/:username/listas/:id` redirigen |
 | `/panel`, `/panel/moderacion`, `/panel/revision`, `/panel/problemas/:id/editar`, `/panel/teoria/:id/editar` | Páginas del equipo para editores y admins (ver [ROLES.md](ROLES.md#dónde-están-las-páginas-del-equipo)) |
 | `/panel/usuarios`, `/panel/cambios`, `/panel/cambios/:id` | Páginas del equipo solo para admins |
 | `/recursos` | Recursos externos |
@@ -116,8 +116,8 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/reports/content` | Con sesión: `POST /` («Reportar» un problema o una lección). Editores y admins: `GET /`, `POST /:id/status` |
 | `/api/submissions` | Con sesión: `GET /folders`, `POST /folders`, `POST /`, `GET /mine`, `GET /mine/:id`, `PUT /mine/:id`, `DELETE /mine/:id` |
 | `/api/flags` | Sugerencias. Con sesión: `POST /`, `GET /mine` (las tuyas). Editores y admins: `GET /`, `POST /:id/status` |
-| `/api/profiles` | Público: `GET /:username` (`email` solo para el dueño), `GET /:username/followers`, `/following`, `/comments`, `/lists` (las privadas solo para el dueño), `/badges`. Solo el dueño: `GET /:username/activity` (404 para cualquier otra persona). Con sesión: `PUT /me` (`avatar`, `avatarColor`, `bio`), `PUT`/`DELETE /:username/follow` |
-| `/api/my-lists` | Listas personales. Con sesión: `GET /containing?itemType=&item=`, `POST /`. Dueño: `PATCH /:id`, `DELETE /:id`, `POST /:id/items`, `DELETE /:id/items/:itemType/:item`. `GET /:id`: el dueño, o cualquiera si la lista es pública (si no, 404) |
+| `/api/profiles` | Público: `GET /?q=` (búsqueda por usuario: inicio, 2+ caracteres, 20 resultados, solo datos públicos, 60 por minuto por IP), `GET /:username` (`email` solo para el dueño), `GET /:username/followers`, `/following`, `/comments`, `/lists` (las privadas solo para el dueño), `/badges`. Solo el dueño: `GET /:username/activity` y `GET /:username/solved` (404 para cualquier otra persona). Con sesión: `PUT /me` (`avatar`, `avatarColor`, `bio`), `PUT`/`DELETE /:username/follow` |
+| `/api/my-lists` | Listas personales (se muestran como «colecciones» en «Guardados»). Con sesión: `GET /containing?itemType=&item=`, `POST /`. Dueño: `PATCH /:id`, `DELETE /:id`, `POST /:id/items`, `DELETE /:id/items/:itemType/:item`. `GET /:id`: el dueño, o cualquiera si la lista es pública (si no, 404) |
 | `/api/problems/:problemId/solved` | Con sesión: `GET`, `PUT`, `DELETE` («Lo resolví») |
 | `/api/notifications` | Con sesión: `GET /`, `POST /read` |
 | `/api/editor` | Editores y admins: `GET`/`PUT /problems/:id`, `GET`/`PUT /theory/:id`. Admins: `GET /revisions`, `GET /revisions/:id` |

@@ -19,7 +19,7 @@ buscando material.
 | Rutas | Rutas de estudio ordenadas, con progreso. La Ruta OMM tiene Preparación y 5 ciclos | Parcial: Preparación y Ciclo 1 están completos; las 14 lecciones del Ciclo 2 están escritas con el formato nuevo en el código y esperan su publicación |
 | Entrenamiento | Bibliotecas: Problemas (56), Teoría (37 lecciones), Exámenes (3), Listas (6) y Recursos externos (3) | Hecho. El código tiene 49 lecciones con el formato nuevo (todo lo anterior al Ciclo 3); el sitio las muestra cuando se publican |
 | Comunidad | Comentarios, proponer problemas, sugerencias y reportes, moderación y revisión | Hecho. El foro y las @menciones están planeados |
-| Mi Espacio | Perfil, listas personales, seguir, «Lo resolví», insignias | Hecho ([PROFILES.md](docs/es/PROFILES.md)) |
+| Mi Espacio | Perfil, «Guardados» (colecciones), seguir, «Lo resolví» y la lista de resueltos, «Buscar usuarios», insignias | Hecho ([PROFILES.md](docs/es/PROFILES.md)) |
 | Experiencias, Equipo, Universidad | Blog, equipo, guías para la universidad | Planeado (hoy dicen «Próximamente») |
 
 Todas las funciones, con lo que funciona hoy y lo que está planeado:
@@ -52,7 +52,7 @@ scripts de npm: [docs/es/DEVELOPMENT.md](docs/es/DEVELOPMENT.md).
 | [FEATURES.md](docs/es/FEATURES.md) | Todas las funciones, hechas o planeadas, y cómo funciona el sitio hoy |
 | [ARCHITECTURE.md](docs/es/ARCHITECTURE.md) | Cómo está dividido el código: carpetas, páginas, API, modelo de datos |
 | [ROLES.md](docs/es/ROLES.md) | Usuario, Editor y Admin: quién puede hacer qué |
-| [PROFILES.md](docs/es/PROFILES.md) | Mi Espacio: perfiles, privacidad, listas personales, seguir e insignias |
+| [PROFILES.md](docs/es/PROFILES.md) | Mi Espacio: perfiles, privacidad, «Guardados» (colecciones), problemas resueltos, búsqueda de usuarios, seguir e insignias |
 | [SUBMISSIONS.md](docs/es/SUBMISSIONS.md) | Problemas de la comunidad, carpetas de examen, reportes de errores y su revisión |
 | [CONTENT.md](docs/es/CONTENT.md) | Cómo se escriben y publican lecciones, problemas, listas, exámenes y Rutas |
 | [CONTENT_IMPORT.md](docs/es/CONTENT_IMPORT.md) | Cargar el contenido oficial a una base de datos |
