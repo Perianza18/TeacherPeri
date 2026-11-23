@@ -59,6 +59,8 @@ $$\frac{a_1^2}{x_1}+\cdots+\frac{a_n^2}{x_n}+\frac{a_{n+1}^2}{x_{n+1}}\ge\frac{A
 La igualdad final exige igualdad en los dos pasos: en el primero, por hipótesis de inducción, que las razones $\tfrac{a_i}{x_i}$ con $i\le n$ sean iguales entre sí, digamos a $k$; entonces $A=kX$, y en el segundo paso hace falta $\tfrac AX=\tfrac{a_{n+1}}{x_{n+1}}$, es decir, $\tfrac{a_{n+1}}{x_{n+1}}=k$. Recíprocamente, si las $n+1$ razones valen $k$, los dos pasos son igualdades por las mismas dos condiciones.
 :::
 
+Con todos los numeradores iguales a $1$ se obtiene una desigualdad conocida.
+
 :::try ¿Qué da la desigualdad útil para $\dfrac1a+\dfrac1b+\dfrac1c$, con $a$, $b$ y $c$ positivos?
 Con numeradores $1^2$ resulta $\tfrac1a+\tfrac1b+\tfrac1c\ge\tfrac{9}{a+b+c}$, con igualdad cuando $a=b=c$.
 :::

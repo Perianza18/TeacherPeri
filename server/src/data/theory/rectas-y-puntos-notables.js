@@ -73,6 +73,8 @@ El segmento $MN$ es paralelo a $AB$ y mide la mitad de $AB$.
 Sea $M'$ el punto donde la paralela a $AB$ por $N$ corta a $BC$. Por la proposición de la paralela a un lado (lección «Semejanza y congruencia»), $CM'/CB=CN/CA=NM'/AB$. Como $N$ es punto medio, $CN/CA=1/2$; entonces $CM'=CB/2$, de modo que $M'$ es el punto medio $M$. Así, $MN$ es la paralela trazada, y $MN/AB=1/2$.
 :::
 
+Con la paralela media aparecen dos triángulos semejantes de razón $\tfrac12$, y de ahí sale la posición del punto de corte de las medianas.
+
 :::theorem Centroide
 Las tres medianas de un triángulo pasan por un mismo punto $G$, que está en cada mediana a dos tercios de su longitud desde el vértice.
 :::

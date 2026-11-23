@@ -41,6 +41,8 @@ No existe un entero mayor que todos los demás enteros.
 Supongamos que existe un entero $N$ mayor que todos los demás enteros. Como $N$ es entero, $N+1$ también es entero; además $N+1>N$ porque $1>0$. Esto contradice que $N$ sea mayor que todos los demás enteros. Por tanto no existe tal $N$.
 :::
 
+La fuerza de la prueba está en señalar exactamente qué dos afirmaciones chocan.
+
 :::mistake
 Llamar contradicción a una conclusión que solo parece extraña. Una contradicción debe señalar dos afirmaciones incompatibles, como «$N$ es mayor que todo otro entero» y «$N+1$ es un entero mayor que $N$».
 :::

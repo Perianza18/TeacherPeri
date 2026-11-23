@@ -34,6 +34,8 @@ Sea $S=1+2+\cdots+n$. Como el orden de una suma finita se puede invertir, tambi�
 Por tanto $2S=n(n+1)$. Al dividir ambos lados entre $2$, resulta $S=n(n+1)/2$. El argumento incluye $n$ impar: el término central aparece una vez en cada escritura de $S$, igual que los demás.
 :::
 
+Conviene comprobar la fórmula con un caso pequeño.
+
 :::try ¿Qué valor da la fórmula para $1+2+3+4+5$?
 Con $n=5$ se obtiene $5(5+1)/2=15$. La suma directa también es $15$.
 :::

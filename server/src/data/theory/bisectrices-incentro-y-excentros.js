@@ -93,6 +93,8 @@ Calculamos $[ABL]/[ALC]$ de dos maneras. Los dos triángulos tienen el vértice 
 Por otro lado, $L$ está en la bisectriz, así que sus distancias $LP$ a $AB$ y $LQ$ a $AC$ son iguales; llamémoslas $h$. Con bases $AB$ y $AC$, $[ABL]=AB\cdot h/2$ y $[ALC]=AC\cdot h/2$, de modo que $[ABL]/[ALC]=AB/AC$. Al igualar las dos expresiones se obtiene el teorema.
 :::
 
+La prueba no usó medidas de ángulos, solo áreas calculadas de dos maneras.
+
 :::tip
 Una igualdad de razones de longitudes suele salir de calcular un mismo cociente de áreas de dos maneras: una vez con bases sobre una recta y otra vez con alturas iguales.
 :::

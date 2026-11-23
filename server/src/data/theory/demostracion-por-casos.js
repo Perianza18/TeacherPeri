@@ -25,6 +25,8 @@ Si $n$ es par, existe un entero $k$ con $n=2k$. Entonces $n(n+1)=2k(n+1)=2[k(n+1
 Si $n$ es impar, existe un entero $k$ con $n=2k+1$. Por eso $n+1=2(k+1)$ y $n(n+1)=2[n(k+1)]$. Como $n(k+1)$ es entero, el producto también es par. Hemos probado la conclusión en ambos casos.
 :::
 
+Antes de seguir conviene revisar por qué esos dos casos bastan.
+
 :::try ¿Por qué basta revisar «$n$ par» y «$n$ impar» cuando $n$ es entero?
 Porque todo entero pertenece a uno de esos dos casos. No queda fuera un tercer tipo de entero, tampoco cuando $n$ es negativo o cero.
 :::
@@ -48,6 +50,8 @@ Si $x<0$, por definición $|x|=-x$. Como $x<0$, multiplicar por $-2$ da $-2x>0$.
 
 Todo real es no negativo o negativo, de modo que ambos casos cubren el dominio.
 :::
+
+El caso $x=0$ quedó dentro del primer caso; olvidarlo es un error frecuente.
 
 :::mistake
 Separar solo $x>0$ y $x<0$ al demostrar una afirmación para todos los reales. Esos casos dejan fuera $x=0$. Se puede añadir el caso cero o incluirlo, como arriba, en $x\ge0$.

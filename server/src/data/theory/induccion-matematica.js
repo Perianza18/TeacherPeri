@@ -27,6 +27,8 @@ Supongamos que existe algún entero $n\ge n_0$ para el que $P(n)$ es falsa. Los 
 Como $P(n_0)$ es verdadera, $m\ne n_0$, así que $m-1\ge n_0$. La afirmación $P(m-1)$ es verdadera: si fuera falsa, $(m-1)-n_0$ sería un número menor en el conjunto elegido. Aplicando el paso inductivo con $k=m-1$, de $P(m-1)$ se sigue $P(m)$, en contradicción con la elección de $m$. Por tanto no existe ningún contraejemplo.
 :::
 
+El valor inicial no tiene que ser $0$ ni $1$; lo fija el problema.
+
 :::try Si el paso inductivo comienza en $k=3$, ¿cuál es el primer caso que debe comprobarse para concluir la afirmación desde $n=3$?
 Hay que comprobar $P(3)$. El paso permite después pasar de $P(3)$ a $P(4)$, de $P(4)$ a $P(5)$, y así sucesivamente.
 :::

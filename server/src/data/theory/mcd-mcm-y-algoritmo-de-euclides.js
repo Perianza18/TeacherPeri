@@ -86,6 +86,8 @@ $$\operatorname{mcd}(a,b)\operatorname{mcm}(a,b)=ab.$$
 Para cada primo, llamemos $u$ y $v$ a sus exponentes en $a$ y $b$. El exponente en el producto del MCD y el MCM es $\min(u,v)+\max(u,v)=u+v$, que es el exponente en $ab$. Esto vale también si alguno de los exponentes es cero. Ambos productos tienen la misma factorización prima, así que son iguales; si $a=b=1$, ambos productos valen $1$.
 :::
 
+En particular, en cuanto se conoce el MCD, el MCM se obtiene con una sola división.
+
 :::tip
 Si dos procesos empiezan juntos y se repiten cada $a$ y $b$ unidades, sus coincidencias posteriores ocurren en múltiplos comunes positivos de $a$ y $b$. Para la primera coincidencia se necesita el MCM.
 :::

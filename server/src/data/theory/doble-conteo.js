@@ -58,6 +58,8 @@ En una reunión, la suma de los números de saludos de todas las personas es el 
 Contamos las parejas (persona, saludo) en las que la persona participó en el saludo. Por personas, la cuenta es la suma de los números de saludos. Por saludos, cada saludo tiene exactamente dos participantes y aporta $2$ parejas; si hay $s$ saludos, la cuenta es $2s$. Así, la suma es $2s$, un número par. Si se quitan de esa suma los sumandos pares, lo que queda sigue siendo par, y es una suma de números impares; una suma de números impares es par solo si tiene una cantidad par de sumandos.
 :::
 
+El lema sirve sobre todo para descartar situaciones imposibles.
+
 :::try ¿Pueden $7$ personas saludar cada una a exactamente $3$ de las otras?
 No. La suma de los números de saludos sería $7\cdot3=21$, que es impar, y el lema dice que debe ser par.
 :::

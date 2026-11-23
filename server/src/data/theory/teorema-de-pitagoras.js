@@ -72,6 +72,8 @@ Sea $ABC$ el triángulo dado, con $AB=a$, $AC=b$ y $BC=c$. Construyamos un triá
 Por Pitágoras, $d^2=a^2+b^2$. La hipótesis dice que $a^2+b^2=c^2$, por lo que $d^2=c^2$. Como $d$ y $c$ son positivos, $d=c$. Los tres lados de $ABC$ y $A'B'C'$ son respectivamente iguales, así que los triángulos son congruentes por LLL. El ángulo $A$ corresponde al ángulo recto $A'$; por tanto, $A$ es recto y está opuesto al lado de longitud $c$.
 :::
 
+Con el converso, unas medidas bastan para reconocer un ángulo recto sin necesidad de medirlo.
+
 :::tip
 Para comprobar si tres longitudes forman un triángulo rectángulo, comparar primero el cuadrado de la mayor con la suma de los cuadrados de las otras dos. Si son iguales, el converso justifica el ángulo recto.
 :::
