@@ -6,6 +6,7 @@ import PageHero from '../components/PageHero'
 import { Mark } from '../components/decor/Decor'
 import { SkeletonGrid } from '../components/Skeleton'
 import RandomMascot from '../components/decor/RandomMascot'
+import Mascot from '../components/decor/Mascot'
 import RouteGraph from '../components/decor/RouteGraph'
 import { apiFetch } from '../lib/api'
 import { usePageMeta } from '../hooks/usePageMeta'
@@ -54,7 +55,7 @@ export default function RutasPage() {
           title={<>Guías para avanzar con <Mark variant="arrow" color="var(--tp-violet)" width={6} delay={400}>dirección</Mark>.</>}
           lead="Explora recorridos que conectan contenido, práctica y siguientes pasos. Tú eliges el ritmo."
           artClassName="absolute right-6 top-1/2 hidden -translate-y-1/2 xl:block xl:right-10"
-          art={<div className="flex flex-col items-end gap-1"><RouteGraph className="w-[min(430px,30vw)]" /><p aria-hidden="true" className="tp-hand -rotate-2 pr-4 text-[24px]">¡pasa el mouse por los puntos!</p></div>}
+          art={<div className="flex items-end gap-2"><Mascot pose="peri-estudioso" className="mb-9 h-[150px]" /><div className="flex flex-col items-end gap-1"><RouteGraph className="w-[min(300px,21vw)]" /><p aria-hidden="true" className="tp-hand -rotate-2 pr-4 text-[24px]">¡pasa el mouse por los puntos!</p></div></div>}
         >
           <div className="tp-card mt-3 grid w-full max-w-[860px] gap-3 bg-tp-surface p-3 md:grid-cols-[1fr_260px] xl:max-w-[640px]">
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar Rutas" aria-label="Buscar Rutas" className="tp-input bg-tp-paper" />
@@ -68,7 +69,7 @@ export default function RutasPage() {
         <section aria-label="Rutas publicadas" className="tp-container py-16 lg:py-20">
           {loading && <><p className="sr-only">Cargando Rutas…</p><SkeletonGrid count={3} strip={false} strong className="grid gap-8 md:grid-cols-2 xl:grid-cols-3" /></>}
           {error && <p className="tp-card-quiet bg-tp-orange-soft p-4">No fue posible cargar las Rutas: {error}</p>}
-          {!loading && !error && paths.length === 0 && <div className="tp-card-soft flex items-center gap-5 bg-tp-surface p-6"><RandomMascot className="h-24 w-auto shrink-0" /><p className="text-[17px] text-tp-ink-soft">Todavía no hay Rutas publicadas.</p></div>}
+          {!loading && !error && paths.length === 0 && <div className="tp-card-soft flex items-center gap-5 bg-tp-surface p-6"><RandomMascot className="h-24 w-auto shrink-0" wideClassName="h-16 w-auto shrink-0" /><p className="text-[17px] text-tp-ink-soft">Todavía no hay Rutas publicadas.</p></div>}
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             {paths.map((path, index) => {
               const tone = CARD_TONES[index % CARD_TONES.length]

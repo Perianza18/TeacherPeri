@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import MathText from '../components/math/MathText'
 import ProblemSubmissionForm from '../components/submissions/ProblemSubmissionForm'
 import ProblemImages from '../components/images/ProblemImages'
+import Mascot from '../components/decor/Mascot'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 import { MY_SUBMISSIONS_PATH, PROPOSE_PATH, STATE_INFO } from '../lib/submissions'
@@ -127,9 +128,12 @@ export default function MisEnviosPage() {
       {auth && loading && <p className="mt-8 text-tp-ink-muted" aria-live="polite">Cargando tus envíos…</p>}
       {auth && !loading && result.error && <p role="alert" className="mt-8 tp-card-quiet bg-tp-orange-soft p-4">No fue posible cargar tus envíos: {result.error}</p>}
       {auth && !loading && !result.error && result.items.length === 0 && (
-        <section className="tp-card-soft mt-8 bg-tp-surface p-6">
-          <span className="tp-kicker">Mis envíos</span>
-          <p className="mt-4 text-lg leading-8 text-tp-ink-soft">Todavía no has propuesto problemas.</p>
+        <section className="tp-card-soft mt-8 flex items-center gap-5 bg-tp-surface p-6">
+          <Mascot pose="cath-patita" className="h-24 shrink-0" />
+          <div>
+            <span className="tp-kicker">Mis envíos</span>
+            <p className="mt-4 text-lg leading-8 text-tp-ink-soft">Todavía no has propuesto problemas.</p>
+          </div>
         </section>
       )}
       {auth && !loading && result.items.length > 0 && (
