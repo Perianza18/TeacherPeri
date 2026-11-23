@@ -17,7 +17,7 @@ Sean $a,b$ enteros y $m\ge2$ un entero. Decimos que $a$ es congruente con $b$ m�
 
 La congruencia no afirma que $a$ y $b$ sean iguales. Afirma que su diferencia es un múltiplo del módulo. Por ejemplo, $17\equiv3\pmod7$ porque $17-3=14=2\cdot7$; también $-3\equiv4\pmod7$ porque $-3-4=-7$.
 
-Cada entero tiene un único residuo entre $0$ y $m-1$ al dividirse entre $m$. Dos enteros son congruentes módulo $m$ precisamente cuando tienen el mismo residuo. Para verlo, escribimos $a=mq+r$ y $b=mp+s$, donde $r,s$ son sus residuos. Si $a-b$ es múltiplo de $m$, también lo es $r-s=(a-b)-m(q-p)$. Como $r-s$ está entre $-(m-1)$ y $m-1$, debe ser cero. En sentido inverso, si $r=s$, al restar las expresiones de $a$ y $b$ queda $a-b=m(q-p)$, un múltiplo de $m$.
+Usaremos la división con residuo: cada entero $a$ se escribe de una única manera como $a=mq+r$, con $q$ entero y $0\le r\le m-1$; ese $r$ es el **residuo** de $a$ al dividir entre $m$. Dos enteros son congruentes módulo $m$ precisamente cuando tienen el mismo residuo. Para verlo, escribimos $a=mq+r$ y $b=mp+s$, donde $r,s$ son sus residuos. Si $a-b$ es múltiplo de $m$, también lo es $r-s=(a-b)-m(q-p)$. Como $r-s$ está entre $-(m-1)$ y $m-1$, debe ser cero. En sentido inverso, si $r=s$, al restar las expresiones de $a$ y $b$ queda $a-b=m(q-p)$, un múltiplo de $m$.
 
 :::try Si hoy es martes, ¿qué día será dentro de $100$ días?
 Como $100=14\cdot7+2$, al retirar $14$ semanas completas quedan $2$ días. Dos días después del martes es jueves.
@@ -30,14 +30,24 @@ Si $a\equiv b\pmod m$ y $c\equiv d\pmod m$, entonces $a+c\equiv b+d\pmod m$ y $a
 :::
 
 :::proof
-Por las hipótesis existen enteros $k$ y $\ell$ con $a-b=km$ y $c-d=\ell m$. Para la suma, restamos los dos resultados:
-$$(a+c)-(b+d)=m(k+\ell).$$
+Por las hipótesis existen enteros $k$ y $\ell$ con $a-b=km$ y $c-d=\ell m$. Para la suma, sumamos estas dos igualdades miembro a miembro y agrupamos:
+$$(a+c)-(b+d)=(a-b)+(c-d)=km+\ell m=m(k+\ell).$$
 Como $k+\ell$ es entero, $m$ divide a la diferencia. Para el producto, sumamos y restamos $bc$:
 $$ac-bd=(a-b)c+b(c-d).$$
 Al sustituir $a-b=km$ y $c-d=\ell m$, queda $ac-bd=m(kc+b\ell)$. El factor entre paréntesis es entero, así que $m$ divide a esta diferencia. Esto demuestra ambas congruencias.
 :::
 
-Al repetir la regla del producto, también se pueden reemplazar factores por representantes congruentes en potencias de exponente entero no negativo. Por ejemplo, $9\equiv2\pmod7$ permite usar $2$ para calcular un residuo de $9^n$.
+Con la regla del producto también se puede cambiar la base de una potencia por otra congruente.
+
+:::corollary Potencias
+Si $a\equiv b\pmod m$, entonces $a^n\equiv b^n\pmod m$ para todo entero $n\ge1$.
+:::
+
+:::proof
+Para $n=1$ es la hipótesis. Supongamos que $a^n\equiv b^n\pmod m$ para cierto $n\ge1$. Al aplicar la regla del producto a esta congruencia y a $a\equiv b\pmod m$ se obtiene $a^n\cdot a\equiv b^n\cdot b$, es decir, $a^{n+1}\equiv b^{n+1}\pmod m$. Por inducción, la congruencia vale para todo $n\ge1$.
+:::
+
+Por ejemplo, $9\equiv2\pmod7$ permite calcular el residuo de $9^n$ con potencias de $2$, que son más pequeñas.
 
 :::mistake
 Cancelar un factor en una congruencia sin justificarlo. Se cumple $2\cdot1\equiv2\cdot4\pmod6$, porque $2-8=-6$, pero $1$ y $4$ no son congruentes módulo $6$: su diferencia $-3$ no es múltiplo de $6$. La cancelación requiere condiciones adicionales.
@@ -77,7 +87,7 @@ Antes de elegir un módulo para una imposibilidad, probar qué residuos pueden t
 
 - En *Disquisitiones Arithmeticae*, publicado en 1801, Carl Friedrich Gauss usó el símbolo $\equiv$ para las congruencias. La notación permite expresar relaciones entre enteros según un módulo.
 - La decimocuarta Olimpiada Internacional de Matemáticas se celebró en Toruń, Polonia, en 1972. Participaron $107$ estudiantes de $14$ países.
-- La Tierra gira alrededor de su eje mientras orbita el Sol. Un día solar medio dura aproximadamente $24$ horas.
+- En la primavera de 2024 salieron a la vez, en el centro de Estados Unidos, dos grupos de cigarras periódicas: uno aparece cada $13$ años y el otro cada $17$. Esos dos grupos no coincidían desde 1803. Como $13$ y $17$ no tienen divisores comunes mayores que $1$, la próxima coincidencia ocurrirá cuando hayan pasado $13\cdot17=221$ años, en 2245.
 
 ## Ejercicios
 

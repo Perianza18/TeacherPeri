@@ -73,7 +73,7 @@ En la exploración se vale probar, modificar una conjetura o buscar un caso más
 
 - En *How to Solve It*, publicado en 1945, George Pólya presentó una forma de organizar la resolución de problemas que incluye comprender, planear, ejecutar y revisar. Esas etapas orientan la búsqueda, aunque no sean una receta que resuelva todos los problemas.
 - La segunda Olimpiada Internacional de Matemáticas se celebró en 1960 en Sinaia, Rumania. Participaron $39$ estudiantes de $5$ países.
-- En 1984 una misión del transbordador espacial llevó abejas en un módulo especial. La tripulación observó cómo se adaptaban al vuelo durante la misión.
+- En el año 2000, Toshiyuki Nakagaki y sus colegas publicaron en la revista *Nature* que un moho mucilaginoso, un organismo de una sola célula sin cerebro, resuelve laberintos. Con comida en las dos salidas, el organismo se extiende por todos los pasillos, retira sus ramas de los callejones sin salida y termina formando un solo tubo por el camino más corto.
 
 ## Ejercicios
 

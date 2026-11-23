@@ -63,7 +63,7 @@ Una sesión mixta no es una competencia oficial ni necesita resolverse con reloj
 
 ## Agregados culturales
 
-- Los *Elementos* de Euclides están organizados en trece libros. Entre sus temas hay geometría y teoría de números; el libro séptimo incluye el algoritmo para el máximo común divisor.
+- Hacia 1919, G. H. Hardy visitó a Srinivasa Ramanujan, enfermo en Putney, cerca de Londres, y comentó que el número de su taxi, $1729$, le parecía poco interesante. Ramanujan respondió que era el menor entero positivo que se escribe de dos maneras como suma de dos cubos positivos: $1729=1^3+12^3=9^3+10^3$.
 - La decimotercera Olimpiada Internacional de Matemáticas se celebró en Žilina, entonces Checoslovaquia, en 1971. Participaron $115$ estudiantes de $15$ países.
 - Las abejas de miel construyen panales de cera con celdas hexagonales. Un panal permite observar formas geométricas en una estructura hecha por animales.
 

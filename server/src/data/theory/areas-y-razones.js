@@ -17,7 +17,7 @@ Pero la figura por sí sola no demuestra que las áreas estén en razón $2:3$. 
 
 Usaremos la fórmula conocida para el área de un triángulo: si una base tiene longitud $b$ y la distancia perpendicular desde el vértice opuesto a la recta de esa base es $h$, el área es $bh/2$. La altura es una distancia, aunque el pie de la perpendicular quede fuera del segmento elegido como base. Escribiremos $[ABC]$ para el área del triángulo $ABC$.
 
-![Triángulo ABC con D en BC y altura AH perpendicular a BC](figuras/areas-y-razones-bases.svg "Los triángulos ABD y ADC comparten altura")
+En la figura, los triángulos $ABD$ y $ADC$ tienen el mismo vértice $A$ y sus bases $BD$ y $DC$ están sobre la misma recta $BC$.
 
 :::proposition Bases y áreas
 Sea $ABC$ un triángulo y $D$ un punto interior del segmento $BC$. Entonces
@@ -27,8 +27,6 @@ $$\frac{[ABD]}{[ADC]}=\frac{BD}{DC}.$$
 :::proof
 Sea $h$ la distancia perpendicular de $A$ a la recta $BC$. Como $BD$ y $DC$ están en esa misma recta, $h$ es la altura de ambos triángulos al elegir esas bases. Por la fórmula del área, $[ABD]=BD\cdot h/2$ y $[ADC]=DC\cdot h/2$. Como $h>0$ y $DC>0$, al dividir la primera igualdad entre la segunda y cancelar el factor común $h/2$ obtenemos $[ABD]/[ADC]=BD/DC$.
 :::
-
-![Triángulo ABC dividido por AD en dos triángulos con bases BD y DC](figuras/areas-y-razones-bases.svg "La suma de las dos áreas es el área total")
 
 :::example
 Un triángulo $ABC$ tiene área $45$. El punto $D$ está en el interior de $BC$ y $BD:DC=2:3$. Calcular $[ABD]$ y $[ADC]$.
@@ -55,15 +53,11 @@ $$\frac{[EBC]}{[ABC]}=\frac{h_E}{h_A}.$$
 Por la fórmula del área, $[EBC]=BC\cdot h_E/2$ y $[ABC]=BC\cdot h_A/2$. Como $BC>0$ y $h_A>0$, dividir la primera igualdad entre la segunda y cancelar $BC/2$ da $[EBC]/[ABC]=h_E/h_A$.
 :::
 
-![Triángulo ABC con altura AH y E en el interior de AH](figuras/areas-y-razones-alturas.svg "Las alturas se miden desde la recta BC")
-
 :::example
 En el triángulo $ABC$, $AH$ es una altura, $E$ está en el interior de $AH$ y satisface $AE:EH=2:3$ y $[ABC]=50$. Calcular $[EBC]$.
 
 Como $AH=AE+EH$, la razón $AE:EH=2:3$ da $EH/AH=3/5$. Por la proposición de base común, $[EBC]/[ABC]=EH/AH=3/5$. Por tanto, $[EBC]=(3/5)\cdot50=30$. La razón $AE/AH=2/5$ usa el tramo equivocado: la altura desde $E$ hasta $BC$ es $EH$.
 :::
-
-![Triángulo ABC con altura AH y E entre A y H](figuras/areas-y-razones-alturas.svg "La altura desde E termina en H")
 
 :::mistake
 Confundir la distancia entre dos vértices con la altura de uno de ellos. La altura se mide desde el vértice hasta la recta de la base: en la figura, la altura correspondiente a $E$ es $EH$.
@@ -71,21 +65,24 @@ Confundir la distancia entre dos vértices con la altura de uno de ellos. La alt
 
 ### Una escala en dos direcciones
 
-![Triángulo ABC con DE paralela a BC y alturas AK y AH](figuras/areas-y-razones-semejantes.svg "El triángulo ADE es una copia a escala de ABC")
+![Triángulo ABC con D en AB, E en AC, DE paralela a BC y el segmento BE resaltado](figuras/areas-y-razones-semejantes.svg "El segmento BE conecta el triángulo pequeño con el grande")
 
-En la figura, $D$ y $E$ son puntos interiores de $AB$ y $AC$, y $DE$ es paralela a $BC$. El pie de la perpendicular desde $A$ a $BC$ es $H$, y esa perpendicular corta a $DE$ en $K$. La figura muestra un caso particular; el argumento siguiente vale para cualquier razón $k$ entre $0$ y $1$, siempre que el pie $H$ esté en el interior del lado $BC$ elegido.
+En la figura, $D$ y $E$ son puntos interiores de $AB$ y $AC$, y $DE$ es paralela a $BC$. El triángulo $ADE$ es una copia reducida de $ABC$, pero las dos ideas anteriores comparan triángulos con un vértice o una base en común, y $ADE$ y $ABC$ no comparten ninguna de las dos cosas. El segmento $BE$ produce un triángulo intermedio, $ABE$, que comparte el vértice $E$ con $ADE$ y el vértice $B$ con $ABC$. La figura muestra el caso $AD/AB=3/5$; el argumento no depende de ese valor.
 
 :::proposition Área y escala
-Sea $ABC$ un triángulo cuyo pie de altura $H$ desde $A$ está en el interior de $BC$. Sean $D$ y $E$ puntos interiores de $AB$ y $AC$, con $DE\parallel BC$. Si $AD/AB=k$, entonces $[ADE]/[ABC]=k^2$.
+Sean $ABC$ un triángulo y $D$ y $E$ puntos interiores de $AB$ y $AC$, con $DE\parallel BC$. Si $AD/AB=k$, entonces $[ADE]/[ABC]=k^2$.
 :::
 
 :::proof
-Por la semejanza producida por la paralela, $ADE\sim ABC$, de modo que $DE/BC=AD/AB=k$. Las rectas $DE$ y $BC$ son paralelas, así que $AK$ también es perpendicular a $DE$. Los triángulos $ADK$ y $ABH$ tienen ángulos rectos en $K$ y $H$, respectivamente, y tienen igual ángulo en $A$: las semirrectas $AD$ y $AB$ coinciden, y también coinciden $AK$ y $AH$. Por el criterio AA son semejantes; por tanto, $AK/AH=AD/AB=k$.
+Los triángulos $ADE$ y $ABE$ tienen el vértice $E$ en común, y sus bases $AD$ y $AB$ están sobre la recta $AB$. Si $h$ es la distancia de $E$ a esa recta, la fórmula del área da $[ADE]=AD\cdot h/2$ y $[ABE]=AB\cdot h/2$; al dividir la primera igualdad entre la segunda se cancela $h/2$ y queda $[ADE]/[ABE]=AD/AB=k$.
 
-Con bases $DE$ y $BC$, las alturas son $AK$ y $AH$. Al dividir sus fórmulas de área obtenemos $[ADE]/[ABC]=(DE/BC)(AK/AH)=k\cdot k=k^2$.
+Del mismo tipo es la segunda comparación, ahora con el vértice $B$ en común y las bases $AE$ y $AC$ sobre la recta $AC$. Si $h'$ es la distancia de $B$ a esa recta, $[ABE]=AE\cdot h'/2$ y $[ABC]=AC\cdot h'/2$, de modo que $[ABE]/[ABC]=AE/AC$. Como $DE\parallel BC$, la proposición de la paralela a un lado (lección «Semejanza y congruencia») da $AE/AC=AD/AB=k$.
+
+Al multiplicar las dos razones, $[ABE]$ se cancela:
+$$\frac{[ADE]}{[ABC]}=\frac{[ADE]}{[ABE]}\cdot\frac{[ABE]}{[ABC]}=k\cdot k=k^2.$$
 :::
 
-El exponente dos aparece al multiplicar dos razones iguales: una para la base y otra para la altura.
+El exponente dos aparece al multiplicar dos razones iguales: el triángulo se reduce en la dirección de $AB$ y también en la de $AC$.
 
 :::tip
 Cuando dos áreas parecen difíciles de comparar, buscar primero una base común o dos bases sobre una misma recta. Después revisar si las alturas son iguales o si se pueden comparar con semejanza.

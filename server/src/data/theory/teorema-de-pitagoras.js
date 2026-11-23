@@ -44,6 +44,8 @@ Una pantalla rectangular mide $8$ pulgadas de ancho y $6$ de alto. ¿Cuánto mid
 La diagonal es la hipotenusa del triángulo rectángulo formado con el ancho y el alto. Si su longitud es $d$, Pitágoras da $d^2=8^2+6^2=64+36=100$. Una longitud es positiva, por lo que $d=10$ pulgadas. Conocer la diagonal sin el ancho o el alto no bastaría para recuperar ambos: distintas formas pueden compartir la misma diagonal.
 :::
 
+Con esto se responde la pregunta del preámbulo: la diagonal sola no basta. La pantalla de proporción $4:3$ y diagonal $10$ es la del ejemplo, con ancho $8<8.5$. Si la proporción es $16:9$, el ancho y el alto son $16t$ y $9t$ para algún $t>0$, y Pitágoras da $(16t)^2+(9t)^2=10^2$, es decir, $337t^2=100$. Entonces $t=10/\sqrt{337}$ y el ancho es $160/\sqrt{337}$, que es mayor que $8.5$: al elevar al cuadrado, $160^2=25\,600$ y $8.5^2\cdot337=24\,348.25$.
+
 :::try En un triángulo rectángulo, los catetos miden $5$ y $12$. ¿Cuánto mide la hipotenusa?
 Si $c$ es la hipotenusa, $c^2=5^2+12^2=25+144=169$. Como $c>0$, se obtiene $c=13$.
 :::
@@ -69,6 +71,8 @@ Sea $ABC$ el triángulo dado, con $AB=a$, $AC=b$ y $BC=c$. Construyamos un triá
 
 Por Pitágoras, $d^2=a^2+b^2$. La hipótesis dice que $a^2+b^2=c^2$, por lo que $d^2=c^2$. Como $d$ y $c$ son positivos, $d=c$. Los tres lados de $ABC$ y $A'B'C'$ son respectivamente iguales, así que los triángulos son congruentes por LLL. El ángulo $A$ corresponde al ángulo recto $A'$; por tanto, $A$ es recto y está opuesto al lado de longitud $c$.
 :::
+
+Con el converso, unas medidas bastan para reconocer un ángulo recto sin necesidad de medirlo.
 
 :::tip
 Para comprobar si tres longitudes forman un triángulo rectángulo, comparar primero el cuadrado de la mayor con la suma de los cuadrados de las otras dos. Si son iguales, el converso justifica el ángulo recto.

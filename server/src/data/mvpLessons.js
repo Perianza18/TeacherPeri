@@ -158,3 +158,27 @@ for (const lesson of MVP_LESSONS) {
   PREVIOUS_THEORY[lesson.pathSlug] = { title: lesson.theory.title, summary: lesson.theory.summary, content: lesson.theory.content }
   Object.assign(lesson.theory, { summary: rewrite.summary, content: rewrite.content })
 }
+
+// Lessons that never had an earlier text (Ciclo 2 onward) are written
+// directly in the lesson format. They carry their own title, area and level
+// and enter the release as new lessons; they are not part of PREVIOUS_THEORY,
+// so the guarded revision leaves them to the additive content import.
+export const NEW_THEORY_SLUGS = []
+for (const rewrite of Object.values(THEORY_REWRITES)) {
+  if (!rewrite.lesson || MVP_LESSONS.some((entry) => entry.pathSlug === rewrite.pathSlug)) continue
+  const { title, area, level } = rewrite.lesson
+  const theoryKey = `${rewrite.pathSlug}-guia`
+  const [boxes] = Object.values(rewrite.collections)
+  NEW_THEORY_SLUGS.push(rewrite.pathSlug)
+  MVP_LESSONS.push({
+    pathSlug: rewrite.pathSlug,
+    area,
+    theory: { key: theoryKey, title, summary: rewrite.summary, level, publicationStatus: 'draft', content: rewrite.content },
+    steps: [
+      { order: 1, title: 'Lee la lección', description: 'Estudia la teoría, los ejemplos resueltos y las preguntas de «Inténtalo» antes de pasar a los problemas.', theoryKeys: [theoryKey], problemCodes: [] },
+      { order: 2, title: 'Ejercicios', description: 'Comprueba las ideas de la lección; cada ejercicio tiene pistas.', theoryKeys: [], problemCodes: boxes.ejercicios },
+      { order: 3, title: 'Problemas', description: 'Practica con problemas de estilo olímpico, sin pistas.', theoryKeys: [], problemCodes: boxes.practice },
+      { order: 4, title: 'Problemas de mayor dificultad', description: 'Dos problemas donde la dificultad está en encontrar la idea.', theoryKeys: [], problemCodes: boxes.dificiles },
+    ],
+  })
+}

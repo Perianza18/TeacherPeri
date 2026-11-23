@@ -54,7 +54,9 @@ Si $x$ es solución, existe un entero $k$ con $ax-b=mk$, por lo que $b=ax-mk$. C
 
 Ahora supongamos que $d$ divide a $b$. Si $d=m$, tanto $a$ como $b$ son múltiplos de $m$, así que $ax-b$ es múltiplo de $m$ para todo entero $x$. Sirven las $m=d$ clases.
 
-Si $d<m$, escribimos $a=da'$, $b=db'$ y $m=dm'$. La condición $m\mid(ax-b)$ equivale a $m'\mid(a'x-b')$: en una dirección se divide la igualdad $d(a'x-b')=dm'k$ entre el entero positivo $d$; en la otra se multiplica por $d$. Además $m'\ge2$ y $\gcd(a',m')=1$, de modo que $a'$ tiene inverso módulo $m'$. Al multiplicar por él se obtiene una única clase solución $x\equiv x_0\pmod{m'}$.
+Si $d<m$, escribimos $a=da'$, $b=db'$ y $m=dm'$. La condición $m\mid(ax-b)$ equivale a $m'\mid(a'x-b')$: en una dirección se divide la igualdad $d(a'x-b')=dm'k$ entre el entero positivo $d$; en la otra se multiplica por $d$. Además $m'\ge2$, porque $d$ es un divisor de $m$ menor que $m$. También $\gcd(a',m')=1$: si un entero $e\ge1$ divide a $a'$ y a $m'$, entonces $de$ divide a $a=da'$ y a $m=dm'$, así que $de\le d$ y $e=1$. Por el criterio de invertibilidad, $a'$ tiene un inverso $u$ módulo $m'$.
+
+Sea $x_0=ub'$. Si $a'x\equiv b'\pmod{m'}$, al multiplicar por $u$ queda $x\equiv ua'x\equiv ub'=x_0\pmod{m'}$. Recíprocamente, si $x\equiv x_0\pmod{m'}$, al multiplicar por $a'$ queda $a'x\equiv a'ub'\equiv b'\pmod{m'}$. Así, las soluciones son exactamente los enteros de la clase $x\equiv x_0\pmod{m'}$.
 
 Todo representante de esa clase tiene la forma $x_0+tm'$. Al escribir $t=dh+j$ con $0\le j<d$, se ve que módulo $m=dm'$ pertenece a una de las clases $x_0+jm'$ para $j=0,\ldots,d-1$. Son distintas: si las clases con índices $i$ y $j$ fueran congruentes módulo $m$, existiría un entero $k$ con $m'(j-i)=dm'k$. Al dividir entre $m'>0$, quedaría $j-i=dk$. Pero el valor absoluto de $j-i$ es menor que $d$, así que $j-i=0$ y los índices son iguales. Por tanto hay exactamente $d$ clases.
 :::
@@ -77,7 +79,7 @@ Calcular primero $d=\gcd(a,m)$ y revisar si divide al objetivo. Si se reduce, an
 
 - Étienne Bézout escribió libros de matemáticas para la formación de oficiales franceses. También publicó una obra sobre ecuaciones algebraicas en 1779.
 - La decimoquinta Olimpiada Internacional de Matemáticas se celebró en Moscú en 1973. Participaron $125$ estudiantes de $16$ países.
-- Los pulpos tienen tres corazones. Dos impulsan sangre hacia las branquias y el tercero la distribuye por el cuerpo.
+- Los libros con código ISBN de diez cifras, usados hasta 2007, llevan al final una cifra de control: multiplicadas por $10,9,\ldots,1$, las diez cifras deben sumar un múltiplo de $11$. Cuando la cifra que falta es $10$, se escribe «X». Si al copiar el código se cambia una sola cifra, la suma deja de ser múltiplo de $11$ y el error se detecta.
 
 ## Ejercicios
 

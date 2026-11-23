@@ -73,7 +73,7 @@ Una sesión puede terminar con una solución escrita, un error corregido o una p
 
 ## Agregados culturales
 
-- En 1889 Giuseppe Peano publicó un sistema de axiomas para los números naturales. El trabajo matemático también incluye revisar las definiciones desde las que se construyen los argumentos.
+- En 1996, Gavin Hunt publicó en la revista *Nature* que los cuervos de Nueva Caledonia, una isla del Pacífico, fabrican ganchos con ramitas y con hojas recortadas para sacar insectos de los troncos. Sus herramientas tienen formas tan estandarizadas que parecen seguir un mismo diseño.
 - La primera Olimpiada Internacional de Matemáticas se celebró en 1959 en Rumania. Participaron $52$ estudiantes de $7$ países.
 - En 2008 Jeffrey Karpicke y Henry Roediger publicaron un experimento sobre el aprendizaje de pares de palabras. Estudiaron qué ocurría al practicar la recuperación de lo aprendido, además de volver a estudiarlo.
 

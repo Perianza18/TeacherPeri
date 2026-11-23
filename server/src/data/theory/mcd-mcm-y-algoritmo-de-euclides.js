@@ -61,7 +61,7 @@ Si un entero positivo $d$ divide a $a$ y $b$, divide a la combinación $a-bq=r$.
 Recíprocamente, si $d$ divide a $b$ y $r$, divide a la combinación $bq+r=a$. Por tanto $d$ divide a $a$ y $b$. Los dos pares tienen exactamente los mismos divisores comunes.
 :::
 
-En cada paso dividimos el primer número entre el segundo: $a=bq+r$ con $0\le r<b$. Si $r>0$, sustituimos el par por $(b,r)$ y repetimos. Los residuos positivos disminuyen, así que el proceso termina; cuando $r=0$, el divisor de ese paso divide al número anterior y es el mayor divisor común de ambos.
+En cada paso dividimos el primer número entre el segundo: $a=bq+r$ con $0\le r<b$. Si $r>0$, sustituimos el par por $(b,r)$ y repetimos. Los residuos son enteros no negativos y cada uno es menor que el anterior, así que en algún paso aparece $r=0$. En ese paso, el par es $(b,r')$ con $b=r'q$: el divisor $r'$ divide a $b$, y ningún divisor de $r'$ es mayor que $r'$, de modo que el MCD de ese par es $r'$. Por la proposición, cada sustitución conserva el conjunto de divisores comunes; por tanto todos los pares del proceso, incluido el inicial, tienen el mismo MCD, el último residuo no nulo $r'$.
 
 :::example
 Usar el algoritmo de Euclides para calcular $\operatorname{mcd}(168,60)$.
@@ -85,6 +85,8 @@ $$\operatorname{mcd}(a,b)\operatorname{mcm}(a,b)=ab.$$
 :::proof
 Para cada primo, llamemos $u$ y $v$ a sus exponentes en $a$ y $b$. El exponente en el producto del MCD y el MCM es $\min(u,v)+\max(u,v)=u+v$, que es el exponente en $ab$. Esto vale también si alguno de los exponentes es cero. Ambos productos tienen la misma factorización prima, así que son iguales; si $a=b=1$, ambos productos valen $1$.
 :::
+
+En particular, en cuanto se conoce el MCD, el MCM se obtiene con una sola división.
 
 :::tip
 Si dos procesos empiezan juntos y se repiten cada $a$ y $b$ unidades, sus coincidencias posteriores ocurren en múltiplos comunes positivos de $a$ y $b$. Para la primera coincidencia se necesita el MCM.

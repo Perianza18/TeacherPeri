@@ -74,34 +74,49 @@ Una base que ya tiene el contenido importado se actualiza con
 1. Define `MONGO_REVISION_URI` en privado, con el nombre de la base en la
    dirección. Nunca usa `MONGO_URI` como respaldo.
 2. Corre `npm run content:revise-theory` (simulación). Nombra la base y lista las
-   lecciones que cambiarán, los problemas que agregará y las colecciones que
+   lecciones que cambiarán, las lecciones nuevas que creará, las que omitirá por
+   haber sido editadas en el sitio, los problemas que agregará y las colecciones que
    creará. No escribe nada.
 3. Define `REVISION_DATABASE_CONFIRM` con el nombre exacto de la base y corre
    `npm run content:revise-theory -- --apply`.
 4. Corre la simulación otra vez: cada línea debe decir «already up to date» o no
    listar nada.
 
-Comparar y cambiar: una lección solo cambia si tiene exactamente el texto y el
-resumen anteriores, o una reescritura ya publicada que esté en
-`server/src/data/theory/earlier.js` (o ya tiene los nuevos); lo mismo con la
-descripción de su Ruta. Cuando se corrige en su archivo una lección que ya está
-publicada, agrega la versión publicada a `earlier.js` (nunca edites una entrada)
-para que la siguiente corrida pueda reemplazarla. Los problemas y colecciones solo se crean si faltan, y si ya existe uno con
-contenido distinto, el proceso se detiene. Cualquier conflicto detiene todo antes
-de escribir; las escrituras ocurren en una sola transacción. Después de una
-revisión, `content:import -- --dry-run` solo reporta `keep`. Una base nueva
-recibe todo con `content:import`.
+Cada lección se decide por separado y nada se sobrescribe sin aviso:
+
+- **Lecciones reescritas** (tienen un texto anterior): el texto, el resumen y la
+  descripción de la Ruta solo cambian si tienen exactamente la versión anterior, o
+  una reescritura ya publicada que esté en `server/src/data/theory/earlier.js`.
+  Cuando se corrige en su archivo una lección ya publicada, agrega la versión
+  publicada a `earlier.js` (nunca edites una entrada).
+- **Lecciones nuevas** (sin texto anterior; el archivo define
+  `lesson: { title, area, level }`, por ejemplo las del Ciclo 2): la corrida crea la
+  lección, sus cuatro pasos, sus problemas y cajas, y publica su Ruta y los grupos en
+  borrador que tiene arriba, siempre que esas Rutas conserven el borrador del código.
+- **Cambios hechos en el sitio.** Los editores pueden cambiar lecciones en
+  `/panel/teoria/:id/editar`. Una lección cuyos registros en vivo tengan otra cosa
+  se **omite**, y las demás siguen. La simulación muestra, para cada lección omitida,
+  las líneas que difieren y una huella de 12 caracteres de lo que tiene. Puedes copiar
+  el cambio del sitio al archivo de la lección (`/panel/cambios` muestra el antes y
+  el después) y correr otra vez, o, después de revisar la diferencia, reemplazar
+  exactamente esa versión en vivo con `--accept-live <slug-de-lección>@<huella>`
+  (una vez por lección). Si la lección vuelve a cambiar después de la simulación, su
+  huella cambia y la aceptación ya no aplica. Los problemas y cajas propios de una
+  lección omitida esperan con ella.
+- **Problemas y cajas** solo se agregan. Si uno ya existe con otro contenido
+  (editado en el sitio), se reporta y se deja como está.
+
+Las escrituras ocurren en una sola transacción, cada una con un filtro de comparar y
+cambiar: si un registro cambia entre el plan y la escritura, no se escribe nada.
+Después de una revisión completa, `content:import -- --dry-run` solo reporta `keep`.
+Una base nueva recibe todo con `content:import`.
 
 Con el archivo privado de Atlas, `npm run atlas:revise-theory:test` y
-`npm run atlas:revise-theory:prod` (agrega `-- --apply` para escribir) hacen los
-pasos 1 y 3 por ti (ver [DEVELOPMENT.md](DEVELOPMENT.md#scripts-de-atlas)).
-
-**Cambios hechos en el sitio.** Los editores pueden cambiar una lección en
-`/panel/teoria/:id/editar`. Una lección cambiada ahí ya no tiene exactamente el
-texto anterior, así que una corrida posterior de `content:revise-theory` se
-detiene en ella en vez de borrar el trabajo del editor. Primero copia el cambio
-del sitio al archivo de la lección (`/panel/cambios` muestra el antes y el
-después) y vuelve a correrlo.
+`npm run atlas:revise-theory:prod` (agrega `-- --apply` para escribir, y las opciones
+`--accept-live` que hagan falta) hacen los pasos 1 y 3 por ti (ver
+[DEVELOPMENT.md](DEVELOPMENT.md#scripts-de-atlas)). Orden sugerido: fusionar primero
+el pull request para que las figuras estén desplegadas, después correr en la base de
+prueba, y luego una simulación en producción, revisada antes de `--apply`.
 
 ## Qué incluye y de dónde viene
 

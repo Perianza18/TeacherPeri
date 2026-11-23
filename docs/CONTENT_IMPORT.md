@@ -61,31 +61,48 @@ A database that already holds the imported content is updated with
 1. Set `MONGO_REVISION_URI` privately, with an explicit database path. It never
    falls back to `MONGO_URI`.
 2. Run `npm run content:revise-theory` (dry run). It names the database and lists
-   the lessons that will change, the problems it will add and the collections it
-   will create. Nothing is written.
+   the lessons that will change, the new lessons it will create, the lessons it
+   will skip because they were edited on the site, the problems it will add and the
+   collections it will create. Nothing is written.
 3. Set `REVISION_DATABASE_CONFIRM` to the exact database name and run
    `npm run content:revise-theory -- --apply`.
 4. Run the dry run again: every line should say «already up to date» or list nothing.
 
-Compare-and-set: a lesson changes only while it holds the exact previous text and
-summary, or an earlier published rewrite listed in `server/src/data/theory/earlier.js`
-(or already holds the new ones); its Ruta description likewise. When a lesson that
-is already published gets corrected in its file, add the published version to
-`earlier.js` (never edit an entry) so the next run can replace it. Problems and
-collections are created only when missing, and an existing one with different
-content stops the run. Any conflict stops the whole run before writing; the writes
-happen in one transaction. After a revision, `content:import -- --dry-run` reports
-only `keep`. A fresh database gets everything from `content:import`.
+Each lesson is decided on its own, and nothing is ever overwritten silently:
+
+- **Rewritten lessons** (they have a previous text): the text, summary and Ruta
+  description change only while they hold the exact previous version, or an earlier
+  published rewrite listed in `server/src/data/theory/earlier.js`. When a lesson that
+  is already published gets corrected in its file, add the published version to
+  `earlier.js` (never edit an entry).
+- **New lessons** (no previous text; the file sets `lesson: { title, area, level }`,
+  for example the Ciclo 2 lessons): the run creates the lesson, its four Steps, its
+  problems and boxes, and publishes its Ruta and the draft groups above it, as long
+  as those Rutas still hold the checked-in draft.
+- **Edits made on the site.** Editors can change lessons on
+  `/panel/teoria/:id/editar`. A lesson whose live records hold anything else is
+  **skipped**, and the others go ahead. The dry run prints, for each skipped lesson,
+  the lines that differ and a 12-character fingerprint of what it holds. Either copy
+  the site's change into the lesson file (`/panel/cambios` shows the before and
+  after) and run again, or, after reviewing the difference, replace that exact live
+  version with `--accept-live <lesson-slug>@<fingerprint>` (repeat it for each
+  lesson). If the lesson changes again after the dry run, its fingerprint changes and
+  the acceptance no longer applies. A skipped lesson's own problems and boxes wait
+  with it.
+- **Problems and boxes** are only added. One that exists with different content
+  (edited on the site) is reported and left as it is.
+
+The writes happen in one transaction, each with a compare-and-set filter: if a record
+changes between the plan and the write, nothing is written. After a complete
+revision, `content:import -- --dry-run` reports only `keep`. A fresh database gets
+everything from `content:import`.
 
 With the private Atlas file, `npm run atlas:revise-theory:test` and
-`npm run atlas:revise-theory:prod` (add `-- --apply` to write) set steps 1 and 3
-for you (see [DEVELOPMENT.md](DEVELOPMENT.md#atlas-scripts)).
-
-**Edits made on the site.** Editors can change a lesson on
-`/panel/teoria/:id/editar`. A lesson changed there no longer holds the exact
-previous text, so a later `content:revise-theory` run stops on it instead of
-overwriting the editor's work. Copy the site's change into the lesson file first
-(`/panel/cambios` shows the before and after), then run it again.
+`npm run atlas:revise-theory:prod` (add `-- --apply` to write, and any
+`--accept-live` options) set steps 1 and 3 for you (see
+[DEVELOPMENT.md](DEVELOPMENT.md#atlas-scripts)). Suggested order: merge the pull
+request first so the figures are deployed, then run on the test database, then a dry
+run on production, reviewed before `--apply`.
 
 ## Included content and sources
 

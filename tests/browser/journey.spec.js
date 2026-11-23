@@ -89,7 +89,7 @@ test('problem discovery, pagination, math, solution and comments', async ({ page
 
 test('theory pagination and direct navigation do not show stale content', async ({ page }, testInfo) => {
   await page.goto('/entrenamiento/teoria')
-  await expect(page.getByText('37 resultados')).toBeVisible()
+  await expect(page.getByText(`${dataFor('Theory').length} resultados`)).toBeVisible()
   await assertFits(page)
   await page.goto(`/entrenamiento/teoria/${entry('Theory', 'factorizacion-e-identidades-guia')._id}`)
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Factorización')

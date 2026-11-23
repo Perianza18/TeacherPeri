@@ -4,7 +4,7 @@ English · **[Español](es/FEATURES.md)**
 
 Everything TeacherPeri does today or aims to do. Each feature has a status:
 
-- **Done:** live on https://www.teacherperi.com.
+- **Done:** live on https://teacherperi.vercel.app.
 - **In progress:** being built; the note says where (branch or pull request).
 - **Partial:** part of it is live; the note says which part.
 - **Planned:** agreed, not started. **Today** says what the site does instead.
@@ -47,8 +47,8 @@ A Ruta is an ordered path through existing material. See
 | Problemas: hints (each behind its own toggle) and solutions | Done | |
 | Problem page with a stable link | Done | `/entrenamiento/problemas/:id` |
 | Exam folder tree (e.g. Exámenes › OMM › OMM Estatal › Jalisco › 2023), usable as a filter | Done | The tree, the «Carpeta o examen» filter and new folders proposed by users work. «Exámenes» holds OMM (including OMM Estatal), OMMEB, Centroamericana, Iberoamericana, IMO and «Prácticas TeacherPeri» with the 3 practice exams (14 problems); added on the live database on 2026-11-21 |
-| Teoría: 37 lessons with math, examples and practice | Done | |
-| Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Done | All 37 lessons use the new format in the code; publishing them to the database requires the theory revision |
+| Teoría: 37 lessons with math, examples and practice | Done | Live site. The code also has the 12 missing Ciclo 2 lessons (49 lessons before Ciclo 3) |
+| Teoría: new lesson format (definitions, theorems, figures, exercise boxes) | Done | All 49 lessons before Ciclo 3 use the new format in the code, with figures computed by scripts in `server/src/scripts/figures/`. `content:revise-theory` publishes them lesson by lesson: it revises the 37 existing ones, creates the 12 new Ciclo 2 lessons, and skips any lesson edited on the live site unless that exact version is accepted with `--accept-live`. Not yet run on any database |
 | Local theory draft preview | In progress | Development only: `/dev/teoria-borrador/<lesson-slug>` renders rewrite data and collections without a database, with the lesson’s curriculum label and level |
 | «Sugerir un cambio» and «Reportar» on lessons | Done | Same two actions as on problems (see below) |
 | Exámenes: browse by competition and subfolder | Done | The page shows main folders as descriptive cards, only when they contain published exams, such as «TeacherPeri Originals» and «OMM»; «OMM Estatal» is inside «OMM». Opening a folder shows its exam cards directly, without an extra year button; other subfolders appear as folder cards. New competitions such as OMMEB appear automatically when they contain published exams. |
@@ -57,7 +57,6 @@ A Ruta is an ordered path through existing material. See
 | Images in problems (geometry) | Done | Up to 4 per problem, each with a required Spanish description. Users add them when proposing; editors and admins see them in Revisión; editors add, replace or remove them (statement or solution). The description can use $…$ math: writers see a live preview, reviewers see it rendered next to each image, and the page never shows it (the `alt` text gets a plain version). Stored in MongoDB as WebP (max 1200 px), about 12 KB per figure. See [SUBMISSIONS.md](SUBMISSIONS.md#images-in-problems) |
 | Global search across all libraries | Planned | **Today:** each library has its own search |
 | Visual refresh of Inicio, Rutas, Entrenamiento, Listas, Contacto and lessons («cómic» style, penguin logo) | Done | Pull requests #18, #20 and #21 |
-| Two mascots: TeacherPeri (penguin) and TeacherCath (cat) | Done | Together in «Sobre TeacherPeri» and the link preview; the footer word takes turns between TeacherPeri and TeacherCath; they take turns on the 404 page and «no results» notes. See [DESIGN.md](DESIGN.md) |
 
 ## Listas
 
@@ -103,7 +102,7 @@ A Ruta is an ordered path through existing material. See
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Profile page `/perfil/<username>` («Mi Espacio» in the avatar menu) | Done | Profile card, «En números» and tabs: Actividad, Comentarios, Listas, Mis envíos, Insignias. Visitors see only Comentarios, Listas and Insignias. The email, Actividad, Mis envíos and private lists are only sent to the owner by the server. See [PROFILES.md](PROFILES.md) |
-| «Editar perfil»: preset avatars and a short description | Done | 24 preset avatars (12 drawings and 12 math shapes, no uploads), a background colour for them, and up to 160 characters. Shown in the navbar, on comments and in follower lists |
+| «Editar perfil»: preset avatars and a short description | Done | 12 preset avatars (no uploads) and up to 160 characters. Shown in the navbar, on comments and in follower lists |
 | «Lo resolví» on problems | Done | The student marks a problem solved (nothing checks the answer). Counts as «problemas resueltos» |
 | Earned badges | Done | Problems solved (1/10/50), comments (1/10/50), accepted problems (1/5/20), applied suggestions (1/5/20), and Editor/Admin. Never taken away. See [PROFILES.md](PROFILES.md#lo-resolví-and-badges) |
 | Followed Rutas, «continue where you left off» | Planned | **Today:** Actividad lists your recent comments, saves, solves, proposals and suggestions |
@@ -125,4 +124,4 @@ A Ruta is an ordered path through existing material. See
 | «Cómic refinado» design system | Done | Colors, fonts and shared styles in `src/index.css`. Rules in [DESIGN.md](DESIGN.md) |
 | Works on phones (375 px and up) | Done | |
 | Hosting: Vercel (website), Render (API), MongoDB Atlas (database) | Done | See [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Own domain | Done | https://www.teacherperi.com. `teacherperi.com` and `teacherperi.vercel.app` redirect to it |
+| Own domain | Planned | **Today:** teacherperi.vercel.app |

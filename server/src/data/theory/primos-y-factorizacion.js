@@ -86,13 +86,15 @@ Si $n=m^2$, podemos elegir el entero $m$ positivo porque $n>0$. Si $m=1$, entonc
 Recíprocamente, si cada exponente de $n$ es par, podemos escribirlo como $2b_i$ con $b_i$ entero no negativo. Entonces $n=(p_1^{b_1}\cdots p_r^{b_r})^2$. Para $n=1$, se tiene $1=1^2$.
 :::
 
+Con esta proposición, preguntar si un número es un cuadrado se vuelve una pregunta sobre los exponentes de su factorización.
+
 :::tip
 Para buscar el mayor divisor cuadrado de un número, reducir cada exponente impar al par inmediato inferior y conservar los exponentes pares. Así se usa la mayor potencia permitida de cada primo sin introducir factores nuevos.
 :::
 
 ## Agregados culturales
 
-- Antes de 1733, Leonhard Euler mostró que $2^{32}+1$ es divisible por $641$. Ese ejemplo refutó una conjetura de Fermat sobre cierta familia de números que se creían primos.
+- En 1732, Leonhard Euler mostró que $2^{32}+1=4\,294\,967\,297$ es divisible por $641$. Pierre de Fermat había conjeturado que todos los números $2^{2^n}+1$ son primos; este es el caso $n=5$, y el ejemplo de Euler refutó la conjetura.
 - La octava Olimpiada Internacional de Matemáticas se celebró en 1966 en Sofía, Bulgaria. Participaron $72$ estudiantes de $9$ países.
 - En 1610 Galileo observó con un telescopio las cuatro lunas mayores de Júpiter. Hoy se conocen como satélites galileanos.
 
