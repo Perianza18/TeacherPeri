@@ -64,23 +64,32 @@ export default function ProfileCard({ profile, auth, onSignIn, onChange, onShowP
   )
 }
 
-export function NumbersCard({ stats }) {
+// «En números». For the owner, the solved count is a button that opens
+// «Problemas resueltos»; visitors only see the number.
+export function NumbersCard({ stats, onShowSolved }) {
   const rows = [
-    [stats.solved, 'problemas resueltos', 'problema resuelto'],
-    [stats.comments, 'comentarios', 'comentario'],
-    [stats.proposed, 'problemas propuestos', 'problema propuesto'],
-    [stats.badges, 'insignias', 'insignia'],
+    ['solved', stats.solved, 'problemas resueltos', 'problema resuelto'],
+    ['comments', stats.comments, 'comentarios', 'comentario'],
+    ['proposed', stats.proposed, 'problemas propuestos', 'problema propuesto'],
+    ['badges', stats.badges, 'insignias', 'insignia'],
   ]
   return (
     <section aria-labelledby="en-numeros" className="tp-card-soft bg-tp-surface p-6">
       <h2 id="en-numeros" className="tp-kicker">En números</h2>
       <dl className="mt-4 grid grid-cols-2 gap-4">
-        {rows.map(([value, many, one]) => (
-          <div key={many} className="flex flex-col-reverse">
-            <dt className="text-sm leading-5 text-tp-ink-muted">{value === 1 ? one : many}</dt>
-            <dd className="font-display text-[28px] font-extrabold leading-none">{value}</dd>
-          </div>
-        ))}
+        {rows.map(([key, value, many, one]) => {
+          const label = value === 1 ? one : many
+          return (
+            <div key={key} className="flex flex-col-reverse">
+              <dt className="text-sm leading-5 text-tp-ink-muted">{label}</dt>
+              <dd className="font-display text-[28px] font-extrabold leading-none">
+                {key === 'solved' && onShowSolved
+                  ? <button type="button" onClick={onShowSolved} aria-label={`${value} ${label}: ver cuáles`} className="min-h-11 min-w-11 text-left underline decoration-tp-violet decoration-[3px] underline-offset-4 hover:text-tp-violet">{value}</button>
+                  : value}
+              </dd>
+            </div>
+          )
+        })}
       </dl>
     </section>
   )

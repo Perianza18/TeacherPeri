@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ProfileCard, { NumbersCard } from '../components/profile/ProfileCard'
 import ProfileTabs from '../components/profile/ProfileTabs'
 import ListsPanel from '../components/profile/ListsPanel'
-import { ActivityPanel, BadgesPanel, CommentsPanel, PeoplePanel, SubmissionsPanel } from '../components/profile/panels'
+import UserSearch from '../components/profile/UserSearch'
+import { ActivityPanel, BadgesPanel, CommentsPanel, PeoplePanel, SearchPanel, SolvedPanel, SubmissionsPanel } from '../components/profile/panels'
 import { useAuth } from '../context/useAuth'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { apiFetch } from '../lib/api'
-import { tabsFor } from '../lib/profile'
+import { tabsFor, userQuery } from '../lib/profile'
 
 export function ProfileShell({ children }) {
   return (
@@ -24,15 +25,27 @@ export function ProfileShell({ children }) {
 }
 
 const PEOPLE = ['seguidores', 'siguiendo']
+// Old links used ?tab=listas for what is now «Guardados».
+const TAB_ALIASES = { listas: 'guardados' }
 
 // Mi Espacio: /perfil/:username. The owner sees five tabs; visitors see
-// Comentarios, Listas and Insignias. The server decides what each one gets.
+// Comentarios, Guardados and Insignias. The server decides what each one gets.
+// The right column shows a tab's panel, or (with no tab selected) seguidores /
+// siguiendo (?ver=), the owner's «Problemas resueltos» (?ver=resueltos) or the
+// «Buscar usuarios» results (?buscar=).
 export default function PerfilPage() {
   const { username } = useParams()
   const [params, setParams] = useSearchParams()
   const { auth, abrirModal, updateUser } = useAuth()
   const token = auth?.token
   const [result, setResult] = useState({ key: null, profile: null, error: null })
+  // What the search box starts with: the URL's ?buscar= on first load, empty
+  // after «Volver» or on another profile (a new `n` remounts the box).
+  const [searchSeed, setSearchSeed] = useState(() => ({ n: 0, user: username, value: userQuery(params.get('buscar')) }))
+  const hasSearch = params.has('buscar')
+  const onSearch = useCallback((query) => {
+    setParams(query ? { buscar: query } : {}, { replace: hasSearch })
+  }, [hasSearch, setParams])
   const key = `${username}|${token ?? ''}`
 
   useEffect(() => {
@@ -58,15 +71,21 @@ export default function PerfilPage() {
   }
 
   const tabs = tabsFor(profile.isOwner)
-  const people = PEOPLE.includes(params.get('ver')) ? params.get('ver') : null
-  const active = people ? null : (tabs.find((tab) => tab.id === params.get('tab')) ?? tabs[0]).id
+  const search = userQuery(params.get('buscar'))
+  const ver = params.get('ver')
+  const people = PEOPLE.includes(ver) ? ver : null
+  const solved = profile.isOwner && ver === 'resueltos'
+  const side = Boolean(search || people || solved)
+  const tabParam = params.get('tab')
+  const active = side ? null : (tabs.find((tab) => tab.id === (TAB_ALIASES[tabParam] ?? tabParam)) ?? tabs[0]).id
+  const back = () => setParams({}, { replace: false })
   const select = (id) => setParams({ tab: id }, { replace: true })
   const setProfile = (changes) => setResult((r) => ({ ...r, profile: { ...r.profile, ...changes } }))
 
   const panels = {
     actividad: () => <ActivityPanel profile={profile} token={token} />,
     comentarios: () => <CommentsPanel profile={profile} />,
-    listas: () => <ListsPanel profile={profile} token={token} />,
+    guardados: () => <ListsPanel profile={profile} token={token} />,
     envios: () => <SubmissionsPanel token={token} />,
     insignias: () => <BadgesPanel profile={profile} />,
   }
@@ -83,13 +102,18 @@ export default function PerfilPage() {
             onShowPeople={(which) => setParams({ ver: which })}
             onProfileSaved={(saved) => { setProfile({ avatar: saved.avatar, avatarColor: saved.avatarColor, bio: saved.bio }); updateUser({ avatar: saved.avatar, avatarColor: saved.avatarColor, bio: saved.bio }) }}
           />
-          <NumbersCard stats={profile.stats} />
+          <UserSearch key={`${username}|${searchSeed.n}`} initial={searchSeed.user === username ? searchSeed.value : ''} onSearch={onSearch} />
+          <NumbersCard stats={profile.stats} onShowSolved={profile.isOwner ? () => setParams({ ver: 'resueltos' }) : null} />
         </div>
         <div className="flex min-w-0 flex-col gap-6">
           <ProfileTabs tabs={tabs} activeId={active} onSelect={select} />
-          {people
-            ? <PeoplePanel key={people} profile={profile} which={people} onBack={() => setParams({}, { replace: false })} />
-            : <div role="tabpanel" id={`perfil-panel-${active}`} aria-labelledby={`perfil-tab-${active}`} tabIndex={0} className="focus-visible:outline-offset-4">
+          {search
+            ? <SearchPanel query={search} onBack={() => { setSearchSeed((seed) => ({ n: seed.n + 1, user: username, value: '' })); back() }} />
+            : people
+              ? <PeoplePanel key={people} profile={profile} which={people} onBack={back} />
+              : solved
+                ? <SolvedPanel profile={profile} token={token} onBack={back} />
+                : <div role="tabpanel" id={`perfil-panel-${active}`} aria-labelledby={`perfil-tab-${active}`} tabIndex={0} className="focus-visible:outline-offset-4">
               {panels[active]()}
             </div>}
         </div>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import MathText from '../math/MathText'
 import { usePanelData } from '../../hooks/usePanelData'
-import { ACTIVITY_LABELS, BADGE_COLORS, longDate, profilePath } from '../../lib/profile'
+import { ACTIVITY_LABELS, AREA_PILLS, BADGE_COLORS, longDate, plural, profilePath, roleName } from '../../lib/profile'
 import Avatar from './Avatar'
 import { EmptyCard, FeedRow, LINK, PanelStatus, SoloTu, StatusPill, TextLink } from './shared'
 
@@ -137,29 +137,101 @@ export function SubmissionsPanel({ token }) {
   )
 }
 
+// Title + «Volver» above the lists that replace the tabs' panel.
+function SidePanel({ id, title, onBack, children }) {
+  return (
+    <section aria-labelledby={id} className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 id={id} className="font-display text-[24px] font-extrabold tracking-[-0.02em]">{title}</h2>
+        <button type="button" onClick={onBack} className={`${LINK} min-h-11`}>Volver</button>
+      </div>
+      {children}
+    </section>
+  )
+}
+
+// Rows of people: seguidores, siguiendo and «Buscar usuarios».
+function PeopleRows({ people }) {
+  return (
+    <ul className="tp-card-soft bg-tp-surface p-5 sm:p-6">
+      {people.map((person) => (
+        <li key={person.username} className="flex items-center gap-3 border-t-2 border-dashed border-tp-rule py-3 first:border-t-0 first:pt-0 last:pb-0">
+          <Avatar id={person.avatar} color={person.avatarColor} />
+          <span className="min-w-0 flex-1 truncate font-bold">@{person.username}</span>
+          <span className="tp-pill shrink-0 bg-tp-violet-soft text-xs">{roleName(person.role)}</span>
+          <Link to={profilePath(person.username)} className={`${LINK} inline-flex min-h-11 shrink-0 items-center text-sm`}>Ver perfil</Link>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export function PeoplePanel({ profile, which, onBack }) {
   const path = `${base(profile.username)}/${which === 'seguidores' ? 'followers' : 'following'}`
   const { data, error, loading } = usePanelData(path)
   const title = which === 'seguidores' ? `Seguidores de @${profile.username}` : `@${profile.username} sigue a`
   return (
-    <section aria-labelledby="personas-titulo" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="personas-titulo" className="font-display text-[24px] font-extrabold tracking-[-0.02em]">{title}</h2>
-        <button type="button" onClick={onBack} className={`${LINK} min-h-11`}>Volver</button>
-      </div>
+    <SidePanel id="personas-titulo" title={title} onBack={onBack}>
       {(loading || error) ? <PanelStatus loading={loading} error={error} /> : data.items.length === 0
         ? <EmptyCard kicker="Nadie todavía">{which === 'seguidores' ? 'Aún no tiene seguidores.' : 'Aún no sigue a nadie.'}</EmptyCard>
-        : (
+        : <PeopleRows people={data.items} />}
+    </SidePanel>
+  )
+}
+
+// «Buscar usuarios» results. `query` is already trimmed and long enough.
+export function SearchPanel({ query, onBack }) {
+  const { data, error, loading } = usePanelData(`/api/profiles?q=${encodeURIComponent(query)}`)
+  const count = data?.items.length ?? 0
+  return (
+    <SidePanel id="buscar-titulo" title="Buscar usuarios" onBack={onBack}>
+      <p aria-live="polite" className="sr-only">{loading ? '' : error ? error : count ? plural(count, 'resultado', 'resultados') : 'No encontramos a nadie con ese usuario.'}</p>
+      {(loading || error) ? <PanelStatus loading={loading} error={error} /> : count === 0
+        ? <EmptyCard kicker="Sin resultados">No encontramos a nadie con ese usuario.</EmptyCard>
+        : <PeopleRows people={data.items} />}
+    </SidePanel>
+  )
+}
+
+const CHIP = 'tp-pill min-h-11 cursor-pointer px-4 text-sm font-bold'
+
+// «Problemas resueltos» (owner only; the server answers 404 to anyone else).
+export function SolvedPanel({ profile, token, onBack }) {
+  const { data, error, loading } = usePanelData(`${base(profile.username)}/solved`, token)
+  const [area, setArea] = useState(null)
+  const items = data?.items ?? []
+  const areas = [...new Set(items.map((item) => item.area).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'))
+  const shown = area ? items.filter((item) => item.area === area) : items
+  return (
+    <SidePanel id="resueltos-titulo" title="Problemas resueltos" onBack={onBack}>
+      {(loading || error) ? <PanelStatus loading={loading} error={error} /> : items.length === 0
+        ? <EmptyCard kicker="Ninguno todavía">Marca «Lo resolví» en un problema y aparecerá aquí.</EmptyCard>
+        : <>
+          {areas.length > 1 && (
+            <fieldset className="flex flex-wrap gap-2">
+              <legend className="mb-2 text-sm font-bold">Filtrar por área</legend>
+              {[null, ...areas].map((value) => (
+                <label key={value ?? 'todas'} className={`${CHIP} has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 ${area === value ? (AREA_PILLS[value] ?? 'bg-tp-yellow') : 'bg-tp-surface'}`}>
+                  <input type="radio" name="area-resueltos" className="sr-only" checked={area === value} onChange={() => setArea(value)} />
+                  {value ?? 'Todas'}
+                </label>
+              ))}
+            </fieldset>
+          )}
           <ul className="tp-card-soft bg-tp-surface p-5 sm:p-6">
-            {data.items.map((person) => (
-              <li key={person.username} className="flex items-center gap-3 border-t-2 border-dashed border-tp-rule py-3 first:border-t-0 first:pt-0 last:pb-0">
-                <Avatar id={person.avatar} color={person.avatarColor} />
-                <span className="min-w-0 flex-1 truncate font-bold">@{person.username}</span>
-                <Link to={profilePath(person.username)} className={`${LINK} inline-flex min-h-11 items-center text-sm`}>Ver perfil</Link>
+            {shown.map((item) => (
+              <li key={item.id} className="border-t-2 border-dashed border-tp-rule py-4 first:border-t-0 first:pt-0 last:pb-0">
+                <Link to={item.href} className="group block rounded-[10px] focus-visible:outline-offset-4">
+                  <MathText text={item.preview} className="line-clamp-3 break-words font-reading text-[17px] leading-[1.7] text-tp-ink group-hover:text-tp-violet" />
+                </Link>
+                <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-tp-ink-muted">
+                  {item.area && <span className={`tp-pill text-xs text-tp-ink ${AREA_PILLS[item.area] ?? 'bg-tp-surface'}`}>{item.area}</span>}
+                  <span>Resuelto el <time dateTime={item.solvedAt}>{longDate(item.solvedAt)}</time></span>
+                </p>
               </li>
             ))}
           </ul>
-        )}
-    </section>
+        </>}
+    </SidePanel>
   )
 }

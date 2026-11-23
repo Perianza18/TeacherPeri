@@ -1,12 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { nextTabIndex, plural, profilePath, relativeTime, tabsFor } from '../../../src/lib/profile.js'
+import { nextTabIndex, plural, profilePath, relativeTime, tabsFor, userListPath, userQuery } from '../../../src/lib/profile.js'
 import { AVATARS, AVATAR_COLORS, DRAWING_AVATARS, avatarById, avatarFill } from '../../../src/lib/avatars.js'
 import { AVATAR_COLORS as COLOR_IDS, AVATAR_IDS } from '../lib/profile.js'
 
 describe('Mi Espacio en el sitio', () => {
-  it('visitantes ven Comentarios, Listas e Insignias; el dueño ve las cinco pestañas', () => {
-    expect(tabsFor(false).map((t) => t.label)).toEqual(['Comentarios', 'Listas', 'Insignias'])
-    expect(tabsFor(true).map((t) => t.label)).toEqual(['Actividad', 'Comentarios', 'Listas', 'Mis envíos', 'Insignias'])
+  it('visitantes ven Comentarios, Guardados e Insignias; el dueño ve las cinco pestañas', () => {
+    expect(tabsFor(false).map((t) => t.label)).toEqual(['Comentarios', 'Guardados', 'Insignias'])
+    expect(tabsFor(true).map((t) => t.label)).toEqual(['Actividad', 'Comentarios', 'Guardados', 'Mis envíos', 'Insignias'])
+    expect(tabsFor(true).find((t) => t.id === 'guardados').color).toBe('bg-tp-coral')
     expect(tabsFor(true).every((t) => !/text-white/.test(t.color))).toBe(true)
   })
 
@@ -48,5 +49,19 @@ describe('Mi Espacio en el sitio', () => {
     expect(avatarFill(avatar, 'menta')).toBe('var(--tp-mint)')
     expect(avatarFill(avatar, null)).toBe(avatar.fill)
     expect(avatarFill(avatar, 'rojo')).toBe(avatar.fill)
+  })
+})
+
+describe('«Guardados» y «Buscar usuarios» en el sitio', () => {
+  it('las colecciones viven en /colecciones/', () => {
+    expect(userListPath('ana', 'l1')).toBe('/perfil/ana/colecciones/l1')
+  })
+
+  it('la búsqueda pide al menos 2 caracteres e ignora la @ inicial', () => {
+    expect(userQuery('')).toBe('')
+    expect(userQuery(' a ')).toBe('')
+    expect(userQuery('@a')).toBe('')
+    expect(userQuery('@an')).toBe('an')
+    expect(userQuery('  Beto ')).toBe('Beto')
   })
 })

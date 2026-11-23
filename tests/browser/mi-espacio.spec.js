@@ -20,7 +20,16 @@ const comments = Array.from({ length: 16 }, (_, i) => ({
   body: i === 15 ? 'Con $3$ basta, por casillas.' : `Comentario ${i}`, author: { _id: 'u-x', username: i === 15 ? 'ana' : 'beto', role: 'user', avatar: 'a03' },
 }))
 
+const SOLVED = [
+  { id: 'p1', preview: 'Hay $10$ calcetines rojos y $10$ azules.', area: 'Combinatoria', solvedAt: ago(2 * hour), href: '/entrenamiento/problemas/p1' },
+  { id: 'p2', preview: 'Un triángulo tiene ángulos de $50^\\circ$ y $60^\\circ$.', area: 'Geometría', solvedAt: ago(30 * hour), href: '/entrenamiento/problemas/p2' },
+  { id: 'p3', preview: 'Encuentra todos los $n$ tales que $n^2+1$ es primo.', area: 'Teoría de Números', solvedAt: ago(80 * hour), href: '/entrenamiento/problemas/p3' },
+]
+const PEOPLE = [{ username: 'beto', avatar: 'a03', role: 'editor' }, { username: 'Betania', avatar: 'a05', role: 'user' }]
+let searches = []
+
 async function mockApi(page, { signedIn }) {
+  searches = []
   if (signedIn) await page.addInitScript((user) => localStorage.setItem('teacherperi_auth', JSON.stringify({ token: 'fixture-token', user })), ANA)
   await page.route('**/api/**', async (route) => {
     const { pathname } = new URL(route.request().url())
@@ -34,7 +43,10 @@ async function mockApi(page, { signedIn }) {
         { kind: 'proposal', at: ago(26 * hour), target: { label: 'OMM Estatal › Jalisco › 2023, problema 4', href: '/mis-envios/p2' }, status: 'pending' },
       ] },
       '/api/profiles/ana/comments': { total: 1, page: 1, pageSize: 20, items: [{ id: 'c15', body: 'Con $3$ basta.', createdAt: ago(2 * hour), target: { label: 'Calcetines', href: '/entrenamiento/problemas/p1#comentario-c15' } }] },
-      '/api/profiles/ana/lists': { isOwner: owner, items: [{ id: 'l1', name: 'Geometría para el estatal', isPublic: true, count: 2, href: '/perfil/ana/listas/l1' }] },
+      '/api/profiles/ana/lists': { isOwner: owner, items: [{ id: 'l1', name: 'Geometría para el estatal', isPublic: true, count: 2, href: '/perfil/ana/colecciones/l1' }] },
+      '/api/profiles/ana/solved': owner ? { items: SOLVED } : undefined,
+      '/api/my-lists/containing': { items: [{ id: 'l1', name: 'Geometría para el estatal', isPublic: true, count: 2, contains: false }] },
+      '/api/my-lists/l1': { id: 'l1', name: 'Geometría para el estatal', isPublic: true, isOwner: owner, count: 0, items: [], owner: { username: 'ana', avatar: 'a07' } },
       '/api/profiles/ana/badges': { earned: [{ id: 'solved-1', name: 'Primer problema', color: 'mint', description: '1 problema resuelto', earned: true, earnedAt: ago(48 * hour) }], locked: [{ id: 'solved-10', name: 'Constancia', color: 'mint', description: '10 problemas resueltos', earned: false, remaining: 7 }] },
       '/api/profiles/ana/followers': { total: 1, page: 1, pageSize: 50, items: [{ username: 'beto', avatar: 'a03', role: 'editor' }] },
       '/api/submissions/mine': [],
@@ -44,6 +56,11 @@ async function mockApi(page, { signedIn }) {
       '/api/problems/p1/solved': { solved: false },
     }[pathname]
     if (pathname.startsWith('/api/paths')) return route.fulfill({ json: [] })
+    if (pathname === '/api/profiles') {
+      const q = new URL(route.request().url()).searchParams.get('q') ?? ''
+      searches.push(q)
+      return route.fulfill({ json: { items: PEOPLE.filter((p) => p.username.toLowerCase().startsWith(q.toLowerCase())) } })
+    }
     if (json === undefined) return route.fulfill({ status: 404, json: { error: 'No existe' } })
     return route.fulfill({ json })
   })
@@ -55,7 +72,7 @@ test('el dueño ve las cinco pestañas y las recorre con el teclado', async ({ p
   await mockApi(page, { signedIn: true })
   await page.goto('/perfil/ana')
   const tabs = page.getByRole('tab')
-  await expect(tabs).toHaveText(['Actividad', 'Comentarios', 'Listas', 'Mis envíos', 'Insignias'])
+  await expect(tabs).toHaveText(['Actividad', 'Comentarios', 'Guardados', 'Mis envíos', 'Insignias'])
   await expect(page.getByRole('tab', { name: 'Actividad' })).toHaveAttribute('aria-selected', 'true')
   await expect(page.getByText('ana@example.test')).toBeVisible()
   await expect(page.getByRole('tabpanel')).toContainText('Comentario · hace 2 h')
@@ -82,10 +99,10 @@ test('el dueño ve las cinco pestañas y las recorre con el teclado', async ({ p
   expect(await fits(page)).toBe(true)
 })
 
-test('un visitante ve Comentarios, Listas e Insignias, sin correo; la lista de seguidores no marca pestaña', async ({ page }) => {
+test('un visitante ve Comentarios, Guardados e Insignias, sin correo; los seguidores no marcan pestaña', async ({ page }) => {
   await mockApi(page, { signedIn: false })
   await page.goto('/perfil/ana')
-  await expect(page.getByRole('tab')).toHaveText(['Comentarios', 'Listas', 'Insignias'])
+  await expect(page.getByRole('tab')).toHaveText(['Comentarios', 'Guardados', 'Insignias'])
   await expect(page.getByRole('button', { name: 'Seguir' })).toBeVisible()
   await expect(page.getByText('ana@example.test')).toHaveCount(0)
   await page.getByRole('tab', { name: 'Insignias' }).click()
@@ -94,6 +111,7 @@ test('un visitante ve Comentarios, Listas e Insignias, sin correo; la lista de s
   await page.getByRole('button', { name: '2 seguidores' }).click()
   await expect(page.getByRole('heading', { name: 'Seguidores de @ana' })).toBeVisible()
   await expect(page.getByText('@beto')).toBeVisible()
+  await expect(page.getByRole('main').getByText('Editor')).toBeVisible()
   expect(await page.getByRole('tab', { selected: true }).count()).toBe(0)
   await page.getByRole('button', { name: 'Volver' }).click()
   await expect(page.getByRole('tab', { name: 'Comentarios' })).toHaveAttribute('aria-selected', 'true')
@@ -109,4 +127,102 @@ test('el enlace a un comentario abre su página, baja hasta él y lo resalta', a
   await expect(target).toHaveClass(/tp-flash/)
   await expect(target).toBeInViewport()
   await expect(page.locator('#comentario-c3')).not.toHaveClass(/tp-flash/)
+})
+
+const noLista = async (locator) => expect(await locator.innerText()).not.toMatch(/\blistas?\b/i)
+
+test('«Guardados»: colecciones en el perfil, en «Guardar» y en su página, sin la palabra «lista»', async ({ page }) => {
+  await mockApi(page, { signedIn: true })
+  await page.goto('/perfil/ana?tab=listas') // old links still open the tab
+  await expect(page.getByRole('tab', { name: 'Guardados' })).toHaveAttribute('aria-selected', 'true')
+  await expect(page.getByRole('button', { name: 'Nueva colección' })).toBeVisible()
+  await expect(page.getByText('2 elementos')).toBeVisible()
+  await noLista(page.getByRole('main'))
+  await page.getByRole('button', { name: 'Nueva colección' }).click()
+  await expect(page.getByLabel('Nombre de la colección')).toBeVisible()
+  await noLista(page.getByRole('main'))
+
+  await page.goto('/perfil/ana/listas/l1') // old address redirects
+  await expect(page).toHaveURL(/\/perfil\/ana\/colecciones\/l1$/)
+  await expect(page.getByText('Colección vacía')).toBeVisible()
+  await expect(page.getByRole('link', { name: /Volver a los guardados de @ana/ })).toHaveAttribute('href', '/perfil/ana?tab=guardados')
+  await noLista(page.getByRole('main'))
+
+  await page.goto('/entrenamiento/problemas/p1')
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click()
+  const dialog = page.getByRole('dialog', { name: 'Guardar en una colección' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByRole('button', { name: 'Nueva colección' })).toBeVisible()
+  await noLista(dialog)
+})
+
+test('el dueño abre «Problemas resueltos» con el teclado y filtra por área', async ({ page }) => {
+  await mockApi(page, { signedIn: true })
+  await page.goto('/perfil/ana')
+  const count = page.getByRole('button', { name: '3 problemas resueltos: ver cuáles' })
+  await count.focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('heading', { name: 'Problemas resueltos' })).toBeVisible()
+  await expect(page).toHaveURL(/ver=resueltos/)
+  expect(await page.getByRole('tab', { selected: true }).count()).toBe(0)
+  const rows = page.getByRole('region', { name: 'Problemas resueltos' }).getByRole('listitem')
+  await expect(rows).toHaveCount(3)
+  await expect(rows.first()).toContainText('Combinatoria')
+  await expect(rows.first()).toContainText('Resuelto el')
+  await expect(rows.first().getByRole('link')).toHaveAttribute('href', '/entrenamiento/problemas/p1')
+  const filter = page.getByRole('group', { name: 'Filtrar por área' })
+  await filter.getByText('Geometría', { exact: true }).click()
+  await expect(page.getByRole('radio', { name: 'Geometría' })).toBeChecked()
+  await expect(rows).toHaveCount(1)
+  await expect(rows.first()).toContainText('triángulo')
+  // Arrow keys move between the área radios.
+  await page.getByRole('radio', { name: 'Geometría' }).focus()
+  await page.keyboard.press('ArrowLeft')
+  await expect(page.getByRole('radio', { name: 'Combinatoria' })).toBeChecked()
+  await filter.getByText('Todas', { exact: true }).click()
+  await expect(rows).toHaveCount(3)
+  await page.getByRole('button', { name: 'Volver' }).click()
+  await expect(page.getByRole('tab', { name: 'Actividad' })).toHaveAttribute('aria-selected', 'true')
+  expect(await fits(page)).toBe(true)
+})
+
+test('un visitante solo ve el número de resueltos, sin botón', async ({ page }) => {
+  await mockApi(page, { signedIn: false })
+  await page.goto('/perfil/ana?ver=resueltos')
+  await expect(page.getByRole('tab', { name: 'Comentarios' })).toHaveAttribute('aria-selected', 'true')
+  await expect(page.getByText('problemas resueltos')).toBeVisible()
+  await expect(page.getByRole('button', { name: /resueltos/ })).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Problemas resueltos' })).toHaveCount(0)
+})
+
+test('«Buscar usuarios»: 2 caracteres mínimo, resultados con teclado, vacío y «Volver»', async ({ page }) => {
+  await mockApi(page, { signedIn: false })
+  await page.goto('/perfil/ana')
+  const box = page.getByRole('searchbox', { name: 'Buscar usuarios' })
+  await expect(box).toHaveAttribute('placeholder', '@usuario')
+  await box.fill('@b')
+  await expect(page.getByText('Escribe al menos 2 caracteres.')).toBeVisible()
+  await page.waitForTimeout(500)
+  expect(searches).toEqual([])
+
+  await box.fill('@be')
+  await expect(page.getByRole('heading', { name: 'Buscar usuarios' })).toBeVisible()
+  expect([...new Set(searches)]).toEqual(['be'])
+  expect(await page.getByRole('tab', { selected: true }).count()).toBe(0)
+  await expect(page.getByText('@beto')).toBeVisible()
+  await expect(page.getByText('@Betania')).toBeVisible()
+  await expect(page.getByRole('main').getByText('Editor')).toBeVisible()
+  // Keyboard: Tab from the box reaches the results' «Ver perfil» links.
+  await box.focus()
+  const link = page.getByRole('link', { name: 'Ver perfil' }).first()
+  for (let i = 0; i < 20 && !(await link.evaluate((n) => n === document.activeElement)); i += 1) await page.keyboard.press('Tab')
+  await expect(link).toBeFocused()
+  await expect(link).toHaveAttribute('href', '/perfil/beto')
+
+  await box.fill('zz')
+  await expect(page.getByText('No encontramos a nadie con ese usuario.').first()).toBeVisible()
+  await page.getByRole('button', { name: 'Volver' }).click()
+  await expect(box).toHaveValue('')
+  await expect(page.getByRole('tab', { name: 'Comentarios' })).toHaveAttribute('aria-selected', 'true')
+  expect(await fits(page)).toBe(true)
 })
