@@ -7,7 +7,8 @@ import CathCat from '../components/decor/CathCat'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 // The two people behind TeacherPeri, each with their mascot. Each card opens
-// that person's own page (src/pages/equipo/), which each of them decorates.
+// that person's own page (src/pages/equipo/) in a new tab: those pages have no
+// site menu, and each person decorates their own.
 const PEOPLE = [
   { name: 'Elías', mascot: 'TeacherPeri', to: '/equipo/elias', Art: PeriPenguin, card: 'bg-tp-tint-violet' },
   { name: 'Catherine', mascot: 'TeacherCath', to: '/equipo/catherine', Art: CathCat, card: 'bg-[#ffd3dd]' },
@@ -22,11 +23,11 @@ export default function EquipoPage() {
         <PageHero id="equipo-titulo" tone="yellow" kicker="Equipo" title="Conócenos" lead="Somos dos: cada quien con su mascota y su propia página." />
         <section aria-labelledby="equipo-titulo" className="tp-container grid gap-8 pb-24 pt-14 sm:grid-cols-2">
           {PEOPLE.map(({ name, mascot, to, Art, card }) => (
-            <Link key={to} to={to} className={`tp-card tp-lift group flex min-w-0 items-end justify-between gap-3 p-6 sm:gap-4 sm:p-7 ${card}`}>
+            <Link key={to} to={to} target="_blank" rel="noreferrer" className={`tp-card tp-lift group flex min-w-0 items-end justify-between gap-3 p-6 sm:gap-4 sm:p-7 ${card}`}>
               <div className="flex min-w-0 flex-col gap-2 self-center">
                 <span className="tp-hand -rotate-2 text-[24px] leading-none">{mascot}</span>
                 <h2 className="font-display text-[34px] font-extrabold leading-none tracking-[-0.035em] sm:text-[44px]">{name}</h2>
-                <span className="mt-2 font-bold">Ver su página<span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">{' →'}</span></span>
+                <span className="mt-2 font-bold">Ver su página<span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">{' ↗'}</span><span className="sr-only"> (se abre en otra pestaña)</span></span>
               </div>
               <Art className="h-[120px] w-auto shrink-0 sm:h-[170px]" />
             </Link>
