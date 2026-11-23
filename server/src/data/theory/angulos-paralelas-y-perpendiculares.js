@@ -87,7 +87,7 @@ La suma sospechada sugiere partir $\angle APB$ en una pieza ligada a $r$ y otra 
 
 La recta $\ell$ también es paralela a $s$: si la cortara en un punto $Q$, por $Q$ pasarían dos paralelas distintas a $r$, la recta $s$ y la recta $\ell$.
 
-Con la transversal $PA$, el ángulo de $35^\circ$ en $A$ y el ángulo entre $PA$ y $\ell$ en $P$ son alternos internos, así que este mide $35^\circ$. Del mismo modo, el ángulo entre $PB$ y $\ell$ mide $40^\circ$. Como $A$ y $B$ quedan en lados opuestos de $\ell$, esas son las dos piezas de $\angle APB$, que mide $75^\circ$. Con esta disposición, el ángulo en $P$ es siempre la suma de los dos ángulos dados.
+Con la transversal $PA$, el ángulo de $35^\circ$ en $A$ y el ángulo entre $PA$ y $\ell$ en $P$ son alternos internos, así que este mide $35^\circ$. Con la transversal $PB$ y las paralelas $s$ y $\ell$, el ángulo de $40^\circ$ en $B$ y el ángulo entre $PB$ y $\ell$ en $P$ también son alternos internos, así que este mide $40^\circ$. Como $A$ y $B$ quedan en lados opuestos de $\ell$, esas son las dos piezas de $\angle APB$, que mide $75^\circ$. Con esta disposición, el ángulo en $P$ es siempre la suma de los dos ángulos dados.
 :::
 
 :::tip
