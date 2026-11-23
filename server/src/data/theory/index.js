@@ -46,12 +46,13 @@ import inclusionExclusion from './inclusion-exclusion.js'
 import cevaMenelao from './ceva-y-menelao.js'
 import cauchySchwarz from './cauchy-schwarz-y-tecnicas-clasicas.js'
 import homogeneizacion from './homogeneizacion-y-sustituciones.js'
+import mixtoCiclo2 from './entrenamiento-mixto-ciclo-2.js'
 
 // Lessons rewritten in the lesson format of the theory page (spec «Página de
 // teoría», Part 2). Each file holds the new summary and text of one lesson,
 // the new banco problems it introduces and the problem collections its boxes
 // point to. mvpLessons.js applies them as the last layer.
-const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir, organizar, atasco, aprender, recursos, revisar, elegir, bases, digitos, mixto, modular, inversos, puntosNotables, bisectrices, areasTriangulos, medias, desigualdadUtil, binomiales, dobleConteo, inclusionExclusion, cevaMenelao, cauchySchwarz, homogeneizacion]
+const LESSONS = [angulos, casillas, semejanza, areas, factorizacion, pitagoras, manipulaciones, ecuaciones, divisibilidad, primos, mcd, bezout, conteo, permutaciones, directa, casos, contraposicion, contradiccion, induccion, construccion, omm, porQue, entrenar, abordar, introduccionPruebas, escribir, organizar, atasco, aprender, recursos, revisar, elegir, bases, digitos, mixto, modular, inversos, puntosNotables, bisectrices, areasTriangulos, medias, desigualdadUtil, binomiales, dobleConteo, inclusionExclusion, cevaMenelao, cauchySchwarz, homogeneizacion, mixtoCiclo2]
 
 export const THEORY_REWRITES = Object.freeze(Object.fromEntries(LESSONS.map((lesson) => [lesson.pathSlug, lesson])))
 

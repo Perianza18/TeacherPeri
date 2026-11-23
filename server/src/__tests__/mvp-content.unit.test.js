@@ -55,7 +55,9 @@ describe('MVP release integrity', () => {
   })
   it('labels exams as original practice and keeps unfinished cycles draft', () => {
     expect(MVP_EXAMS.every((exam) => /original|parcial/.test(exam.instructions))).toBe(true)
-    for (const cycle of [2, 3, 4, 5]) expect(entries.find((e) => e.key === `entrenamiento-mixto-ciclo-${cycle}`).data.publicationStatus).toBe('draft')
+    // Ciclo 2 is complete (every lesson, including its mixed practice), so it is published.
+    expect(entries.find((e) => e.key === 'entrenamiento-mixto-ciclo-2').data.publicationStatus).toBe('published')
+    for (const cycle of [3, 4, 5]) expect(entries.find((e) => e.key === `entrenamiento-mixto-ciclo-${cycle}`).data.publicationStatus).toBe('draft')
     expect(entries.every((e) => !e.data.pdfUrl)).toBe(true)
   })
 })
