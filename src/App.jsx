@@ -8,10 +8,11 @@ import RedirectToEntrenamientoListas from './pages/ListasPage'
 // what Inicio needs; each page's code arrives when someone opens it.
 const EntrenamientoPage = lazy(() => import('./pages/EntrenamientoPage'))
 const Problemas = lazy(() => import('./pages/Problemas'))
-const SobreMiPage = lazy(() => import('./pages/SobreMiPage'))
 const RecursosPage = lazy(() => import('./pages/RecursosPage'))
 const ExperienciasPage = lazy(() => import('./pages/ExperienciasPage'))
 const EquipoPage = lazy(() => import('./pages/EquipoPage'))
+const EliasPage = lazy(() => import('./pages/equipo/EliasPage'))
+const CatherinePage = lazy(() => import('./pages/equipo/CatherinePage'))
 const EstudiaExtranjeroPage = lazy(() => import('./pages/EstudiaExtranjeroPage'))
 const ContactoPage = lazy(() => import('./pages/ContactoPage'))
 const ColaboradoresPage = lazy(() => import('./pages/ColaboradoresPage'))
@@ -88,9 +89,12 @@ function App() {
           <Route path="/recursos" element={<RecursosPage />} />
           <Route path="/experiencias" element={<ExperienciasPage />} />
           <Route path="/equipo" element={<EquipoPage />} />
+          <Route path="/equipo/elias" element={<EliasPage />} />
+          <Route path="/equipo/catherine" element={<CatherinePage />} />
           <Route path="/estudia-en-el-extranjero" element={<EstudiaExtranjeroPage />} />
           <Route path="/contacto" element={<ContactoPage />} />
-          <Route path="/sobre-mi" element={<SobreMiPage />} />
+          {/* «Sobre mí» became the team page; old links land there. */}
+          <Route path="/sobre-mi" element={<Navigate to="/equipo" replace />} />
           <Route path="/colaboradores" element={<ColaboradoresPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
