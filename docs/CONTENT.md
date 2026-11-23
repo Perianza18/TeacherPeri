@@ -14,6 +14,7 @@ change is reviewed in a pull request.
 | --- | --- | --- |
 | Problems, lessons, lists, exams and the OMM Ruta (first release) | `server/src/data/` (`mvpManifest.js`, `mvpLessons.js`, `mvpProblems.js`, `ommCurriculum.js`, `ommLaunchContent*.js`) | `npm run content:import` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | Rewritten lessons and the problems they add | `server/src/data/theory/`, one file per lesson | `npm run content:revise-theory` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revising-rewritten-theory-lessons)) |
+| New lessons with no earlier text (they set `lesson: { title, area, level }`) | `server/src/data/theory/`, one file per lesson | `npm run content:import` |
 | Lesson figures | `public/figuras/*.svg` | Published with the website |
 | Community problems and exam folders | Proposed on the site | Admin review ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
@@ -36,8 +37,9 @@ Planned: images in problems, for geometry. **Today:** text and math only.
 
 ## Lessons (Teoría)
 
-> **Status:** Partial. The new lesson format is live; 2 of the 37 lessons use it.
-> The others still use the older format and look as before.
+> **Status:** Partial. The new lesson format is live. In the code, all 49 lessons
+> before Ciclo 3 use it (37 rewritten and 12 new Ciclo 2 lessons); the live site
+> shows each one once it is published.
 
 A lesson in the new format has these sections, in this order: Preámbulo →
 Teoría → Agregados culturales → Ejercicios → Problemas → Problemas de mayor

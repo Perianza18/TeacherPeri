@@ -15,6 +15,7 @@ mano en el sitio. Así cada cambio se revisa en un pull request.
 | --- | --- | --- |
 | Problemas, lecciones, listas, exámenes y la Ruta OMM (primera versión) | `server/src/data/` (`mvpManifest.js`, `mvpLessons.js`, `mvpProblems.js`, `ommCurriculum.js`, `ommLaunchContent*.js`) | `npm run content:import` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | Lecciones reescritas y los problemas que agregan | `server/src/data/theory/`, un archivo por lección | `npm run content:revise-theory` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revisar-lecciones-reescritas)) |
+| Lecciones nuevas sin texto anterior (definen `lesson: { title, area, level }`) | `server/src/data/theory/`, un archivo por lección | `npm run content:import` |
 | Figuras de las lecciones | `public/figuras/*.svg` | Se publican con el sitio |
 | Problemas y carpetas de examen de la comunidad | Se proponen en el sitio | Revisión de un admin ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 
@@ -40,8 +41,9 @@ matemáticas.
 
 ## Lecciones (Teoría)
 
-> **Estado:** Parcial. El formato nuevo ya funciona; 2 de las 37 lecciones lo
-> usan. Las demás siguen con el formato anterior y se ven igual que antes.
+> **Estado:** Parcial. El formato nuevo ya funciona. En el código, las 49
+> lecciones anteriores al Ciclo 3 lo usan (37 reescritas y 12 nuevas del Ciclo 2);
+> el sitio muestra cada una cuando se publica.
 
 Una lección en el formato nuevo tiene estas secciones, en este orden: Preámbulo →
 Teoría → Agregados culturales → Ejercicios → Problemas → Problemas de mayor
