@@ -90,6 +90,11 @@ Las fuentes se cargan de Google Fonts en `index.html`:
   lectura de máximo 840px. Barra lateral de 260–300px; en celular baja debajo del
   contenido y nunca queda fija.
 - Las zonas táctiles miden al menos 44px de alto.
+- Dos mascotas: **Peri**, el pingüino con un grafo en la espalda (`PeriPenguin`, también el logo), y **Cath**, la
+  gatita (`CathCat`). Las dos son solo decoración. Salen juntas, con los nombres «TeacherPeri» y «TeacherCath», en «Sobre TeacherPeri» en Inicio y en la imagen
+  de vista previa de links. La palabra gigante del pie de página se turna al azar entre TeacherPeri (Cath en la
+  «T», Peri en la «i») y TeacherCath (Peri en la «T», Cath en la «h»); en la página 404 y en
+  los avisos sin resultados sale una de las dos al azar (`RandomMascot`).
 - Los avatares son círculos con borde de tinta de 2px y relleno pastel. Los
   usuarios elegirán solo entre avatares prediseñados (sin subir imágenes).
 

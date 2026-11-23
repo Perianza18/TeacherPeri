@@ -6,6 +6,7 @@ import { useInView } from '../hooks/useInView'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { BubbleTail, Burst, HandArrow, Highlight, Mark, Marquee } from '../components/decor/Decor'
 import PeriPenguin from '../components/decor/PeriPenguin'
+import CathCat from '../components/decor/CathCat'
 import { useAuth } from '../context/useAuth'
 import { apiFetch } from '../lib/api'
 import { LIBRARY_BASE } from '../lib/libraryPaths'
@@ -382,17 +383,27 @@ function SobreTeacherPeri() {
           <h2 id="sobre-titulo" className="tp-section-title max-w-[1000px]">Construido desde la experiencia de aprender, competir y <Highlight color="var(--tp-sky)">enseñar</Highlight>.</h2>
         </div>
         <div className="grid items-start gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-          {/* Peri's penguin says the mission. On a phone the bubble sits above
-              it, its tail pointing down at the head; from sm up the penguin
-              stands to the left of the bubble, the tail pointing at its beak,
-              and the buttons go under the bubble. */}
+          {/* The two mascots, Peri's penguin and Cath the cat, say the
+              mission. On a phone the bubble sits above them, its tail pointing
+              down at Peri's head; from sm up they stand to the left of the
+              bubble, the tail pointing at Peri's beak, and the buttons go
+              under the bubble. */}
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-x-5 gap-y-3 [grid-template-areas:'bubble_bubble'_'penguin_buttons'] sm:items-start sm:gap-x-11 sm:gap-y-7 sm:[grid-template-areas:'penguin_bubble'_'penguin_buttons']">
             <div className="tp-bubble max-w-[640px] bg-tp-surface px-6 py-5 [grid-area:bubble] sm:px-7">
               <p className="text-[17px] leading-[1.65]"><strong>Misión:</strong> hacer que el entrenamiento para olimpiadas de matemáticas sea accesible para todos. Inspirados por la experiencia de dar talleres gratuitos a estudiantes y profesores.</p>
               <BubbleTail className="left-12 top-[calc(100%-3px)] sm:hidden" />
               <BubbleTail className="left-[3px] top-7 hidden origin-top-left rotate-90 sm:block" />
             </div>
-            <PeriPenguin className="mt-11 h-[160px] w-auto [grid-area:penguin] sm:mt-0 sm:h-[220px] lg:h-[240px]" />
+            <div aria-hidden="true" className="mt-11 flex items-end [grid-area:penguin] sm:mt-0">
+              <div className="flex flex-col items-center">
+                <PeriPenguin className="h-[150px] w-auto sm:h-[200px] xl:h-[230px]" />
+                <span className="tp-hand -rotate-3 whitespace-nowrap text-[20px] leading-none sm:text-[24px]">TeacherPeri</span>
+              </div>
+              <div className="ml-2 flex flex-col items-center sm:ml-3">
+                <CathCat className="h-[112px] w-auto sm:h-[148px] xl:h-[170px]" />
+                <span className="tp-hand rotate-2 whitespace-nowrap text-[20px] leading-none sm:text-[24px]">TeacherCath</span>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-3 pb-1 [grid-area:buttons]">
               <Link to="/sobre-mi" className="tp-button bg-tp-ink px-5 font-bold text-white">Sobre mí</Link>
               <Link to="/contacto" className="tp-button bg-tp-surface px-5 font-bold text-tp-ink">Contacto</Link>

@@ -1,20 +1,20 @@
-import penguin from '../../assets/penguin.svg'
+import penguin from '../../assets/penguin.webp'
 
-// Peri's penguin: the hand-drawn penguin with a graph on its back, the same
-// drawing as the logo seal, traced to SVG in src/assets/penguin.svg. It
-// faces right. Decoration only (aria-hidden).
+// Peri's penguin: the penguin with a graph on its back, the main mascot and
+// the logo (public/logo-seal.svg). Cut out of its white background in
+// src/assets/penguin.webp, in the same style as Cath (CathCat). It faces
+// right. Decoration only (aria-hidden).
 //   flip:     face left instead of right
 //   question: a hand-drawn «?» floats behind its head
 //   halo:     a colour for a sticker-like rim around it, so its dark outline
 //             still shows on a dark background (the footer)
 
 // Size of the drawing's viewBox.
-const W = 107
-const H = 185.9
+const W = 118.5
+const H = 186.0
 
-// The drawing's outer outline, in the traced drawing's own coordinates
-// (shifted into the viewBox like the drawing in penguin.svg).
-const OUTLINE = 'M71.5 190.2l-.5 0-1.3-.2-.4-.1-9.2-1.5-1.7-.3-.4-.2-5.7-4.7-.2-.2-1.2-4.9-.1-.4-.9-4-.2-.5-6.5-5.6-.7 .3-5.5 3-6.2 1.9-1.9 .6-1 .1-2.4 .1-.5 0-2.3 .1-.4 0-.8 0-8-2-.5-.3-.6-.8-.4-1 0-.3 0-.5 .2-1 .3-.6 .3-.3 7.8-6.2 2.1-3.7 .7-1.4-.1-1.1-.1-1-.1-.6-.1-1-.3-2.1-.4-3.4-.3-2.2-.4-3.2-.4-2.9-.1-1-.6-4.8-.1-.6-.2-1.7-.5-3.5-.1-.2-.6-.6-.5-.7-.3-.8-.1-.6 0-.7 .2-.8 .3-.6 .6-.8 1.3-.9 0-.3-.7-9.7-.1-.2-1-.6-.5-.5-.3-.4-.3-.6-.2-.9 0-1.2 .3-1 .4-.6 .7-.7 .6-.5 .1-.1 0-1.9 0-.5 .1-1.5 0-.5 .1-1.3 0-.4 .1-1.4 0-.5 .1-1.4 0-.5 0-1.8-1-1-.7-1.3-.1-.5-.1-.4 .1-.7 .1-.5 .3-.7 .5-.7 .3-.3 1.2-.7 .8-.2 .2-.2 4.1-8.6 4.6-9.1 .6-1.1 0-.2-.5-.7-.2-.4-.3-1.2 0-.6 .1-.6 .4-.9 .5-.7 .5-.5 .8-.5 .6-.2 .8-.1 .8 .1 .7 .2 .2-.1 2.5-5.6 .4-1.1-.1-.2-.5-.7-.3-.6-.2-.6-.1-.7 .1-.8 .2-.8 .6-1 .5-.5 .5-.4 .6-.3 .1-.1 0-.8 0-.4-.1-1 0-.3-.1-.9 0-.3-.1-1.5 1.5-8.7 2-5.6 .6-1.7 1-2.5 3.6-5.1 1.7-1.6 1.3-1.2 1-.9 1-.9 6.4-2.9 2.4-.3 1.1-.1 .6-.1 .3 0 .6-.1 1.7-.2 .6-.1 2.1-.2 .7-.1 1.1-.1 2.9 .6 .9 .2 .9 .1 .5 .1 1.6 .5 2.6 .6 3 .7 .5 .1 5.7 2.5 .3 .2 .9 .7 2.9 2.3 .5 .5 2.9 5.2 1.8 3.7 12.5 7.9 .3 .3 .2 .3 0 .7-.3 .6-3.2 3-.7 .3-7.4 2.4-.2 .1-.1 .5-1 7 2 6.7 9.4 20.2 2.4 8.5 1.7 7.5 1.4 9.8 .1 .7 0 .4 .1 2.1 0 .5 .1 2.3 0 .5 .1 2.1 0 .5 .1 2.1 0 .8 0 1.9 0 .4-.2 2.2 0 .3-.1 .9 0 .3-.1 .9 0 .3-.1 .9 0 .3-.1 .9 0 .3-.1 .9 0 .3-.3 3-3.2 12.7-4.3 11.6-.3 .6-5 6.6-.3 .3-.6 .5-4.3 3.4-.1 .2 1 3.4 .3 .8 5.8 1.8 1 .4 2.6 1.4 2.2 1.1 1.4 .8 .7 .8 2.2 3.1 .1 .6-.2 .7-.3 .3-.4 .2-2.2 .5-.4 .1-.1 .2 0 .5-.1 1-.2 .8-.4 .6-.4 .3-.4 .1-.4 0-1.1-.2-1.9-.4-1.6-.3-.1 .1-.1 .8-.3 .4-.7 .5-.4 .1-.7 0-.3 0-.8-.1-1.4-.1-.9-.1-.3 0-1-.1-.4 0-1-.1-.4 0-2.2-.2-5-1.5-3.4-1-.5-.3-3.3-3.3-.8-.9-.2-.4-1.4-4.5-.2-.5-.1-.1-.5 .1-5.6 .9-.4 .1-1 .2-.1 .1-.1 .1 .2 .3 1.1 2.1 .5 .7 .4 .4 1.1 .6 2.5 1.2 4.6 2.3 .2 .2 2.5 3.8 .1 .5 0 .3-.1 .3-.2 .3-.2 .2-.4 .2-2.8 .9-.1 .2-.7 2.4-.3 .4-.2 .2-.4 .1-.5 0-5.1-1.2-.2 .1 0 1.1-.1 .3-.2 .3Z'
+// The drawing's outer outline, traced from the image.
+const OUTLINE = 'M55.7 185.3 L51.3 185.1 L41.8 183.3 L35.3 176.8 L33.9 170.2 L32.8 169.1 L29.6 168.1 L20.0 161.1 L14.0 163.3 L5.8 163.3 L4.2 162.9 L3.5 162.0 L2.9 159.4 L6.5 154.4 L8.5 145.8 L3.7 133.5 L2.1 121.1 L1.1 118.9 L0.5 99.3 L1.3 97.7 L2.9 86.1 L2.9 84.9 L1.1 82.7 L1.1 80.7 L2.8 78.6 L4.6 78.0 L5.5 76.9 L7.7 68.9 L13.7 58.7 L12.9 56.5 L13.1 54.5 L15.6 52.2 L18.0 52.2 L21.1 46.4 L21.5 45.0 L20.1 42.2 L21.1 39.8 L22.7 38.4 L22.9 28.8 L28.1 15.4 L44.6 3.1 L59.3 0.7 L65.3 0.5 L79.5 3.3 L92.3 12.3 L99.6 26.8 L101.2 41.4 L99.2 49.5 L96.2 55.5 L102.4 66.3 L103.6 70.5 L108.8 78.5 L115.8 95.3 L117.8 106.5 L117.6 119.5 L114.5 124.8 L111.5 125.4 L109.5 124.0 L108.6 124.7 L106.8 138.7 L99.6 151.8 L85.6 163.0 L86.3 163.9 L94.9 167.7 L98.0 171.6 L98.2 172.8 L97.1 173.7 L95.5 173.9 L94.6 174.8 L94.4 176.6 L93.3 177.7 L88.5 176.9 L86.7 178.7 L84.1 178.7 L77.5 178.1 L68.9 175.5 L63.5 169.9 L57.9 170.1 L57.2 170.8 L57.9 171.7 L64.3 174.7 L67.4 179.6 L64.1 181.1 L62.1 184.7 L56.9 183.5 L55.7 185.3 Z'
 
 export default function PeriPenguin({ className = '', flip = false, question = false, halo = null }) {
   return (
@@ -26,7 +26,7 @@ export default function PeriPenguin({ className = '', flip = false, question = f
             <circle cx="12" cy="30" r="2.2" fill="var(--tp-ink)" />
           </g>
         )}
-        {halo && <path d={OUTLINE} transform="translate(-10.5 -5.9)" fill={halo} stroke={halo} strokeWidth="12" strokeLinejoin="round" />}
+        {halo && <path d={OUTLINE} fill={halo} stroke={halo} strokeWidth="12" strokeLinejoin="round" />}
         <image href={penguin} width={W} height={H} />
       </g>
     </svg>

@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Burst } from '../components/decor/Decor'
-import PeriPenguin from '../components/decor/PeriPenguin'
+import RandomMascot from '../components/decor/RandomMascot'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 // 404: a poster «4✸4» where the zero is a comic starburst and a puzzled
-// penguin stands beside it, the page title
+// mascot (Peri or Cath, they take turns) stands beside it, the page title
 // for screen readers and search, and three ways back in.
 export default function NotFoundPage() {
   usePageMeta({ title: 'Página no encontrada', noindex: true })
@@ -25,7 +25,7 @@ export default function NotFoundPage() {
                 <span className="text-[0.62em] leading-none">0</span>
               </Burst>
               4
-              <PeriPenguin question flip className="ml-[0.16em] h-[0.86em] w-auto self-end" />
+              <RandomMascot question flip className="ml-[0.16em] h-[0.86em] w-auto self-end" />
             </p>
             <h1 id="no-encontrada" className="tp-page-title">Página no encontrada</h1>
             <p className="tp-hand -rotate-2 text-[32px] leading-tight">Este problema no tiene solución… todavía.</p>

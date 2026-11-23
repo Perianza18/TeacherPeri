@@ -1,6 +1,7 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PeriPenguin from './decor/PeriPenguin'
+import CathCat from './decor/CathCat'
 
 const LINKS = [
   ['Rutas', '/rutas'],
@@ -18,6 +19,8 @@ const LINKS = [
 // re-renders React.
 export default function Footer() {
   const footer = useRef(null)
+  // Which word the big footer shows this time (see the comment on it).
+  const [cathWord] = useState(() => Math.random() < 0.5)
 
   function trackPointer(event) {
     if (event.pointerType !== 'mouse' || !footer.current) return
@@ -48,13 +51,28 @@ export default function Footer() {
           ))}
         </nav>
       </div>
-      {/* The penguin stands on the «i» of Peri as its dot (a dotless ı below
-          it), so the visible letters are aria-hidden behind a plain label. */}
-      <Link to="/" aria-label="TeacherPeri" className="relative mt-10 block select-none whitespace-nowrap text-center font-display text-[clamp(64px,19vw,290px)] font-extrabold leading-[.8] tracking-[-0.055em] text-tp-paper transition-colors hover:text-white">
-        <span aria-hidden="true">
-          Teacher<span className="text-[#9d7cff]">Per<span className="relative">ı<PeriPenguin flip halo="#9d7cff" className="pointer-events-none absolute bottom-[0.79em] left-1/2 h-[max(44px,0.4em)] w-auto -translate-x-1/2" /></span></span>
-        </span>
-      </Link>
+      {/* The big word takes turns at random: «TeacherPeri» or «TeacherCath».
+          Both mascots stand on it either way. In TeacherPeri, Cath sits on
+          the top of the «T» and Peri stands on the «i» as its dot (a dotless
+          ı below it); in TeacherCath, Peri stands on the «T» and Cath sits on
+          the «h». «Peri» is violet and «Cath» pink, like her ears. TeacherCath
+          is a little wider, so its font is a little
+          smaller and both words span the same width. The visible letters are
+          aria-hidden behind a plain label, and the top margin grows with the
+          word so the mascot on the «T» clears the text above. */}
+      {cathWord ? (
+        <Link to="/" aria-label="TeacherCath" className="relative mt-[max(3rem,0.44em)] block select-none whitespace-nowrap text-center font-display text-[clamp(60px,17.7vw,270px)] font-extrabold leading-[.8] tracking-[-0.055em] text-tp-paper transition-colors hover:text-white">
+          <span aria-hidden="true">
+            <span className="relative">T<PeriPenguin halo="var(--tp-paper)" className="pointer-events-none absolute bottom-[0.93em] left-1/2 h-[max(44px,0.4em)] w-auto -translate-x-1/2" /></span>eacher<span className="text-[#ff8fb8]">Cat<span className="relative">h<CathCat halo="#ff8fb8" className="pointer-events-none absolute bottom-[0.98em] left-[0.13em] h-[max(36px,0.34em)] w-auto -translate-x-1/2" /></span></span>
+          </span>
+        </Link>
+      ) : (
+        <Link to="/" aria-label="TeacherPeri" className="relative mt-[max(2.5rem,0.34em)] block select-none whitespace-nowrap text-center font-display text-[clamp(64px,19vw,290px)] font-extrabold leading-[.8] tracking-[-0.055em] text-tp-paper transition-colors hover:text-white">
+          <span aria-hidden="true">
+            <span className="relative">T<CathCat halo="var(--tp-paper)" className="pointer-events-none absolute bottom-[0.93em] left-1/2 h-[max(36px,0.34em)] w-auto -translate-x-1/2" /></span>eacher<span className="text-[#9d7cff]">Per<span className="relative">ı<PeriPenguin flip halo="#9d7cff" className="pointer-events-none absolute bottom-[0.79em] left-1/2 h-[max(44px,0.4em)] w-auto -translate-x-1/2" /></span></span>
+          </span>
+        </Link>
+      )}
       <div className="relative border-t border-white/10 py-5 text-center text-xs text-white/40">
         Hecho con cariño para quienes aman resolver problemas.
       </div>
