@@ -59,6 +59,7 @@ A Ruta is an ordered path through existing material. See
 | Visual refresh of Inicio, Rutas, Entrenamiento, Listas, Contacto and lessons («cómic» style, penguin logo) | Done | Pull requests #18, #20 and #21 |
 | Two mascots: TeacherPeri (penguin) and TeacherCath (cat) | Done | Together in «Sobre TeacherPeri» and the link preview; the footer word takes turns between TeacherPeri and TeacherCath; they take turns on the 404 page and «no results» notes. See [DESIGN.md](DESIGN.md) |
 | Problem card presentation | Done | Problem cards show their area and one available subtopic as text in the colored strip, followed by the statement. Keep topic names in full, allowing them to wrap when necessary. The local-only `/dev/tarjetas-problemas` preview shows sample problem and exam cards with illustrative subtopics. A heading appears only when source, year and problem number identify a contest item; problem difficulty is not displayed in public problem views or lesson practice boxes. |
+| Problem subtopics | Done | The November 2026 catalog review adds missing subtopics and consolidates one-off labels into broader topics. The guarded `revise-problem-subtopics.js` script preserves existing classifications, checks the target and saves a backup before applying changes. |
 
 ## Listas
 

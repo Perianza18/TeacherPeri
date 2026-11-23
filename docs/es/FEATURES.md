@@ -59,6 +59,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Renovación visual de Inicio, Rutas, Entrenamiento, Listas, Contacto y lecciones (estilo «cómic», logo del pingüino) | Hecho | Pull requests #18, #20 y #21 |
 | Dos mascotas: TeacherPeri (pingüino) y TeacherCath (gatita) | Hecho | Juntas en «Sobre TeacherPeri» y la vista previa de links; la palabra del pie de página se turna entre TeacherPeri y TeacherCath; se turnan en la página 404 y en los avisos sin resultados. Ver [DESIGN.md](DESIGN.md) |
 | Presentación de tarjetas de problemas | Hecho | Las tarjetas muestran el área y un subtema disponible como texto en la franja de color, seguidos del enunciado. Los nombres se escriben completos y pueden ocupar más de una línea si es necesario. La vista local `/dev/tarjetas-problemas` muestra ejemplos de tarjetas de problemas y exámenes con subtemas ilustrativos. Solo aparece un título cuando la fuente, el año y el número identifican un problema de concurso; no se muestra la dificultad en las vistas públicas de problemas ni en las cajas de práctica de las lecciones. |
+| Subtemas de problemas | Hecho | La revisión del catálogo de noviembre de 2026 agrega subtemas faltantes y agrupa etiquetas aisladas en temas más amplios. El script protegido `revise-problem-subtopics.js` conserva las clasificaciones existentes, comprueba el destino y guarda un respaldo antes de aplicar cambios. |
 
 ## Listas
 
