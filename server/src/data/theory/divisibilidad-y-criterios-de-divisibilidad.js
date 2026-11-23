@@ -97,7 +97,7 @@ Para demostrar divisibilidad, buscar una diferencia que sea un múltiplo conocid
 
 - Los libros VII a IX de los *Elementos* de Euclides estudian teoría de números. El libro VII incluye un procedimiento para hallar el máximo común divisor, que aparecerá en una lección posterior.
 - La séptima Olimpiada Internacional de Matemáticas se celebró en 1965 en Berlín. Participaron $80$ estudiantes de $10$ países.
-- Marte tarda aproximadamente $24$ horas y $37$ minutos en completar una rotación. A un día marciano se le llama «sol».
+- El calendario que usamos, introducido en 1582 por el papa Gregorio XIII, decide los años bisiestos con divisibilidad: un año es bisiesto si es múltiplo de $4$, salvo los múltiplos de $100$ que no son múltiplos de $400$. Por eso 1900 no fue bisiesto y 2000 sí. En cada bloque de $400$ años hay $97$ bisiestos, y el año promedio dura $365+97/400=365.2425$ días, muy cerca de la duración del año solar.
 
 ## Ejercicios
 

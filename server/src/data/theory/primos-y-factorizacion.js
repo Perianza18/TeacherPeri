@@ -92,7 +92,7 @@ Para buscar el mayor divisor cuadrado de un número, reducir cada exponente impa
 
 ## Agregados culturales
 
-- Antes de 1733, Leonhard Euler mostró que $2^{32}+1$ es divisible por $641$. Ese ejemplo refutó una conjetura de Fermat sobre cierta familia de números que se creían primos.
+- En 1732, Leonhard Euler mostró que $2^{32}+1=4\,294\,967\,297$ es divisible por $641$. Pierre de Fermat había conjeturado que todos los números $2^{2^n}+1$ son primos; este es el caso $n=5$, y el ejemplo de Euler refutó la conjetura.
 - La octava Olimpiada Internacional de Matemáticas se celebró en 1966 en Sofía, Bulgaria. Participaron $72$ estudiantes de $9$ países.
 - En 1610 Galileo observó con un telescopio las cuatro lunas mayores de Júpiter. Hoy se conocen como satélites galileanos.
 
