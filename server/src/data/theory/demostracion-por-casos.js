@@ -25,6 +25,8 @@ Si $n$ es par, existe un entero $k$ con $n=2k$. Entonces $n(n+1)=2k(n+1)=2[k(n+1
 Si $n$ es impar, existe un entero $k$ con $n=2k+1$. Por eso $n+1=2(k+1)$ y $n(n+1)=2[n(k+1)]$. Como $n(k+1)$ es entero, el producto también es par. Hemos probado la conclusión en ambos casos.
 :::
 
+Antes de seguir conviene revisar por qué esos dos casos bastan.
+
 :::try ¿Por qué basta revisar «$n$ par» y «$n$ impar» cuando $n$ es entero?
 Porque todo entero pertenece a uno de esos dos casos. No queda fuera un tercer tipo de entero, tampoco cuando $n$ es negativo o cero.
 :::
@@ -48,6 +50,8 @@ Si $x<0$, por definición $|x|=-x$. Como $x<0$, multiplicar por $-2$ da $-2x>0$.
 
 Todo real es no negativo o negativo, de modo que ambos casos cubren el dominio.
 :::
+
+El caso $x=0$ quedó dentro del primer caso; olvidarlo es un error frecuente.
 
 :::mistake
 Separar solo $x>0$ y $x<0$ al demostrar una afirmación para todos los reales. Esos casos dejan fuera $x=0$. Se puede añadir el caso cero o incluirlo, como arriba, en $x\ge0$.
@@ -89,9 +93,9 @@ Al terminar una prueba por casos, releer la lista de casos junto con el dominio:
 
 ## Agregados culturales
 
-- George Pólya publicó la primera edición de *How to Solve It* en 1945. En el libro estudió maneras de abordar problemas matemáticos y revisar sus soluciones.
+- El teorema de los cuatro colores dice que cualquier mapa en el plano se puede colorear con cuatro colores sin que dos regiones vecinas compartan color. Se conjeturó en 1852 y Kenneth Appel y Wolfgang Haken lo demostraron en 1976 con una prueba por casos gigantesca: reunieron cerca de $1\,500$ configuraciones y una computadora revisó cada una.
 - La decimocuarta Olimpiada Internacional de Matemáticas se celebró en 1972 en Toruń, Polonia. Participaron $107$ estudiantes de $14$ países.
-- Según la NASA, las alas de un colibrí pueden batir aproximadamente $50$ veces por segundo. La frecuencia depende del ave y de sus condiciones de vuelo.
+- El ajolote vive en estado silvestre solo en los canales de Xochimilco y aguas cercanas, al sur de la Ciudad de México, y la Unión Internacional para la Conservación de la Naturaleza lo clasifica en peligro crítico. Puede regenerar sus extremidades, su médula espinal y partes de su corazón y de su cerebro sin dejar cicatriz, por lo que laboratorios de todo el mundo lo estudian.
 
 ## Ejercicios
 

@@ -4,6 +4,7 @@ import request from 'supertest'
 import app from '../app.js'
 import { importMvpContent, CONTENT_MODELS } from '../migrations/import-mvp-content.js'
 import { buildMvpManifest } from '../data/mvpManifest.js'
+import { NEW_THEORY_SLUGS } from '../data/mvpLessons.js'
 
 const entry = (model, key) => buildMvpManifest().find((e) => e.model === model && e.key === key)
 describe('MVP atomic import and public journey', () => {
@@ -59,7 +60,8 @@ describe('MVP atomic import and public journey', () => {
     expect((await request(app).put('/api/paths/factorizacion-e-identidades/completion').send({ completed: true })).status).toBe(401)
     const rootFolder = entry('Category', 'omm')._id
     const library = await request(app).get('/api/theory').query({ categories: rootFolder, limit: 50 })
-    expect(library.body.total).toBe(37)
+    // 37 lessons of the first release plus the new lessons with no earlier text (Ciclo 2).
+    expect(library.body.total).toBe(37 + NEW_THEORY_SLUGS.length)
     const reverse = await request(app).get('/api/paths').query({ contentType: 'Theory', contentId: theory.body._id })
     expect(reverse.body.items.map((p) => p.slug)).toContain('factorizacion-e-identidades')
   }, 60000)

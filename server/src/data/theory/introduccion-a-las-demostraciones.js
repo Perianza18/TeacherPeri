@@ -77,7 +77,7 @@ Llamemos $m$ al menor de los dos enteros; el mayor es $m+1$. La suma es $m+(m+1)
 
 - Julia Robinson estudió durante años preguntas sobre ecuaciones con soluciones enteras. Su trabajo fue parte del desarrollo que permitió resolver el décimo problema de Hilbert en 1970.
 - La tercera Olimpiada Internacional de Matemáticas se celebró en 1961 en Veszprém, Hungría. Participaron $48$ estudiantes de $6$ países.
-- La Luna tarda aproximadamente $27.3$ días en completar una vuelta alrededor de la Tierra. El intervalo entre dos lunas nuevas es distinto: aproximadamente $29.5$ días.
+- En 1969, los astronautas del Apolo 11 dejaron en la Luna un panel de espejos que devuelve la luz en la misma dirección en que llega. Al medir cuánto tarda un pulso de láser en ir y volver, se ha comprobado que la Luna se aleja de la Tierra unos $3.8$ centímetros por año. La afirmación se acepta porque se midió, no porque parezca razonable.
 
 ## Ejercicios
 

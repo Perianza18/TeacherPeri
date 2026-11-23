@@ -405,7 +405,7 @@ function SobreTeacherPeri() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3 pb-1 [grid-area:buttons]">
-              <Link to="/sobre-mi" className="tp-button bg-tp-ink px-5 font-bold text-white">Sobre mí</Link>
+              <Link to="/equipo" className="tp-button bg-tp-ink px-5 font-bold text-white">Conócenos</Link>
               <Link to="/contacto" className="tp-button bg-tp-surface px-5 font-bold text-tp-ink">Contacto</Link>
             </div>
           </div>

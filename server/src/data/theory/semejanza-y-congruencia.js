@@ -18,21 +18,15 @@ Una posibilidad sería comparar todos sus lados y ángulos, pero en un problema 
 
 ### Correspondencia y escala
 
-![Dos triángulos rectángulos ABC y DEF con vértices correspondientes A y D, B y E, C y F](figuras/semejanza-y-congruencia-correspondencia.svg "Correspondencia entre los vértices de dos triángulos")
+![Dos triángulos rectángulos, ABC pequeño y DEF grande, colocados en la misma posición; el lado DE está resaltado](figuras/semejanza-y-congruencia-correspondencia.svg "Correspondencia entre los vértices de dos triángulos")
 
-El orden de los vértices indica la correspondencia: en $ABC$ y $DEF$, $A$ corresponde a $D$, $B$ a $E$ y $C$ a $F$. Así, $AB$ corresponde a $DE$, $BC$ a $EF$ y $CA$ a $FD$.
-
-![Dos triángulos ABC y DEF con lados correspondientes](figuras/semejanza-y-congruencia-correspondencia.svg "Los vértices se nombran en el orden de la correspondencia")
+El orden de los vértices indica la correspondencia: en $ABC$ y $DEF$, $A$ corresponde a $D$, $B$ a $E$ y $C$ a $F$. Así, $AB$ corresponde a $DE$, $BC$ a $EF$ y $CA$ a $FD$. En la figura, el lado resaltado $DE$ corresponde a $AB$.
 
 :::definition Semejanza de triángulos
 Dos triángulos no degenerados $ABC$ y $DEF$ son semejantes, en ese orden, si sus ángulos correspondientes son iguales y existe un número $k>0$ tal que $DE=k\,AB$, $EF=k\,BC$ y $FD=k\,CA$. Escribimos $ABC\sim DEF$; $k$ es la razón de semejanza del primero al segundo.
 :::
 
-![Dos triángulos ABC y DEF comparados por sus lados y ángulos](figuras/semejanza-y-congruencia-correspondencia.svg "La congruencia exige también el mismo tamaño")
-
 Los triángulos son **congruentes** cuando sus lados y ángulos correspondientes son iguales. En particular, una semejanza de razón $1$ es una congruencia. Para reconocerla no hace falta medir las seis partes: usaremos como criterio conocido lado-ángulo-lado (LAL): dos triángulos son congruentes si dos lados y el ángulo comprendido entre ellos son respectivamente iguales.
-
-![Dos triángulos rectángulos ABC y DEF, con DE igual a 120 y AB igual a 80](figuras/semejanza-y-congruencia-correspondencia.svg "Correspondencia de lados para calcular una longitud")
 
 :::example
 Los triángulos $ABC$ y $DEF$ son semejantes en ese orden. Si $AB=80$, $DE=120$ y $BC=100$, determinar $EF$.
@@ -46,15 +40,11 @@ La razón es $4/6=2/3$. Una razón menor que $1$ indica que los lados del segund
 
 ### Reconocer triángulos semejantes
 
-![Dos triángulos ABC y DEF con vértices correspondientes](figuras/semejanza-y-congruencia-correspondencia.svg "La correspondencia permite comparar ángulos")
-
 Usaremos como resultado previo el criterio ángulo-ángulo (AA): si dos ángulos de un triángulo son respectivamente iguales a dos de otro, los triángulos son semejantes con esa correspondencia. El tercer par de ángulos también es igual porque la suma de los ángulos interiores de cada triángulo es $180^\circ$.
 
-![Triángulo ABC con D sobre AB y E sobre AC, y DE paralela a BC](figuras/semejanza-y-congruencia-paralela.svg "La transversal AB corta a las paralelas DE y BC")
+También usaremos que los ángulos correspondientes entre paralelas son iguales (lección «Ángulos, paralelas y perpendiculares»).
 
-También usaremos que los ángulos correspondientes entre paralelas son iguales.
-
-![Triángulo ABC con D en AB, E en AC y DE paralela a BC](figuras/semejanza-y-congruencia-paralela.svg "Una paralela a un lado del triángulo")
+![Triángulo ABC con D en AB, E en AC y el segmento DE, resaltado, paralelo a BC](figuras/semejanza-y-congruencia-paralela.svg "Una paralela a un lado del triángulo")
 
 :::proposition Paralela a un lado
 En un triángulo $ABC$, sean $D$ y $E$ puntos interiores de los segmentos $AB$ y $AC$, respectivamente. Si $DE$ es paralelo a $BC$, entonces $ADE\sim ABC$ y
@@ -65,15 +55,11 @@ $$\frac{AD}{AB}=\frac{AE}{AC}=\frac{DE}{BC}.$$
 Los triángulos $ADE$ y $ABC$ comparten el ángulo en $A$: las semirrectas $AD$ y $AB$ coinciden, al igual que $AE$ y $AC$. Como $DE$ es paralela a $BC$ y la recta $AB$ las corta, los ángulos correspondientes $ADE$ y $ABC$ son iguales. Por AA, $ADE\sim ABC$ con correspondencia $A\leftrightarrow A$, $D\leftrightarrow B$, $E\leftrightarrow C$. La definición de semejanza da la igualdad de las tres razones escritas.
 :::
 
-![Triángulo ABC con D sobre AB y E sobre AC, y segmento DE paralelo a BC](figuras/semejanza-y-congruencia-paralela.svg "El triángulo pequeño se compara con el completo")
-
 :::example
 En el triángulo $ABC$, $D$ está en el interior de $AB$, $E$ en el interior de $AC$ y $DE\parallel BC$. Si $AD=4$, $DB=2$ y $AE=6$, calcular $EC$.
 
 La paralela permite comparar $ADE$ con $ABC$, no con una de las piezas sobrantes. Como $AB=AD+DB=6$, la proposición da $4/6=6/AC$. Al multiplicar por $6AC$ obtenemos $4AC=36$, así que $AC=9$. Finalmente, $EC=AC-AE=9-6=3$.
 :::
-
-![Triángulo ABC con un segmento DE paralelo al lado BC](figuras/semejanza-y-congruencia-paralela.svg "Lados completos y partes de un triángulo")
 
 :::mistake
 Comparar lados que no corresponden. La igualdad $AD/AB=AE/AC$ compara cada lado del triángulo pequeño con el lado completo correspondiente. Por ejemplo, sustituir $AB$ por $DB$ sin justificar otra relación cambia la razón y puede dar un resultado falso.

@@ -16,6 +16,8 @@ describe('exercise list classification', () => {
   })
   it('includes direct applications outside the exercise boxes and supports multiple lists', () => {
     expect(EXERCISE_CODES).toContain('TP-G23')
+    expect(EXERCISE_CODES).toContain('TP-A65')
+    expect(EXERCISE_LISTS.filter((list) => list.codes.includes('TP-A55')).length).toBeGreaterThan(1)
     expect(EXERCISE_LISTS.filter((list) => list.codes.includes('TP-A03')).length).toBeGreaterThan(1)
     expect(EXERCISE_CODES).not.toContain('TP-C16')
   })

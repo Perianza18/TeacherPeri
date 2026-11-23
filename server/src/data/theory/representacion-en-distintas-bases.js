@@ -59,7 +59,7 @@ Si $N=bq+r=bq'+r'$ para enteros $q,q'$ y cifras $0\le r,r'<b$, entonces $r=r'$ y
 Igualamos $bq+r=bq'+r'$. Al restar $bq$ y $r'$ de ambos lados obtenemos $r-r'=bq'-bq=b(q'-q)$, así que $r-r'$ es múltiplo de $b$. Como ambas cifras están entre $0$ y $b-1$, se cumple $-(b-1)\le r-r'\le b-1$. El único múltiplo de $b$ en ese intervalo es $0$; por tanto $r=r'$. Al sustituir esta igualdad en $bq+r=bq'+r'$ y restar $r$, queda $bq=bq'$, de donde $q=q'$ porque $b\ne0$.
 :::
 
-Al aplicar el mismo argumento a cada cociente, las demás cifras también quedan determinadas. Con la convención de no escribir ceros iniciales, la representación de cada entero no negativo en una base dada es única.
+De aquí sale la unicidad de toda la escritura. Supongamos que un entero positivo $N$ tiene dos escrituras en base $b$, $(a_k\cdots a_1a_0)_b$ y $(c_j\cdots c_1c_0)_b$. Al sacar $b$ como factor de todos los términos salvo el último, ambas dan $N=bq+a_0$ y $N=bq'+c_0$, con $q=(a_k\cdots a_1)_b$ y $q'=(c_j\cdots c_1)_b$. La proposición da $a_0=c_0$ y $q=q'$. Ahora aplicamos la proposición a $q=q'$, escrito como $bq_1+a_1$ y como $bq_1'+c_1$: da $a_1=c_1$ y $q_1=q_1'$. Cada paso iguala una cifra más y deja un cociente menor que el anterior; al llegar al cociente cero se han igualado todas las cifras. Con la convención de no escribir ceros iniciales, las dos escrituras tienen también la misma longitud, así que la representación de cada entero positivo en una base dada es única.
 
 ### Cuando la base es desconocida
 
@@ -75,9 +75,9 @@ Antes de operar, anotar el intervalo de cada cifra. Al terminar una conversión,
 
 ## Agregados culturales
 
-- Los babilonios utilizaron un sistema de numeración relacionado con la base $60$. Su notación histórica no coincidía exactamente con la escritura posicional moderna descrita aquí.
+- Los mayas escribían los números con puntos, que valen $1$, barras, que valen $5$, y un símbolo para el cero, en posiciones apiladas de abajo hacia arriba y agrupadas de veinte en veinte. En las cuentas del calendario, la tercera posición no valía $20\cdot20=400$, sino $18\cdot20=360$, una cantidad cercana a los días de un año.
 - La undécima Olimpiada Internacional de Matemáticas se celebró en Bucarest en 1969. Participaron $112$ estudiantes de $14$ países.
-- Las computadoras usan código binario para procesar y almacenar información. La base $2$ emplea solo las cifras $0$ y $1$.
+- En 1703, Gottfried Wilhelm Leibniz publicó en las memorias de la Academia de Ciencias de París una explicación de la aritmética binaria, que escribe todos los números solo con $0$ y $1$. Mostraba cómo sumar, restar y multiplicar en esa base, casi tres siglos antes de que fuera el lenguaje interno de las computadoras.
 
 ## Ejercicios
 

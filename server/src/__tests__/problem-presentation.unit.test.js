@@ -11,6 +11,8 @@ describe('problem card presentation', () => {
     expect(sourceProblemTitle({ competition: 'OMM', año: '2025', problemNumber: 1 })).toBe('OMM 2025 · Problema 1')
     expect(sourceProblemTitle({ tipo: 'Putnam', año: '2021', codigo: 'PUTNAM-2021-B2' })).toBe('Putnam 2021 · Problema B2')
     expect(sourceProblemTitle({ titulo: 'OMM 2025 Problema 1' })).toBe('OMM 2025 Problema 1')
+    expect(sourceProblemTitle({ titulo: 'OMM · Estatal · Jalisco · 2024 · Problema 2', competition: 'OMM', año: '2024', problemNumber: 2, codigo: 'U-00005' })).toBe('OMM · Estatal · Jalisco · 2024 · Problema 2')
+    expect(sourceProblemTitle({ competition: 'OMM', año: '2024', codigo: 'U-00005' })).toBe('')
   })
   it('shows the area and distinct available topic names', () => {
     expect(problemTopics({ tema: 'Geometría', topics: [{ name: 'Geometría' }, { name: 'Triángulos' }, { name: 'Triángulos' }] })).toEqual(['Geometría', 'Triángulos'])

@@ -4,7 +4,7 @@
 
 Todo lo que TeacherPeri hace hoy o quiere hacer. Cada función tiene un estado:
 
-- **Hecho:** ya está en https://www.teacherperi.com.
+- **Hecho:** ya está en https://teacherperi.vercel.app.
 - **En curso:** se está construyendo; la nota dice dónde (rama o pull request).
 - **Parcial:** una parte ya está publicada; la nota dice cuál.
 - **Planeado:** acordado, sin empezar. **Hoy** explica qué hace el sitio mientras tanto.
@@ -47,8 +47,8 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Problemas: pistas (cada una con su propio botón) y soluciones | Hecho | |
 | Página de problema con enlace estable | Hecho | `/entrenamiento/problemas/:id` |
 | Árbol de carpetas de examen (p. ej. Exámenes › OMM › OMM Estatal › Jalisco › 2023), usable como filtro | Hecho | Funcionan el árbol, el filtro «Carpeta o examen» y las carpetas nuevas que proponen los usuarios. «Exámenes» tiene OMM (que incluye OMM Estatal), OMMEB, Centroamericana, Iberoamericana, IMO y «Prácticas TeacherPeri» con los 3 exámenes de práctica (14 problemas); se agregaron a la base del sitio el 2026-11-21 |
-| Teoría: 37 lecciones con matemáticas, ejemplos y práctica | Hecho | |
-| Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Hecho | Las 37 lecciones tienen el formato nuevo en el código; su publicación en la base requiere ejecutar la revisión de teoría |
+| Teoría: 37 lecciones con matemáticas, ejemplos y práctica | Hecho | Sitio en vivo. El código tiene además las 12 lecciones que faltaban del Ciclo 2 (49 lecciones antes del Ciclo 3) |
+| Teoría: formato nuevo de lección (definiciones, teoremas, figuras, cajas de ejercicios) | Hecho | Las 49 lecciones anteriores al Ciclo 3 tienen el formato nuevo en el código, con figuras calculadas por scripts en `server/src/scripts/figures/`. `content:revise-theory` las publica lección por lección: revisa las 37 que ya existían, crea las 12 nuevas del Ciclo 2 y omite cualquier lección editada en el sitio, salvo que esa versión exacta se acepte con `--accept-live`. Todavía no se ha corrido en ninguna base |
 | Vista local de borradores de teoría | En curso | Solo en desarrollo: `/dev/teoria-borrador/<slug-de-lección>` muestra el texto y las colecciones sin base de datos, con la etiqueta curricular y el nivel de la lección |
 | «Sugerir un cambio» y «Reportar» en las lecciones | Hecho | Las mismas dos acciones que en los problemas (ver abajo) |
 | Exámenes: navegación por competencia y subcarpeta | Hecho | La página muestra las carpetas principales como tarjetas descriptivas, solo cuando tienen exámenes publicados, como «TeacherPeri Originals» y «OMM»; «OMM Estatal» está dentro de «OMM». Al abrir una carpeta aparecen directamente sus tarjetas de examen, sin un botón adicional para el año; las demás subcarpetas aparecen como tarjetas de carpeta. Nuevas competencias como OMMEB aparecen automáticamente cuando contienen exámenes publicados. |
@@ -104,7 +104,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Función | Estado | Notas |
 | --- | --- | --- |
 | Página de perfil `/perfil/<usuario>` («Mi Espacio» en el menú del avatar) | Hecho | Tarjeta del perfil, «En números» y pestañas: Actividad, Comentarios, Listas, Mis envíos, Insignias. Los visitantes solo ven Comentarios, Listas e Insignias. El servidor solo manda al dueño el correo, la Actividad, Mis envíos y las listas privadas. Ver [PROFILES.md](PROFILES.md) |
-| «Editar perfil»: avatares prediseñados y una descripción corta | Hecho | 24 avatares prediseñados (12 dibujos y 12 figuras matemáticas, sin fotos), un color de fondo para ellos y hasta 160 caracteres. Se ven en la barra, en los comentarios y en las listas de seguidores |
+| «Editar perfil»: avatares prediseñados y una descripción corta | Hecho | 12 avatares prediseñados (sin fotos) y hasta 160 caracteres. Se ven en la barra, en los comentarios y en las listas de seguidores |
 | «Lo resolví» en los problemas | Hecho | El estudiante marca un problema como resuelto (nada revisa la respuesta). Cuenta como «problemas resueltos» |
 | Insignias ganadas | Hecho | Problemas resueltos (1/10/50), comentarios (1/10/50), problemas aceptados (1/5/20), sugerencias aplicadas (1/5/20), y Editor/Admin. Nunca se pierden. Ver [PROFILES.md](PROFILES.md#lo-resolví-e-insignias) |
 | Rutas que sigues, «continúa donde te quedaste» | Planeado | **Hoy:** Actividad muestra tus comentarios, cosas guardadas, problemas resueltos, propuestas y sugerencias recientes |
@@ -117,8 +117,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Contacto | Parcial | El formulario funciona con sesión iniciada. El enlace «Correo» y los íconos de Instagram y LinkedIn de abajo todavía llevan a direcciones de ejemplo |
 | Colabora (cómo colaborar) | Planeado | **Hoy:** usa Contacto |
 | Experiencias (blog de exolímpicos) | Planeado | **Hoy:** página «Próximamente» |
-| Equipo | Planeado | **Hoy:** página «Próximamente» |
-| Sobre mí | Planeado | **Hoy:** página «Próximamente», enlazada desde Inicio y el pie de página |
+| Equipo | Hecho | `/equipo`: dos tarjetas, Elías (TeacherPeri) y Catherine (TeacherCath), y cada una abre su propia página (`/equipo/elias`, `/equipo/catherine`, un archivo por persona en `src/pages/equipo/`), que cada quien decora. Enlazada desde «Conócenos» en Inicio |
 
 ## Sitio y hospedaje
 
@@ -127,4 +126,4 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Sistema de diseño «Cómic refinado» | Hecho | Colores, fuentes y estilos compartidos en `src/index.css`. Reglas en [DESIGN.md](DESIGN.md) |
 | Funciona en celulares (desde 375 px) | Hecho | |
 | Hospedaje: Vercel (sitio), Render (API), MongoDB Atlas (base de datos) | Hecho | Ver [DEPLOYMENT.md](DEPLOYMENT.md) |
-| Dominio propio | Hecho | https://www.teacherperi.com. `teacherperi.com` y `teacherperi.vercel.app` redirigen ahí |
+| Dominio propio | Planeado | **Hoy:** teacherperi.vercel.app |

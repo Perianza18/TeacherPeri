@@ -97,7 +97,7 @@ Antes de sumar o multiplicar, describir qué identifica a cada resultado. Separa
 
 - En la India se desarrolló una tradición de contar combinaciones relacionada con Pingala. Una disposición triangular de esos números se conoce como *Meru Prastara*.
 - La undécima Olimpiada Internacional de Matemáticas se celebró en 1969 en Bucarest, Rumania. Participaron $112$ estudiantes de $14$ países.
-- Las dos sondas Voyager llevan discos con sonidos e imágenes seleccionados para mostrar aspectos de la vida y la cultura en la Tierra. Fueron lanzadas en 1977.
+- El cubo de Rubik tiene $43\,252\,003\,274\,489\,856\,000$ posiciones distintas, un número que se obtiene con los principios de esta lección. En julio de 2010, un equipo de cuatro personas demostró, con unos $35$ años de cálculo de computadora donados por Google, que cualquier posición se resuelve en $20$ movimientos o menos.
 
 ## Ejercicios
 

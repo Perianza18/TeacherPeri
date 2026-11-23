@@ -2,12 +2,12 @@ import { existsSync, readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 import { THEORY_COLLECTIONS, THEORY_PROBLEMS, THEORY_REWRITES } from '../data/theory/index.js'
-import { MVP_LESSONS, PREVIOUS_THEORY } from '../data/mvpLessons.js'
+import { MVP_LESSONS, NEW_THEORY_SLUGS, PREVIOUS_THEORY } from '../data/mvpLessons.js'
 import { MVP_PROBLEMS } from '../data/mvpProblems.js'
 import { OMM_LAUNCH_CONTENT_BATCH_1 } from '../data/ommLaunchContent.js'
-import { decide, heldPrevious } from '../migrations/revise-theory-lessons.js'
+import { decide, fingerprint, heldPrevious, lineChanges } from '../migrations/revise-theory-lessons.js'
 import { EARLIER_THEORY } from '../data/theory/earlier.js'
-import { revisionTarget } from '../scripts/revise-theory-lessons.js'
+import { parseRevisionArgs, report, revisionTarget } from '../scripts/revise-theory-lessons.js'
 import { parseArticle } from '../../../src/lib/theoryArticle.js'
 
 const lessons = Object.values(THEORY_REWRITES)
@@ -102,8 +102,19 @@ describe('Rewritten theory lessons', () => {
     }
   })
 
+  it('adds lessons without an earlier text as new lessons, outside the guarded revision', () => {
+    for (const slug of NEW_THEORY_SLUGS) {
+      const lesson = THEORY_REWRITES[slug]
+      expect(PREVIOUS_THEORY[slug]).toBeUndefined()
+      expect(lesson.lesson).toMatchObject({ title: expect.any(String), area: expect.any(String), level: expect.any(String) })
+      const released = MVP_LESSONS.find((entry) => entry.pathSlug === slug)
+      expect(released.theory).toMatchObject({ title: lesson.lesson.title, summary: lesson.summary, content: lesson.content })
+      expect(released.steps.flatMap((step) => step.problemCodes)).toEqual(Object.values(lesson.collections)[0].ejercicios.concat(Object.values(lesson.collections)[0].practice, Object.values(lesson.collections)[0].dificiles))
+    }
+  })
+
   it('is the last layer: the release uses the new text and keeps the exact previous one', () => {
-    for (const lesson of lessons) {
+    for (const lesson of lessons.filter((entry) => !NEW_THEORY_SLUGS.includes(entry.pathSlug))) {
       const base = OMM_LAUNCH_CONTENT_BATCH_1.lessons.find((entry) => entry.pathSlug === lesson.pathSlug)?.theory ?? PREVIOUS_THEORY[lesson.pathSlug]
       expect(base).toBeDefined()
       const released = MVP_LESSONS.find((entry) => entry.pathSlug === lesson.pathSlug).theory
@@ -141,6 +152,24 @@ describe('Theory revision guard', () => {
     expect(heldPrevious({ content: 'piloto' }, original, published)).toBe(published)
     expect(heldPrevious({ content: 'viejo' }, original, published)).toBe(original)
     expect(decide({ content: 'piloto con un cambio' }, desired, original, published)).toBeNull()
+  })
+
+  it('reads --accept-live as a lesson slug with the fingerprint of the reviewed live version', () => {
+    expect(parseRevisionArgs([])).toEqual({ apply: false, acceptLive: {} })
+    expect(parseRevisionArgs(['--apply', '--accept-live', 'principio-de-casillas@0123456789ab'])).toEqual({ apply: true, acceptLive: { 'principio-de-casillas': '0123456789ab' } })
+    expect(() => parseRevisionArgs(['--accept-live', 'principio-de-casillas'])).toThrow('--accept-live')
+    expect(() => parseRevisionArgs(['--apply', '--dry-run'])).toThrow('not both')
+    expect(() => parseRevisionArgs(['--force'])).toThrow('Use --dry-run')
+  })
+
+  it('summarizes a live edit and fingerprints exactly what the lesson holds', () => {
+    expect(lineChanges('a\nb\nnueva', 'a\nb\nvieja')).toEqual({ added: 1, removed: 1, examples: ['+ nueva', '- vieja'] })
+    expect(fingerprint([{ content: 'x' }])).toMatch(/^[0-9a-f]{12}$/)
+    expect(fingerprint([{ content: 'x' }])).not.toBe(fingerprint([{ content: 'y' }]))
+    const text = report('dry-run', 'teacherperi', { lessons: [{ slug: 'principio-de-casillas', title: 'Principio de casillas', kind: 'revised', status: 'skipped', text: 'skip', ruta: 'skip', steps: [], fingerprint: '0123456789ab', live: [{ model: 'Theory', changes: { added: 1, removed: 0, examples: ['+ texto nuevo'] } }] }], groupsPublished: [], groupsSkipped: [], problemsAdded: [], problemsAlreadyThere: [], problemsEditedLive: [], collectionsCreated: [], collectionsAlreadyThere: [], collectionsEditedLive: [], writes: 0 })
+    expect(text).toContain('SKIPPED: edited on the live site')
+    expect(text).toContain('--accept-live principio-de-casillas@0123456789ab')
+    expect(text).toContain('Nothing was written.')
   })
 
   it('lists earlier published versions only for rewritten lessons, each different from the current text', () => {

@@ -28,6 +28,16 @@ const additional = {
   'problemas-de-digitos': ['TP-D03','TP-D04','TP-D19','TP-D20','TP-D21','TP-D22'],
   'aritmetica-modular': ['TP-M01','TP-M09','TP-M10','TP-M11','TP-M12'],
   'inversos-y-congruencias-lineales': ['TP-M03','TP-M04','TP-M19','TP-M20','TP-M21','TP-M22','TP-M23'],
+  'rectas-y-puntos-notables': ['TP-G53','TP-G56','TP-G58'],
+  'bisectrices-incentro-y-excentros': ['TP-G65','TP-G66','TP-G68','TP-G69'],
+  'areas-y-razones-en-triangulos': ['TP-G53','TP-G68'],
+  'desigualdades-y-medias-fundamentales': ['TP-A41','TP-A42','TP-A43','TP-A44','TP-A46','TP-A77','TP-A78'],
+  'la-desigualdad-util': ['TP-A53','TP-A54','TP-A55','TP-A56','TP-A57','TP-A58','TP-A60'],
+  'coeficientes-binomiales-y-triangulo-de-pascal': ['TP-C41','TP-C44','TP-C45','TP-C46'],
+  'doble-conteo': ['TP-C53','TP-C54','TP-C55','TP-C58'],
+  'inclusion-exclusion': ['TP-C65','TP-C66','TP-C67','TP-C68','TP-C70'],
+  'cauchy-schwarz-y-tecnicas-clasicas': ['TP-A42','TP-A55','TP-A65','TP-A66','TP-A67','TP-A68','TP-A69','TP-A70'],
+  'homogeneizacion-y-sustituciones': ['TP-A77','TP-A78','TP-A79'],
 }
 
 export const EXERCISE_LISTS = Object.entries(THEORY_REWRITES).map(([slug, lesson]) => {

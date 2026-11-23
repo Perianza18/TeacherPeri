@@ -63,7 +63,7 @@ No hace falta esconder una idea sencilla detrás de palabras complicadas. Una so
 
 ## Agregados culturales
 
-- El libro *How to Solve It*, de George Pólya, apareció en inglés en 1945. En su prefacio Pólya habla de descubrir ideas y también de reflexionar sobre la forma en que se resuelven los problemas.
+- Hacia 1637, Pierre de Fermat escribió en el margen de un libro de Diofanto que no existen enteros positivos $x,y,z$ con $x^3+y^3=z^3$, ni con exponentes mayores, y que tenía una demostración maravillosa que no cabía en el margen. Su hijo publicó la nota en 1670. La demostración nunca apareció, y la afirmación se demostró hasta 1995, con el trabajo de Andrew Wiles.
 - La cuarta Olimpiada Internacional de Matemáticas se celebró en 1962 en České Budějovice, entonces Checoslovaquia. Participaron $56$ estudiantes de $7$ países.
 - La Luna tarda aproximadamente $27$ días en completar una órbita alrededor de la Tierra. Sus fases dependen de qué parte iluminada por el Sol vemos desde nuestro planeta.
 

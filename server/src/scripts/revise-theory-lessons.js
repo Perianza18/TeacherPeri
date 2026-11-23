@@ -6,6 +6,8 @@ import { validateMvpContent } from '../data/validateMvpContent.js'
 // Publishes the rewritten theory lessons to an existing database.
 //   npm run content:revise-theory              → dry run (default): reports, writes nothing
 //   npm run content:revise-theory -- --apply   → writes, in one transaction
+//   ... --accept-live <slug>@<fingerprint>     → also replace one live-edited lesson,
+//                                               only if it still holds the reviewed version
 // The target is never read from MONGO_URI: MONGO_REVISION_URI must name the
 // database in its path, and --apply also needs REVISION_DATABASE_CONFIRM set
 // to that exact database name.
@@ -19,27 +21,57 @@ export function revisionTarget(env = process.env, apply = false) {
   return { uri, dbName }
 }
 
-function report(mode, dbName, result) {
+// --apply / --dry-run, and any number of --accept-live <slug>@<fingerprint>.
+export function parseRevisionArgs(args) {
+  const acceptLive = {}
+  let apply = false, dryRun = false
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] === '--apply') apply = true
+    else if (args[i] === '--dry-run') dryRun = true
+    else if (args[i] === '--accept-live' && /^[a-z0-9-]+@[0-9a-f]{12}$/.test(args[i + 1] || '')) { const [slug, print] = args[i + 1].split('@'); acceptLive[slug] = print; i += 1 }
+    else throw new Error('Use --dry-run (default) or --apply, and optionally --accept-live <lesson-slug>@<fingerprint> for each live-edited lesson to replace.')
+  }
+  if (apply && dryRun) throw new Error('Use --dry-run (default) or --apply, not both.')
+  return { apply, acceptLive }
+}
+
+export function report(mode, dbName, result) {
   const lines = [`Theory revision · ${mode} · database: ${dbName}`]
-  const change = mode === 'applied' ? 'CHANGED' : 'WILL CHANGE'
-  for (const lesson of result.lessons) lines.push(`  Lesson «${lesson.title}»: text ${lesson.text === 'revise' ? change : 'already up to date'}; Ruta description ${lesson.ruta === 'revise' ? change : 'already up to date'}`)
-  lines.push(`  Problems ${mode === 'applied' ? 'added' : 'to add'} (${result.problemsAdded.length}): ${result.problemsAdded.join(', ') || 'none'}`)
+  const done = mode === 'applied'
+  const word = { revise: done ? 'CHANGED' : 'WILL CHANGE', create: done ? 'CREATED' : 'WILL BE CREATED', promote: done ? 'PUBLISHED' : 'WILL BE PUBLISHED', overwrite: done ? 'REPLACED' : 'WILL BE REPLACED', keep: 'already up to date', skip: 'not touched' }
+  for (const lesson of result.lessons) {
+    const parts = [`text ${word[lesson.text]}`, `Ruta ${word[lesson.ruta]}`]
+    if (lesson.steps.length) parts.push(`${lesson.steps.length} Steps ${word[lesson.steps[0]]}`)
+    lines.push(`  ${lesson.kind === 'new' ? 'New lesson' : 'Lesson'} «${lesson.title}» (${lesson.slug}): ${parts.join('; ')}`)
+    if (lesson.status === 'skipped' || lesson.status === 'accepted') {
+      lines.push(`    ${lesson.status === 'skipped' ? 'SKIPPED: edited on the live site' : 'ACCEPTED: the reviewed live version is replaced'} · fingerprint ${lesson.fingerprint}`)
+      for (const live of lesson.live) {
+        const count = (n) => `${n} line${n === 1 ? '' : 's'}`
+        lines.push(`    ${live.model}: ${count(live.changes.added)} only on the live site, ${count(live.changes.removed)} only in the version this revision expected`)
+        for (const example of live.changes.examples) lines.push(`      ${example}`)
+      }
+      if (lesson.status === 'skipped') lines.push(`    To replace exactly this live version after reviewing it: --accept-live ${lesson.slug}@${lesson.fingerprint}`)
+    }
+  }
+  if (result.groupsPublished.length) lines.push(`  Ruta groups ${done ? 'published' : 'to publish'}: ${result.groupsPublished.join(', ')}`)
+  if (result.groupsSkipped.length) lines.push(`  Ruta groups not touched: ${result.groupsSkipped.join(', ')}`)
+  lines.push(`  Problems ${done ? 'added' : 'to add'} (${result.problemsAdded.length}): ${result.problemsAdded.join(', ') || 'none'}`)
   if (result.problemsAlreadyThere.length) lines.push(`  Problems already there (${result.problemsAlreadyThere.length}): ${result.problemsAlreadyThere.join(', ')}`)
-  lines.push(`  Collections ${mode === 'applied' ? 'created' : 'to create'} (${result.collectionsCreated.length}): ${result.collectionsCreated.join(', ') || 'none'}`)
+  if (result.problemsEditedLive.length) lines.push(`  Problems edited on the live site, left as they are (${result.problemsEditedLive.length}): ${result.problemsEditedLive.join(', ')}`)
+  lines.push(`  Collections ${done ? 'created' : 'to create'} (${result.collectionsCreated.length}): ${result.collectionsCreated.join(', ') || 'none'}`)
   if (result.collectionsAlreadyThere.length) lines.push(`  Collections already there (${result.collectionsAlreadyThere.length}): ${result.collectionsAlreadyThere.join(', ')}`)
+  if (result.collectionsEditedLive.length) lines.push(`  Collections edited on the live site, left as they are (${result.collectionsEditedLive.length}): ${result.collectionsEditedLive.join(', ')}`)
   if (mode === 'dry-run') lines.push('  Nothing was written.')
   return lines.join('\n')
 }
 
 async function run() {
-  const args = process.argv.slice(2)
-  if (args.some((arg) => !['--apply', '--dry-run'].includes(arg)) || (args.includes('--apply') && args.includes('--dry-run'))) throw new Error('Use --dry-run (default) or --apply.')
-  const apply = args.includes('--apply')
+  const { apply, acceptLive } = parseRevisionArgs(process.argv.slice(2))
   const target = revisionTarget(process.env, apply)
   validateMvpContent()
   await mongoose.connect(target.uri, { dbName: target.dbName, serverSelectionTimeoutMS: 10000, autoIndex: false, autoCreate: false })
   if (mongoose.connection.name !== target.dbName || mongoose.connection.db.databaseName !== target.dbName) throw new Error('Connected database does not match the explicit target.')
-  const result = await reviseTheoryLessons({ apply })
+  const result = await reviseTheoryLessons({ apply, acceptLive })
   console.log(report(apply ? 'applied' : 'dry-run', target.dbName, result))
 }
 

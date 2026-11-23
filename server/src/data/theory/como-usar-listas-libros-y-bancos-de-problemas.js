@@ -59,7 +59,7 @@ Una colección extensa no es una carrera. Está bien saltar temporalmente un pro
 
 ## Agregados culturales
 
-- Christian Goldbach y Leonhard Euler intercambiaron cartas sobre problemas de teoría de números. En esa correspondencia discutieron preguntas acerca de números primos y otras propiedades de los enteros.
+- Christian Goldbach y Leonhard Euler intercambiaron cartas durante décadas sobre problemas de teoría de números. En una carta de junio de 1742 apareció la pregunta que hoy se conoce como conjetura de Goldbach: si todo número par mayor que $2$ es suma de dos primos. Sigue sin demostrarse.
 - La octava Olimpiada Internacional de Matemáticas se celebró en Sofía, Bulgaria, en 1966. Participaron $72$ estudiantes de $9$ países.
 - Los colibríes pueden mantenerse suspendidos en el aire y volar hacia atrás. Sus alas producen sustentación tanto en el movimiento hacia abajo como en el movimiento hacia arriba.
 

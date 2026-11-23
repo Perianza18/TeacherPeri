@@ -25,7 +25,7 @@ $$n^2-1=4k(k+1).$$
 Si $k$ es par, $k=2m$ para algún entero $m$, y entonces $4k(k+1)=8m(k+1)$ es múltiplo de $8$. Si $k$ es impar, $k=2m+1$ para algún entero $m$, de modo que $k+1=2(m+1)$ y $4k(k+1)=8k(m+1)$ también es múltiplo de $8$. Todo entero es par o impar, así que ambos casos cubren las posibilidades.
 :::
 
-¿Por qué aparece $k(k+1)$? Al sustituir $n=2k+1$ y desarrollar, $n^2-1=4k^2+4k=4k(k+1)$. La factorización muestra dos enteros consecutivos. Uno es par: si $k$ es par sirve el primero, y si $k$ es impar sirve el segundo. El factor $2$ adicional, junto con el $4$ que ya teníamos, produce el $8$ buscado.
+Conviene detenerse en el origen de $k(k+1)$: al sustituir $n=2k+1$ y desarrollar, $n^2-1=4k^2+4k=4k(k+1)$. La factorización muestra dos enteros consecutivos. Uno es par: si $k$ es par sirve el primero, y si $k$ es impar sirve el segundo. El factor $2$ adicional, junto con el $4$ que ya teníamos, produce el $8$ buscado.
 
 No basta reconocer la identidad al verla. Para cada paso se puede preguntar: «¿qué dato permite hacerlo?» y «¿qué se gana con esta transformación?». En la prueba, escribir el impar como $2k+1$ usa la hipótesis; factorizar permite aprovechar la paridad de dos consecutivos.
 
@@ -45,9 +45,9 @@ Copiar cada línea de una solución y considerar terminada la revisión sin preg
 
 ### Probar los límites de la idea
 
-Cambiar una condición permite investigar qué papel desempeña. ¿Sigue siendo cierto el resultado para un entero par? No: con $n=2$, se obtiene $n^2-1=3$, que no es divisible por $8$. La hipótesis de imparidad no era decorativa.
+Cambiar una condición permite investigar qué papel desempeña. Por ejemplo, el resultado deja de valer para enteros pares: con $n=2$, se obtiene $n^2-1=3$, que no es divisible por $8$. La hipótesis de imparidad no era decorativa.
 
-También se puede pedir una conclusión más débil: si $n$ es impar, ¿es $n^2-1$ divisible por $4$? Sí. La expresión $4k(k+1)$ ya muestra un factor $4$, sin necesidad de separar según la paridad de $k$. En una variación distinta hay que comprobar de nuevo las hipótesis; una idea conocida no garantiza por sí sola la nueva conclusión. Si una solución usa que dos números son consecutivos, conviene localizar la línea que establece esa relación. Si los números de una variante ya no son consecutivos, se necesita otra razón para afirmar que alguno es par; no basta repetir la frase de la prueba anterior.
+También se puede pedir una conclusión más débil, como que $n^2-1$ sea divisible por $4$ cuando $n$ es impar. La expresión $4k(k+1)$ ya muestra un factor $4$, sin necesidad de separar según la paridad de $k$. En una variación distinta hay que comprobar de nuevo las hipótesis; una idea conocida no garantiza por sí sola la nueva conclusión. Si una solución usa que dos números son consecutivos, conviene localizar la línea que establece esa relación. Si los números de una variante ya no son consecutivos, se necesita otra razón para afirmar que alguno es par; no basta repetir la frase de la prueba anterior.
 
 :::tip
 Al terminar una lectura, anotar tres frases: «el obstáculo era…», «la idea fue…» y «esta idea funciona aquí porque…». Después intentar resolver una variante y revisar qué parte del argumento necesita cambiar.
@@ -59,7 +59,7 @@ Aprender de otra solución no disminuye el valor del propio intento. Comparar am
 
 - Emmy Noether realizó contribuciones importantes al álgebra abstracta. En 1933 comenzó a trabajar en Bryn Mawr College, en Estados Unidos, donde dirigió un seminario de álgebra.
 - La séptima Olimpiada Internacional de Matemáticas se celebró en Berlín en 1965. Participaron $80$ estudiantes de $10$ países.
-- Los pulpos son cefalópodos y tienen tres corazones. Dos impulsan sangre hacia las branquias y el tercero la bombea al resto del cuerpo.
+- En febrero de 2017, un equipo de la Universidad Queen Mary de Londres publicó en la revista *Science* que los abejorros aprenden a empujar una bolita hasta una meta observando a otro abejorro entrenado. Los observadores no copiaron el movimiento exacto: en lugar de la bolita lejana que había usado su modelo, empujaron la más cercana, que resolvía la tarea con menos esfuerzo.
 
 ## Ejercicios
 

@@ -74,7 +74,7 @@ Al revisar un intento, buscar una afirmación concreta que falte justificar: por
 ## Agregados culturales
 
 - En 1987 la Sociedad Matemática Mexicana organizó la primera Olimpiada Mexicana de Matemáticas. Desde entonces la OMM ha reunido a estudiantes interesados en resolver problemas.
-- La primera edición de *How to Solve It*, de George Pólya, apareció en 1945. El libro aborda estrategias para comprender y resolver problemas matemáticos.
+- En julio de 2026 se celebró en Shanghái, China, la 67.ª Olimpiada Internacional de Matemáticas, con cerca de cien países. El equipo mexicano, formado a partir de la OMM, obtuvo cinco medallas de bronce y una mención honorífica.
 - Las sondas Voyager, lanzadas en 1977, llevan discos con sonidos e imágenes seleccionados para representar aspectos de la vida y la cultura de la Tierra. Son dos ejemplares de un mismo mensaje.
 
 ## Ejercicios

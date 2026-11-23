@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url'
 const SITE = process.env.SITE_URL || 'https://www.teacherperi.com'
 const API = process.env.VITE_API_URL || 'https://teacherperi-api.onrender.com'
 
-export const MAIN_PAGES = ['/', '/rutas', '/entrenamiento/problemas', '/entrenamiento/teoria', '/entrenamiento/examenes', '/entrenamiento/listas', '/entrenamiento/recursos', '/recursos', '/contacto']
+export const MAIN_PAGES = ['/', '/rutas', '/entrenamiento/problemas', '/entrenamiento/teoria', '/entrenamiento/examenes', '/entrenamiento/listas', '/entrenamiento/recursos', '/recursos', '/equipo', '/contacto']
 
 const escapeXml = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c])
 const day = (value) => (value && !Number.isNaN(Date.parse(value)) ? new Date(value).toISOString().slice(0, 10) : null)
