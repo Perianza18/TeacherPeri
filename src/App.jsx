@@ -8,6 +8,7 @@ import RedirectToEntrenamientoListas from './pages/ListasPage'
 // what Inicio needs; each page's code arrives when someone opens it.
 const EntrenamientoPage = lazy(() => import('./pages/EntrenamientoPage'))
 const Problemas = lazy(() => import('./pages/Problemas'))
+const ExerciseListsPage = lazy(() => import('./pages/ExerciseListsPage'))
 const SobreMiPage = lazy(() => import('./pages/SobreMiPage'))
 const RecursosPage = lazy(() => import('./pages/RecursosPage'))
 const ExperienciasPage = lazy(() => import('./pages/ExperienciasPage'))
@@ -43,6 +44,7 @@ function PageLoading() {
 
 // Dev-only test lesson with every block of the lesson format; the production
 // build drops it because import.meta.env.DEV is false there.
+const ProblemCardPreviewPage = import.meta.env.DEV ? lazy(() => import('./pages/ProblemCardPreviewPage')) : null
 const TheoryDraftPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryDraftPage')) : null
 const TheoryTestLessonPage = import.meta.env.DEV ? lazy(() => import('./pages/TheoryTestLessonPage')) : null
 
@@ -53,6 +55,7 @@ function App() {
         <Suspense fallback={<PageLoading />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          {ProblemCardPreviewPage && <Route path="/dev/tarjetas-problemas" element={<ProblemCardPreviewPage />} />}
           {TheoryTestLessonPage && <Route path="/dev/teoria-prueba" element={<TheoryTestLessonPage />} />}
           {TheoryDraftPage && <Route path="/dev/teoria-borrador/:slug" element={<TheoryDraftPage />} />}
           <Route path="/rutas" element={<RutasPage />} />
@@ -66,7 +69,8 @@ function App() {
             <Route path="teoria/:id" element={<LibraryDetailPage type="teoria" />} />
             <Route path="examenes" element={<LibraryCollection type="exams" title="Exámenes" subtitle="Exámenes que reutilizan Problemas existentes en su orden original." />} />
             <Route path="examenes/:id" element={<LibraryDetailPage type="examenes" />} />
-            <Route path="listas" element={<LibraryCollection key="listas" type="lists" source="teacherperi" title="Listas" subtitle="Colecciones de problemas de TeacherPeri para practicar un tema a la vez." />} />
+            <Route path="listas" element={<ExerciseListsPage />} />
+            <Route path="listas/ejercicios/:slug" element={<ExerciseListsPage />} />
             <Route path="listas/:id" element={<LibraryDetailPage type="listas" />} />
             <Route path="recursos" element={<LibraryCollection key="recursos" type="lists" source="external" title="Recursos externos" subtitle="Materiales de otras organizaciones, enlazados a su fuente original." />} />
             <Route path="recursos/:id" element={<LibraryDetailPage type="listas" />} />

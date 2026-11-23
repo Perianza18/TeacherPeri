@@ -12,9 +12,9 @@ import CommentSection from '../components/comments/CommentSection'
 import SaveToListButton from '../components/profile/SaveToListButton'
 import SolvedToggle from '../components/profile/SolvedToggle'
 import { PROPOSE_PATH } from '../lib/submissions'
+import { problemTopics, sourceProblemTitle } from '../lib/problemPresentation'
 // Header color per area, the same as the library card strips.
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
-const formatearTitulo = (p) => p.titulo || p.codigo
 
 function AuthInlineForm({ onAuthSuccess }) {
   const [modo, setModo] = useState('login') // 'login' | 'signup'
@@ -128,11 +128,10 @@ function ProblemaModal({ problema, onClose, auth, onAuthSuccess, onAuthExpired }
         <div className={`flex shrink-0 items-start justify-between gap-4 border-b-3 border-tp-ink px-6 py-4 ${AREA_STRIPS[problema.tema] || 'bg-tp-yellow'}`}>
           <div className="flex min-w-0 flex-col items-start gap-2">
             <p className="flex flex-wrap items-center gap-2 text-xs font-extrabold uppercase tracking-[0.12em]">
-              {problema.codigo}
-              {problema.tema && <span className="tp-pill bg-tp-surface px-2 py-0 text-[11px] normal-case tracking-normal">{problema.tema}</span>}
+              {problemTopics(problema).join(' · ')}
             </p>
             <h3 id="titulo-modal-problema" className="font-display text-[28px] font-extrabold leading-tight tracking-[-0.03em]">
-              {formatearTitulo(problema)}
+              {sourceProblemTitle(problema) || 'Problema'}
             </h3>
           </div>
           <button

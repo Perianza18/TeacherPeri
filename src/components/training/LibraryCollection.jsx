@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { apiFetch } from '../../lib/api'
-import { LIBRARY_BASE, examTitle } from '../../lib/libraryPaths'
+import { LIBRARY_BASE } from '../../lib/libraryPaths'
 import { examBrowseContents, examBrowseTree } from '../../lib/examBrowse'
-import MathText from '../math/MathText'
 import PageHero from '../PageHero'
 import { GlyphTile } from '../decor/Decor'
 import RandomMascot from '../decor/RandomMascot'
@@ -15,6 +14,7 @@ import { useAreaTree } from './filters/areaTree'
 import { ActiveFilters } from './filters/FilterParts'
 import AreaFilters from './filters/AreaFilters'
 import { usePageMeta } from '../../hooks/usePageMeta'
+import LibraryCard from './LibraryCard'
 
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 // Header tone and symbol sticker per library, and a strip color per problem area.
@@ -24,10 +24,8 @@ const LOOK = {
   exams: { tone: 'orange', strip: 'bg-tp-orange-soft', glyph: '≥', tile: 'bg-tp-yellow', small: '✓', mascot: 'cath-jugando' },
   lists: { tone: 'mint', strip: 'bg-tp-mint-soft', glyph: '√', tile: 'bg-tp-surface', small: 'n!' },
 }
-const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
 const CHIP = 'cursor-pointer rounded-full border-2 border-tp-ink bg-tp-surface px-3 py-1 text-xs font-semibold transition-colors hover:bg-tp-yellow-soft has-[:checked]:bg-tp-yellow'
 const EMPTY_FILTERS = { q: '', area: '', topics: '', tags: '', level: '', categories: [], year: [], subject: [], type: [] }
-const titleOf = (type, item) => type === 'exams' ? examTitle(item) : item.title || item.titulo
 const EXAM_FOLDER_DESCRIPTIONS = {
   'TeacherPeri Originals': 'Exámenes de práctica originales de TeacherPeri.',
   OMM: 'Olimpiada Mexicana de Matemáticas.',
@@ -130,19 +128,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
     <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : (type === 'exams' ? shownItems.length : results.total) === 1 ? '1 resultado' : `${type === 'exams' ? shownItems.length : results.total} resultados`}</div>
     {loading && <SkeletonGrid count={6} className={`mt-5 grid gap-6 ${grid}`} />}
     {!loading && !results.error && (type === 'exams' ? !shownItems.length && !examContents.folders.length : !results.total) && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><RandomMascot question className="h-24 w-auto shrink-0" wideClassName="h-16 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
-    {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{shownItems.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
-      <div className={`flex items-center justify-between gap-2 border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || look.strip}`}>
-        <p className="truncate text-xs font-extrabold uppercase tracking-[0.12em]">{item.codigo || title}{item.level || item.difficulty ? ` · ${LEVELS[item.level || item.difficulty]}` : ''}</p>
-        {item.tema && <span className="tp-pill shrink-0 bg-tp-surface px-2 py-0 text-[11px]">{item.tema}</span>}
-      </div>
-      <div className="flex flex-1 flex-col p-5">
-      <h3 className="font-display text-[21px] font-extrabold leading-tight tracking-[-0.02em]"><Link to={`${base}/${item._id}`} className="hover:text-tp-violet">{titleOf(type, item)}</Link></h3>
-      {item.enunciado ? <MathText text={item.enunciado} className="mt-3 line-clamp-4 text-sm leading-6 text-tp-ink-muted" /> : item.summary && <p className="mt-3 line-clamp-4 text-sm leading-6 text-tp-ink-muted">{item.summary}</p>}
-      {item.sourceOrganization && <p className="mt-4 text-xs text-tp-ink-muted">Fuente: {item.sourceOrganization}</p>}
-      {type === 'exams' && <p className="mt-4 text-xs text-tp-ink-muted">{item.problems?.length === 1 ? '1 problema' : `${item.problems?.length || 0} problemas`} · {item.durationMinutes || 'Sin límite de'} minutos</p>}
-      <div className="mt-auto flex flex-wrap items-center gap-4 pt-6 text-sm font-bold"><Link to={`${base}/${item._id}`} className="rounded-lg border-2 border-tp-ink bg-tp-mint px-3 py-1.5 transition-colors hover:bg-tp-yellow">Abrir →</Link>{onOpen && <button onClick={() => onOpen(item)} className="text-tp-violet underline-offset-2 hover:underline">Comentarios</button>}</div>
-      </div>
-    </article>)}</div>}
+    {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{shownItems.map((item) => <LibraryCard key={item._id} item={item} type={type} title={title} strip={look.strip} base={base} onOpen={onOpen} />)}</div>}
     {!loading && results.totalPages > 1 && <nav aria-label="Paginación" className="mt-10 flex items-center justify-center gap-4"><button disabled={page <= 1} onClick={() => setPage(page - 1)} className="tp-button bg-tp-surface px-4 py-2 font-bold disabled:opacity-40">Anterior</button><span className="text-sm font-bold">{page} / {results.totalPages}</span><button disabled={page >= results.totalPages} onClick={() => setPage(page + 1)} className="tp-button bg-tp-surface px-4 py-2 font-bold disabled:opacity-40">Siguiente</button></nav>}
   </>
 

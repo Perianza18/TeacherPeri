@@ -18,6 +18,7 @@ import { canEdit, editProblemPath } from '../lib/panel'
 import ProblemImages from '../components/images/ProblemImages'
 import { byPlacement } from '../lib/images'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { sourceProblemTitle } from '../lib/problemPresentation'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -144,7 +145,7 @@ export default function LibraryDetailPage({ type }) {
       .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, paths: [] }) })
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
-  const title = type === 'examenes' && item ? examTitle(item) : item?.title || item?.titulo || item?.codigo
+  const title = type === 'problemas' && item ? sourceProblemTitle(item) || (item.isExercise ? 'Ejercicio' : 'Problema') : type === 'examenes' && item ? examTitle(item) : item?.title || item?.titulo || item?.codigo
   usePageMeta({ title, description: item?.summary || item?.enunciado, noindex: Boolean(error) })
   const route = result.key === key ? result.route : null
   const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
@@ -156,8 +157,9 @@ export default function LibraryDetailPage({ type }) {
   }
 
   const isProblem = type === 'problemas'
+  const isExercise = isProblem && item?.isExercise
   const tone = (isProblem && AREA_TONES[item?.tema]) || TYPE_TONES[type] || 'sky'
-  const level = item && (item.dificultad || LEVELS[item.level || item.difficulty])
+  const level = !isProblem && item && LEVELS[item.level]
   const meta = item ? [
     isProblem && problemSourceLabel(item),
     item.tema,
@@ -170,7 +172,7 @@ export default function LibraryDetailPage({ type }) {
   // An external resource is a List from another publisher: it goes back to
   // the «Recursos externos» tab, not to TeacherPeri's lists.
   const resource = type === 'listas' && item?.sourceOrganization && item.sourceOrganization !== 'TeacherPeri'
-  const backLink = !route && (!traversal || item || error) && <Link to={resource ? LIBRARY_BASE.resources : LIBRARY_BASE[config.api]} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a {resource ? 'Recursos externos' : config.label}</Link>
+  const backLink = !route && (!traversal || item || error) && <Link to={isExercise ? LIBRARY_BASE.lists : resource ? LIBRARY_BASE.resources : LIBRARY_BASE[config.api]} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a {isExercise ? 'Listas de ejercicios' : resource ? 'Recursos externos' : config.label}</Link>
   const routeNav = result.key === key && result.route && <nav aria-label="Recorrido de aprendizaje" className="flex flex-wrap gap-2 text-sm font-bold">{result.route.breadcrumbs.map((crumb, index, crumbs) => <span key={crumb.slug}>{index > 0 && ' › '}<Link className="underline underline-offset-4 hover:text-tp-violet" to={`/rutas/${crumbs.slice(0, index + 1).map((entry) => encodeURIComponent(entry.slug)).join('/')}`}>{crumb.title}</Link></span>)}</nav>
 
   if (!item) {
@@ -187,7 +189,7 @@ export default function LibraryDetailPage({ type }) {
     <PageHero
       id="contenido-titulo"
       tone={tone}
-      kicker={`${isProblem ? 'Problema' : resource ? 'Recurso externo' : config.label}${item.codigo ? ` · ${item.codigo}` : ''}`}
+      kicker={`${isProblem ? (isExercise ? 'Ejercicio' : 'Problema') : resource ? 'Recurso externo' : config.label}${!isProblem && item.codigo ? ` · ${item.codigo}` : ''}`}
       title={<span className="break-words">{title}</span>}
       lead={item.summary}
       before={<>{backLink}{routeNav}</>}

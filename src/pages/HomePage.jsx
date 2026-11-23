@@ -175,7 +175,7 @@ const STATS = [
   { api: 'problems', label: 'problemas para practicar', to: LIBRARY_BASE.problems, bar: 'bg-tp-violet' },
   { api: 'theory', label: 'lecciones de teoría', to: LIBRARY_BASE.theory, bar: 'bg-tp-sky' },
   // Only TeacherPeri's own lists: external resources are counted apart.
-  { api: 'lists', query: '&source=teacherperi', label: 'listas de problemas', to: LIBRARY_BASE.lists, bar: 'bg-tp-mint' },
+  { api: 'exercise-lists', label: 'listas de ejercicios', to: LIBRARY_BASE.lists, bar: 'bg-tp-mint' },
   { api: 'exams', label: 'exámenes de práctica', to: LIBRARY_BASE.exams, bar: 'bg-tp-orange' },
 ]
 
@@ -183,7 +183,7 @@ function useLibraryTotals() {
   const [totals, setTotals] = useState({})
   useEffect(() => {
     let active = true
-    Promise.all(STATS.map(({ api, query = '' }) => apiFetch(`/api/${api}?page=1&limit=1${query}`).then((data) => [api, data?.total]).catch(() => [api, null])))
+    Promise.all(STATS.map(({ api, query = '' }) => apiFetch(`/api/${api}?page=1&limit=1${query}`).then((data) => [api, Array.isArray(data) ? data.length : data?.total]).catch(() => [api, null])))
       .then((entries) => { if (active) setTotals(Object.fromEntries(entries.filter(([, total]) => total > 0))) })
     return () => { active = false }
   }, [])

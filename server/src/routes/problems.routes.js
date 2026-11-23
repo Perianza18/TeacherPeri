@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import Problem from '../models/Problem.js'
+import { EXERCISE_CODES } from '../data/exerciseLists.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { descendantCategoryIds, areaCondition, areaOrBadRequest, descendantTopicIds, difficultyOrBadRequest, idsOrBadRequest, keywordConditions, paginatedResponse, populatedContent, textSearch, validObjectId } from './library.utils.js'
 
@@ -15,7 +16,7 @@ async function problemFilter(req, res) {
   if (difficulty === undefined) return null
   const area = areaOrBadRequest(res, req.query.area)
   if (area === null) return null
-  const filter = publishedOrLegacyProblemQuery()
+  const filter = { ...publishedOrLegacyProblemQuery(), codigo: { $nin: EXERCISE_CODES } }
   if (topics.length) filter.topics = { $in: await descendantTopicIds(topics) }
   if (tags.length) filter.tags = { $in: tags }
   if (categories.length) filter.$and = [{ $or: [{ categories: { $in: categories } }, { category: { $in: categories } }] }]
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/facets', async (_req, res) => {
-  const filter = publishedOrLegacyProblemQuery()
+  const filter = { ...publishedOrLegacyProblemQuery(), codigo: { $nin: EXERCISE_CODES } }
   const [years, subjects, types] = await Promise.all(['año', 'tema', 'tipo'].map((field) => Problem.distinct(field, filter)))
   res.json({ years: years.sort().reverse(), subjects: subjects.sort(), types: types.sort() })
 })
@@ -48,7 +49,7 @@ router.get('/:id', async (req, res) => {
   if (!validObjectId(req.params.id)) return res.status(400).json({ error: 'Identificador de problema inválido.' })
   const problem = await populatedContent(Problem.findOne({ _id: req.params.id, ...publishedOrLegacyProblemQuery() })).lean()
   if (!problem) return res.status(404).json({ error: 'Ese problema no existe o no está publicado.' })
-  res.json(problem)
+  res.json({ ...problem, isExercise: EXERCISE_CODES.includes(problem.codigo) })
 })
 
 export default router

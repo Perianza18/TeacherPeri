@@ -2,7 +2,6 @@ import { useId } from 'react'
 import { Link } from 'react-router-dom'
 import RichText from './RichText'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
-import { levelLabel } from '../../lib/theoryArticle'
 import { hintLabel, splitHints } from '../../lib/hints'
 
 // Yellow problem box (DESIGN §5): ink pill, count, then compact white rows
@@ -33,7 +32,7 @@ export default function PracticeBox({ kind = 'practice', problems, context = '',
       </div>
       <ol className="flex flex-col gap-2.5">
         {problems.map((problem, index) => {
-          const meta = [levelLabel(problem.difficulty), commentLabel(problem.commentCount)].filter(Boolean).join(' · ')
+          const meta = commentLabel(problem.commentCount)
           const href = problem.href !== undefined ? problem.href : `${LIBRARY_BASE.problems}/${problem._id}${context}`
           return (
             <li key={problem._id || problem.codigo} className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-xl border-2 border-tp-ink bg-tp-surface px-4 py-3.5">

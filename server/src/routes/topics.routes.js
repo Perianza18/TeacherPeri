@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import Topic from '../models/Topic.js'
 import Problem from '../models/Problem.js'
+import { EXERCISE_CODES } from '../data/exerciseLists.js'
 import Theory from '../models/Theory.js'
 import List from '../models/List.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
@@ -19,7 +20,7 @@ router.get('/', async (req, res) => {
 // The área tiles show these numbers; empty subtemas are hidden.
 // GET /api/topics/counts?library=problems|theory|lists[&source=teacherperi|external]
 const LIBRARIES = {
-  problems: { model: Problem, base: () => publishedOrLegacyProblemQuery() },
+  problems: { model: Problem, base: () => ({ ...publishedOrLegacyProblemQuery(), codigo: { $nin: EXERCISE_CODES } }) },
   theory: { model: Theory, base: () => ({ publicationStatus: 'published' }) },
   lists: { model: List, base: () => ({ publicationStatus: 'published' }) },
 }

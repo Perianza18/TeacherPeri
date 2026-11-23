@@ -323,7 +323,8 @@ describe('Theory page', () => {
     expect(html).toContain('Marcar paso como completado')
     expect(html).toContain('Paso anterior')
     expect(html).toContain('href="/entrenamiento/problemas/p1?ruta=raiz%2Ftema%2Fb"')
-    expect(html).toContain('Nivel básico · Sin comentarios')
+    expect(html).toContain('Sin comentarios')
+    expect(html).not.toContain('Nivel básico · Sin comentarios')
     expect(html).not.toContain('TÍTULO OCULTO')
   })
 
