@@ -7,7 +7,7 @@ import cathAcostada from '../assets/cath-acostada.webp'
 import cathJugando from '../assets/cath-jugando.webp'
 
 // Every pose of the two mascots, Peri's penguin and Cath the cat, cut out of
-// their white backgrounds (src/assets/*.webp, about 640 px on the long side).
+// their white backgrounds (src/assets/*.webp, 640–800 px on the long side).
 // Each pose has its place on the site (docs/DESIGN.md, «Mascots»):
 //   peri-saludando  «Entrar / Crear cuenta» and Contacto: hello
 //   peri-estudioso  Teoría and Rutas: studying
@@ -17,7 +17,7 @@ import cathJugando from '../assets/cath-jugando.webp'
 // The plain poses (peri, cath) also have PeriPenguin and CathCat, which add
 // the «?» and the sticker rim. Drawn by src/components/decor/Mascot.jsx.
 export const POSES = {
-  peri: { src: peri, width: 408, height: 640 },
+  peri: { src: peri, width: 468, height: 800 },
   'peri-saludando': { src: periSaludando, width: 458, height: 640 },
   'peri-estudioso': { src: periEstudioso, width: 457, height: 640 },
   cath: { src: cath, width: 438, height: 640 },

@@ -1,20 +1,20 @@
 import penguin from '../../assets/penguin.webp'
 
-// Peri's penguin: the penguin with a graph on its back, the main mascot and
-// the logo (public/logo-seal.svg). Cut out of its white background in
-// src/assets/penguin.webp, in the same style as Cath (CathCat). It faces
-// right. Decoration only (aria-hidden).
+// Peri's penguin: the hand-drawn penguin with a graph on its back, the same
+// drawing as the logo seal (public/logo-seal.svg), with the shaded feet and
+// the grey shadow under the belly of the later drawing, in
+// src/assets/penguin.webp. It faces right. Decoration only (aria-hidden).
 //   flip:     face left instead of right
 //   question: a hand-drawn «?» floats behind its head
 //   halo:     a colour for a sticker-like rim around it, so its dark outline
 //             still shows on a dark background (the footer)
 
 // Size of the drawing's viewBox.
-const W = 118.5
+const W = 108.8
 const H = 186.0
 
 // The drawing's outer outline, traced from the image.
-const OUTLINE = 'M55.7 185.3 L51.3 185.1 L41.8 183.3 L35.3 176.8 L33.9 170.2 L32.8 169.1 L29.6 168.1 L20.0 161.1 L14.0 163.3 L5.8 163.3 L4.2 162.9 L3.5 162.0 L2.9 159.4 L6.5 154.4 L8.5 145.8 L3.7 133.5 L2.1 121.1 L1.1 118.9 L0.5 99.3 L1.3 97.7 L2.9 86.1 L2.9 84.9 L1.1 82.7 L1.1 80.7 L2.8 78.6 L4.6 78.0 L5.5 76.9 L7.7 68.9 L13.7 58.7 L12.9 56.5 L13.1 54.5 L15.6 52.2 L18.0 52.2 L21.1 46.4 L21.5 45.0 L20.1 42.2 L21.1 39.8 L22.7 38.4 L22.9 28.8 L28.1 15.4 L44.6 3.1 L59.3 0.7 L65.3 0.5 L79.5 3.3 L92.3 12.3 L99.6 26.8 L101.2 41.4 L99.2 49.5 L96.2 55.5 L102.4 66.3 L103.6 70.5 L108.8 78.5 L115.8 95.3 L117.8 106.5 L117.6 119.5 L114.5 124.8 L111.5 125.4 L109.5 124.0 L108.6 124.7 L106.8 138.7 L99.6 151.8 L85.6 163.0 L86.3 163.9 L94.9 167.7 L98.0 171.6 L98.2 172.8 L97.1 173.7 L95.5 173.9 L94.6 174.8 L94.4 176.6 L93.3 177.7 L88.5 176.9 L86.7 178.7 L84.1 178.7 L77.5 178.1 L68.9 175.5 L63.5 169.9 L57.9 170.1 L57.2 170.8 L57.9 171.7 L64.3 174.7 L67.4 179.6 L64.1 181.1 L62.1 184.7 L56.9 183.5 L55.7 185.3 Z'
+const OUTLINE = 'M53.7 185.6 L49.6 185.2 L39.6 183.3 L33.4 177.2 L32.6 175.7 L31.4 169.7 L30.6 168.6 L25.9 171.1 L17.6 173.7 L9.7 173.9 L1.1 171.6 L0.3 170.6 L0.3 167.4 L9.2 160.0 L11.9 155.1 L8.1 124.7 L6.4 122.2 L6.4 120.5 L6.9 119.3 L8.8 117.4 L8.1 107.1 L6.3 105.5 L5.7 104.2 L5.9 101.4 L7.8 99.3 L8.2 90.6 L8.2 87.2 L6.4 84.7 L6.4 82.7 L7.8 80.7 L10.0 79.5 L19.6 60.1 L18.5 57.5 L19.1 55.1 L21.2 53.3 L22.6 53.1 L23.9 53.4 L26.8 47.7 L27.3 46.3 L26.0 43.4 L26.9 40.6 L28.8 39.1 L28.4 33.7 L30.0 24.7 L34.2 13.7 L37.5 9.1 L42.9 4.2 L49.4 1.3 L57.0 0.3 L63.1 0.3 L74.3 2.9 L81.1 5.9 L85.5 9.6 L90.1 18.5 L90.8 19.1 L103.9 27.6 L103.6 28.9 L100.3 32.2 L92.1 34.8 L91.5 35.4 L90.4 42.9 L92.5 49.8 L102.4 71.1 L105.1 80.7 L106.7 87.8 L108.3 98.7 L108.4 116.5 L107.6 125.0 L104.4 138.0 L99.7 150.5 L94.4 157.8 L89.9 161.6 L89.9 164.2 L90.8 165.0 L95.4 167.2 L98.5 171.3 L98.7 172.1 L97.6 173.2 L95.3 173.7 L94.9 174.1 L94.6 176.3 L93.6 177.4 L88.4 176.6 L86.6 178.5 L84.0 178.5 L77.2 177.9 L68.6 175.4 L66.0 173.7 L63.8 171.2 L63.2 171.2 L62.8 171.7 L62.8 174.1 L66.0 178.2 L66.2 179.7 L65.3 180.3 L62.9 181.1 L62.2 181.7 L61.7 183.8 L60.9 184.7 L55.1 183.5 L54.4 185.1 L53.7 185.6 Z'
 
 export default function PeriPenguin({ className = '', flip = false, question = false, halo = null }) {
   return (
