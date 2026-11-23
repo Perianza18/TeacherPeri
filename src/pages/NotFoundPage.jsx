@@ -25,7 +25,7 @@ export default function NotFoundPage() {
                 <span className="text-[0.62em] leading-none">0</span>
               </Burst>
               4
-              <RandomMascot question flip className="ml-[0.16em] h-[0.86em] w-auto self-end" />
+              <RandomMascot question flip className="ml-[0.16em] h-[0.86em] w-auto self-end" wideClassName="ml-[0.12em] h-[0.48em] w-auto self-end" />
             </p>
             <h1 id="no-encontrada" className="tp-page-title">Página no encontrada</h1>
             <p className="tp-hand -rotate-2 text-[32px] leading-tight">Este problema no tiene solución… todavía.</p>

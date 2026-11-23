@@ -7,6 +7,8 @@ import MathText from '../math/MathText'
 import PageHero from '../PageHero'
 import { GlyphTile } from '../decor/Decor'
 import RandomMascot from '../decor/RandomMascot'
+import Mascot from '../decor/Mascot'
+import { isWidePose } from '../../lib/mascots'
 import { SkeletonGrid } from '../Skeleton'
 import FolderFilter from './FolderFilter'
 import { useAreaTree } from './filters/areaTree'
@@ -17,9 +19,9 @@ import { usePageMeta } from '../../hooks/usePageMeta'
 const LEVELS = { basico: 'Básico', intermedio: 'Intermedio', avanzado: 'Avanzado' }
 // Header tone and symbol sticker per library, and a strip color per problem area.
 const LOOK = {
-  problems: { tone: 'violet', strip: 'bg-tp-yellow', glyph: '?', tile: 'bg-tp-yellow', small: 'x²' },
-  theory: { tone: 'sky', strip: 'bg-tp-tint-sky', glyph: 'π', tile: 'bg-tp-surface', small: '∞' },
-  exams: { tone: 'orange', strip: 'bg-tp-orange-soft', glyph: '≥', tile: 'bg-tp-yellow', small: '✓' },
+  problems: { tone: 'violet', strip: 'bg-tp-yellow', glyph: '?', tile: 'bg-tp-yellow', small: 'x²', mascot: 'cath-jugando' },
+  theory: { tone: 'sky', strip: 'bg-tp-tint-sky', glyph: 'π', tile: 'bg-tp-surface', small: '∞', mascot: 'peri-estudioso' },
+  exams: { tone: 'orange', strip: 'bg-tp-orange-soft', glyph: '≥', tile: 'bg-tp-yellow', small: '✓', mascot: 'cath-jugando' },
   lists: { tone: 'mint', strip: 'bg-tp-mint-soft', glyph: '√', tile: 'bg-tp-surface', small: 'n!' },
 }
 const AREA_STRIPS = { 'Geometría': 'bg-tp-sky', 'Álgebra': 'bg-tp-tint-violet', 'Combinatoria': 'bg-tp-orange', 'Teoría de Números': 'bg-tp-mint' }
@@ -127,7 +129,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   const resultsBlock = (resultsTop, grid) => <>
     <div aria-live="polite" className={`${resultsTop} font-display text-[22px] font-extrabold tracking-[-0.02em]`}>{loading ? 'Cargando biblioteca…' : results.error ? `No fue posible cargar la biblioteca: ${results.error}` : (type === 'exams' ? shownItems.length : results.total) === 1 ? '1 resultado' : `${type === 'exams' ? shownItems.length : results.total} resultados`}</div>
     {loading && <SkeletonGrid count={6} className={`mt-5 grid gap-6 ${grid}`} />}
-    {!loading && !results.error && (type === 'exams' ? !shownItems.length && !examContents.folders.length : !results.total) && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><RandomMascot question className="h-24 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
+    {!loading && !results.error && (type === 'exams' ? !shownItems.length && !examContents.folders.length : !results.total) && <div className="tp-card-quiet mt-4 flex items-center gap-5 bg-tp-surface p-6"><RandomMascot question className="h-24 w-auto shrink-0" wideClassName="h-16 w-auto shrink-0" /><p className="text-[17px]">No hay contenido que coincida. Prueba otra búsqueda o limpia los filtros.</p></div>}
     {!loading && <div className={`mt-5 grid gap-6 ${grid}`}>{shownItems.map((item) => <article key={item._id} className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
       <div className={`flex items-center justify-between gap-2 border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || look.strip}`}>
         <p className="truncate text-xs font-extrabold uppercase tracking-[0.12em]">{item.codigo || title}{item.level || item.difficulty ? ` · ${LEVELS[item.level || item.difficulty]}` : ''}</p>
@@ -145,7 +147,7 @@ export default function LibraryCollection({ type, title, subtitle, onOpen, eyebr
   </>
 
   return <>
-    <PageHero id="biblioteca-titulo" tone={look.tone} kicker={eyebrow} title={title} art={<GlyphTile glyph={look.glyph} color={look.tile} small={look.small} />} lead={subtitle} className="lg:pb-14">
+    <PageHero id="biblioteca-titulo" tone={look.tone} kicker={eyebrow} title={title} art={look.mascot ? <Mascot pose={look.mascot} className={isWidePose(look.mascot) ? 'h-[150px] xl:h-[170px]' : 'h-[200px] xl:h-[220px]'} /> : <GlyphTile glyph={look.glyph} color={look.tile} small={look.small} />} lead={subtitle} className="lg:pb-14">
       {headerAction && <div className="pt-1">{headerAction}</div>}
     </PageHero>
     <section className="tp-container pb-24 pt-10">

@@ -3,6 +3,7 @@ import Footer from '../components/Footer'
 import PageHero from '../components/PageHero'
 import Contacto from '../components/sections/Contacto'
 import ContactForm from '../components/contact/ContactForm'
+import Mascot from '../components/decor/Mascot'
 import { BubbleTail, Mark } from '../components/decor/Decor'
 import { usePageMeta } from '../hooks/usePageMeta'
 
@@ -21,6 +22,7 @@ export default function ContactoPage() {
           kicker="Contacto"
           title={<Mark variant="lines" color="var(--tp-orange)" width={6} delay={300}>Contáctame</Mark>}
           lead="¡Holaaa! Qué gusto que quieras ponerte en contacto. 🚀"
+          art={<Mascot pose="peri-saludando" className="h-[210px]" />}
         />
 
         <section aria-label="Escríbeme" className="tp-container grid items-start gap-12 pb-20 pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:gap-14">

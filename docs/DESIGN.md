@@ -89,8 +89,12 @@ Fonts load from Google Fonts in `index.html`:
 - Two mascots: **Peri**, the penguin with a graph on its back (`PeriPenguin`, also the logo), and **Cath**, the
   cat (`CathCat`). Both are decoration only. They stand together, labelled «TeacherPeri» and «TeacherCath», in «Sobre TeacherPeri» on Inicio and in the link
   preview image. The big footer word takes turns at random between TeacherPeri (Cath on the «T», Peri on the «i»)
-  and TeacherCath (Peri on the «T», Cath on the «h»); on the 404 page and «no results» notes
-  one of them appears at random (`RandomMascot`).
+  and TeacherCath (Peri on the «T», Cath on the «h»); each also has poses with a fixed place
+  (`Mascot`, poses in `src/lib/mascots.js`): Peri waving on the «Entrar / Crear cuenta» window and Contacto; Peri
+  studying in the Teoría and Rutas headers; Cath playing in the Problemas and Exámenes headers; Cath lying down on
+  «Próximamente» pages; Cath licking her paw on the Contacto thank-you and an empty «Mis envíos». On the 404 page and
+  «no results» notes any of the seven poses appears at random (`RandomMascot`). At most one mascot per screen, beside
+  the content, never over text.
 - Avatars are circles with a 2px ink border and a pastel fill. Users will pick
   from preset avatars only (no uploads).
 

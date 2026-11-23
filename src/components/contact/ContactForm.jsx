@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
+import Mascot from '../decor/Mascot'
 
 const PERFILES = [
   'Estudiante de Secundaria/Prepa',
@@ -75,7 +76,8 @@ export default function ContactForm() {
 
   if (enviado) {
     return (
-      <div role="status" className="tp-card flex flex-col items-start gap-3 bg-tp-mint p-7">
+      <div role="status" className="tp-card relative flex flex-col items-start gap-3 bg-tp-mint p-7 pr-32">
+        <Mascot pose="cath-patita" className="absolute bottom-3 right-5 h-28" />
         <p className="font-display text-[28px] font-extrabold leading-none tracking-[-0.03em]">¡Mensaje enviado!</p>
         <p className="text-[16px]">Gracias por escribir — te responderé pronto.</p>
         <button
