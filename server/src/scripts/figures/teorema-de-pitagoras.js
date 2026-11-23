@@ -28,7 +28,7 @@ const baseLabels=[label(A,'A',-17,-6),label(B,'B',6,16),label(C,'C',-17,16),labe
 const rightC=squareMark(C,unit(difference(A,C)),unit(difference(B,C)))
 save('triangulo',[triangle(A,B,C),rightC],baseLabels)
 const rightH=squareMark(H,unit(difference(C,H)),unit(difference(B,H)))
-save('altura',[line(C,H,'#6D3EE8'),triangle(A,B,C),rightH],[...baseLabels,label(H,'H',5,-10)])
+save('altura',[line(C,H,'#6D3EE8'),triangle(A,B,C),rightC,rightH],[...baseLabels,label(H,'H',5,-10)])
 const B2=[54,174],C2=[246,174],A2=[150,46],M=scale(add(B2,C2),0.5)
 assert.equal(dist(A2,B2),160);assert.equal(dist(A2,C2),160);assert.equal(dist(B2,C2),192);assert.equal(dist(A2,M),128)
 save('isosceles',[line(A2,M,'#6D3EE8'),triangle(A2,B2,C2),squareMark(M,unit(difference(A2,M)),unit(difference(C2,M)))],[label(A2,'A',-4,-8),label(B2,'B',-17,16),label(C2,'C',5,16),label(M,'M',-7,18)])
