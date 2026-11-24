@@ -833,7 +833,7 @@ export default function CatherinePage() {
               <div className="mt-10 grid items-start gap-10 md:grid-cols-[260px_minmax(0,1fr)]">
                 {/* Left column: the class photo and a little desk of school things */}
                 <div className="mx-auto flex w-full max-w-[250px] flex-col items-center gap-8">
-                  <Polaroid src={fotoClases} alt="Catherine dando clase a niñas y niños" pos="22% center" caption="dando clase ♡" tilt="-rotate-2" tape={C.teal} />
+                  <Polaroid src={fotoClases} alt="Catherine de niña dando clase a otros niños en Aula Gandhi" pos="18% center" caption="dando clase ♡" tilt="-rotate-2" tape={C.teal} />
                   <Chalkboard className="w-full rotate-1" />
                 </div>
                 <div className="flex flex-col gap-4 text-left">
