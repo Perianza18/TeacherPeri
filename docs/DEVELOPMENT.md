@@ -92,7 +92,7 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 | `content:import` | Loads the official content into a database ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | `content:revise-theory` | Publishes rewritten lessons ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revising-rewritten-theory-lessons)) |
 | `content:check` | Shows what content the API's database has (read-only) |
-| `content:import-exams` | Imports official exam problems from prepared files, such as the OMM regional exams ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#importing-official-exam-problems)) |
+| `content:import-exams` | Imports official exam problems from prepared files, such as the OMM regional exams, the OMCC and the PAGMO ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#importing-official-exam-problems)) |
 | `users:set-role` | Changes one account's role ([ROLES.md](ROLES.md)) |
 | `review` | Reviews proposals, exam folders and error reports ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 | `db:migrate:roles-users` | One-time migration for the three roles and exam folders ([SUBMISSIONS.md](SUBMISSIONS.md#migration)) |

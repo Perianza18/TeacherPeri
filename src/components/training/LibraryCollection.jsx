@@ -35,6 +35,8 @@ const EXAM_FOLDER_DESCRIPTIONS = {
   Occidente: 'Olimpiada Regional de Occidente.',
   Centro: 'Olimpiada Regional de la Zona Centro.',
   OMMEB: 'Olimpiada Mexicana de Matemáticas para Educación Básica.',
+  Centroamericana: 'Olimpiada Matemática de Centroamérica y el Caribe (OMCC).',
+  PAGMO: 'Olimpiada Panamericana Femenil de Matemáticas.',
 }
 
 function ExamFolderCard({ name, onOpen }) {

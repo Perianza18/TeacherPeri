@@ -120,20 +120,23 @@ prueba, y luego una simulación en producción, revisada antes de `--apply`.
 
 ## Importar problemas de exámenes oficiales
 
-`content:import-exams` carga problemas de exámenes oficiales (se usó primero para
-los regionales de la OMM: Sureste, Occidente y Centro) desde una carpeta de
+`content:import-exams` carga problemas de exámenes oficiales (se usó para los
+regionales de la OMM, la OMCC y la PAGMO) desde una carpeta de
 archivos preparados, un JSON por examen, con sus figuras en `figures/`. Los
 archivos se guardan fuera del repositorio; el script está en
 `server/src/scripts/import-exam-problems.js`, que describe el formato.
 
 - Cada examen va a la carpeta `Exámenes › <competencia> › <ronda> › <año>`
-  (por ejemplo `Exámenes › OMM Regional › Sureste › 2024`); las carpetas que
-  faltan se crean ya aprobadas.
+  (por ejemplo `Exámenes › OMM Regional › Sureste › 2024`), o a
+  `Exámenes › <competencia> › <año>` cuando el examen no tiene ronda (por
+  ejemplo `Exámenes › Centroamericana › 2016`); las carpetas que faltan se crean
+  ya aprobadas.
 - Los problemas solo usan etiquetas, áreas y subtemas que ya existen. Uno
   desconocido detiene la corrida: el script nunca crea etiquetas ni temas.
 - Las figuras (SVG dibujado con las reglas de `Figura`, o un recorte PNG) se
   guardan como cualquier imagen subida: WebP, de 1200 px de ancho como máximo, con
-  texto alternativo en español.
+  texto alternativo en español. Un problema tiene hasta 4 figuras; cada una va
+  con el enunciado o con la solución.
 - Carpetas, problemas y figuras se escriben en una sola transacción; después, la
   misma sincronización de exámenes del sitio crea o actualiza las tarjetas en
   Exámenes.

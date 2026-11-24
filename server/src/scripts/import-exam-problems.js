@@ -7,15 +7,18 @@
 //
 // Each file is an array of problem records:
 //   { codigo, titulo, enunciado, solution, sourceAttribution, año, tema, tipo,
-//     problemNumber, competition, round, subtopics: [tag labels],
+//     problemNumber, competition, round (optional), subtopics: [tag labels],
 //     subtopicTopics: [subtopic names under the área], difficulty, dificultad,
-//     publicationStatus, figure: null | { id, kind: 'svg'|'png', alt } }
+//     publicationStatus, figures: [{ id, kind: 'svg'|'png', alt, placement }] }
+// (`figure: { id, kind, alt }`, one statement figure, is still accepted.)
 // Figures are read from <folder>/figures/<id>.svg or .png and stored like any
-// uploaded image (WebP, at most 1200 px wide).
+// uploaded image (WebP, at most 1200 px wide); placement is 'statement'
+// (default) or 'solution'. At most 4 per problem.
 //
 // What it writes, all in one transaction:
-//   - the exam folders Exámenes › <competition> › <round> › <año>, created
-//     when missing (approved, like the seed folders);
+//   - the exam folders Exámenes › <competition> › <round> › <año> (or
+//     Exámenes › <competition> › <año> when there is no round), created when
+//     missing (approved, like the seed folders);
 //   - the problems, with existing tags and topics only: an unknown tag, área
 //     or subtopic stops the run. It never creates a tag or a topic;
 //   - the figures.
@@ -57,7 +60,10 @@ export function parseImportArgs(args) {
 export const stableId = (kind, key) => new mongoose.Types.ObjectId(crypto.createHash('sha256').update(`teacherperi:exam-import:${kind}:${key}`).digest('hex').slice(0, 24))
 
 const AREAS = ['Álgebra', 'Combinatoria', 'Geometría', 'Teoría de Números']
-const REQUIRED = ['codigo', 'titulo', 'enunciado', 'sourceAttribution', 'año', 'tema', 'tipo', 'competition', 'round', 'difficulty', 'dificultad']
+const REQUIRED = ['codigo', 'titulo', 'enunciado', 'sourceAttribution', 'año', 'tema', 'tipo', 'competition', 'difficulty', 'dificultad']
+
+// The figures of a record: the `figures` list, or the older single `figure`.
+export const recordFigures = (r) => r.figures ?? (r.figure ? [{ ...r.figure, placement: 'statement' }] : [])
 
 // Checks one exam file's records without a database. Returns error lines.
 export function recordProblems(records, file) {
@@ -74,7 +80,13 @@ export function recordProblems(records, file) {
     if (!AREAS.includes(r.tema)) errors.push(`${where}: unknown área «${r.tema}»`)
     if (!['published', 'draft'].includes(r.publicationStatus)) errors.push(`${where}: publicationStatus must be published or draft`)
     for (const finding of [...mathFindings(r.enunciado), ...mathFindings(r.solution || '')]) errors.push(`${where}: ${finding.message}`)
-    if (r.figure && (!/^[a-z0-9-]+$/.test(r.figure.id || '') || !['svg', 'png'].includes(r.figure.kind) || !(r.figure.alt?.length >= 5 && r.figure.alt.length <= 300))) errors.push(`${where}: invalid figure`)
+    if (r.round !== undefined && r.round !== null && (typeof r.round !== 'string' || !r.round.trim())) errors.push(`${where}: round must be a name or absent`)
+    const figures = recordFigures(r)
+    if (figures.length > 4) errors.push(`${where}: at most 4 figures`)
+    for (const fig of figures) {
+      if (!/^[a-z0-9-]+$/.test(fig.id || '') || !['svg', 'png'].includes(fig.kind) || !(fig.alt?.length >= 5 && fig.alt.length <= 300) || !['statement', 'solution'].includes(fig.placement ?? 'statement')) errors.push(`${where}: invalid figure`)
+      if (fig.placement === 'solution' && !r.solution) errors.push(`${where}: a solution figure needs a solution`)
+    }
   }
   return errors
 }
@@ -138,8 +150,8 @@ export async function importExamProblems({ folder, apply }) {
     for (const { file, records } of exams) {
       const first = records[0]
       const competition = await childFolder(root, first.competition, first.competition)
-      const round = await childFolder(competition, first.round, `${first.competition}|${first.round}`)
-      const year = await childFolder(round, first.año, `${first.competition}|${first.round}|${first.año}`)
+      const round = first.round ? await childFolder(competition, first.round, `${first.competition}|${first.round}`) : competition
+      const year = await childFolder(round, first.año, first.round ? `${first.competition}|${first.round}|${first.año}` : `${first.competition}|${first.año}`)
       examFolders.push(year._id)
       for (const r of records) {
         const existing = await col('problems').findOne({ codigo: r.codigo }, opt)
@@ -158,18 +170,23 @@ export async function importExamProblems({ folder, apply }) {
           _id: stableId('problem', r.codigo),
           codigo: r.codigo, titulo: r.titulo, enunciado: r.enunciado, solution: r.solution || '',
           sourceAttribution: r.sourceAttribution, año: r.año, tema: r.tema, tipo: r.tipo,
-          competition: r.competition, round: r.round, problemNumber: r.problemNumber,
+          competition: r.competition, ...(r.round ? { round: r.round } : {}), problemNumber: r.problemNumber,
           category: year._id, categories: [year._id],
           topics: [area._id, ...subtopics.map((t) => t._id)], tags: tagIds,
           difficulty: r.difficulty, dificultad: r.dificultad, exito: 0,
           publicationStatus: r.publicationStatus, author: null, deletedAt: null, createdAt: now, updatedAt: now,
         }
-        if (r.figure) {
+        const figures = recordFigures(r)
+        if (figures.length) {
           if (owners.length !== 1) throw new TargetError('Figures need exactly one admin account to own them.')
-          const image = await figureImage(folder, r.figure)
-          const imageId = stableId('image', r.codigo)
-          imageDocs.push({ _id: imageId, owner: owners[0]._id, contentType: 'image/webp', ...image, originalBytes: image.bytes, createdAt: now, updatedAt: now })
-          doc.images = [{ image: imageId, alt: r.figure.alt, placement: 'statement' }]
+          doc.images = []
+          for (const [index, fig] of figures.entries()) {
+            const image = await figureImage(folder, fig)
+            // The first figure keeps the id of the one-figure format, so earlier imports match.
+            const imageId = stableId('image', index === 0 ? r.codigo : `${r.codigo}#${index + 1}`)
+            imageDocs.push({ _id: imageId, owner: owners[0]._id, contentType: 'image/webp', ...image, originalBytes: image.bytes, createdAt: now, updatedAt: now })
+            doc.images.push({ image: imageId, alt: fig.alt, placement: fig.placement ?? 'statement' })
+          }
         }
         try { await new Problem(doc).validate() } catch (invalid) {
           throw new TargetError(`${r.codigo}: ${Object.values(invalid.errors || {}).map((e) => e.message).join('; ') || 'invalid problem'}`)
