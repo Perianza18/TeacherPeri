@@ -37,6 +37,7 @@ describe('Inicio: Problema del día', () => {
     expect(problemSourceLabel(ommu)).toBe('OMMU Nacional 2024 · Problema 1')
     expect(problemSourceLabel({ competition: 'TeacherPeri', tipo: 'TeacherPeri', año: '2026', codigo: 'TP-G01', titulo: 'El ángulo exterior' })).toBe('TeacherPeri 2026')
     expect(problemSourceLabel({ competition: 'Putnam', año: '2023', problemNumber: 3 })).toBe('Putnam 2023 · Problema 3')
+    expect(problemSourceLabel({ competition: 'OMM Regional', round: 'Sureste', año: '2024', problemNumber: 3 })).toBe('OMM Regional Sureste 2024 · Problema 3')
     expect(problemSourceLabel(ommu)).not.toContain('título')
   })
 })

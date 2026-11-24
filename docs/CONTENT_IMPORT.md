@@ -104,6 +104,36 @@ With the private Atlas file, `npm run atlas:revise-theory:test` and
 request first so the figures are deployed, then run on the test database, then a dry
 run on production, reviewed before `--apply`.
 
+## Importing official exam problems
+
+`content:import-exams` loads official exam problems (first used for the OMM
+regional exams: Sureste, Occidente and Centro) from a folder of prepared files,
+one JSON file per exam, plus their figures in `figures/`. The files are kept
+outside the repository; the script is in
+`server/src/scripts/import-exam-problems.js`, which describes the record format.
+
+- Each exam goes into the folder `Exámenes › <competition> › <round> › <year>`
+  (for example `Exámenes › OMM Regional › Sureste › 2024`); missing folders are
+  created as approved folders.
+- Problems use existing tags, áreas and subtopics only. An unknown one stops the
+  run: the script never creates a tag or a topic.
+- Figures (SVG drawn to the `Figura` rules, or a PNG crop) are stored like any
+  uploaded image: WebP, at most 1200 px wide, with Spanish alt text.
+- Folders, problems and figures are written in one transaction; then the same
+  exam sync the site uses creates or updates the exam cards on Exámenes.
+- Ids are stable, so a second run reports every problem as already there. A code
+  that already holds a different statement stops the run.
+
+1. Set `MONGO_EXAM_IMPORT_URI` privately, with an explicit database path.
+2. Run `npm run content:import-exams -- <folder>` (dry run). It lists the folders,
+   problems and figures it would create. Nothing is written.
+3. Set `EXAM_IMPORT_CONFIRM` to the exact database name and add `--apply`.
+4. Run the dry run again: it should create nothing.
+
+With the private Atlas file, `npm run atlas:import-exams:test -- <folder>` and
+`npm run atlas:import-exams:prod -- <folder>` (add `--apply` to write) set
+steps 1 and 3 for you.
+
 ## Included content and sources
 
 37 Spanish Theory lessons, 56 original Problems (20 of them from the rewritten lessons), six lesson problem collections, six canonical problem Lists,
