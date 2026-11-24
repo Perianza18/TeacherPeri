@@ -104,6 +104,45 @@ With the private Atlas file, `npm run atlas:revise-theory:test` and
 request first so the figures are deployed, then run on the test database, then a dry
 run on production, reviewed before `--apply`.
 
+## Importing the OMMEB Guerrero exams
+
+The state (Estatal) and selection (Selectivo) exams of the OMMEB in Guerrero, 7a to
+10a edición (2023–2026), levels 1 to 3, are transcribed in
+`server/src/data/ommebGuerrero/`: one file per exam (24 exams, 360 problems), with
+the official answer of every problem, the official solution of the problems «de
+redacción» (their grading criteria are not copied) and the figures cut from the PDFs
+as PNG/JPG in `figuras/`. `index.js` explains the fields and validates the math with
+strict KaTeX.
+
+`npm run content:import-ommeb-guerrero` adds them to a database that already has
+content:
+
+1. Set `MONGO_OMMEB_IMPORT_URI` privately, with an explicit database path. It never
+   falls back to `MONGO_URI`.
+2. Run `npm run content:import-ommeb-guerrero` (dry run). It lists the folders and
+   problems it will create and the problems already there. Nothing is written.
+3. Set `OMMEB_IMPORT_CONFIRM` to the exact database name and run
+   `npm run content:import-ommeb-guerrero -- --apply`. The figures are stored as
+   images owned by the oldest admin account, or by `--owner <username>`.
+4. Run the dry run again: everything should be «already there».
+
+What it does:
+
+- Creates the exam folders `Exámenes › OMMEB › Guerrero › <year> › <Estatal|Selectivo>
+  › Nivel <n>` (an existing «OMMEB» folder is reused) and publishes each problem with
+  its code (`OMMEB-GRO-2025-EST-N1-01`), number and área, in one transaction.
+- Each folder then gets its exam on the Exámenes page («OMMEB 2025 · Guerrero ·
+  Estatal · Nivel 1»), with the duration and the instructions of the exam.
+- A problem that already exists is never changed. If it differs from the
+  transcription (edited on the site) it is reported and left as it is.
+- If a folder it needs is still waiting for review, it stops before writing.
+
+Money is written «53.20 pesos», because a lone `$` starts a formula. A few problems
+have no official answer (the key marks none, or the PDF has the key of another
+exam); they say so in a note next to the answer. With the private Atlas file,
+`npm run atlas:import-ommeb:test` and `npm run atlas:import-ommeb:prod` (add
+`-- --apply` to write) set steps 1 and 3 for you.
+
 ## Included content and sources
 
 37 Spanish Theory lessons, 56 original Problems (20 of them from the rewritten lessons), six lesson problem collections, six canonical problem Lists,
