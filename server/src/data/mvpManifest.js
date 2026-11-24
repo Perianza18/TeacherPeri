@@ -42,7 +42,7 @@ export function buildMvpManifest(resolve = (model, key) => contentId(model, key)
     const { pathSlug, ...fields } = problem
     delete fields.answer
     const area = MVP_LESSONS.find((l) => l.pathSlug === pathSlug).area
-    add('Problem', problem.codigo, { ...fields, ...metadata(area), category: resolve('Category', area), año: '2026', tema: AREAS[area], tipo: 'TeacherPeri', dificultad: problem.difficulty === 'basico' ? 'Fácil' : 'Media', competition: 'TeacherPeri', sourceAttribution: 'Material original de TeacherPeri. Práctica editorial; no es un problema oficial de competencia.', publicationStatus: 'published' }, { codigo: problem.codigo })
+    add('Problem', problem.codigo, { ...fields, ...metadata(area), category: resolve('Category', area), año: '2026', tema: AREAS[area], tipo: 'TeacherPeri', dificultad: problem.difficulty === 'basico' ? 'Fácil' : 'Media', competition: 'TeacherPeri', sourceAttribution: 'Material original de TeacherPeri.', publicationStatus: 'published' }, { codigo: problem.codigo })
   }
   for (const lesson of MVP_LESSONS) {
     const { key, ...fields } = lesson.theory

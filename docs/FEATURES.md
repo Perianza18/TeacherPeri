@@ -129,3 +129,5 @@ A Ruta is an ordered path through existing material. See
 | Works on phones (375 px and up) | Done | |
 | Hosting: Vercel (website), Render (API), MongoDB Atlas (database) | Done | See [DEPLOYMENT.md](DEPLOYMENT.md) |
 | Own domain | Planned | **Today:** teacherperi.vercel.app |
+
+Problem credits use the full competition name and, only when known, the original proposer; TeacherPeri originals show their concise source. Exercise lists omit internal codes, and theory cards and pages omit difficulty.

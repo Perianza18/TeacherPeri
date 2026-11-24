@@ -39,6 +39,13 @@ aparece con su propio botón («Ver pista 1», «Ver pista 2»).
 Planeado: imágenes en los problemas, para geometría. **Hoy:** solo texto y
 matemáticas.
 
+En público, los originales llevan «Fuente: Material original de TeacherPeri.».
+Los problemas de concurso llevan «Créditos y fuente:» y el nombre completo de la
+competencia; agrega «Autor:» solo cuando se conozca quién propuso originalmente
+el problema, no quien lo subió al sitio. No busques nombres faltantes solo para
+llenar el campo. No muestres dificultad en páginas ni tarjetas públicas de
+problemas o teoría. En las listas, usa «Ejercicio n» sin códigos internos.
+
 ## Lecciones (Teoría)
 
 > **Estado:** Parcial. El formato nuevo ya funciona. En el código, las 49

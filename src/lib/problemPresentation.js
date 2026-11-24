@@ -18,3 +18,26 @@ export function problemTopics(problem = {}) {
   const names = (problem.topics || []).map((topic) => typeof topic === 'object' && topic ? topic.name : '').filter(Boolean)
   return [...new Set([area, ...names].filter(Boolean))]
 }
+
+// A submission account identifies who entered a problem, not its contest proposer.
+export function problemCredit(problem = {}) {
+  const source = String(problem.competition || problem.tipo || '').trim()
+  const attribution = String(problem.sourceAttribution || '').trim()
+  if (/^teacherperi$/i.test(source) || (!source && /^TP-/i.test(problem.codigo || ''))) {
+    return { label: 'Fuente', source: 'Material original de TeacherPeri.' }
+  }
+  const names = [
+    [/^OMM(?:\s+Estatal)?$/i, 'Olimpiada Mexicana de Matemáticas'],
+    [/^OMMU(?:\s|$)/i, 'Olimpiada Mexicana de Matemáticas para Universitarios'],
+    [/^OMMEB$/i, 'Olimpiada Mexicana de Matemáticas para Educación Básica'],
+    [/^IMO$/i, 'Olimpiada Internacional de Matemáticas'],
+    [/^Putnam$/i, 'William Lowell Putnam Mathematical Competition'],
+  ]
+  const competition = names.find(([pattern]) => pattern.test(source))?.[1]
+    || (problem.competition && !/^teacherperi$/i.test(source) ? source : '')
+  if (competition) {
+    const author = /(?:^|\n)\s*Autor(?:a)?:\s*([^\n]+)/i.exec(attribution)?.[1]?.trim()
+    return { label: 'Créditos y fuente', source: `${competition}.`, author }
+  }
+  return attribution ? { label: 'Fuente', source: attribution } : null
+}

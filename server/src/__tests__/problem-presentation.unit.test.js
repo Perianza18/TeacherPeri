@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { problemTopics, sourceProblemTitle } from '../../../src/lib/problemPresentation.js'
+import { problemCredit, problemTopics, sourceProblemTitle } from '../../../src/lib/problemPresentation.js'
 
 describe('problem card presentation', () => {
   it('omits arbitrary titles and internal codes', () => {
@@ -17,5 +17,19 @@ describe('problem card presentation', () => {
   it('shows the area and distinct available topic names', () => {
     expect(problemTopics({ tema: 'Geometría', topics: [{ name: 'Geometría' }, { name: 'Triángulos' }, { name: 'Triángulos' }] })).toEqual(['Geometría', 'Triángulos'])
     expect(problemTopics({ topics: ['unpopulated-id'] })).toEqual([])
+  })
+})
+
+describe('problem credits', () => {
+  it('uses the exact original-material credit', () => {
+    expect(problemCredit({ competition: 'TeacherPeri', sourceAttribution: 'Material original de TeacherPeri. Práctica editorial.' })).toEqual({ label: 'Fuente', source: 'Material original de TeacherPeri.' })
+  })
+  it('expands competition names and does not mistake a submitter for the original proposer', () => {
+    expect(problemCredit({ competition: 'OMM Estatal', sourceAttribution: 'OMM › 2024. Propuesto por @ana.' })).toEqual({ label: 'Créditos y fuente', source: 'Olimpiada Mexicana de Matemáticas.', author: undefined })
+    expect(problemCredit({ tipo: 'OMMU Nacional' }).source).toBe('Olimpiada Mexicana de Matemáticas para Universitarios.')
+    expect(problemCredit({ competition: 'OMM', sourceAttribution: 'Autor: Nombre Conocido' }).author).toBe('Nombre Conocido')
+  })
+  it('retains attribution for other community material', () => {
+    expect(problemCredit({ sourceAttribution: 'Propuesto por @ana.' })).toEqual({ label: 'Fuente', source: 'Propuesto por @ana.' })
   })
 })

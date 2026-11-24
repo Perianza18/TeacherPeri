@@ -129,3 +129,5 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Funciona en celulares (desde 375 px) | Hecho | |
 | Hospedaje: Vercel (sitio), Render (API), MongoDB Atlas (base de datos) | Hecho | Ver [DEPLOYMENT.md](DEPLOYMENT.md) |
 | Dominio propio | Planeado | **Hoy:** teacherperi.vercel.app |
+
+Los créditos usan el nombre completo de la competencia y, solo cuando se conoce, quien propuso originalmente el problema; los originales de TeacherPeri muestran su fuente breve. Las listas omiten códigos internos y las tarjetas y páginas de teoría omiten la dificultad.

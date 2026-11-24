@@ -18,7 +18,7 @@ import { canEdit, editProblemPath } from '../lib/panel'
 import ProblemImages from '../components/images/ProblemImages'
 import { byPlacement } from '../lib/images'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { sourceProblemTitle } from '../lib/problemPresentation'
+import { problemCredit, sourceProblemTitle } from '../lib/problemPresentation'
 
 const CONFIG = { teoria: { api: 'theory', label: 'Teoría' }, listas: { api: 'lists', label: 'Listas' }, examenes: { api: 'exams', label: 'Exámenes' }, problemas: { api: 'problems', label: 'Problemas' } }
 
@@ -158,6 +158,7 @@ export default function LibraryDetailPage({ type }) {
 
   const isProblem = type === 'problemas'
   const isExercise = isProblem && item?.isExercise
+  const credit = item ? (isProblem ? problemCredit(item) : item.sourceAttribution && { label: 'Fuente', source: item.sourceAttribution }) : null
   const tone = (isProblem && AREA_TONES[item?.tema]) || TYPE_TONES[type] || 'sky'
   const level = !isProblem && item && LEVELS[item.level]
   const meta = item ? [
@@ -237,7 +238,7 @@ export default function LibraryDetailPage({ type }) {
           </li>)}</ol>
         </>}
 
-        {item.sourceAttribution && <p className="rounded-[14px] border-2 border-dashed border-tp-rule p-4 text-sm leading-6 text-tp-ink-muted"><span className="font-bold text-tp-ink">Fuente: </span>{item.sourceAttribution}</p>}
+        {credit && <p className="rounded-[14px] border-2 border-dashed border-tp-rule p-4 text-sm leading-6 text-tp-ink-muted"><span className="font-bold text-tp-ink">{credit.label}: </span>{credit.source}{credit.author && <><br />Autor: {credit.author}</>}</p>}
 
         {relatedRoutes.length > 0 && <aside aria-labelledby="continua-titulo" className="flex flex-col gap-4 border-t-2 border-dashed border-tp-rule pt-8">
           <h2 id="continua-titulo" className="font-display text-[28px] font-extrabold tracking-[-0.03em]">Continúa en una Ruta</h2>

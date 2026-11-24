@@ -30,6 +30,13 @@ and solution, áreas (`Topic`), tags, folders (`Category`), a level (`basico`,
 `intermedio` or `avanzado`) and an optional source. Problems have internal codes
 (e.g. `TP-C07`) and titles, but the site shows the statement, never the title.
 
+Public problem credits use «Fuente: Material original de TeacherPeri.» for
+TeacherPeri originals. Contest problems use «Créditos y fuente:» followed by the
+competition's full name; add «Autor:» only for a verified original proposer,
+not the person who submitted the problem to the site. Do not research missing
+names just to fill the field. Do not display difficulty on public problem or
+theory pages or cards. Exercise lists label entries «Ejercicio n» without codes.
+
 Several hints go in one field, separated by a blank line. Each one is shown
 behind its own toggle («Ver pista 1», «Ver pista 2»).
 

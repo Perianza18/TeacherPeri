@@ -11,7 +11,7 @@ import { Celebration } from '../decor/Decor'
 import { useAuth } from '../../context/useAuth'
 import { apiFetch } from '../../lib/api'
 import { LIBRARY_BASE } from '../../lib/libraryPaths'
-import { collectionSlugs, levelLabel, parseArticle, readingMinutes } from '../../lib/theoryArticle'
+import { collectionSlugs, parseArticle, readingMinutes } from '../../lib/theoryArticle'
 import { buildRutaContext } from '../../lib/rutaContext'
 import { canEdit, editLessonPath } from '../../lib/panel'
 
@@ -42,14 +42,14 @@ function Breadcrumbs({ items }) {
   )
 }
 
-function HeaderBand({ crumbs, topic, title, summary, meta }) {
+function HeaderBand({ crumbs, title, summary, meta }) {
   return (
     <section aria-labelledby="teoria-titulo" className="relative overflow-hidden border-b-3 border-tp-ink bg-tp-sky">
       <div aria-hidden="true" className="tp-graph absolute inset-0" />
       <div aria-hidden="true" className="tp-halftone absolute -right-24 -top-28 size-[440px] opacity-[.15] [mask-image:radial-gradient(circle,black_20%,transparent_68%)]" />
       <div className="tp-container relative flex flex-col gap-4 pb-12 pt-8 lg:pb-14">
         <Breadcrumbs items={crumbs} />
-        <span className="tp-sticker -rotate-2 self-start bg-tp-yellow">{topic ? `Teoría · ${topic}` : 'Teoría'}</span>
+        <span className="tp-sticker -rotate-2 self-start bg-tp-yellow">Teoría</span>
         <h1 id="teoria-titulo" className="tp-page-title max-w-[900px]">{title}</h1>
         {summary && <p className="tp-lead max-w-[680px] text-[18px] text-tp-ink-soft">{summary}</p>}
         {meta.length > 0 && (
@@ -261,7 +261,6 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
   const practiceCount = collectionSlugs(item.content).reduce((count, slug) => count + (collections[`${slug}:practice`]?.length || 0), 0) || problems.length
   const meta = [
     `Lectura · ${readingMinutes(item.content)} min`,
-    levelLabel(item.level),
     practiceCount > 0 && plural(practiceCount, 'problema de práctica', 'problemas de práctica'),
   ].filter(Boolean)
   const sections = article.sections
@@ -271,7 +270,7 @@ function TheoryPage({ item, route, ancestors, problems, collections, relatedRout
   return (
     <>
       {sections.length > 0 && <ReadingBar progress={reading.progress} />}
-      <HeaderBand crumbs={crumbs} topic={item.topics?.[0]?.name} title={item.title} summary={item.description || item.summary} meta={meta} />
+      <HeaderBand crumbs={crumbs} title={item.title} summary={item.description || item.summary} meta={meta} />
       {strip && <RutaStrip strip={strip} progress={completion.parentProgress} />}
       <div className="tp-container pb-16 pt-7">
         <div className={sections.length > 0 ? 'xl:grid xl:grid-cols-[220px_minmax(0,840px)] xl:justify-center xl:gap-12' : ''}>

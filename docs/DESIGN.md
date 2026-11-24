@@ -131,7 +131,7 @@ paragraph that uses it.
 ## 6. Page patterns
 
 - **Page header band:** full-width sky band (edge to edge, 3px ink bottom border,
-  no card frame), yellow kicker (e.g. «TEORÍA · CICLO 1 · LECCIÓN 2»), h1, lead,
+  no card frame), yellow kicker (e.g. «TEORÍA»), h1, lead,
   meta ribbon (reading time, level, number of practice problems).
 - **Logo:** text only, «TeacherPeri», Bricolage Grotesque 800, 22px,
   letter-spacing -0.02em. No box, no icon.

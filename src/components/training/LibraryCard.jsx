@@ -13,7 +13,7 @@ export default function LibraryCard({ item, type, title, strip, base, onOpen, pr
   const fullTopics = topics.join(' · ')
   return <article className="tp-card-soft tp-lift flex min-w-0 flex-col overflow-hidden bg-tp-surface">
     <div className={`flex min-h-11 items-center border-b-2 border-tp-ink px-5 py-2.5 ${AREA_STRIPS[item.tema] || strip}`}>
-      <p className="min-w-0 break-words text-xs font-extrabold uppercase tracking-[0.12em]" aria-label={type === 'problems' ? fullTopics : undefined}>{type === 'problems' ? fullTopics : <>{title}{item.level ? ` · ${LEVELS[item.level]}` : ''}</>}</p>
+      <p className="min-w-0 break-words text-xs font-extrabold uppercase tracking-[0.12em]" aria-label={type === 'problems' ? fullTopics : undefined}>{type === 'problems' ? fullTopics : <>{title}{type !== 'theory' && item.level ? ` · ${LEVELS[item.level]}` : ''}</>}</p>
     </div>
     <div className="flex flex-1 flex-col p-5">
       {heading && <h3 className="font-display text-[21px] font-extrabold leading-tight tracking-[-0.02em]">{preview ? heading : <Link to={href} className="hover:text-tp-violet">{heading}</Link>}</h3>}

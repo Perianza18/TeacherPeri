@@ -137,7 +137,7 @@ del párrafo que la usa.
 
 - **Banda de encabezado:** banda sky a todo lo ancho (de orilla a orilla, borde
   inferior de tinta de 3px, sin marco de tarjeta), kicker amarillo (p. ej.
-  «TEORÍA · CICLO 1 · LECCIÓN 2»), h1, párrafo de entrada, cinta de metadatos
+  «TEORÍA»), h1, párrafo de entrada, cinta de metadatos
   (tiempo de lectura, nivel, número de problemas de práctica).
 - **Logo:** solo texto, «TeacherPeri», Bricolage Grotesque 800, 22px,
   letter-spacing -0.02em. Sin caja ni ícono.

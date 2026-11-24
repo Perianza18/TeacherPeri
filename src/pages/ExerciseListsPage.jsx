@@ -33,7 +33,7 @@ export default function ExerciseListsPage() {
         {!lists.length && <p className="mt-6">No hay listas que coincidan con la búsqueda.</p>}
       </>}
       {slug && data?.exercises && <ol className="mx-auto flex max-w-[800px] flex-col gap-5">{data.exercises.map((exercise, index) => <li key={exercise._id} className="tp-card-soft bg-tp-surface p-5 sm:p-6">
-        <p className="text-sm font-bold">Ejercicio {index + 1} · {exercise.codigo}</p>
+        <p className="text-sm font-bold">Ejercicio {index + 1}</p>
         <MathText text={exercise.enunciado} className="tp-reading-text mt-4 whitespace-pre-wrap leading-7" />
         {exercise.hint && <details className="mt-4"><summary className="cursor-pointer font-bold">Ver pista</summary><MathText text={exercise.hint} className="mt-3 leading-7" /></details>}
         {exercise.solution && <details className="mt-4"><summary className="cursor-pointer font-bold">Ver solución</summary><MathText text={exercise.solution} className="mt-3 whitespace-pre-wrap leading-7" /></details>}
