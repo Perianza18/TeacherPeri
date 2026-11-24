@@ -92,10 +92,11 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 | `content:import` | Loads the official content into a database ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | `content:revise-theory` | Publishes rewritten lessons ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revising-rewritten-theory-lessons)) |
 | `content:check` | Shows what content the API's database has (read-only) |
+| `content:import-exams` | Imports official exam problems from prepared files, such as the OMM regional exams ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#importing-official-exam-problems)) |
 | `users:set-role` | Changes one account's role ([ROLES.md](ROLES.md)) |
 | `review` | Reviews proposals, exam folders and error reports ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 | `db:migrate:roles-users` | One-time migration for the three roles and exam folders ([SUBMISSIONS.md](SUBMISSIONS.md#migration)) |
-| `atlas:<tool>:test`, `atlas:<tool>:prod` | Run `migrate`, `review`, `set-role`, `revise-theory` or `import` against Atlas using the private Atlas file ([below](#atlas-scripts)) |
+| `atlas:<tool>:test`, `atlas:<tool>:prod` | Run `migrate`, `review`, `set-role`, `revise-theory`, `import`, `sync-exams` or `import-exams` against Atlas using the private Atlas file ([below](#atlas-scripts)) |
 | `db:local:start` | Starts a local MongoDB replica set ([LOCAL_MVP.md](LOCAL_MVP.md)) |
 | `db:reset:dev` | **Erases** the problems and folders of a local `teacherperi_dev` database and fills it with old sample problems. Local only |
 | `curriculum:preview:omm`, `curriculum:preview:omm-content` | Print the OMM Ruta and its content without a database |
@@ -130,6 +131,7 @@ it to the tool through the tool's own variable.
 | `atlas:revise-theory:test`, `atlas:revise-theory:prod` | `content:revise-theory` |
 | `atlas:import:test`, `atlas:import:prod` | `content:import` |
 | `atlas:sync-exams:test`, `atlas:sync-exams:prod` | `db:sync:exam-folders` (one exam per exam folder on Exámenes) |
+| `atlas:import-exams:test`, `atlas:import-exams:prod` | `content:import-exams` (give the folder with the exam files after `--`) |
 
 Each one is a dry run (or read only) unless `--apply` follows `--`, for example
 `npm run atlas:migrate:test -- --apply`. With `--apply` the wrapper confirms the

@@ -29,6 +29,12 @@ describe('problem credits', () => {
     expect(problemCredit({ tipo: 'OMMU Nacional' }).source).toBe('Olimpiada Mexicana de Matemáticas para Universitarios.')
     expect(problemCredit({ competition: 'OMM', sourceAttribution: 'Autor: Nombre Conocido' }).author).toBe('Nombre Conocido')
   })
+  it('names the region of an OMM regional exam', () => {
+    const problem = { competition: 'OMM Regional', round: 'Sureste', año: '2024', problemNumber: 3, titulo: 'Regional Sureste 2024 · Problema 3', sourceAttribution: 'Regional Sureste 2024, Problema 3.\nAutor: Delegación de Guerrero' }
+    expect(problemCredit(problem)).toEqual({ label: 'Créditos y fuente', source: 'Olimpiada Mexicana de Matemáticas, Regional Sureste.', author: 'Delegación de Guerrero' })
+    expect(sourceProblemTitle(problem)).toBe('Regional Sureste 2024 · Problema 3')
+    expect(problemCredit({ competition: 'OMM Regional' }).source).toBe('OMM Regional.')
+  })
   it('retains attribution for other community material', () => {
     expect(problemCredit({ sourceAttribution: 'Propuesto por @ana.' })).toEqual({ label: 'Fuente', source: 'Propuesto por @ana.' })
   })

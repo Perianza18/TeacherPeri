@@ -118,6 +118,39 @@ Con el archivo privado de Atlas, `npm run atlas:revise-theory:test` y
 el pull request para que las figuras estén desplegadas, después correr en la base de
 prueba, y luego una simulación en producción, revisada antes de `--apply`.
 
+## Importar problemas de exámenes oficiales
+
+`content:import-exams` carga problemas de exámenes oficiales (se usó primero para
+los regionales de la OMM: Sureste, Occidente y Centro) desde una carpeta de
+archivos preparados, un JSON por examen, con sus figuras en `figures/`. Los
+archivos se guardan fuera del repositorio; el script está en
+`server/src/scripts/import-exam-problems.js`, que describe el formato.
+
+- Cada examen va a la carpeta `Exámenes › <competencia> › <ronda> › <año>`
+  (por ejemplo `Exámenes › OMM Regional › Sureste › 2024`); las carpetas que
+  faltan se crean ya aprobadas.
+- Los problemas solo usan etiquetas, áreas y subtemas que ya existen. Uno
+  desconocido detiene la corrida: el script nunca crea etiquetas ni temas.
+- Las figuras (SVG dibujado con las reglas de `Figura`, o un recorte PNG) se
+  guardan como cualquier imagen subida: WebP, de 1200 px de ancho como máximo, con
+  texto alternativo en español.
+- Carpetas, problemas y figuras se escriben en una sola transacción; después, la
+  misma sincronización de exámenes del sitio crea o actualiza las tarjetas en
+  Exámenes.
+- Los identificadores son estables, así que una segunda corrida reporta todos los
+  problemas como ya existentes. Un código que ya tiene otro enunciado detiene la
+  corrida.
+
+1. Define `MONGO_EXAM_IMPORT_URI` en privado, con el nombre de la base en la ruta.
+2. Corre `npm run content:import-exams -- <carpeta>` (simulación). Muestra las
+   carpetas, problemas y figuras que crearía. No escribe nada.
+3. Define `EXAM_IMPORT_CONFIRM` con el nombre exacto de la base y agrega `--apply`.
+4. Corre la simulación otra vez: no debe crear nada.
+
+Con el archivo privado de Atlas, `npm run atlas:import-exams:test -- <carpeta>` y
+`npm run atlas:import-exams:prod -- <carpeta>` (agrega `--apply` para escribir)
+hacen los pasos 1 y 3 por ti.
+
 ## Importar los exámenes de la OMMEB Guerrero
 
 Los exámenes Estatal y Selectivo de la OMMEB en Guerrero, de la 7a a la 10a edición

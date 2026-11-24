@@ -33,7 +33,10 @@ export function problemCredit(problem = {}) {
     [/^IMO$/i, 'Olimpiada Internacional de Matemáticas'],
     [/^Putnam$/i, 'William Lowell Putnam Mathematical Competition'],
   ]
-  const competition = names.find(([pattern]) => pattern.test(source))?.[1]
+  // OMM regional exams name their region: «Olimpiada Mexicana de Matemáticas, Regional Sureste».
+  const region = /^OMM Regional$/i.test(source) && String(problem.round || '').trim()
+  const competition = (region && `Olimpiada Mexicana de Matemáticas, Regional ${region}`)
+    || names.find(([pattern]) => pattern.test(source))?.[1]
     || (problem.competition && !/^teacherperi$/i.test(source) ? source : '')
   if (competition) {
     const author = /(?:^|\n)\s*Autor(?:a)?:\s*([^\n]+)/i.exec(attribution)?.[1]?.trim()
