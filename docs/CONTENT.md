@@ -15,7 +15,7 @@ change is reviewed in a pull request.
 | Problems, lessons, lists, exams and the OMM Ruta (first release) | `server/src/data/` (`mvpManifest.js`, `mvpLessons.js`, `mvpProblems.js`, `ommCurriculum.js`, `ommLaunchContent*.js`) | `npm run content:import` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | Rewritten lessons and the problems they add | `server/src/data/theory/`, one file per lesson | `npm run content:revise-theory` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revising-rewritten-theory-lessons)) |
 | New lessons with no earlier text (they set `lesson: { title, area, level }`) | `server/src/data/theory/`, one file per lesson | `npm run content:revise-theory` (it creates them) |
-| OMMEB Guerrero exams (Estatal and Selectivo, 2023–2026, levels 1–3) | `server/src/data/ommebGuerrero/`, one file per exam, figures in `figuras/` | `npm run content:import-ommeb-guerrero` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#importing-the-ommeb-guerrero-exams)) |
+| Transcribed official exams (OMMEB Guerrero 2023–2026; IMC and PAGMO 2021 selection exams; Olimpiada Femenil CARMA 2020) | `server/src/data/ommebGuerrero/` and `server/src/data/examenesEntrenamiento/`, one file per exam, figures in `figuras/` | `npm run content:import-transcribed -- <collection>` ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#importing-transcribed-exams-ommeb-guerrero-and-others)) |
 | Lesson figures | `public/figuras/*.svg` | Published with the website |
 | Community problems and exam folders | Proposed on the site | Admin review ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 

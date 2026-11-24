@@ -1,9 +1,11 @@
 // ---------------------------------------------------------------------------
-// Imports the OMMEB Guerrero exams (server/src/data/ommebGuerrero) into a
-// database that already has content. Additive and idempotent:
+// Imports a transcribed exam collection (server/src/data/examCollections.js,
+// e.g. OMMEB Guerrero) into a database that already has content. Additive
+// and idempotent:
 //
-//   - Exam folders Exámenes › OMMEB › Guerrero › <year> › <Estatal|Selectivo> ›
-//     Nivel <n> are found by name (ignoring case and accents) or created.
+//   - The exam folders of the collection (Exámenes › OMMEB › Guerrero › 2025 ›
+//     Estatal › Nivel 1, …) are found by name (ignoring case and accents) or
+//     created.
 //   - Each problem is found by its code (OMMEB-GRO-2025-EST-N1-01). A missing
 //     one is created, published, with its figures as ProblemImages. One that
 //     exists is never changed: it is reported as «already there» when it holds
@@ -15,7 +17,8 @@
 // With apply=false nothing is written and the plan is returned. With
 // apply=true the folders, images and problems are written in one transaction
 // (a replica set is required, as for the other importers); the Exam sync runs
-// after it and is itself idempotent.
+// after it and is itself idempotent. The figures belong to --owner, or else
+// to the oldest admin, or else to the oldest editor.
 // ---------------------------------------------------------------------------
 
 import { readFile } from 'node:fs/promises'
@@ -31,17 +34,19 @@ import { normalizeSlug } from '../models/content.js'
 import { EXAM_ROOT_NAME } from './examFolders.js'
 import { syncFolderExams } from './examSync.js'
 import { processImage } from './images.js'
-import {
-  FIGURES_DIR, OMMEB_GUERRERO_EXAMS, buildOmmebProblems, examFolderPath, examInstructions, validateOmmebGuerrero,
-} from '../data/ommebGuerrero/index.js'
+import { OMMEB_GUERRERO } from '../data/ommebGuerrero/index.js'
+import { EXAMENES_ENTRENAMIENTO } from '../data/examenesEntrenamiento/index.js'
+
+// Every collection the command can import, by key.
+export const COLLECTIONS = Object.fromEntries([OMMEB_GUERRERO, EXAMENES_ENTRENAMIENTO].map((collection) => [collection.key, collection]))
 
 mongoose.set('transactionAsyncLocalStorage', true)
 
 // The fields compared to tell «already there» from «edited on the site».
 export const COMPARED_FIELDS = ['titulo', 'enunciado', 'solution', 'sourceAttribution', 'competition', 'round', 'problemNumber', 'año', 'tema', 'tipo']
 
-export class OmmebImportError extends Error {
-  constructor(message, code = 'OMMEB_IMPORT_ERROR') {
+export class TranscribedImportError extends Error {
+  constructor(message, code = 'TRANSCRIBED_IMPORT_ERROR') {
     super(message)
     this.code = code
   }
@@ -73,10 +78,10 @@ function resolveFolders(folders, paths) {
 }
 
 // What an import would do, without writing.
-export async function planOmmebImport({ exams = OMMEB_GUERRERO_EXAMS } = {}) {
-  const summary = validateOmmebGuerrero(exams)
-  const problems = buildOmmebProblems(exams)
-  const paths = exams.map(examFolderPath)
+export async function planImport(collection, { exams = collection.exams } = {}) {
+  const summary = collection.validate(exams)
+  const problems = collection.buildProblems(exams)
+  const paths = exams.map(collection.folderPath)
   // Sequential on purpose: this also runs inside the import transaction.
   const folders = await Category.find({ kind: 'exam' }).lean()
   const existing = await Problem.find({ codigo: { $in: problems.map((p) => p.fields.codigo) } }).lean()
@@ -92,7 +97,7 @@ export async function planOmmebImport({ exams = OMMEB_GUERRERO_EXAMS } = {}) {
 }
 
 // Plain-object report of a plan (for the CLI and the tests).
-export function summarizeOmmebPlan(plan) {
+export function summarizePlan(plan) {
   const codes = (action) => plan.rows.filter((row) => row.action === action).map((row) => row.fields.codigo)
   return {
     exams: plan.summary.exams,
@@ -107,10 +112,12 @@ export function summarizeOmmebPlan(plan) {
 }
 
 async function imageOwner(username) {
-  const query = username ? { username } : { role: 'admin' }
-  const owner = await User.findOne(query).sort({ createdAt: 1 }).select('_id username role').lean()
-  if (!owner) throw new OmmebImportError(username ? `No user «${username}» to own the figures.` : 'No admin account to own the figures. Pass --owner <username>.', 'OMMEB_NO_OWNER')
-  return owner
+  const queries = username ? [{ username }] : [{ role: 'admin' }, { role: 'editor' }]
+  for (const query of queries) {
+    const owner = await User.findOne(query).sort({ createdAt: 1 }).select('_id username role').lean()
+    if (owner) return owner
+  }
+  throw new TranscribedImportError(username ? `No user «${username}» to own the figures.` : 'No admin or editor account to own the figures. Pass --owner <username>.', 'TRANSCRIBED_NO_OWNER')
 }
 
 async function topicIds() {
@@ -118,15 +125,15 @@ async function topicIds() {
   return (area) => topics.filter((topic) => sameName(topic.name, area)).map((topic) => topic._id)
 }
 
-// Runs the import. apply=false (default) only plans.
-export async function importOmmebGuerrero({ apply = false, owner: ownerName = null, exams = OMMEB_GUERRERO_EXAMS } = {}) {
-  const plan = await planOmmebImport({ exams })
-  if (plan.pending.length) throw new OmmebImportError(`These folders are waiting for review; approve or rename them on /panel/revision first: ${plan.pending.join(', ')}.`, 'OMMEB_PENDING_FOLDER')
-  const report = summarizeOmmebPlan(plan)
+// Runs the import of one collection. apply=false (default) only plans.
+export async function importCollection(collection, { apply = false, owner: ownerName = null, exams = collection.exams } = {}) {
+  const plan = await planImport(collection, { exams })
+  if (plan.pending.length) throw new TranscribedImportError(`These folders are waiting for review; approve or rename them on /panel/revision first: ${plan.pending.join(', ')}.`, 'TRANSCRIBED_PENDING_FOLDER')
+  const report = summarizePlan(plan)
   if (!apply) return { ...report, applied: false, examChanges: [] }
 
   const hello = await mongoose.connection.db.admin().command({ hello: 1 })
-  if (!hello.setName && hello.msg !== 'isdbgrid') throw new OmmebImportError('The import requires a replica set (MongoDB Atlas supports this). Nothing was written.', 'CONTENT_REPLICA_SET_REQUIRED')
+  if (!hello.setName && hello.msg !== 'isdbgrid') throw new TranscribedImportError('The import requires a replica set (MongoDB Atlas supports this). Nothing was written.', 'CONTENT_REPLICA_SET_REQUIRED')
 
   const toCreate = plan.rows.filter((row) => row.action === 'create')
   // Figures are re-encoded before the transaction (sharp is slow) — the same
@@ -134,7 +141,7 @@ export async function importOmmebGuerrero({ apply = false, owner: ownerName = nu
   const owner = toCreate.some((row) => row.figures.length) ? await imageOwner(ownerName) : null
   const encoded = new Map()
   for (const file of new Set(toCreate.flatMap((row) => row.figures.map((figure) => figure.file)))) {
-    const original = await readFile(path.join(FIGURES_DIR, file))
+    const original = await readFile(path.join(collection.figuresDir, file))
     encoded.set(file, { ...(await processImage(original)), originalBytes: original.length })
   }
   const topicsFor = await topicIds()
@@ -143,7 +150,7 @@ export async function importOmmebGuerrero({ apply = false, owner: ownerName = nu
     await mongoose.connection.transaction(async () => {
       // The plan is recomputed inside the transaction, so nothing created in
       // the meantime is duplicated.
-      const fresh = await planOmmebImport({ exams })
+      const fresh = await planImport(collection, { exams })
       const folders = new Map(fresh.byPath)
       let root = fresh.root
       if (!root) root = (await new Category({ name: EXAM_ROOT_NAME, parent: null, kind: 'exam', reviewStatus: 'approved' }).save()).toObject()
@@ -172,16 +179,18 @@ export async function importOmmebGuerrero({ apply = false, owner: ownerName = nu
 
   // One Exam per exam folder on the Exámenes page, then its duration and
   // instructions when the Exam has none yet.
-  const after = await planOmmebImport({ exams })
-  const examFolders = exams.map((exam) => ({ exam, folder: after.byPath.get(key(examFolderPath(exam))) }))
+  const after = await planImport(collection, { exams })
+  const examFolders = exams.map((exam) => ({ exam, folder: after.byPath.get(key(collection.folderPath(exam))) }))
   const examChanges = await syncFolderExams(examFolders.map(({ folder }) => folder?._id), { apply: true })
   for (const { exam, folder } of examFolders) {
     if (!folder) continue
-    const set = { durationMinutes: exam.duracionMinutos, instructions: examInstructions(exam), organization: 'OMMEB Guerrero', country: 'México' }
-    for (const [field, value] of Object.entries(set)) {
+    const set = collection.examFields(exam)
+    for (const [field, value] of Object.entries(set).filter(([, value]) => value !== undefined)) {
       const result = await Exam.updateMany({ categories: folder._id, [field]: { $in: [null, ''] } }, { $set: { [field]: value } })
-      if (result.modifiedCount) examChanges.push(`set ${field} of the exam in «${key(examFolderPath(exam))}»`)
+      if (result.modifiedCount) examChanges.push(`set ${field} of the exam in «${key(collection.folderPath(exam))}»`)
     }
   }
   return { ...report, applied: true, examChanges }
 }
+
+export const importOmmebGuerrero = (options) => importCollection(OMMEB_GUERRERO, options)

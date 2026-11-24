@@ -28,7 +28,7 @@ export const TOOLS = {
   'revise-theory': { script: 'revise-theory-lessons.js', uriVar: 'MONGO_REVISION_URI', confirmVar: 'REVISION_DATABASE_CONFIRM' },
   import: { script: 'import-mvp-content.js', uriVar: 'MONGO_CONTENT_IMPORT_URI', confirmVar: 'CONTENT_IMPORT_CONFIRM' },
   'sync-exams': { script: 'sync-exam-folders.js', uriVar: 'MONGO_EXAM_SYNC_URI', confirmVar: 'EXAM_SYNC_CONFIRM' },
-  'import-ommeb': { script: 'import-ommeb-guerrero.js', uriVar: 'MONGO_OMMEB_IMPORT_URI', confirmVar: 'OMMEB_IMPORT_CONFIRM' },
+  'import-transcribed': { script: 'import-transcribed-exams.js', uriVar: 'MONGO_TRANSCRIBED_IMPORT_URI', confirmVar: 'TRANSCRIBED_IMPORT_CONFIRM' },
   'import-exams': { script: 'import-exam-problems.js', uriVar: 'MONGO_EXAM_IMPORT_URI', confirmVar: 'EXAM_IMPORT_CONFIRM' },
 }
 

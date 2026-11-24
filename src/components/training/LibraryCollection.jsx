@@ -35,6 +35,10 @@ const EXAM_FOLDER_DESCRIPTIONS = {
   Occidente: 'Olimpiada Regional de Occidente.',
   Centro: 'Olimpiada Regional de la Zona Centro.',
   OMMEB: 'Olimpiada Mexicana de Matemáticas para Educación Básica.',
+  Guerrero: 'Exámenes estatales y selectivos de Guerrero.',
+  IMC: 'International Mathematics Competition: exámenes selectivos de México.',
+  PAGMO: 'Olimpiada Panamericana Femenil de Matemáticas: exámenes selectivos de México.',
+  'Olimpiada Femenil CARMA': 'Olimpiada Femenil de matemáticas organizada por CARMA.',
 }
 
 function ExamFolderCard({ name, onOpen }) {

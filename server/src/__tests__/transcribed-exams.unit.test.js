@@ -4,7 +4,9 @@ import { describe, expect, it } from 'vitest'
 import {
   FIGURES_DIR, OMMEB_GUERRERO_EXAMS, buildOmmebProblems, examFolderPath, examInstructions, validateOmmebGuerrero,
 } from '../data/ommebGuerrero/index.js'
-import { ommebReport, parseOmmebArgs } from '../scripts/import-ommeb-guerrero.js'
+import { importReport, parseTranscribedArgs } from '../scripts/import-transcribed-exams.js'
+import { EXAMENES_ENTRENAMIENTO, SIN_RESPUESTA } from '../data/examenesEntrenamiento/index.js'
+import { COLLECTIONS } from '../lib/transcribedExams.js'
 import { toolEnv } from '../scripts/atlas.js'
 import { sourceProblemTitle } from '../../../src/lib/problemPresentation.js'
 
@@ -69,26 +71,52 @@ describe('OMMEB Guerrero transcription', () => {
   })
 })
 
-describe('OMMEB import command', () => {
-  it('takes --apply, --dry-run and --owner only', () => {
-    expect(parseOmmebArgs([])).toEqual({ apply: false, owner: null })
-    expect(parseOmmebArgs(['--apply', '--owner', 'elias'])).toEqual({ apply: true, owner: 'elias' })
-    expect(() => parseOmmebArgs(['--apply', '--dry-run'])).toThrow()
-    expect(() => parseOmmebArgs(['--force'])).toThrow()
+describe('Exámenes de entrenamiento transcription', () => {
+  const entrenamiento = EXAMENES_ENTRENAMIENTO.buildProblems()
+
+  it('has the 4 IMC, the PAGMO and the CARMA exams, and validates', () => {
+    expect(EXAMENES_ENTRENAMIENTO.validate()).toMatchObject({ exams: 6, problems: 67 })
+    expect(EXAMENES_ENTRENAMIENTO.exams.map((exam) => exam.carpeta.join(' › '))).toContain('IMC › Selectivo de México (secundaria) › 2021 › Examen 5')
+    const files = readdirSync(path.dirname(EXAMENES_ENTRENAMIENTO.figuresDir)).filter((file) => /^[a-z]+-20\d\d-.+\.js$/.test(file))
+    expect(files).toHaveLength(EXAMENES_ENTRENAMIENTO.exams.length)
+  })
+
+  it('titles the problems so the problem page shows them whole, and says there is no answer', () => {
+    const first = entrenamiento.find((p) => p.fields.codigo === 'IMC-MX-2021-SEL1-01')
+    expect(sourceProblemTitle(first.fields)).toBe('Selectivo IMC México, examen 1 · 2021 · Problema 1')
+    expect(first.fields).toMatchObject({ competition: 'IMC', round: 'Selectivo de México (secundaria) · Examen 1', solution: `Nota: ${SIN_RESPUESTA}` })
+  })
+
+  it('uses every figure file, and no code is shared with another collection', () => {
+    const used = new Set(entrenamiento.flatMap((p) => p.figures.map((f) => f.file)))
+    expect(readdirSync(EXAMENES_ENTRENAMIENTO.figuresDir).filter((file) => !used.has(file))).toEqual([])
+    const all = Object.values(COLLECTIONS).flatMap((collection) => collection.buildProblems().map((p) => p.fields.codigo))
+    expect(new Set(all).size).toBe(all.length)
+  })
+})
+
+describe('Transcribed exams import command', () => {
+  it('takes a collection, --apply, --dry-run and --owner only', () => {
+    expect(parseTranscribedArgs(['ommeb-guerrero'])).toEqual({ collection: 'ommeb-guerrero', apply: false, owner: null })
+    expect(parseTranscribedArgs(['examenes-entrenamiento', '--apply', '--owner', 'elias'])).toEqual({ collection: 'examenes-entrenamiento', apply: true, owner: 'elias' })
+    expect(() => parseTranscribedArgs([])).toThrow()
+    expect(() => parseTranscribedArgs(['ommeb-guerrero', '--apply', '--dry-run'])).toThrow()
+    expect(() => parseTranscribedArgs(['ommeb-guerrero', '--force'])).toThrow()
+    expect(() => parseTranscribedArgs(['otra'])).toThrow()
   })
 
   it('reports a dry run without connection details', () => {
-    const text = ommebReport('teacherperi', { applied: false, exams: 24, problems: 360, foldersToCreate: ['OMMEB › Guerrero'], create: ['A', 'B'], keep: [], differs: [{ codigo: 'C', fields: ['enunciado'] }], images: 3, examChanges: [] })
-    expect(text).toContain('dry-run · database: teacherperi')
+    const text = importReport('OMMEB Guerrero', 'teacherperi', { applied: false, exams: 24, problems: 360, foldersToCreate: ['OMMEB › Guerrero'], create: ['A', 'B'], keep: [], differs: [{ codigo: 'C', fields: ['enunciado'] }], images: 3, examChanges: [] })
+    expect(text).toContain('OMMEB Guerrero · dry-run · database: teacherperi')
     expect(text).toContain('C: enunciado')
     expect(text).toContain('Nothing was written.')
   })
 
   it('runs on Atlas through the shared wrapper', () => {
     const uri = 'mongodb+srv://u:p@cluster.example.net/teacherperi?retryWrites=true'
-    const { env, apply } = toolEnv({ ATLAS_TEST_URI: uri }, 'test', 'import-ommeb', ['--apply'])
+    const { env, apply } = toolEnv({ ATLAS_TEST_URI: uri }, 'test', 'import-transcribed', ['examenes-entrenamiento', '--apply'])
     expect(apply).toBe(true)
-    expect(env.MONGO_OMMEB_IMPORT_URI).toBe(uri)
-    expect(env.OMMEB_IMPORT_CONFIRM).toBe('teacherperi')
+    expect(env.MONGO_TRANSCRIBED_IMPORT_URI).toBe(uri)
+    expect(env.TRANSCRIBED_IMPORT_CONFIRM).toBe('teacherperi')
   })
 })

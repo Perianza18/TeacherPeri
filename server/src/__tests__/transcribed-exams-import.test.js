@@ -8,7 +8,8 @@ import ProblemImage from '../models/ProblemImage.js'
 import Topic from '../models/Topic.js'
 import User from '../models/User.js'
 import { OMMEB_GUERRERO_EXAMS } from '../data/ommebGuerrero/index.js'
-import { importOmmebGuerrero } from '../lib/ommebImport.js'
+import { EXAMENES_ENTRENAMIENTO } from '../data/examenesEntrenamiento/index.js'
+import { importCollection, importOmmebGuerrero } from '../lib/transcribedExams.js'
 
 // Two exams keep the test quick: one with figures in the statement and the
 // solution, one with a problem that has no official answer.
@@ -77,7 +78,23 @@ describe('OMMEB Guerrero import', () => {
   it('stops when a folder it needs is waiting for review', async () => {
     const { ommeb } = await setup()
     await Category.create({ name: 'guerrero', kind: 'exam', parent: ommeb._id, reviewStatus: 'pending' })
-    await expect(importOmmebGuerrero({ apply: true, exams })).rejects.toMatchObject({ code: 'OMMEB_PENDING_FOLDER' })
+    await expect(importOmmebGuerrero({ apply: true, exams })).rejects.toMatchObject({ code: 'TRANSCRIBED_PENDING_FOLDER' })
     expect(await Problem.countDocuments()).toBe(0)
   })
+
+  it('imports another collection next to it, with an editor owning the figures', async () => {
+    await Topic.create({ name: 'Geometría', slug: 'omm-geometria' })
+    await User.create({ username: 'edith', email: 'edith@test.com', passwordHash: 'hash-de-prueba', role: 'editor' })
+    await Category.create({ name: 'Exámenes', kind: 'exam' })
+    const exams = EXAMENES_ENTRENAMIENTO.exams.filter((exam) => exam.carpeta[0] !== 'IMC' || exam.carpeta[3] === 'Examen 1')
+    const result = await importCollection(EXAMENES_ENTRENAMIENTO, { apply: true, exams })
+    expect(result.create).toHaveLength(15 + 3 + 4)
+    const owner = await User.findOne({ username: 'edith' })
+    expect(await ProblemImage.countDocuments({ owner: owner._id })).toBe(result.images)
+    const titles = (await Exam.find().lean()).map((e) => [e.competition, e.year, e.round].join(' · ')).sort()
+    expect(titles).toEqual(['IMC · 2021 · Selectivo de México (secundaria) · Examen 1', 'Olimpiada Femenil CARMA · 2020 · Categoría Walabi · Etapa final', 'PAGMO · 2021 · Selectivo de México · Examen 1'])
+    const carma = await Exam.findOne({ competition: 'Olimpiada Femenil CARMA' }).lean()
+    expect(carma.durationMinutes).toBeUndefined()
+    expect(carma.instructions).toContain('VI Olimpiada Femenil CARMA')
+  }, 60000)
 })
