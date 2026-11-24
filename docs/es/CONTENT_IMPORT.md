@@ -164,7 +164,7 @@ KaTeX estricto. Hay dos colecciones:
 | Colección | Carpeta | Contenido |
 | --- | --- | --- |
 | `ommeb-guerrero` | `server/src/data/ommebGuerrero/` | Exámenes Estatal y Selectivo de la OMMEB en Guerrero, de la 7a a la 10a edición (2023–2026), niveles 1 a 3: 24 exámenes, 360 problemas, con las respuestas oficiales y las soluciones oficiales de los problemas de redacción (sin copiar los criterios de calificación) |
-| `examenes-entrenamiento` | `server/src/data/examenesEntrenamiento/` | Exámenes selectivos y de entrenamiento que llegaron como PDF sueltos: exámenes 1, 2, 3 y 5 del selectivo mexicano 2021 para la IMC (secundaria), el primer examen selectivo 2021 de la delegación mexicana a la PAGMO y la final Walabi de la VI Olimpiada Femenil CARMA (2020): 6 exámenes, 67 problemas. Los PDF no traen respuestas, así que cada problema lo dice en una nota |
+| `examenes-entrenamiento` | `server/src/data/examenesEntrenamiento/` | Exámenes selectivos y de entrenamiento que llegaron como PDF sueltos: exámenes 1, 2, 3 y 5 del selectivo mexicano 2021 para la IMC (secundaria) y el primer examen selectivo 2021 de la delegación mexicana a la PAGMO: 5 exámenes, 63 problemas. Los PDF no traen respuestas, así que cada problema lo dice en una nota |
 
 `npm run content:import-transcribed -- <colección>` agrega una colección a una base
 que ya tiene contenido:

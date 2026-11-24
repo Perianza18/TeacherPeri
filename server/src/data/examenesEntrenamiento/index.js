@@ -25,7 +25,6 @@ import imc2021Examen2 from './imc-2021-selectivo-2.js'
 import imc2021Examen3 from './imc-2021-selectivo-3.js'
 import imc2021Examen5 from './imc-2021-selectivo-5.js'
 import pagmo2021Examen1 from './pagmo-2021-selectivo-1.js'
-import carma2020Walabi from './carma-2020-walabi-final.js'
 
 // Every exam. Add the import of a new exam file here.
 export const EXAMENES_ENTRENAMIENTO_EXAMS = [
@@ -34,7 +33,6 @@ export const EXAMENES_ENTRENAMIENTO_EXAMS = [
   imc2021Examen3,
   imc2021Examen5,
   pagmo2021Examen1,
-  carma2020Walabi,
 ]
 
 export const FIGURES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'figuras')

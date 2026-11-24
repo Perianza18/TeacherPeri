@@ -147,7 +147,7 @@ strict KaTeX. Two collections exist:
 | Collection | Folder | Content |
 | --- | --- | --- |
 | `ommeb-guerrero` | `server/src/data/ommebGuerrero/` | Estatal and Selectivo exams of the OMMEB in Guerrero, 7a to 10a edición (2023–2026), levels 1 to 3: 24 exams, 360 problems, with the official answers and the official solutions of the problems «de redacción» (their grading criteria are not copied) |
-| `examenes-entrenamiento` | `server/src/data/examenesEntrenamiento/` | Selection and training exams that came as loose PDFs: exams 1, 2, 3 and 5 of the 2021 Mexican selection for the IMC (secondary), the first 2021 selection exam of the Mexican PAGMO team and the Walabi final of the VI Olimpiada Femenil CARMA (2020): 6 exams, 67 problems. The PDFs have no answers, so each problem says so in a note |
+| `examenes-entrenamiento` | `server/src/data/examenesEntrenamiento/` | Selection and training exams that came as loose PDFs: exams 1, 2, 3 and 5 of the 2021 Mexican selection for the IMC (secondary) and the first 2021 selection exam of the Mexican PAGMO team: 5 exams, 63 problems. The PDFs have no answers, so each problem says so in a note |
 
 `npm run content:import-transcribed -- <collection>` adds a collection to a database
 that already has content:

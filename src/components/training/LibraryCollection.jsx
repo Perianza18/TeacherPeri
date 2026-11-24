@@ -41,7 +41,6 @@ const EXAM_FOLDER_DESCRIPTIONS = {
   IMC: 'International Mathematics Competition.',
   'Selectivo de México': 'Exámenes para elegir a la delegación mexicana.',
   'Selectivo de México (secundaria)': 'Exámenes para elegir a la delegación mexicana de secundaria.',
-  'Olimpiada Femenil CARMA': 'Olimpiada Femenil de matemáticas organizada por CARMA.',
 }
 
 function ExamFolderCard({ name, onOpen }) {
