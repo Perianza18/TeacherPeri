@@ -94,10 +94,11 @@ NODE_ENV=development MONGO_DEV_RESET_URI=mongodb://127.0.0.1:27017/teacherperi_d
 | `content:import` | Carga el contenido oficial a una base ([CONTENT_IMPORT.md](CONTENT_IMPORT.md)) |
 | `content:revise-theory` | Publica lecciones reescritas ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#revisar-lecciones-reescritas)) |
 | `content:check` | Muestra qué contenido tiene la base de la API (solo lectura) |
+| `content:import-exams` | Importa problemas de exámenes oficiales desde archivos preparados, como los regionales de la OMM ([CONTENT_IMPORT.md](CONTENT_IMPORT.md#importar-problemas-de-exámenes-oficiales)) |
 | `users:set-role` | Cambia el rol de una cuenta ([ROLES.md](ROLES.md)) |
 | `review` | Revisa propuestas, carpetas de examen y reportes de errores ([SUBMISSIONS.md](SUBMISSIONS.md)) |
 | `db:migrate:roles-users` | Migración única para los tres roles y las carpetas de examen ([SUBMISSIONS.md](SUBMISSIONS.md#migración)) |
-| `atlas:<herramienta>:test`, `atlas:<herramienta>:prod` | Corren `migrate`, `review`, `set-role`, `revise-theory` o `import` contra Atlas con el archivo privado de Atlas ([abajo](#scripts-de-atlas)) |
+| `atlas:<herramienta>:test`, `atlas:<herramienta>:prod` | Corren `migrate`, `review`, `set-role`, `revise-theory`, `import`, `sync-exams` o `import-exams` contra Atlas con el archivo privado de Atlas ([abajo](#scripts-de-atlas)) |
 | `db:local:start` | Inicia un replica set de MongoDB local ([LOCAL_MVP.md](LOCAL_MVP.md)) |
 | `db:reset:dev` | **Borra** los problemas y carpetas de una base local `teacherperi_dev` y la llena con problemas de ejemplo antiguos. Solo local |
 | `curriculum:preview:omm`, `curriculum:preview:omm-content` | Imprimen la Ruta OMM y su contenido sin base de datos |
@@ -131,6 +132,7 @@ dirección y se la pasa a la herramienta por la variable propia de esa herramien
 | `atlas:revise-theory:test`, `atlas:revise-theory:prod` | `content:revise-theory` |
 | `atlas:import:test`, `atlas:import:prod` | `content:import` |
 | `atlas:sync-exams:test`, `atlas:sync-exams:prod` | `db:sync:exam-folders` (un examen por carpeta de examen en Exámenes) |
+| `atlas:import-exams:test`, `atlas:import-exams:prod` | `content:import-exams` (la carpeta con los archivos del examen va después de `--`) |
 
 Cada uno es simulación (o solo lectura) salvo que `--apply` vaya después de `--`,
 por ejemplo `npm run atlas:migrate:test -- --apply`. Con `--apply` el envoltorio

@@ -37,7 +37,9 @@ export function stripDayPrefix(statement) {
 // position when the code ends in one (OMMU-NAC-2024-1). Never the title.
 export function problemSourceLabel(problem) {
   if (!problem) return ''
-  const source = [problem.competition || problem.tipo, problem.año].filter(Boolean).join(' ')
+  // OMM regional exams add their region: «OMM Regional Sureste 2024 · Problema 3».
+  const region = /^OMM Regional$/i.test(problem.competition || '') ? problem.round : null
+  const source = [problem.competition || problem.tipo, region, problem.año].filter(Boolean).join(' ')
   const position = problem.problemNumber || /-(\d+)$/.exec(problem.codigo || '')?.[1]
   return [source, position && `Problema ${Number(position)}`].filter(Boolean).join(' · ')
 }

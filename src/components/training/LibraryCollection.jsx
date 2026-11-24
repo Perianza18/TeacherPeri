@@ -30,6 +30,10 @@ const EXAM_FOLDER_DESCRIPTIONS = {
   'TeacherPeri Originals': 'Exámenes de práctica originales de TeacherPeri.',
   OMM: 'Olimpiada Mexicana de Matemáticas.',
   'OMM Estatal': 'Exámenes de las etapas estatales de la OMM.',
+  'OMM Regional': 'Exámenes de los concursos regionales de la OMM: Sureste, Occidente y Centro.',
+  Sureste: 'Olimpiada Regional del Sureste.',
+  Occidente: 'Olimpiada Regional de Occidente.',
+  Centro: 'Olimpiada Regional de la Zona Centro.',
   OMMEB: 'Olimpiada Mexicana de Matemáticas para Educación Básica.',
 }
 
