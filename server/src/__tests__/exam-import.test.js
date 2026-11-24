@@ -65,6 +65,21 @@ describe('exam problems import', () => {
     expect(await Exam.countDocuments()).toBe(1)
   })
 
+  it('files an exam without a round under competition › year, with solution figures', async () => {
+    await vocabulary()
+    const folder = examFolder([
+      record(1, { codigo: 'OMCC-2008-P1', titulo: 'OMCC 2008 · Problema 1', competition: 'Centroamericana', round: undefined, año: '2008', tipo: 'OMCC', solution: 'Fuente: Revista Tzaloa.', figure: undefined, figures: [{ id: 'cuadro', kind: 'svg', alt: 'Un cuadrado sin marcas.' }, { id: 'cuadro', kind: 'svg', alt: 'El mismo cuadrado en la solución.', placement: 'solution' }] }),
+    ])
+    const applied = await importExamProblems({ folder, apply: true })
+    expect(applied.folders.map((f) => f.name)).toEqual(['Centroamericana', '2008'])
+    const stored = await Problem.findOne({ codigo: 'OMCC-2008-P1' }).lean()
+    expect(stored.round).toBeUndefined()
+    expect(stored.images.map((i) => i.placement)).toEqual(['statement', 'solution'])
+    expect(await ProblemImage.countDocuments()).toBe(2)
+    const exam = await Exam.findOne({ competition: 'Centroamericana' }).lean()
+    expect(exam).toMatchObject({ year: '2008', round: null })
+  })
+
   it('stops before writing when a tag is missing or a code holds another statement', async () => {
     await vocabulary()
     await expect(importExamProblems({ folder: examFolder([record(1, { subtopics: ['Nueva etiqueta'] })]), apply: true })).rejects.toThrow(/never creates tags/)

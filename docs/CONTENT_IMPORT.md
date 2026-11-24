@@ -106,19 +106,22 @@ run on production, reviewed before `--apply`.
 
 ## Importing official exam problems
 
-`content:import-exams` loads official exam problems (first used for the OMM
-regional exams: Sureste, Occidente and Centro) from a folder of prepared files,
+`content:import-exams` loads official exam problems (used for the OMM regional
+exams, the OMCC and the PAGMO) from a folder of prepared files,
 one JSON file per exam, plus their figures in `figures/`. The files are kept
 outside the repository; the script is in
 `server/src/scripts/import-exam-problems.js`, which describes the record format.
 
 - Each exam goes into the folder `Exámenes › <competition> › <round> › <year>`
-  (for example `Exámenes › OMM Regional › Sureste › 2024`); missing folders are
-  created as approved folders.
+  (for example `Exámenes › OMM Regional › Sureste › 2024`), or
+  `Exámenes › <competition> › <year>` when the exam has no round (for example
+  `Exámenes › Centroamericana › 2016`); missing folders are created as approved
+  folders.
 - Problems use existing tags, áreas and subtopics only. An unknown one stops the
   run: the script never creates a tag or a topic.
 - Figures (SVG drawn to the `Figura` rules, or a PNG crop) are stored like any
-  uploaded image: WebP, at most 1200 px wide, with Spanish alt text.
+  uploaded image: WebP, at most 1200 px wide, with Spanish alt text. A problem
+  has at most 4 figures; each one goes with the statement or with the solution.
 - Folders, problems and figures are written in one transaction; then the same
   exam sync the site uses creates or updates the exam cards on Exámenes.
 - Ids are stable, so a second run reports every problem as already there. A code
