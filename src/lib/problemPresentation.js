@@ -32,6 +32,8 @@ export function problemCredit(problem = {}) {
     [/^OMMEB$/i, 'Olimpiada Mexicana de Matemáticas para Educación Básica'],
     [/^IMO$/i, 'Olimpiada Internacional de Matemáticas'],
     [/^Putnam$/i, 'William Lowell Putnam Mathematical Competition'],
+    [/^Centroamericana$/i, 'Olimpiada Matemática de Centroamérica y el Caribe'],
+    [/^PAGMO$/i, 'Olimpiada Panamericana Femenil de Matemáticas'],
   ]
   // OMM regional exams name their region: «Olimpiada Mexicana de Matemáticas, Regional Sureste».
   const region = /^OMM Regional$/i.test(source) && String(problem.round || '').trim()
