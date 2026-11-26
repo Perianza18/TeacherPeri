@@ -27,6 +27,9 @@ router.post('/', requireAuth, async (req, res) => {
       perfil,
       motivo,
       mensaje,
+      // Solo se guarda el texto libre cuando la opción es «Otro».
+      perfilOtro: perfil === 'Otro' ? String(req.body.perfilOtro || '').trim() : undefined,
+      motivoOtro: motivo === 'Otro' ? String(req.body.motivoOtro || '').trim() : undefined,
     })
     res.status(201).json(contactMessage)
   } catch (err) {
