@@ -6,10 +6,16 @@
 // "administrador" en este proyecto (todos los usuarios son iguales), así
 // que exponer los mensajes de todo mundo a cualquiera con sesión sería un
 // problema de privacidad. Por ahora se leen directo de Mongo.
+//
+// Además, cada mensaje guardado manda un aviso por correo a la bandeja del
+// equipo (ver lib/contactEmail.js). El aviso sale después de responder, así
+// que un fallo del correo nunca impide enviar el formulario.
 
 import { Router } from 'express'
 import ContactMessage from '../models/ContactMessage.js'
+import User from '../models/User.js'
 import { requireAuth } from '../middleware/auth.js'
+import { sendContactEmail } from '../lib/contactEmail.js'
 
 const router = Router()
 
@@ -32,6 +38,7 @@ router.post('/', requireAuth, async (req, res) => {
       motivoOtro: motivo === 'Otro' ? String(req.body.motivoOtro || '').trim() : undefined,
     })
     res.status(201).json(contactMessage)
+    avisarPorCorreo(contactMessage)
   } catch (err) {
     if (err.name === 'ValidationError') {
       const mensajeError = Object.values(err.errors)
@@ -42,5 +49,19 @@ router.post('/', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'No se pudo enviar el mensaje.' })
   }
 })
+
+async function avisarPorCorreo(contactMessage) {
+  // Sin clave (pruebas, desarrollo local) no se manda nada.
+  if (!process.env.RESEND_API_KEY) return
+  try {
+    const autor = await User.findById(contactMessage.author).select('username email').lean()
+    const resultado = await sendContactEmail(contactMessage, autor)
+    if (!resultado.sent) {
+      console.error(`[contact] no se pudo mandar el aviso de ${contactMessage._id}: ${resultado.reason}`)
+    }
+  } catch (err) {
+    console.error(`[contact] no se pudo mandar el aviso de ${contactMessage._id}: ${err.message}`)
+  }
+}
 
 export default router

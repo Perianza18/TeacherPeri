@@ -118,7 +118,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Función | Estado | Notas |
 | --- | --- | --- |
 | Recursos: recursos externos por categoría | Hecho | `/recursos`. Ningún menú enlaza a ella todavía. Está planeado un filtro por etiquetas |
-| Contacto | Hecho | Título «Contáctanos». El formulario funciona con sesión iniciada; al elegir «Otro» en «¿Quién eres?» o en «Motivo del mensaje» aparece un campo de texto obligatorio (hasta 100 caracteres) para describirlo. «Correo» abre contacto@teacherperi.com e Instagram abre @teacherperi_. LinkedIn aún no tiene página, así que lleva a «Página no encontrada» |
+| Contacto | Hecho | Título «Contáctanos». El formulario funciona con sesión iniciada. Cada mensaje se guarda en la base de datos y además llega por correo a contacto@teacherperi.com (cuando `RESEND_API_KEY` esté en Render, ver [DEPLOYMENT.md](DEPLOYMENT.md#correos-de-contacto)); al elegir «Otro» en «¿Quién eres?» o en «Motivo del mensaje» aparece un campo de texto obligatorio (hasta 100 caracteres) para describirlo. «Correo» abre contacto@teacherperi.com e Instagram abre @teacherperi_. LinkedIn aún no tiene página, así que lleva a «Página no encontrada» |
 | Colabora (cómo colaborar) | Planeado | **Hoy:** usa Contacto |
 | Experiencias (blog de exolímpicos) | Planeado | **Hoy:** página «Próximamente» |
 | Equipo | Hecho | `/equipo`: dos tarjetas, Elías (TeacherPeri) y Catherine (TeacherCath), y cada una abre su propia página (`/equipo/elias`, `/equipo/catherine`, un archivo por persona en `src/pages/equipo/`), que cada quien decora. Enlazada desde «Conócenos» en Inicio |

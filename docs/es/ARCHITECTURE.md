@@ -124,7 +124,7 @@ escribe necesita sesión iniciada, y el servidor revisa el rol en cada petición
 | `/api/review` | Editores y admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
 | `/api/images` | Con sesión: `POST /` (el archivo de la imagen como cuerpo). Pública: `GET /:id` (en caché un año) |
 | `/api/users` | Admins: `GET /` (`?q=` para buscar), `PUT /:id/role` (solo `user` o `editor`) |
-| `/api/contact` | Con sesión: `POST /` |
+| `/api/contact` | Con sesión: `POST /` (guarda el mensaje y lo manda por correo al equipo, ver [DEPLOYMENT.md](DEPLOYMENT.md#correos-de-contacto)) |
 
 Editores y admins aprueban y rechazan propuestas en `/panel/revision` (`/api/review`) o
 con `npm run review`; los dos usan `server/src/lib/review/service.js` (ver

@@ -25,7 +25,8 @@ request or a `VITE_*` variable.
 **Render (API):** `NODE_ENV=production`, `MONGO_URI` (a database user that can
 only read and write `teacherperi_prod`), `JWT_SECRET`,
 `CLIENT_ORIGIN=https://www.teacherperi.com` and `TRUST_PROXY_HOPS=3`.
-Build with `npm ci`; start with `npm start`.
+Build with `npm ci`; start with `npm start`. Optional: `RESEND_API_KEY` (and
+`CONTACT_EMAIL_TO`, `CONTACT_EMAIL_FROM`) for contact emails, see below.
 
 `TRUST_PROXY_HOPS` tells the API how many proxies sit in front of it, so the
 request limits count each visitor and not the proxy. On Render it must be 3
@@ -40,6 +41,34 @@ two checks (watch the `RateLimit-Remaining` response header).
 trailing slash), build `npm run build`, output `dist`. `vercel.json` sends every
 page address to `index.html`, so refreshing a deep link such as `/rutas/...`
 works.
+
+## Contact emails
+
+Every message sent from the Contacto form is saved in the `contactmessages`
+collection and also emailed to the team through [Resend](https://resend.com)
+(free plan: 3,000 emails a month). The API calls Resend's web API directly, so
+there is no extra library. The email goes out after the form answers, so an email
+failure never stops a message from being saved; it is only logged
+(`[contact] no se pudo mandar el aviso…` in the Render logs).
+
+Format: subject `[Contacto TeacherPeri] <motivo> · @<username>`; body with
+Usuario, Correo, ¿Quién eres?, Motivo, Fecha (Mexico City time) and the message.
+«Responder» answers the sender directly (`reply_to` is their account email).
+
+| Variable (Render) | Value |
+| --- | --- |
+| `RESEND_API_KEY` | The Resend API key. Without it, no email is sent (tests and local development) |
+| `CONTACT_EMAIL_TO` | Optional. Default `contacto@teacherperi.com` |
+| `CONTACT_EMAIL_FROM` | Optional. Default `TeacherPeri <avisos@teacherperi.com>`; must use a domain verified in Resend |
+
+One-time setup:
+1. Create a free Resend account.
+2. In Resend › Domains, add `teacherperi.com` and copy the DNS records it shows
+   (DKIM, plus SPF and MX on the `send` subdomain) into the domain's DNS. They
+   do not touch the root MX records, so ImprovMX forwarding keeps working.
+3. When the domain shows «Verified», create an API key with «Sending access».
+4. Add it in Render as `RESEND_API_KEY` and save (Render redeploys).
+5. Send a test message from https://www.teacherperi.com/contacto.
 
 ## Changing data on the live database
 

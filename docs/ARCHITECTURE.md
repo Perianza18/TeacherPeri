@@ -123,7 +123,7 @@ needs a signed-in user, and the server checks the role on every request (see
 | `/api/review` | Editors and admins: `GET /`, `GET /folders`, `GET /submissions/:id`, `POST /submissions/:id/approve`, `POST /submissions/:id/reject`, `POST /folders/:id/approve`, `POST /folders/:id/reject`, `POST /folders/:id/rename` |
 | `/api/images` | Signed in: `POST /` (the image file as the body). Public: `GET /:id` (cached for a year) |
 | `/api/users` | Admins: `GET /` (`?q=` to search), `PUT /:id/role` (`user` or `editor` only) |
-| `/api/contact` | Signed in: `POST /` |
+| `/api/contact` | Signed in: `POST /` (saves the message and emails it to the team, see [DEPLOYMENT.md](DEPLOYMENT.md#contact-emails)) |
 
 Editors and admins approve and reject proposals on `/panel/revision` (`/api/review`) or with
 `npm run review`; both use `server/src/lib/review/service.js` (see

@@ -25,7 +25,8 @@ en un pull request ni en una variable `VITE_*`.
 **Render (API):** `NODE_ENV=production`, `MONGO_URI` (un usuario de base de datos
 que solo puede leer y escribir `teacherperi_prod`), `JWT_SECRET`,
 `CLIENT_ORIGIN=https://www.teacherperi.com` y `TRUST_PROXY_HOPS=3`. Se
-construye con `npm ci` y arranca con `npm start`.
+construye con `npm ci` y arranca con `npm start`. Opcional: `RESEND_API_KEY`
+(y `CONTACT_EMAIL_TO`, `CONTACT_EMAIL_FROM`) para los correos de contacto, ver abajo.
 
 `TRUST_PROXY_HOPS` le dice a la API cuántos proxies hay delante de ella, para que
 los límites de peticiones cuenten a cada visitante y no al proxy. En Render debe
@@ -41,6 +42,37 @@ nuevo con esas dos pruebas (revisa el encabezado de respuesta
 diagonal al final), build `npm run build`, salida `dist`. `vercel.json` manda
 cualquier dirección de página a `index.html`, así que recargar un enlace profundo
 como `/rutas/...` funciona.
+
+## Correos de contacto
+
+Cada mensaje del formulario de Contacto se guarda en la colección
+`contactmessages` y además se manda por correo al equipo con
+[Resend](https://resend.com) (plan gratis: 3,000 correos al mes). La API llama
+directo a la API web de Resend, así que no hay librería extra. El correo sale
+después de que el formulario responde, así que un fallo del correo nunca impide
+guardar el mensaje; solo queda en el registro (`[contact] no se pudo mandar el
+aviso…` en los logs de Render).
+
+Formato: asunto `[Contacto TeacherPeri] <motivo> · @<usuario>`; cuerpo con
+Usuario, Correo, ¿Quién eres?, Motivo, Fecha (hora de la Ciudad de México) y el
+mensaje. «Responder» le contesta directo a quien escribió (`reply_to` es el
+correo de su cuenta).
+
+| Variable (Render) | Valor |
+| --- | --- |
+| `RESEND_API_KEY` | La clave de la API de Resend. Sin ella no se manda ningún correo (pruebas y desarrollo local) |
+| `CONTACT_EMAIL_TO` | Opcional. Por defecto `contacto@teacherperi.com` |
+| `CONTACT_EMAIL_FROM` | Opcional. Por defecto `TeacherPeri <avisos@teacherperi.com>`; debe usar un dominio verificado en Resend |
+
+Configuración (una sola vez):
+1. Crea una cuenta gratis en Resend.
+2. En Resend › Domains, agrega `teacherperi.com` y copia los registros DNS que
+   muestra (DKIM, y SPF y MX en el subdominio `send`) en el DNS del dominio. No
+   tocan los registros MX de la raíz, así que el reenvío de ImprovMX sigue
+   funcionando.
+3. Cuando el dominio diga «Verified», crea una clave de API con «Sending access».
+4. Agrégala en Render como `RESEND_API_KEY` y guarda (Render vuelve a publicar).
+5. Manda un mensaje de prueba desde https://www.teacherperi.com/contacto.
 
 ## Cambiar datos en la base del sitio
 
