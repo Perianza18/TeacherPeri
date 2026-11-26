@@ -10,7 +10,10 @@ import { plainMathText } from '../lib/mathAlt'
 //   description: one or two sentences; $…$ math becomes plain text
 //                («90^\circ» → «90°») and it is cut near 160 characters,
 //                the length Google shows
-//   noindex:     keep the page out of search results (the 404 page)
+//   noindex:     keep the page out of search results. Only for content that
+//                does not exist (a 404): a passing error, such as too many
+//                requests or the API waking up, must not tell Google to
+//                drop a real page
 // Leaving the page restores the defaults, so a page that does not call this
 // hook never shows the previous page's title.
 

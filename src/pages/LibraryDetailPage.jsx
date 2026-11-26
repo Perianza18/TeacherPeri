@@ -142,11 +142,11 @@ export default function LibraryDetailPage({ type }) {
           : [[], [], {}]
         if (!cancelled) setResult({ key, item, error: null, paths: paths.items || [], route: belongs ? route : null, problems, ancestors, collections })
       })
-      .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, paths: [] }) })
+      .catch((error) => { if (!cancelled) setResult({ key, item: null, error: error.status === 404 ? 'Este contenido no está disponible públicamente.' : error.message, notFound: error.status === 404, paths: [] }) })
     return () => { cancelled = true }
   }, [config.api, id, type, key, traversal])
   const title = type === 'problemas' && item ? sourceProblemTitle(item) || (item.isExercise ? 'Ejercicio' : 'Problema') : type === 'examenes' && item ? examTitle(item) : item?.title || item?.titulo || item?.codigo
-  usePageMeta({ title, description: item?.summary || item?.enunciado, noindex: Boolean(error) })
+  usePageMeta({ title, description: item?.summary || item?.enunciado, noindex: result.key === key && Boolean(result.notFound) })
   const route = result.key === key ? result.route : null
   const relatedRoutes = result.paths.filter((path) => !path.lessonOnly)
 

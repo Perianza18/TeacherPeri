@@ -52,13 +52,13 @@ export default function PerfilPage() {
     let active = true
     apiFetch(`/api/profiles/${encodeURIComponent(username)}`, { token })
       .then((profile) => { if (active) setResult({ key, profile, error: null }) })
-      .catch((error) => { if (active) setResult({ key, profile: null, error: error.status === 404 ? 'Ese perfil no existe.' : error.message }) })
+      .catch((error) => { if (active) setResult({ key, profile: null, error: error.status === 404 ? 'Ese perfil no existe.' : error.message, notFound: error.status === 404 }) })
     return () => { active = false }
   }, [key, username, token])
 
   const current = result.key === key
   const profile = current ? result.profile : null
-  usePageMeta({ title: profile ? `@${profile.username}` : 'Perfil', description: profile?.bio || undefined, noindex: !profile })
+  usePageMeta({ title: profile ? `@${profile.username}` : 'Perfil', description: profile?.bio || undefined, noindex: current && Boolean(result.notFound) })
 
   if (!profile) {
     return (
