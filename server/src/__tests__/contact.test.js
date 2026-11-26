@@ -75,4 +75,56 @@ describe('POST /api/contact', () => {
 
     expect(res.status).toBe(400)
   })
+
+  it('acepta «Otro» en perfil y motivo con su descripción', async () => {
+    const token = await crearUsuarioYObtenerToken()
+
+    const res = await request(app)
+      .post('/api/contact')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        perfil: 'Otro',
+        perfilOtro: '  Directora de escuela  ',
+        motivo: 'Otro',
+        motivoOtro: 'Invitar a un taller',
+        mensaje: 'Nos gustaría organizar un taller.',
+      })
+
+    expect(res.status).toBe(201)
+    expect(res.body.perfilOtro).toBe('Directora de escuela')
+    expect(res.body.motivoOtro).toBe('Invitar a un taller')
+  })
+
+  it('rechaza «Otro» sin descripción', async () => {
+    const token = await crearUsuarioYObtenerToken()
+
+    const res = await request(app)
+      .post('/api/contact')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        perfil: 'Padre/Madre',
+        motivo: 'Otro',
+        motivoOtro: '   ',
+        mensaje: 'Mensaje válido.',
+      })
+
+    expect(res.status).toBe(400)
+  })
+
+  it('no guarda la descripción si la opción no es «Otro»', async () => {
+    const token = await crearUsuarioYObtenerToken()
+
+    const res = await request(app)
+      .post('/api/contact')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        perfil: 'Profesor(a)',
+        perfilOtro: 'ignorado',
+        motivo: 'Feedback general',
+        mensaje: 'Mensaje válido.',
+      })
+
+    expect(res.status).toBe(201)
+    expect(res.body.perfilOtro).toBeUndefined()
+  })
 })

@@ -1,20 +1,20 @@
 // Sección Contacto (id="contacto"): correo y redes, como tarjetas cómic.
-//
-// TODO: href de mailto y de cada red son placeholders — no son datos
-// inventados sobre vos, son literalmente marcadores de posición que hay
-// que reemplazar con tu correo/redes reales antes de publicar el sitio.
-const CORREO_CONTACTO = 'tu-correo@ejemplo.com'
+// LinkedIn aún no tiene página: su enlace lleva a «Página no encontrada»
+// dentro del sitio (misma pestaña) hasta que exista.
+import { Link } from 'react-router-dom'
+
+const CORREO_CONTACTO = 'contacto@teacherperi.com'
 
 const REDES = [
   {
     label: 'Instagram',
-    href: 'https://instagram.com/tu-usuario',
+    href: 'https://www.instagram.com/teacherperi_/',
     icon: '/icons8-instagram-logo-48.png',
     color: 'bg-tp-orange-soft',
   },
   {
     label: 'LinkedIn',
-    href: 'https://linkedin.com/in/tu-usuario',
+    to: '/linkedin',
     icon: '/icons8-linkedin-50.png',
     color: 'bg-tp-sky-soft',
   },
@@ -43,19 +43,28 @@ export default function Contacto() {
               </span>
             </a>
           </li>
-          {REDES.map((red) => (
-            <li key={red.label}>
-              <a href={red.href} target="_blank" rel="noreferrer" className={TILE}>
+          {REDES.map((red) => {
+            const contenido = (
+              <>
                 <span aria-hidden="true" className={`grid size-12 shrink-0 place-items-center rounded-xl border-2 border-tp-ink ${red.color}`}>
                   <img src={red.icon} alt="" className="size-7 object-contain brightness-0" />
                 </span>
                 <span className="flex flex-col">
                   <span className="font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em]">{red.label}</span>
-                  <span className="text-sm text-tp-ink-muted">Abre en otra pestaña ↗</span>
+                  <span className="text-sm text-tp-ink-muted">{red.to ? 'Muy pronto' : 'Abre en otra pestaña ↗'}</span>
                 </span>
-              </a>
-            </li>
-          ))}
+              </>
+            )
+            return (
+              <li key={red.label}>
+                {red.to ? (
+                  <Link to={red.to} className={TILE}>{contenido}</Link>
+                ) : (
+                  <a href={red.href} target="_blank" rel="noreferrer" className={TILE}>{contenido}</a>
+                )}
+              </li>
+            )
+          })}
         </ul>
       </div>
     </section>

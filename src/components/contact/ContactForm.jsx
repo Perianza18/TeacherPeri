@@ -16,7 +16,10 @@ const MOTIVOS = [
   'Compartir experiencia',
   'Duda sobre extranjero',
   'Feedback general',
+  'Otro',
 ]
+
+const OTRO = 'Otro'
 
 const selectClass = 'tp-input'
 
@@ -25,11 +28,14 @@ const selectClass = 'tp-input'
 // del formulario — igual que Problemas.jsx hace con los comentarios,
 // mismo patrón "condicional según auth", ahora reusado aquí. Con sesión,
 // autocompleta nombre/correo desde auth.user (no pide inputs para eso) y
-// solo deja llenar los 2 selects + el mensaje.
+// solo deja llenar los 2 selects + el mensaje. Si un select queda en «Otro»,
+// aparece un campo de texto (obligatorio) para describirlo.
 export default function ContactForm() {
   const { auth, abrirModal } = useAuth()
   const [perfil, setPerfil] = useState(PERFILES[0])
+  const [perfilOtro, setPerfilOtro] = useState('')
   const [motivo, setMotivo] = useState(MOTIVOS[0])
+  const [motivoOtro, setMotivoOtro] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState(null)
@@ -38,7 +44,11 @@ export default function ContactForm() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     const cuerpo = mensaje.trim()
+    const perfilDetalle = perfil === OTRO ? perfilOtro.trim() : ''
+    const motivoDetalle = motivo === OTRO ? motivoOtro.trim() : ''
     if (!cuerpo) return
+    if (perfil === OTRO && !perfilDetalle) return
+    if (motivo === OTRO && !motivoDetalle) return
 
     setError(null)
     setEnviando(true)
@@ -46,10 +56,12 @@ export default function ContactForm() {
       await apiFetch('/api/contact', {
         method: 'POST',
         token: auth.token,
-        body: { perfil, motivo, mensaje: cuerpo },
+        body: { perfil, perfilOtro: perfilDetalle, motivo, motivoOtro: motivoDetalle, mensaje: cuerpo },
       })
       setEnviado(true)
       setMensaje('')
+      setPerfilOtro('')
+      setMotivoOtro('')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -111,6 +123,20 @@ export default function ContactForm() {
         </select>
       </label>
 
+      {perfil === OTRO && (
+        <label className="flex flex-col gap-1.5 text-sm font-bold">
+          Cuéntanos quién eres
+          <input
+            type="text"
+            value={perfilOtro}
+            onChange={(e) => setPerfilOtro(e.target.value)}
+            required
+            maxLength={100}
+            className={selectClass}
+          />
+        </label>
+      )}
+
       <label className="flex flex-col gap-1.5 text-sm font-bold">
         Motivo del mensaje
         <select value={motivo} onChange={(e) => setMotivo(e.target.value)} className={selectClass}>
@@ -119,6 +145,20 @@ export default function ContactForm() {
           ))}
         </select>
       </label>
+
+      {motivo === OTRO && (
+        <label className="flex flex-col gap-1.5 text-sm font-bold">
+          Describe el motivo
+          <input
+            type="text"
+            value={motivoOtro}
+            onChange={(e) => setMotivoOtro(e.target.value)}
+            required
+            maxLength={100}
+            className={selectClass}
+          />
+        </label>
+      )}
 
       <label className="flex flex-col gap-1.5 text-sm font-bold">
         Mensaje

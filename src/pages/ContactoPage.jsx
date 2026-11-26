@@ -7,8 +7,8 @@ import Mascot from '../components/decor/Mascot'
 import { BubbleTail, Mark } from '../components/decor/Decor'
 import { usePageMeta } from '../hooks/usePageMeta'
 
-// Página Contacto: la bienvenida (texto exacto pedido) en un globo de
-// diálogo junto al formulario, y al final las formas de contacto directo
+// Página Contacto: la bienvenida y una cita en un globo de diálogo junto
+// al formulario, y al final las formas de contacto directo
 // (Contacto.jsx).
 export default function ContactoPage() {
   usePageMeta({ title: 'Contacto', description: 'Ponte en contacto con TeacherPeri: escríbenos con tus dudas, ideas o ganas de colaborar.' })
@@ -20,8 +20,7 @@ export default function ContactoPage() {
           id="contacto-titulo"
           tone="mint"
           kicker="Contacto"
-          title={<Mark variant="lines" color="var(--tp-orange)" width={6} delay={300}>Contáctame</Mark>}
-          lead="¡Holaaa! Qué gusto que quieras ponerte en contacto. 🚀"
+          title={<Mark variant="lines" color="var(--tp-orange)" width={6} delay={300}>Contáctanos</Mark>}
           art={<Mascot pose="peri-saludando" className="h-[210px]" />}
         />
 
@@ -33,9 +32,12 @@ export default function ContactoPage() {
               orientación, un exolímpico con ganas de aportar, o un profesor o papá/mamá buscando
               material, ¡este espacio es para ti!
             </p>
-            <p className="tp-hand mt-5 -rotate-1 text-[27px] leading-tight text-tp-violet">
-              No hay pregunta pequeña ni duda tonta. ¡Escríbeme con toda la confianza!
-            </p>
+            <figure className="mt-5 -rotate-1">
+              <blockquote className="tp-hand text-[27px] leading-tight text-tp-violet">
+                «Lo importante es no dejar de hacer preguntas.»
+              </blockquote>
+              <figcaption className="mt-1 text-sm font-bold text-tp-ink-muted">— Albert Einstein</figcaption>
+            </figure>
             <BubbleTail className="left-10 top-[calc(100%-3px)]" />
           </div>
           <ContactForm />
