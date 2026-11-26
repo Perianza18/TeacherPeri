@@ -129,8 +129,10 @@ Editors and admins approve and reject proposals on `/panel/revision` (`/api/revi
 `npm run review`; both use `server/src/lib/review/service.js` (see
 [SUBMISSIONS.md](SUBMISSIONS.md)).
 
-**Limits:** each address may make 300 API requests per 15 minutes, and 20
-failed sign-in attempts per 15 minutes. Both limits are off in tests.
+**Limits:** every 15 minutes, each address may make 3000 API reads (`GET`),
+300 writes (`POST`, `PUT`, `DELETE`…), 2000 image reads and 20 failed sign-in
+attempts. Reads get more room because Googlebot reads hundreds of pages in a
+row from a few addresses. All limits are off in tests.
 
 **Sessions:** signing up or logging in returns a JWT that lasts 7 days. The
 website keeps it in the browser (`localStorage`, key `teacherperi_auth`) and

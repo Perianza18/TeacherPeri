@@ -32,12 +32,12 @@ export default function UserListPage() {
     let active = true
     apiFetch(`/api/my-lists/${id}`, { token })
       .then((list) => { if (active) setState({ key, list, error: null }) })
-      .catch((error) => { if (active) setState({ key, list: null, error: error.status === 404 ? 'Esta colección no existe o es privada.' : error.message }) })
+      .catch((error) => { if (active) setState({ key, list: null, error: error.status === 404 ? 'Esta colección no existe o es privada.' : error.message, notFound: error.status === 404 }) })
     return () => { active = false }
   }, [key, id, token])
 
   const list = state.key === key || state.list ? state.list : null
-  usePageMeta({ title: list?.name ?? 'Colección', noindex: !list?.isPublic })
+  usePageMeta({ title: list?.name ?? 'Colección', noindex: list ? !list.isPublic : state.key === key && Boolean(state.notFound) })
   const back = <Link to={`${profilePath(list?.owner.username ?? username)}?tab=guardados`} className="text-sm font-bold underline underline-offset-2 hover:text-tp-violet">← Volver a los guardados de @{list?.owner.username ?? username}</Link>
 
   const remove = async (item) => {

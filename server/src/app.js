@@ -62,7 +62,11 @@ app.use(express.json())
 // a propósito:
 //
 // 1. Uno GENERAL para toda la API (por si alguien intenta saturar cualquier
-//    ruta, no solo login).
+//    ruta, no solo login). Las lecturas (GET) tienen un presupuesto mucho
+//    más grande que las escrituras: una sola lección pide 10 o más cosas a
+//    la API, y Googlebot lee cientos de páginas seguidas desde pocas IP. Con
+//    el mismo límite que las escrituras, Google recibía «Demasiadas
+//    peticiones» y dejaba fuera de su índice páginas que sí existen.
 // 2. Uno más ESTRICTO solo para /api/auth, porque ahí es donde de verdad
 //    importa: sin esto, nada le impide a alguien probar miles de
 //    contraseñas por segundo (fuerza bruta). Solo cuentan los intentos
@@ -71,13 +75,14 @@ app.use(express.json())
 if (process.env.NODE_ENV !== 'test') {
   // Problem images: a page may show up to 4, and browsers cache each one for a
   // year, so they get their own, larger budget instead of the general one.
-  const isImageRead = (req) => req.method === 'GET' && req.path.startsWith('/images/')
+  const isRead = (req) => req.method === 'GET' || req.method === 'HEAD'
+  const isImageRead = (req) => isRead(req) && req.path.startsWith('/images/')
   app.use(
     '/api/images',
     rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 2000,
-      skip: (req) => req.method !== 'GET',
+      skip: (req) => !isRead(req),
       standardHeaders: true,
       legacyHeaders: false,
       message: { error: 'Demasiadas peticiones. Espera unos minutos e intenta de nuevo.' },
@@ -87,7 +92,18 @@ if (process.env.NODE_ENV !== 'test') {
     '/api',
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      skip: isImageRead,
+      skip: (req) => !isRead(req) || isImageRead(req),
+      max: 3000,
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: { error: 'Demasiadas peticiones. Espera unos minutos e intenta de nuevo.' },
+    }),
+  )
+  app.use(
+    '/api',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      skip: isRead,
       max: 300,
       standardHeaders: true,
       legacyHeaders: false,
