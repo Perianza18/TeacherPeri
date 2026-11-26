@@ -74,10 +74,10 @@ describe('OMMEB Guerrero transcription', () => {
 describe('Exámenes de entrenamiento transcription', () => {
   const entrenamiento = EXAMENES_ENTRENAMIENTO.buildProblems()
 
-  it('has the 4 IMC exams and the PAGMO exam, and validates', () => {
-    expect(EXAMENES_ENTRENAMIENTO.validate()).toMatchObject({ exams: 5, problems: 63 })
+  it('has the 4 IMC exams, the PAGMO exam and the OMM Guerrero state exam, and validates', () => {
+    expect(EXAMENES_ENTRENAMIENTO.validate()).toMatchObject({ exams: 6, problems: 69 })
     expect(EXAMENES_ENTRENAMIENTO.exams.map((exam) => exam.carpeta.join(' › '))).toContain('IMC › Selectivo de México (secundaria) › 2021 › Examen 5')
-    const files = readdirSync(path.dirname(EXAMENES_ENTRENAMIENTO.figuresDir)).filter((file) => /^[a-z]+-20\d\d-.+\.js$/.test(file))
+    const files = readdirSync(path.dirname(EXAMENES_ENTRENAMIENTO.figuresDir)).filter((file) => /^[a-z-]+-20\d\d-.+\.js$/.test(file))
     expect(files).toHaveLength(EXAMENES_ENTRENAMIENTO.exams.length)
   })
 
