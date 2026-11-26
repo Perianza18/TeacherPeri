@@ -69,6 +69,7 @@ export default function PathPage() {
   const loading = detailState.traversalKey !== traversalKey
   const detail = loading ? null : detailState.detail
   const error = loading ? null : detailState.error
+  const notFound = !loading && Boolean(detailState.notFound)
 
   useEffect(() => {
     let cancelled = false
@@ -83,6 +84,7 @@ export default function PathPage() {
         traversalKey,
         detail: null,
         error: requestError.status === 404 ? 'Esta Ruta no existe en ese recorrido público.' : requestError.message,
+        notFound: requestError.status === 404,
       })
     })
     return () => { cancelled = true }
@@ -122,7 +124,7 @@ export default function PathPage() {
   }
 
   const path = detail?.path
-  usePageMeta({ title: path?.title, description: path?.description, noindex: Boolean(error) })
+  usePageMeta({ title: path?.title, description: path?.description, noindex: notFound })
   const visibleProgress = progressKey === progressState.progressKey ? progressState.progress : null
   const completed = visibleProgress?.percentage === 100
 

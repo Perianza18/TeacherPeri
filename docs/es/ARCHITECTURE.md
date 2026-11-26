@@ -130,9 +130,11 @@ Editores y admins aprueban y rechazan propuestas en `/panel/revision` (`/api/rev
 con `npm run review`; los dos usan `server/src/lib/review/service.js` (ver
 [SUBMISSIONS.md](SUBMISSIONS.md)).
 
-**Límites:** cada dirección IP puede hacer 300 peticiones a la API cada 15
-minutos, y 20 intentos fallidos de inicio de sesión cada 15 minutos. Ambos
-límites se apagan en las pruebas.
+**Límites:** cada dirección IP puede hacer, cada 15 minutos, 3000 lecturas
+(`GET`) a la API, 300 escrituras (`POST`, `PUT`, `DELETE`…), 2000 lecturas de
+imágenes y 20 intentos fallidos de inicio de sesión. Las lecturas tienen más
+margen porque Googlebot lee cientos de páginas seguidas desde pocas IP. Todos
+los límites se apagan en las pruebas.
 
 **Sesiones:** al registrarte o iniciar sesión recibes un JWT que dura 7 días. El
 sitio lo guarda en el navegador (`localStorage`, clave `teacherperi_auth`) y lo
