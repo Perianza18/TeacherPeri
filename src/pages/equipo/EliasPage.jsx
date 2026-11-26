@@ -14,7 +14,9 @@ export default function EliasPage() {
         <div className="tp-container pb-24 pt-12">
           <Link to="/equipo" className="font-semibold underline underline-offset-4">← Equipo</Link>
           <h1 className="tp-page-title mt-6">Elías</h1>
-          <p className="mt-4 text-lg text-tp-ink-muted">Esta página está en construcción.</p>
+          <p className="mt-4 text-lg font-semibold">En construcción (ando sobreviviendo a finales).</p>
+          <p className="mt-2 max-w-[560px] text-lg text-tp-ink-muted">Pronto estará lista mi página, pero mientras tanto pueden ir a conocer la de Catherine.</p>
+          <Link to="/equipo/catherine" className="tp-button mt-6 bg-tp-yellow px-5 font-bold">Ir a la página de Catherine →</Link>
         </div>
       </main>
       <Footer />
