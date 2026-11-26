@@ -137,6 +137,50 @@ With the private Atlas file, `npm run atlas:import-exams:test -- <folder>` and
 `npm run atlas:import-exams:prod -- <folder>` (add `--apply` to write) set
 steps 1 and 3 for you.
 
+## Importing transcribed exams (OMMEB Guerrero and others)
+
+Some official exams are transcribed by hand from their PDFs into the repository, one
+file per exam, with their figures cut from the PDF in a `figuras/` folder.
+`server/src/data/examCollections.js` describes the fields and validates the math with
+strict KaTeX. Two collections exist:
+
+| Collection | Folder | Content |
+| --- | --- | --- |
+| `ommeb-guerrero` | `server/src/data/ommebGuerrero/` | Estatal and Selectivo exams of the OMMEB in Guerrero, 7a to 10a edición (2023–2026), levels 1 to 3: 24 exams, 360 problems, with the official answers and the official solutions of the problems «de redacción» (their grading criteria are not copied) |
+| `examenes-entrenamiento` | `server/src/data/examenesEntrenamiento/` | Selection and training exams that came as loose PDFs: exams 1, 2, 3 and 5 of the 2021 Mexican selection for the IMC (secondary) and the first 2021 selection exam of the Mexican PAGMO team, plus the 2026 state stage of the OMM in Guerrero (both days in one exam): 6 exams, 69 problems. The PDFs have no answers, so each problem says so in a note |
+
+`npm run content:import-transcribed -- <collection>` adds a collection to a database
+that already has content:
+
+1. Set `MONGO_TRANSCRIBED_IMPORT_URI` privately, with an explicit database path. It
+   never falls back to `MONGO_URI`.
+2. Run `npm run content:import-transcribed -- <collection>` (dry run). It lists the
+   folders and problems it will create and the problems already there. Nothing is
+   written.
+3. Set `TRANSCRIBED_IMPORT_CONFIRM` to the exact database name and add `--apply`.
+   The figures are stored as images owned by the oldest admin account, or else the
+   oldest editor, or by `--owner <username>`.
+4. Run the dry run again: everything should be «already there».
+
+What it does:
+
+- Creates the exam folders of the collection (for example `Exámenes › OMMEB ›
+  Guerrero › <year> › <Estatal|Selectivo> › Nivel <n>` or `Exámenes › IMC ›
+  Selectivo de México (secundaria) › 2021 › Examen 1`; existing folders are reused) and
+  publishes each problem with its code (`OMMEB-GRO-2025-EST-N1-01`,
+  `IMC-MX-2021-SEL1-01`), number and área, in one transaction.
+- Each folder then gets its exam on the Exámenes page («OMMEB 2025 · Guerrero ·
+  Estatal · Nivel 1»), with the duration and the instructions of the exam.
+- A problem that already exists is never changed. If it differs from the
+  transcription (edited on the site) it is reported and left as it is.
+- If a folder it needs is still waiting for review, it stops before writing.
+
+Money is written «53.20 pesos», because a lone `$` starts a formula. Problems with no
+official answer say so in a note next to the answer. With the private Atlas file,
+`npm run atlas:import-transcribed:test -- <collection>` and
+`npm run atlas:import-transcribed:prod -- <collection>` (add `--apply` to write) set
+steps 1 and 3 for you.
+
 ## Included content and sources
 
 37 Spanish Theory lessons, 56 original Problems (20 of them from the rewritten lessons), six lesson problem collections, six canonical problem Lists,

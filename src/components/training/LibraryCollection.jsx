@@ -37,6 +37,10 @@ const EXAM_FOLDER_DESCRIPTIONS = {
   OMMEB: 'Olimpiada Mexicana de Matemáticas para Educación Básica.',
   Centroamericana: 'Olimpiada Matemática de Centroamérica y el Caribe (OMCC).',
   PAGMO: 'Olimpiada Panamericana Femenil de Matemáticas.',
+  Guerrero: 'Exámenes estatales y selectivos de Guerrero.',
+  IMC: 'International Mathematics Competition.',
+  'Selectivo de México': 'Exámenes para elegir a la delegación mexicana.',
+  'Selectivo de México (secundaria)': 'Exámenes para elegir a la delegación mexicana de secundaria.',
 }
 
 function ExamFolderCard({ name, onOpen }) {

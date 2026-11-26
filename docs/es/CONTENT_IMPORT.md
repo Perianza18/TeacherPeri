@@ -154,6 +154,49 @@ Con el archivo privado de Atlas, `npm run atlas:import-exams:test -- <carpeta>` 
 `npm run atlas:import-exams:prod -- <carpeta>` (agrega `--apply` para escribir)
 hacen los pasos 1 y 3 por ti.
 
+## Importar exámenes transcritos (OMMEB Guerrero y otros)
+
+Algunos exámenes oficiales se transcriben a mano desde sus PDF al repositorio, un
+archivo por examen, con sus figuras recortadas del PDF en una carpeta `figuras/`.
+`server/src/data/examCollections.js` describe los campos y valida las fórmulas con
+KaTeX estricto. Hay dos colecciones:
+
+| Colección | Carpeta | Contenido |
+| --- | --- | --- |
+| `ommeb-guerrero` | `server/src/data/ommebGuerrero/` | Exámenes Estatal y Selectivo de la OMMEB en Guerrero, de la 7a a la 10a edición (2023–2026), niveles 1 a 3: 24 exámenes, 360 problemas, con las respuestas oficiales y las soluciones oficiales de los problemas de redacción (sin copiar los criterios de calificación) |
+| `examenes-entrenamiento` | `server/src/data/examenesEntrenamiento/` | Exámenes selectivos y de entrenamiento que llegaron como PDF sueltos: exámenes 1, 2, 3 y 5 del selectivo mexicano 2021 para la IMC (secundaria) y el primer examen selectivo 2021 de la delegación mexicana a la PAGMO, más la etapa estatal 2026 de la OMM en Guerrero (los dos días en un examen): 6 exámenes, 69 problemas. Los PDF no traen respuestas, así que cada problema lo dice en una nota |
+
+`npm run content:import-transcribed -- <colección>` agrega una colección a una base
+que ya tiene contenido:
+
+1. Define `MONGO_TRANSCRIBED_IMPORT_URI` en privado, con la base en la ruta. Nunca
+   usa `MONGO_URI`.
+2. Corre `npm run content:import-transcribed -- <colección>` (simulación). Lista las
+   carpetas y problemas que va a crear y los que ya existen. No escribe nada.
+3. Define `TRANSCRIBED_IMPORT_CONFIRM` con el nombre exacto de la base y agrega
+   `--apply`. Las figuras se guardan como imágenes de la cuenta admin más antigua, o
+   si no hay, del editor más antiguo, o de `--owner <usuario>`.
+4. Corre otra vez la simulación: todo debe decir que ya existe.
+
+Qué hace:
+
+- Crea las carpetas de examen de la colección (por ejemplo `Exámenes › OMMEB ›
+  Guerrero › <año> › <Estatal|Selectivo> › Nivel <n>` o `Exámenes › IMC ›
+  Selectivo de México (secundaria) › 2021 › Examen 1`; reutiliza las que ya existen) y
+  publica cada problema con su código (`OMMEB-GRO-2025-EST-N1-01`,
+  `IMC-MX-2021-SEL1-01`), número y área, en una sola transacción.
+- Después cada carpeta recibe su examen en la página de Exámenes («OMMEB 2025 ·
+  Guerrero · Estatal · Nivel 1»), con la duración y las indicaciones del examen.
+- Un problema que ya existe nunca se cambia. Si es distinto de la transcripción
+  (se editó en el sitio), se reporta y se deja como está.
+- Si alguna carpeta que necesita está en revisión, se detiene antes de escribir.
+
+El dinero se escribe «53.20 pesos», porque un `$` suelto inicia una fórmula. Los
+problemas sin respuesta oficial lo dicen en una nota junto a la respuesta. Con el
+archivo privado de Atlas, `npm run atlas:import-transcribed:test -- <colección>` y
+`npm run atlas:import-transcribed:prod -- <colección>` (agrega `--apply` para
+escribir) hacen los pasos 1 y 3 por ti.
+
 ## Qué incluye y de dónde viene
 
 37 lecciones de teoría en español, 56 problemas originales (20 de ellos de las
