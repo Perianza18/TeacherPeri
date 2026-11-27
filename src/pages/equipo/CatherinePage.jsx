@@ -171,7 +171,7 @@ const ALBUM = [
   { src: fotoOroFemenil, alt: 'Catherine recibe su oro en el 2º Concurso Nacional Femenil', pos: 'center 60%', caption: '¡ese oro de 2023!', tilt: 'rotate-2', tape: C.yellow },
   { src: fotoAmigos, alt: 'Catherine con amigos al aire libre', pos: '70% center', caption: 'entre amigos', tilt: '-rotate-1', tape: C.teal },
   { src: fotoPremiacionOmm, alt: 'Catherine con su medalla en la premiación de la OMM', pos: 'center 30%', caption: 'ocho años de olimpiadas', tilt: 'rotate-3', tape: C.lilac },
-  { src: fotoStaffOmm, alt: 'Catherine con el equipo organizador de la OMM 2026', pos: 'center 60%', caption: 'ahora del otro lado (2026)', tilt: '-rotate-2', tape: C.green },
+  { src: fotoStaffOmm, alt: 'Catherine como staff de la 40.ª OMM en Monterrey, caminando al frente de los concursantes', pos: 'center', caption: 'ahora del otro lado (2026)', tilt: '-rotate-2', tape: C.green },
 ]
 
 const PROJECTS = [
