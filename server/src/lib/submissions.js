@@ -14,6 +14,7 @@ import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { examPathLabel, folderPath } from './examFolders.js'
 import { rootOf, topicsVisibleTo } from './topics.js'
 import { parseImageList } from './images.js'
+import { SOLUTION_MAX } from './review/checks.js'
 
 const MAX_TERMS = 10
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
@@ -23,6 +24,8 @@ const unique = (values) => [...new Set(values.map(String))]
 // (publicationStatus, status, author, codigo…) is ignored.
 export function parseProposal(body = {}) {
   const enunciado = typeof body.enunciado === 'string' ? body.enunciado.replace(/\r\n/g, '\n').trim() : ''
+  const solution = typeof body.solution === 'string' ? body.solution.replace(/\r\n/g, '\n').trim() : ''
+  if (solution.length > SOLUTION_MAX) return { error: `La solución no puede pasar de ${SOLUTION_MAX} caracteres.` }
   const ids = (value, label) => {
     if (value === undefined || value === null) return []
     if (!Array.isArray(value) || value.some((id) => !isId(id))) return { error: `La lista de ${label} no es válida.` }
@@ -30,7 +33,7 @@ export function parseProposal(body = {}) {
     if (list.length > MAX_TERMS) return { error: `Elige como máximo ${MAX_TERMS} ${label}.` }
     return list
   }
-  const topics = ids(body.topics, 'áreas')
+  const topics = ids(body.topics, 'temas')
   if (topics.error) return topics
   const tags = ids(body.tags, 'etiquetas')
   if (tags.error) return tags
@@ -48,7 +51,7 @@ export function parseProposal(body = {}) {
   }
   const images = parseImageList(body.images)
   if (images.error) return images
-  return { proposal: { enunciado, topics, tags, isExam, examFolder, problemNumber, images: images.images } }
+  return { proposal: { enunciado, solution, topics, tags, isExam, examFolder, problemNumber, images: images.images } }
 }
 
 // Topics and tags by id. By default only approved topics; `userId` adds the
@@ -111,6 +114,7 @@ export function proposalFromProblem(problem, folders) {
   const examFolder = (problem.categories || []).map(String).find((id) => byId.get(id)?.kind === 'exam') || null
   return {
     enunciado: problem.enunciado,
+    solution: problem.solution || '',
     topics: (problem.topics || []).map(String),
     tags: (problem.tags || []).map(String),
     isExam: Boolean(examFolder),
@@ -181,7 +185,7 @@ export async function ownSubmissionViews(userId, problemIds = null) {
 
 export function sameProposal(a, b) {
   const sorted = (list) => [...(list || [])].map(String).sort().join(',')
-  return a.enunciado === b.enunciado && sorted(a.topics) === sorted(b.topics) && sorted(a.tags) === sorted(b.tags) &&
+  return a.enunciado === b.enunciado && (a.solution || '') === (b.solution || '') && sorted(a.topics) === sorted(b.topics) && sorted(a.tags) === sorted(b.tags) &&
     Boolean(a.isExam) === Boolean(b.isExam) && String(a.examFolder ?? '') === String(b.examFolder ?? '') && (a.problemNumber ?? null) === (b.problemNumber ?? null) &&
     JSON.stringify(statementImages(a.images)) === JSON.stringify(statementImages(b.images))
 }

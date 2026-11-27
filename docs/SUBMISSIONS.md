@@ -31,11 +31,19 @@ until an admin reviews it.
 
 Up to 4 images may go with the statement (see [Images in problems](#images-in-problems)).
 
-## Área and temas
+## Solution (optional)
 
-The form asks first for the área (Geometría, Álgebra, Teoría de Números,
-Combinatoria; one or more), then optional temas (subtemas of the chosen áreas)
-and an optional técnica de demostración (children of «Demostraciones»).
+The author may add a solution or just the final answer (`solution`, up to
+20 000 characters, with `$…$` formulas checked like the statement). It goes
+through review with the rest of the proposal and, once approved, becomes the
+problem's «Solución». A proposal without one leaves the live solution as it is.
+
+## Tema
+
+The form never says «área» or «etiqueta»: the section is «Tema». It asks first
+«¿De qué tema es?» with the four big temas, which are the áreas (Geometría,
+Álgebra, Teoría de Números, Combinatoria; one or more), then optional temas (subtemas of the chosen áreas)
+and an optional técnica de demostración (children of «Demostraciones»). Tags are only offered on staff screens.
 Picking a subtema also marks its área. The same name can exist under two áreas
 («Combinatoria › Caminos» and «Álgebra › Caminos»), so the form always shows the
 área next to a subtema.

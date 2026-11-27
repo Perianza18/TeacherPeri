@@ -80,6 +80,7 @@ async function findSubmission(ref, { pendingOnly = true } = {}) {
 function describeProposal(proposal, ctx) {
   return {
     enunciado: proposal.enunciado,
+    solution: proposal.solution || '',
     topics: label(ctx.topics, proposal.topics || [], 'name'),
     tags: label(ctx.tags, proposal.tags || [], 'label'),
     isExam: Boolean(proposal.isExam),
@@ -241,6 +242,9 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
   const keepCredit = problem.sourceAttribution && !AUTO_CREDIT.test(problem.sourceAttribution)
   const update = {
     enunciado: proposal.enunciado,
+    // A solution only replaces the live one when the proposal brings one
+    // (proposals sent before the field existed have none).
+    ...(proposal.solution ? { solution: proposal.solution } : {}),
     topics: proposal.topics,
     tags: proposal.tags,
     // The statement pictures come from the proposal; pictures an editor put in

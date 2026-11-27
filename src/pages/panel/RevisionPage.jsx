@@ -26,6 +26,12 @@ function Proposal({ data, label }) {
       {label && <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">{label}</p>}
       <MathText text={data.enunciado} className="tp-reading-text whitespace-pre-wrap break-words leading-7" />
       <ReviewImages images={data.images} />
+      {data.solution && (
+        <details className="rounded-[10px] border-2 border-dashed border-tp-rule px-4 py-2">
+          <summary className="min-h-11 cursor-pointer content-center text-sm font-bold">Solución que propone</summary>
+          <MathText text={data.solution} className="tp-reading-text whitespace-pre-wrap break-words pb-2 leading-7" />
+        </details>
+      )}
       <p className="flex flex-wrap gap-2 text-sm">
         {data.isExam && <span className="tp-pill bg-tp-surface text-xs">{data.examFolder?.replace(/^Exámenes › /, '') ?? 'Sin carpeta'}{data.problemNumber ? ` · Problema ${data.problemNumber}` : ''}</span>}
         {data.topics.map((name) => <span key={name} className="tp-pill bg-tp-sky-soft text-xs">{name}</span>)}

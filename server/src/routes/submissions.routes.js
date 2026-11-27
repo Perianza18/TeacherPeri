@@ -108,7 +108,7 @@ router.post('/topics', requirePermission('topics:propose'), async (req, res) => 
   if (parsed.error) return res.status(400).json({ error: parsed.error })
   const visible = await topicsVisibleTo(req.userId)
   const parent = isId(req.body?.parent) ? visible.find((topic) => String(topic._id) === String(req.body.parent) && !topic.parent && PROPOSABLE_ROOT_SLUGS.includes(topic.slug)) : null
-  if (!parent) return res.status(400).json({ error: 'Elige primero el área del tema.' })
+  if (!parent) return res.status(400).json({ error: 'Elige dentro de cuál tema va (Geometría, Álgebra, Teoría de Números o Combinatoria).' })
   const everyone = await Topic.find({ parent: parent._id, reviewStatus: { $ne: 'rejected' } }).lean()
   const existing = existingTopicNamed(parsed.name, parent._id, everyone)
   if (existing) {
@@ -144,6 +144,7 @@ router.post('/', requirePermission('problems:submit'), async (req, res) => {
       problem = await Problem.create({
         codigo: await nextCommunityCode(),
         enunciado: proposal.enunciado,
+        ...(proposal.solution ? { solution: proposal.solution } : {}),
         topics: proposal.topics,
         tags: proposal.tags,
         ...(proposal.images.length ? { images: proposal.images } : {}),
@@ -193,7 +194,7 @@ router.put('/mine/:id', requirePermission('problems:edit-own'), async (req, res)
 
   if (!isLive) {
     // Nunca aprobado: el borrador se actualiza en su lugar.
-    problem.set({ enunciado: proposal.enunciado, topics: proposal.topics, tags: proposal.tags, images: proposal.images.length ? proposal.images : undefined, ...derivedProblemFields(proposal, { folders: allById, topics, current: problem.toObject() }) })
+    problem.set({ enunciado: proposal.enunciado, solution: proposal.solution || undefined, topics: proposal.topics, tags: proposal.tags, images: proposal.images.length ? proposal.images : undefined, ...derivedProblemFields(proposal, { folders: allById, topics, current: problem.toObject() }) })
     await problem.save()
   }
   if (pending) {

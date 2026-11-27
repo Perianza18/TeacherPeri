@@ -32,4 +32,4 @@ export function folderPathNames(id, folders) {
   return names
 }
 
-export const emptyProposal = () => ({ enunciado: '', topics: [], tags: [], isExam: false, examFolder: null, problemNumber: '', images: [] })
+export const emptyProposal = () => ({ enunciado: '', solution: '', topics: [], tags: [], isExam: false, examFolder: null, problemNumber: '', images: [] })

@@ -14,7 +14,7 @@
 // ---------------------------------------------------------------------------
 
 import mongoose from 'mongoose'
-import { STATEMENT_MAX } from '../lib/review/checks.js'
+import { SOLUTION_MAX, STATEMENT_MAX } from '../lib/review/checks.js'
 
 export const SUBMISSION_KINDS = ['create', 'edit']
 export const SUBMISSION_STATUSES = ['pending', 'approved', 'rejected', 'withdrawn', 'superseded']
@@ -23,6 +23,9 @@ export const REJECTION_REASON_MAX = 1000
 const proposalSchema = new mongoose.Schema(
   {
     enunciado: { type: String, required: true, maxlength: STATEMENT_MAX },
+    // Optional: the author's solution or final answer (shown, once approved,
+    // under «Solución» on the problem page).
+    solution: { type: String, default: '', maxlength: SOLUTION_MAX },
     topics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }],
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
     isExam: { type: Boolean, default: false },

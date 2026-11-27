@@ -386,3 +386,34 @@ describe('Temas propuestos', () => {
     expect((await request(app).get('/api/review/topics').set(as(ana.token))).status).toBe(403)
   })
 })
+
+describe('Solución opcional', () => {
+  it('se envía con el problema, se revisan sus fórmulas y se publica al aprobar', async () => {
+    const { ana, admin, algebra } = await setup()
+    const bad = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)], solution: 'Es $n+1' })
+    expect(bad.status).toBe(422)
+    expect(bad.body.checks.map((c) => c.message).join(' ')).toMatch(/Solución: Hay un signo/)
+
+    const res = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)], solution: '  $n(n+1)$ es producto de consecutivos.  ' })
+    expect(res.status).toBe(201)
+    expect(res.body.proposal.solution).toBe('$n(n+1)$ es producto de consecutivos.')
+    expect((await request(app).get(`/api/problems/${res.body._id}`)).status).toBe(404)
+
+    await approveSubmission({ ref: res.body.codigo, reviewer: admin.user, apply: true })
+    expect((await Problem.findById(res.body._id).lean()).solution).toBe('$n(n+1)$ es producto de consecutivos.')
+
+    // Editing the published problem keeps the live solution until approved.
+    const edit = await request(app).put(`/api/submissions/mine/${res.body._id}`).set(as(ana.token)).send({ enunciado: STATEMENT, topics: [String(algebra._id)], solution: 'Otra solución.' })
+    expect(edit.status).toBe(200)
+    expect((await Problem.findById(res.body._id).lean()).solution).toBe('$n(n+1)$ es producto de consecutivos.')
+    await approveSubmission({ ref: res.body.codigo, reviewer: admin.user, apply: true })
+    expect((await Problem.findById(res.body._id).lean()).solution).toBe('Otra solución.')
+  })
+
+  it('sin solución también se puede enviar', async () => {
+    const { ana, algebra } = await setup()
+    const res = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)] })
+    expect(res.status).toBe(201)
+    expect((await Problem.findById(res.body._id).lean()).solution).toBeUndefined()
+  })
+})

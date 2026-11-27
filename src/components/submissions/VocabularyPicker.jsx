@@ -13,7 +13,7 @@ const VISIBLE_CHILDREN = 12
 // tema (it stays in review) and resolves with it; without it there is no
 // «Crear tema» (the editor screens). Staff pass `allowReserved` to offer the
 // tags only the team applies («Original TeacherPeri»).
-export default function VocabularyPicker({ topics, tags, value, onChange, onCreateTopic = null, allowReserved = false, help = 'Para aprobarlo hace falta al menos un área.' }) {
+export default function VocabularyPicker({ topics, tags, value, onChange, onCreateTopic = null, allowReserved = false, help = 'Marca uno o más.' }) {
   const id = useId()
   const [query, setQuery] = useState('')
   const [expanded, setExpanded] = useState({})
@@ -59,12 +59,12 @@ export default function VocabularyPicker({ topics, tags, value, onChange, onCrea
 
   return (
     <fieldset className="flex flex-col gap-6">
-      <legend className="font-display text-lg font-extrabold text-tp-ink">Área y temas</legend>
+      <legend className="font-display text-lg font-extrabold text-tp-ink">Tema</legend>
 
-      {/* 1. Área */}
+      {/* 1. Tema (las cuatro grandes) */}
       <div>
-        <p className="flex items-center gap-2 text-sm font-bold text-tp-ink"><Step n={1} />¿De qué área es?</p>
-        <p className="mt-1 text-sm text-tp-ink-muted">Marca una o más. {help}</p>
+        <p className="flex items-center gap-2 text-sm font-bold text-tp-ink"><Step n={1} />¿De qué tema es?</p>
+        <p className="mt-1 text-sm text-tp-ink-muted">{help}</p>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {areas.map((area) => {
             const on = isChosen(area.topic._id)
@@ -83,7 +83,7 @@ export default function VocabularyPicker({ topics, tags, value, onChange, onCrea
       {/* 2. Temas */}
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <label htmlFor={id} className="flex items-center gap-2 text-sm font-bold text-tp-ink"><Step n={2} />Temas <span className="font-semibold text-tp-ink-muted">(opcional)</span></label>
+          <label htmlFor={id} className="flex items-center gap-2 text-sm font-bold text-tp-ink"><Step n={2} />¿Algo más específico? <span className="font-semibold text-tp-ink-muted">(opcional)</span></label>
           {onCreateTopic && !creating && (
             <button type="button" onClick={openCreate} className="tp-button gap-1.5 bg-tp-yellow px-3 text-sm font-extrabold">
               <span aria-hidden="true" className="text-lg leading-none">+</span>Crear tema
@@ -149,8 +149,8 @@ export default function VocabularyPicker({ topics, tags, value, onChange, onCrea
                 onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); create() } }}
                 placeholder="Por ejemplo: Palomar" className="tp-input mt-1 font-normal" />
             </label>
-            <p className="mt-3 text-sm font-semibold text-tp-ink">¿En qué área va?</p>
-            <div className="mt-1 flex flex-wrap gap-2" role="radiogroup" aria-label="Área del tema nuevo">
+            <p className="mt-3 text-sm font-semibold text-tp-ink">¿Dentro de cuál va?</p>
+            <div className="mt-1 flex flex-wrap gap-2" role="radiogroup" aria-label="Dónde va el tema nuevo">
               {areaOptions.map((area) => {
                 const on = creating.area === String(area.topic._id)
                 return (
@@ -174,13 +174,13 @@ export default function VocabularyPicker({ topics, tags, value, onChange, onCrea
           </div>
         )}
 
-        {chosenAreas.length === 0 && !typed && <p className="mt-3 text-sm text-tp-ink-muted">Elige un área arriba para ver sus temas.</p>}
+        {chosenAreas.length === 0 && !typed && <p className="mt-3 text-sm text-tp-ink-muted">Elige un tema arriba para ver opciones más específicas.</p>}
         {!typed && chosenAreas.map((area) => {
           const open = expanded[area.slug]
           const list = open ? area.children : area.children.slice(0, VISIBLE_CHILDREN)
           return area.children.length > 0 && (
             <div key={area.slug} className="mt-4">
-              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-tp-ink-muted">Temas de {area.name}</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-tp-ink-muted">Dentro de {area.name}</p>
               <TopicChips topics={list} isChosen={isChosen} onToggle={toggleTopic} tone={area.color} />
               {area.children.length > VISIBLE_CHILDREN && (
                 <button type="button" onClick={() => setExpanded((current) => ({ ...current, [area.slug]: !open }))} className="mt-1 min-h-11 text-sm font-bold text-tp-violet underline underline-offset-2">
@@ -207,7 +207,7 @@ export default function VocabularyPicker({ topics, tags, value, onChange, onCrea
         </div>
       )}
 
-      {visibleTags.length > 0 && (
+      {allowReserved && visibleTags.length > 0 && (
         <div>
           <p className="text-sm font-bold text-tp-ink">Etiquetas <span className="font-semibold text-tp-ink-muted">(opcional)</span></p>
           <ul className="mt-2 flex flex-wrap gap-2">
