@@ -9,6 +9,7 @@ import PageFeedback from '../components/PageFeedback'
 import CommentSection from '../components/comments/CommentSection'
 import SaveToListButton from '../components/profile/SaveToListButton'
 import SolvedToggle from '../components/profile/SolvedToggle'
+import CommunitySolutions from '../components/solutions/CommunitySolutions'
 import { LIBRARY_BASE, examProblemTitle, examTitle } from '../lib/libraryPaths'
 import { loadLessonBoxes } from '../lib/lessonBoxes'
 import { hintLabel, splitHints } from '../lib/hints'
@@ -211,6 +212,7 @@ export default function LibraryDetailPage({ type }) {
         </>}
         <Hints hint={item.hint} />
         {(item.solution || byPlacement(item.images, 'solution').length > 0) && <Solution solution={item.solution} images={item.images} />}
+        {type === 'problemas' && <CommunitySolutions problemId={item._id} />}
         {type === 'problemas' && <div className="flex flex-wrap items-center gap-3">
           <SolvedToggle problemId={item._id} />
           <SaveToListButton itemType="problem" itemId={item._id} />

@@ -767,21 +767,32 @@ h2.tp-lesson-heading {
 .tp-tab {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   min-height: 44px;
-  border: 2px solid var(--tp-ink);
-  border-radius: 10px;
-  padding: 0 14px;
-  color: var(--tp-ink);
+  border: 2px solid color-mix(in srgb, var(--tp-ink) 18%, transparent);
+  border-radius: 999px;
+  padding: 0 16px 0 13px;
+  color: var(--tp-ink-soft);
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 800;
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 
+.tp-tab:hover { border-color: var(--tp-ink); color: var(--tp-ink); }
+
 .tp-tab[aria-selected="true"] {
+  border-color: var(--tp-ink);
+  color: var(--tp-ink);
   transform: translate(-2px, -2px);
   box-shadow: 3px 3px 0 var(--tp-ink);
 }
+
+/* Avatar frames (src/lib/frames.js): the ring between the outer ink line and the avatar. */
+.tp-frame-bronce { background: linear-gradient(135deg, #f2b27a, #c8743f 55%, #f0a56a); }
+.tp-frame-plata { background: repeating-conic-gradient(#eef0f4 0 12deg, #b9c0cc 12deg 24deg); }
+.tp-frame-oro { background: linear-gradient(135deg, #ffe58a, #f5a524 50%, #ffd65a); }
+.tp-frame-olimpico { background: conic-gradient(#b99cf0, #86d7ff, #8ee8bf, #ffd65a, #ff9f43, #f7a8c4, #b99cf0); }
 
 /* A comment opened from a link (#comentario-…) glows for a moment. */
 @keyframes tp-flash {

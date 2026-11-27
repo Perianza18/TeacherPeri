@@ -47,7 +47,7 @@ export default function CommentRow({ comment, viewer, onReply, onReport, onDelet
   return (
     <li id={anchor} className={`py-2 ${indentClass}`} style={indent}>
       <div className="flex gap-3">
-        <Avatar id={comment.author?.avatar} color={comment.author?.avatarColor} size="sm" />
+        <Avatar id={comment.author?.avatar} color={comment.author?.avatarColor} frame={comment.author?.frame} size="sm" />
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
             {comment.author?.username

@@ -37,6 +37,17 @@ export const BADGE_CATEGORIES = Object.freeze([
     ],
   },
   {
+    id: 'solutions',
+    label: 'Soluciones aceptadas',
+    color: 'violet',
+    unit: ['solución aceptada', 'soluciones aceptadas'],
+    tiers: [
+      { id: 'solutions-1', name: 'Primera solución', threshold: 1 },
+      { id: 'solutions-5', name: 'Solucionador', threshold: 5 },
+      { id: 'solutions-20', name: 'Maestro de soluciones', threshold: 20 },
+    ],
+  },
+  {
     id: 'suggestions',
     label: 'Sugerencias aplicadas',
     color: 'coral',

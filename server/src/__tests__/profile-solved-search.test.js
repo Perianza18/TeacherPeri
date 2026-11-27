@@ -53,7 +53,7 @@ describe('Buscar usuarios', () => {
     const res = await get('/api/profiles?q=AN')
     expect(res.status).toBe(200)
     expect(res.body.items.map((p) => p.username)).toEqual(['Andrea', 'ana'])
-    for (const person of res.body.items) expect(Object.keys(person).sort()).toEqual(['avatar', 'avatarColor', 'role', 'username'])
+    for (const person of res.body.items) expect(Object.keys(person).sort()).toEqual(['avatar', 'avatarColor', 'frame', 'role', 'username'])
     expect(JSON.stringify(res.body)).not.toContain('@test.com')
     expect((await get('/api/profiles?q=@be')).body.items).toEqual([expect.objectContaining({ username: 'beto', role: 'editor' })])
   })

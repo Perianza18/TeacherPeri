@@ -19,7 +19,7 @@ describe('reglas de insignias', () => {
     const view = badgeView([{ badge: 'comments-1', earnedAt: 'x' }, { badge: 'solved-1', earnedAt: 'y' }], { solved: 3, comments: 1 })
     expect(view.earned.map((b) => b.id)).toEqual(['solved-1', 'comments-1'])
     expect(view.earned[0]).toMatchObject({ name: 'Primer problema', description: '1 problema resuelto' })
-    expect(view.locked.map((b) => [b.id, b.remaining])).toEqual([['solved-10', 7], ['comments-10', 9], ['contributions-1', 1], ['suggestions-1', 1]])
+    expect(view.locked.map((b) => [b.id, b.remaining])).toEqual([['solved-10', 7], ['comments-10', 9], ['contributions-1', 1], ['solutions-1', 1], ['suggestions-1', 1]])
     expect(new Set(BADGE_IDS).size).toBe(BADGE_IDS.length)
   })
 })

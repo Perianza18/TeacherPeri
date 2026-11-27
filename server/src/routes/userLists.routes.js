@@ -20,6 +20,7 @@ import { requireAuth } from '../middleware/auth.js'
 import { optionalAuth } from '../middleware/optionalAuth.js'
 import { roleOf } from '../lib/permissions.js'
 import { LIST_ITEM_TYPES, MAX_ITEMS_PER_LIST, MAX_LISTS_PER_USER, avatarColorOf, avatarOf, parseListName } from '../lib/profile.js'
+import { frameOf } from '../lib/levels.js'
 import { contentNames, publicItemExists } from '../lib/profileContent.js'
 
 const router = Router()
@@ -64,7 +65,7 @@ router.post('/', requireAuth, async (req, res) => {
 })
 
 router.get('/:id', optionalAuth, async (req, res) => {
-  const list = isId(req.params.id) ? await UserList.findById(req.params.id).populate('owner', 'username role avatar avatarColor').lean() : null
+  const list = isId(req.params.id) ? await UserList.findById(req.params.id).populate('owner', 'username role avatar avatarColor points frame').lean() : null
   if (!list || !list.owner) return notFound(res)
   const owner = Boolean(req.userId) && String(list.owner._id) === req.userId
   if (!list.isPublic && !owner) return notFound(res)
@@ -83,7 +84,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
     name: list.name,
     isPublic: list.isPublic,
     isOwner: owner,
-    owner: { username: list.owner.username, avatar: avatarOf(list.owner), avatarColor: avatarColorOf(list.owner), role: roleOf(list.owner) },
+    owner: { username: list.owner.username, avatar: avatarOf(list.owner), avatarColor: avatarColorOf(list.owner), frame: frameOf(list.owner), role: roleOf(list.owner) },
     count: items.length,
     items,
   })

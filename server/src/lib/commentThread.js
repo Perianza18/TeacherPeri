@@ -10,6 +10,7 @@
 import { MAX_COMMENT_DEPTH } from './moderation.js'
 import { roleOf } from './permissions.js'
 import { avatarColorOf, avatarOf } from './profile.js'
+import { frameOf } from './levels.js'
 
 const key = (id) => (id == null ? null : String(id))
 const byCreatedAt = (a, b) => new Date(a.createdAt) - new Date(b.createdAt) || key(a._id).localeCompare(key(b._id))
@@ -52,7 +53,7 @@ export function publicComment(comment, depth) {
     return { ...shared, deleted: true, deletedAs: comment.deletedAs, body: null, author: null }
   }
   const author = comment.author && typeof comment.author === 'object'
-    ? { _id: comment.author._id, username: comment.author.username, role: roleOf(comment.author), avatar: avatarOf(comment.author), avatarColor: avatarColorOf(comment.author) }
+    ? { _id: comment.author._id, username: comment.author.username, role: roleOf(comment.author), avatar: avatarOf(comment.author), avatarColor: avatarColorOf(comment.author), frame: frameOf(comment.author) }
     : null
   return { ...shared, deleted: false, body: comment.body, author }
 }

@@ -32,13 +32,13 @@ export const longDate = (value) => new Date(value).toLocaleDateString('es-MX', {
 
 export const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 
-// Tabs: who sees each one, and its color (always with ink text).
+// Tabs: who sees each one, and its color (the dot, and the fill when selected; always ink text).
 export const PROFILE_TABS = [
   { id: 'actividad', label: 'Actividad', color: 'bg-tp-yellow', ownerOnly: true },
   { id: 'comentarios', label: 'Comentarios', color: 'bg-tp-sky' },
-  { id: 'guardados', label: 'Guardados', color: 'bg-tp-coral' },
+  { id: 'guardados', label: 'Guardados', color: 'bg-tp-orange' },
   { id: 'envios', label: 'Mis envíos', color: 'bg-tp-mint', ownerOnly: true },
-  { id: 'insignias', label: 'Insignias', color: 'bg-tp-yellow' },
+  { id: 'insignias', label: 'Insignias', color: 'bg-tp-tint-violet', dot: 'bg-tp-violet' },
 ]
 
 export const tabsFor = (isOwner) => PROFILE_TABS.filter((tab) => isOwner || !tab.ownerOnly)
@@ -58,6 +58,7 @@ export const ACTIVITY_LABELS = {
   comment: 'Comentario',
   proposal: 'Problema propuesto',
   suggestion: 'Sugerencia',
+  solution: 'Solución propuesta',
   saved: 'Guardado',
   solved: 'Resuelto',
   follow: 'Siguiendo',

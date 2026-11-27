@@ -7,7 +7,7 @@ describe('Mi Espacio en el sitio', () => {
   it('visitantes ven Comentarios, Guardados e Insignias; el dueño ve las cinco pestañas', () => {
     expect(tabsFor(false).map((t) => t.label)).toEqual(['Comentarios', 'Guardados', 'Insignias'])
     expect(tabsFor(true).map((t) => t.label)).toEqual(['Actividad', 'Comentarios', 'Guardados', 'Mis envíos', 'Insignias'])
-    expect(tabsFor(true).find((t) => t.id === 'guardados').color).toBe('bg-tp-coral')
+    expect(tabsFor(true).find((t) => t.id === 'guardados').color).toBe('bg-tp-orange')
     expect(tabsFor(true).every((t) => !/text-white/.test(t.color))).toBe(true)
   })
 
@@ -63,5 +63,25 @@ describe('«Guardados» y «Buscar usuarios» en el sitio', () => {
     expect(userQuery('@a')).toBe('')
     expect(userQuery('@an')).toBe('an')
     expect(userQuery('  Beto ')).toBe('Beto')
+  })
+})
+
+describe('Marcos del avatar', () => {
+  it('el sitio y el servidor usan los mismos marcos y puntos', async () => {
+    const site = await import('../../../src/lib/frames.js')
+    const server = await import('../lib/levels.js')
+    expect(site.FRAMES.map(({ id, name, min }) => ({ id, name, min }))).toEqual(server.FRAMES.map(({ id, name, min }) => ({ id, name, min })))
+    expect(site.POINTS).toEqual(server.POINTS)
+  })
+
+  it('solo cuenta lo aceptado; el marco elegido vale si se alcanza', async () => {
+    const { pointsFrom, levelView, frameOf } = await import('../lib/levels.js')
+    expect(pointsFrom({ solved: 500, comments: 300 })).toBe(0)
+    expect(pointsFrom({ contributions: 2, solutions: 1, suggestions: 3 })).toBe(115)
+    expect(levelView(115)).toMatchObject({ frame: 'plata', unlocked: ['lapiz', 'bronce', 'plata'], next: { id: 'oro', remaining: 135 } })
+    expect(levelView(900).next).toBeNull()
+    expect(frameOf({ points: 40, frame: 'oro' })).toBe('bronce')
+    expect(frameOf({ points: 300, frame: 'bronce' })).toBe('bronce')
+    expect(frameOf({})).toBe('lapiz')
   })
 })

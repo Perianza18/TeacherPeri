@@ -3,29 +3,33 @@ import { useCallback, useId, useState } from 'react'
 import useDialog from '../../hooks/useDialog'
 import { AVATAR_COLORS, DRAWING_AVATARS, SHAPE_AVATARS, avatarById } from '../../lib/avatars'
 import { apiFetch } from '../../lib/api'
+import { FRAMES } from '../../lib/frames'
 import Avatar from './Avatar'
 
 const BIO_MAX = 160
 
 // One option in a picker: a hidden radio button, so the arrow keys move
 // through the group and a screen reader names each one, inside the tile you see.
-function Option({ name, checked, onChange, children, shape = 'rounded-full' }) {
+function Option({ name, checked, onChange, children, shape = 'rounded-full', disabled = false }) {
   return (
-    <label className={`relative grid cursor-pointer place-items-center ${shape} p-1 has-[:checked]:outline has-[:checked]:outline-[3px] has-[:checked]:outline-tp-violet has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-tp-violet`}>
-      <input type="radio" name={name} checked={checked} onChange={onChange} className="sr-only" />
+    <label className={`relative grid place-items-center ${shape} p-1 has-[:checked]:outline has-[:checked]:outline-[3px] has-[:checked]:outline-tp-violet has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-tp-violet ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+      <input type="radio" name={name} checked={checked} onChange={onChange} disabled={disabled} className="sr-only" />
       {children}
     </label>
   )
 }
 
-// «Editar perfil»: pick a preset avatar (a drawing or a math shape) and its
-// background colour, and write a short description.
+// «Editar perfil»: pick a preset avatar (a drawing or a math shape), its
+// background colour and one of the frames they have unlocked, and write a
+// short description.
 export default function EditProfileDialog({ profile, token, onSaved, onClose }) {
   const id = useId()
   const close = useCallback(() => onClose(), [onClose])
   const ref = useDialog(close)
   const [avatar, setAvatar] = useState(profile.avatar)
   const [avatarColor, setAvatarColor] = useState(profile.avatarColor ?? null)
+  const [frame, setFrame] = useState(profile.frame ?? 'lapiz')
+  const points = profile.level?.points ?? 0
   const [bio, setBio] = useState(profile.bio || '')
   const [state, setState] = useState({ saving: false, error: null })
 
@@ -33,7 +37,7 @@ export default function EditProfileDialog({ profile, token, onSaved, onClose }) 
     event.preventDefault()
     setState({ saving: true, error: null })
     try {
-      const saved = await apiFetch('/api/profiles/me', { method: 'PUT', token, body: { avatar, avatarColor, bio } })
+      const saved = await apiFetch('/api/profiles/me', { method: 'PUT', token, body: { avatar, avatarColor, frame, bio } })
       onSaved(saved)
     } catch (error) {
       setState({ saving: false, error: error.message })
@@ -60,7 +64,7 @@ export default function EditProfileDialog({ profile, token, onSaved, onClose }) 
         <h2 id={`${id}-title`} className="font-display text-[22px] font-extrabold tracking-[-0.02em]">Editar perfil</h2>
         <form onSubmit={submit} className="mt-5 flex flex-col gap-5">
           <div className="flex items-center gap-4">
-            <Avatar id={avatar} color={avatarColor} size="lg" />
+            <Avatar id={avatar} color={avatarColor} frame={frame} size="lg" />
             <p className="text-sm leading-6 text-tp-ink-muted">Así se verá tu avatar en tu perfil, en la barra de arriba y en tus comentarios.</p>
           </div>
           <fieldset>
@@ -85,6 +89,24 @@ export default function EditProfileDialog({ profile, token, onSaved, onClose }) 
                   </span>
                 </Option>
               ))}
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend className="text-sm font-bold">Marco</legend>
+            <p className="mt-1 text-sm text-tp-ink-muted">Se desbloquean con puntos: cuando el equipo acepta un problema, una solución o una corrección tuya. Tienes {points} {points === 1 ? 'punto' : 'puntos'}.</p>
+            <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-3">
+              {FRAMES.map((option) => {
+                const locked = points < option.min
+                return (
+                  <Option key={option.id} name={`${id}-frame`} shape="rounded-xl px-1.5 pt-3" checked={frame === option.id} onChange={() => setFrame(option.id)} disabled={locked}>
+                    <span className={`grid justify-items-center gap-1.5 ${locked ? 'opacity-45 grayscale' : ''}`}>
+                      <Avatar id={avatar} color={avatarColor} frame={option.id} size="picker" />
+                      <span className="text-xs font-semibold">{option.name}</span>
+                    </span>
+                    {locked && <span className="text-[11px] font-semibold text-tp-ink-muted">desde {option.min} pts<span className="sr-only">, bloqueado</span></span>}
+                  </Option>
+                )
+              })}
             </div>
           </fieldset>
           <div className="flex flex-col gap-2">

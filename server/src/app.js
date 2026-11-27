@@ -38,6 +38,7 @@ import profilesRoutes from './routes/profiles.routes.js'
 import userListsRoutes from './routes/userLists.routes.js'
 import solvesRoutes from './routes/solves.routes.js'
 import imagesRoutes from './routes/images.routes.js'
+import solutionsRoutes from './routes/solutions.routes.js'
 
 const app = express()
 
@@ -149,6 +150,7 @@ app.use('/api/users', usersRoutes)
 app.use('/api/profiles', profilesRoutes)
 app.use('/api/my-lists', userListsRoutes)
 app.use('/api/images', imagesRoutes)
+app.use('/api/solutions', solutionsRoutes)
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ese recurso no existe.' }))
 app.use((error, _req, res, next) => {
