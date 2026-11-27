@@ -4,7 +4,7 @@ import CathCat from '../../components/decor/CathCat'
 import Mascot from '../../components/decor/Mascot'
 import { usePageMeta } from '../../hooks/usePageMeta'
 import fotoPortada from '../../assets/equipo/portada.webp'
-import fotoPremiacionOmm from '../../assets/equipo/premiacion-omm.webp'
+import fotoConElias from '../../assets/equipo/con-elias.webp'
 import fotoOroFemenil from '../../assets/equipo/oro-femenil.webp'
 import fotoPrimerNacional from '../../assets/equipo/primer-nacional.webp'
 import fotoAmigos from '../../assets/equipo/amigos.webp'
@@ -170,7 +170,7 @@ const ALBUM = [
   { src: fotoPrimerNacional, alt: 'Catherine de pequeña recibiendo su premio en su primer nacional', pos: '78% center', caption: 'mi primer nacional ♡', tilt: '-rotate-3', tape: C.pink },
   { src: fotoOroFemenil, alt: 'Catherine recibe su oro en el 2º Concurso Nacional Femenil', pos: 'center 60%', caption: '¡ese oro de 2023!', tilt: 'rotate-2', tape: C.yellow },
   { src: fotoAmigos, alt: 'Catherine con amigos al aire libre', pos: '70% center', caption: 'entre amigos', tilt: '-rotate-1', tape: C.teal },
-  { src: fotoPremiacionOmm, alt: 'Catherine con su medalla en la premiación de la OMM', pos: 'center 30%', caption: 'ocho años de olimpiadas', tilt: 'rotate-3', tape: C.lilac },
+  { src: fotoConElias, alt: 'Selfie de Catherine con Elías en la OMM 2024, los dos con playeras de «homotecia positiva»', pos: 'center', caption: 'TeacherCath y TeacherPeri en la OMM 2024 ♡', tilt: 'rotate-3', tape: C.lilac },
   { src: fotoStaffOmm, alt: 'Catherine como staff de la 40.ª OMM en Monterrey, caminando al frente de los concursantes', pos: 'center', caption: 'ahora del otro lado (2026)', tilt: '-rotate-2', tape: C.green },
 ]
 
