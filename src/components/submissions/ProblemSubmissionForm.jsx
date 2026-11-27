@@ -20,13 +20,20 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([apiFetch('/api/topics'), apiFetch('/api/tags'), apiFetch('/api/submissions/folders', { token })])
+    Promise.all([apiFetch('/api/submissions/topics', { token }), apiFetch('/api/tags'), apiFetch('/api/submissions/folders', { token })])
       .then(([topics, tags, folders]) => { if (!cancelled) setData({ topics, tags, folders, error: null, loaded: true }) })
       .catch((error) => { if (!cancelled) setData((current) => ({ ...current, error: error.message, loaded: true })) })
     return () => { cancelled = true }
   }, [token])
 
   const set = (field, value) => setForm((current) => ({ ...current, [field]: value }))
+
+  // A proposed tema stays in review; only its author sees it until then.
+  const createTopic = async (name, parent) => {
+    const topic = await apiFetch('/api/submissions/topics', { method: 'POST', token, body: { name, parent } })
+    setData((current) => ({ ...current, topics: [...current.topics, topic] }))
+    return topic
+  }
 
   const insertMath = () => {
     const el = textareaRef.current
@@ -102,7 +109,13 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
 
       <ImagesField value={form.images} onChange={(images) => set('images', images)} token={token} />
 
-      <VocabularyPicker topics={data.topics} tags={data.tags} value={{ topics: form.topics, tags: form.tags }} onChange={(next) => setForm((current) => ({ ...current, ...next }))} />
+      <VocabularyPicker
+        topics={data.topics}
+        tags={data.tags}
+        value={{ topics: form.topics, tags: form.tags }}
+        onChange={(next) => setForm((current) => ({ ...current, ...next }))}
+        onCreateTopic={createTopic}
+      />
 
       <div className="flex flex-col gap-3">
         <label className="inline-flex min-h-11 items-center gap-3 text-sm font-bold text-tp-ink">

@@ -31,6 +31,28 @@ until an admin reviews it.
 
 Up to 4 images may go with the statement (see [Images in problems](#images-in-problems)).
 
+## Área and temas
+
+The form asks first for the área (Geometría, Álgebra, Teoría de Números,
+Combinatoria; one or more), then optional temas (subtemas of the chosen áreas)
+and an optional técnica de demostración (children of «Demostraciones»).
+Picking a subtema also marks its área. The same name can exist under two áreas
+(«Combinatoria › Caminos» and «Álgebra › Caminos»), so the form always shows the
+área next to a subtema.
+
+The search also matches other names: the common ones live in
+`server/src/data/topicAliases.js` (by tema name, so «palomar» finds «Principio
+de casillas» in any área), plus the `aliases` stored on each `Topic`.
+
+«Crear tema» proposes a subtema under an área (`POST /api/submissions/topics`).
+It stays `pending` and only its author sees it. If the área already has a tema
+with that name or other name, the server answers 409 with the existing one so
+the form can offer it. In Revisión › Temas an editor approves it, renames it,
+joins it with an existing tema (the proposed name becomes another name of that
+tema, and pending problems switch to it) or rejects it (it is removed from
+pending problems). A problem cannot be approved while one of its temas is
+still pending.
+
 ## Exam folders
 
 Exam folders are `Category` documents with `kind: exam` under one root,

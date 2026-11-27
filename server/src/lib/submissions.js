@@ -12,6 +12,7 @@ import Tag from '../models/Tag.js'
 import Topic from '../models/Topic.js'
 import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { examPathLabel, folderPath } from './examFolders.js'
+import { rootOf, topicsVisibleTo } from './topics.js'
 import { parseImageList } from './images.js'
 
 const MAX_TERMS = 10
@@ -50,8 +51,12 @@ export function parseProposal(body = {}) {
   return { proposal: { enunciado, topics, tags, isExam, examFolder, problemNumber, images: images.images } }
 }
 
-export async function vocabulary() {
-  const [topics, tags] = await Promise.all([Topic.find().lean(), Tag.find().lean()])
+// Topics and tags by id. By default only approved topics; `userId` adds the
+// ones that person proposed and are still in review; `includePending` adds
+// everyone's (the review screen). Rejected topics are never included.
+export async function vocabulary({ userId = null, includePending = false } = {}) {
+  const topicFilter = includePending ? { reviewStatus: { $ne: 'rejected' } } : null
+  const [topics, tags] = await Promise.all([topicFilter ? Topic.find(topicFilter).lean() : topicsVisibleTo(userId), Tag.find().lean()])
   return {
     topics: new Map(topics.map((topic) => [String(topic._id), topic])),
     tags: new Map(tags.map((tag) => [String(tag._id), tag])),
@@ -73,7 +78,8 @@ const YEAR = /^(19|20)\d{2}$/
 export function derivedProblemFields(proposal, { folders, topics, current = null, now = new Date() }) {
   const path = proposal.isExam && proposal.examFolder ? examPathLabel(proposal.examFolder, folders) : []
   const year = [...path].reverse().find((name) => YEAR.test(name)) || String(now.getFullYear())
-  const firstTopic = proposal.topics.map((id) => topics.get(String(id))).find(Boolean)
+  // «tema» is the área (Combinatoria), even when the first pick is a subtema.
+  const firstTopic = proposal.topics.map((id) => rootOf(id, topics)).find(Boolean)
   const keptCategories = (current?.categories || []).filter((id) => {
     const folder = (folders instanceof Map ? folders : new Map(folders.map((f) => [String(f._id), f]))).get(String(id))
     return folder ? folder.kind !== 'exam' : true
@@ -143,7 +149,7 @@ export async function ownSubmissionViews(userId, problemIds = null) {
   const [submissions, folders, { topics, tags }] = await Promise.all([
     ProblemSubmission.find({ problem: { $in: problems.map((p) => p._id) }, status: { $in: ['pending', 'approved', 'rejected'] } }).sort({ createdAt: -1 }).lean(),
     Category.find({ kind: 'exam' }).lean(),
-    vocabulary(),
+    vocabulary({ userId }),
   ])
   const latestByProblem = new Map()
   for (const submission of submissions) if (!latestByProblem.has(String(submission.problem))) latestByProblem.set(String(submission.problem), submission)

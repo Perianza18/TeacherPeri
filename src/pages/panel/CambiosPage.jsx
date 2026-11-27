@@ -2,10 +2,10 @@ import { Link, useParams } from 'react-router-dom'
 import PanelShell, { LoadState } from '../../components/panel/PanelShell'
 import { PANEL, ROLE_NAMES, editLessonPath, editProblemPath, fechaHora, useApiData } from '../../lib/panel'
 
-const TARGET_NAMES = { problem: 'Problema', theory: 'Lección', folder: 'Carpeta' }
-const ACTION_LABELS = { approved: 'Aprobó', rejected: 'Rechazó', renamed: 'Renombró', applied: 'Sugerencia aplicada', dismissed: 'Sugerencia descartada' }
-const ACTION_VERBS = { approved: 'aprobó', rejected: 'rechazó', renamed: 'renombró', applied: 'marcó como aplicada', dismissed: 'descartó' }
-const ACTION_TONES = { approved: 'bg-tp-mint-soft', applied: 'bg-tp-mint-soft', rejected: 'bg-tp-coral-soft', dismissed: 'bg-tp-surface', renamed: 'bg-tp-sky-soft' }
+const TARGET_NAMES = { problem: 'Problema', theory: 'Lección', folder: 'Carpeta', topic: 'Tema' }
+const ACTION_LABELS = { approved: 'Aprobó', rejected: 'Rechazó', renamed: 'Renombró', applied: 'Sugerencia aplicada', dismissed: 'Sugerencia descartada', merged: 'Unió' }
+const ACTION_VERBS = { approved: 'aprobó', rejected: 'rechazó', renamed: 'renombró', applied: 'marcó como aplicada', dismissed: 'descartó', merged: 'unió' }
+const ACTION_TONES = { approved: 'bg-tp-mint-soft', applied: 'bg-tp-mint-soft', rejected: 'bg-tp-coral-soft', dismissed: 'bg-tp-surface', renamed: 'bg-tp-sky-soft', merged: 'bg-tp-sky-soft' }
 
 const shown = (value) => {
   if (value === null || value === undefined || value === '') return '(vacío)'
@@ -65,7 +65,7 @@ function Detalle({ id, token }) {
       <section className="tp-card-soft flex flex-col gap-2 bg-tp-surface p-5 sm:p-6">
         <p className="text-sm text-tp-ink-muted">{fechaHora(r.createdAt)} · @{r.editor ?? '—'} ({ROLE_NAMES[r.editorRole] ?? r.editorRole})</p>
         <h2 className="font-display text-[22px] font-extrabold leading-tight">{TARGET_NAMES[r.targetType]} {r.targetLabel}</h2>
-        {r.targetType !== 'folder' && (
+        {['problem', 'theory'].includes(r.targetType) && (
           <div className="flex flex-wrap gap-4 text-sm font-bold">
             <Link to={r.href} className="min-h-11 content-center text-tp-violet underline underline-offset-2">Ver {r.targetType === 'problem' ? 'problema' : 'lección'}</Link>
             <Link to={r.targetType === 'problem' ? editProblemPath(r.target) : editLessonPath(r.target)} className="min-h-11 content-center text-tp-violet underline underline-offset-2">Editar</Link>

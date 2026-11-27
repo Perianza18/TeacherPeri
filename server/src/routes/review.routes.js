@@ -14,15 +14,22 @@
 // POST /api/review/folders/:id/approve
 // POST /api/review/folders/:id/reject              { reason }
 // POST /api/review/folders/:id/rename              { name }
+// GET  /api/review/topics                          every tema that is not rejected (pending ones too)
+// POST /api/review/topics/:id/approve
+// POST /api/review/topics/:id/reject               { reason }
+// POST /api/review/topics/:id/rename               { name }
+// POST /api/review/topics/:id/merge                { into }  (an approved tema)
 // ---------------------------------------------------------------------------
 
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import Category from '../models/Category.js'
+import Topic from '../models/Topic.js'
+import { topicView } from '../lib/topics.js'
 import User from '../models/User.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
 import {
-  ReviewError, approveFolder, approveSubmission, listPending, rejectFolder, rejectSubmission, renameFolder, showSubmission,
+  ReviewError, approveFolder, approveSubmission, approveTopic, listPending, mergeTopic, rejectFolder, rejectSubmission, rejectTopic, renameFolder, renameTopic, showSubmission,
 } from '../lib/review/service.js'
 
 const router = Router()
@@ -45,6 +52,8 @@ const SPANISH = [
   [/^Only pending folders can be rejected/, 'Esa carpeta ya no está en revisión. Recarga la página.'],
   [/^The folder still has/, 'La carpeta todavía tiene subcarpetas, envíos pendientes o problemas. Muévelos o recházalos primero.'],
   [/^--difficulty must be/, 'El nivel elegido no es válido.'],
+  [/^No topic matches/, 'Ese tema no existe.'],
+  [/^That topic is not pending/, 'Ese tema ya no está en revisión. Recarga la página.'],
 ]
 const FINDINGS = { 'no-topic': 'Agrega al menos un área antes de aprobar.' }
 
@@ -129,6 +138,33 @@ router.post('/folders/:id/reject', requirePermission('folders:review'), async (r
 router.post('/folders/:id/rename', requirePermission('folders:review'), async (req, res) => {
   if (!isId(req.params.id)) return res.status(404).json({ error: 'Esa carpeta no existe.' })
   return run(res, async () => renameFolder({ ref: req.params.id, reviewer: await reviewer(req), name: req.body?.name, apply: true }))
+})
+
+// Every tema that is not rejected (pending ones too), so the review form can
+// name a proposal's pending tema and the merge picker can list the rest.
+router.get('/topics', requirePermission('topics:review'), async (_req, res) => {
+  const topics = await Topic.find({ reviewStatus: { $ne: 'rejected' } }).sort({ name: 1 }).lean()
+  res.json(topics.map((topic) => topicView(topic)))
+})
+
+router.post('/topics/:id/approve', requirePermission('topics:review'), async (req, res) => {
+  if (!isId(req.params.id)) return res.status(404).json({ error: 'Ese tema no existe.' })
+  return run(res, async () => approveTopic({ ref: req.params.id, reviewer: await reviewer(req), apply: true }))
+})
+
+router.post('/topics/:id/reject', requirePermission('topics:review'), async (req, res) => {
+  if (!isId(req.params.id)) return res.status(404).json({ error: 'Ese tema no existe.' })
+  return run(res, async () => rejectTopic({ ref: req.params.id, reviewer: await reviewer(req), reason: req.body?.reason, apply: true }))
+})
+
+router.post('/topics/:id/rename', requirePermission('topics:review'), async (req, res) => {
+  if (!isId(req.params.id)) return res.status(404).json({ error: 'Ese tema no existe.' })
+  return run(res, async () => renameTopic({ ref: req.params.id, reviewer: await reviewer(req), name: req.body?.name, apply: true }))
+})
+
+router.post('/topics/:id/merge', requirePermission('topics:review'), async (req, res) => {
+  if (!isId(req.params.id)) return res.status(404).json({ error: 'Ese tema no existe.' })
+  return run(res, async () => mergeTopic({ ref: req.params.id, reviewer: await reviewer(req), into: req.body?.into, apply: true }))
 })
 
 export default router

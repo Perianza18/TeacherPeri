@@ -16,6 +16,7 @@ const VERBS = {
   renamed: 'renombró',
   applied: 'marcó como aplicada',
   dismissed: 'descartó',
+  merged: 'unió',
 }
 
 export async function recordReview({ targetType, target, targetLabel, reviewer, action, summary, note = null }) {

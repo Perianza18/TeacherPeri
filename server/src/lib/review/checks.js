@@ -118,7 +118,11 @@ export function statementFindings(text) {
 // topics/tags: Maps id → document. folders: every Category the person may use.
 export function vocabularyFindings(proposal, { topics = new Map(), tags = new Map() } = {}) {
   const findings = []
-  for (const id of proposal.topics || []) if (!topics.has(String(id))) findings.push({ level: 'error', code: 'unknown-topic', message: 'Una de las áreas elegidas no existe.' })
+  for (const id of proposal.topics || []) {
+    const topic = topics.get(String(id))
+    if (!topic) findings.push({ level: 'error', code: 'unknown-topic', message: 'Uno de los temas elegidos no existe.' })
+    else if (topic.reviewStatus === 'pending') findings.push({ level: 'info', code: 'topic-pending', message: `El tema «${topic.name}» también está en revisión.` })
+  }
   for (const id of proposal.tags || []) {
     const tag = tags.get(String(id))
     if (!tag) findings.push({ level: 'error', code: 'unknown-tag', message: 'Una de las etiquetas elegidas no existe.' })
