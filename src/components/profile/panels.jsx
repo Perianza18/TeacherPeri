@@ -4,6 +4,7 @@ import MathText from '../math/MathText'
 import { usePanelData } from '../../hooks/usePanelData'
 import { ACTIVITY_LABELS, AREA_PILLS, BADGE_COLORS, longDate, plural, profilePath, roleName } from '../../lib/profile'
 import Avatar from './Avatar'
+import { FRAMES, POINTS, POINT_RULES, frameById } from '../../lib/frames'
 import { EmptyCard, FeedRow, LINK, PanelStatus, SoloTu, StatusPill, TextLink } from './shared'
 
 const base = (username) => `/api/profiles/${encodeURIComponent(username)}`
@@ -12,6 +13,7 @@ function ActivityDetail({ item }) {
   switch (item.kind) {
     case 'comment': return <>en <TextLink href={item.target.href}>{item.target.label}</TextLink></>
     case 'proposal': return <><TextLink href={item.target.href}>{item.target.label}</TextLink><StatusPill status={item.status} /></>
+    case 'solution': return <>en <TextLink href={item.target.href}>{item.target.label}</TextLink><StatusPill status={item.status} /></>
     case 'suggestion': return <>en <TextLink href={item.target.href}>{item.target.label}</TextLink><StatusPill status={item.status} /></>
     case 'saved': return <><TextLink href={item.target.href}>{item.target.label}</TextLink> en <TextLink href={item.list.href}>{item.list.name}</TextLink></>
     case 'follow': return <>Empezaste a seguir a <TextLink href={item.target.href}>{item.target.label}</TextLink></>
@@ -26,7 +28,7 @@ export function ActivityPanel({ profile, token }) {
   return (
     <ul className="tp-card-soft bg-tp-surface p-5 sm:p-6">
       {data.items.map((item, index) => (
-        <FeedRow key={`${item.kind}-${item.at}-${index}`} title={ACTIVITY_LABELS[item.kind]} at={item.at}><ActivityDetail item={item} /></FeedRow>
+        <FeedRow key={`${item.kind}-${item.at}-${index}`} title={ACTIVITY_LABELS[item.kind]} at={item.at} kind={item.kind}><ActivityDetail item={item} /></FeedRow>
       ))}
     </ul>
   )
@@ -45,7 +47,7 @@ export function CommentsPanel({ profile }) {
     <div className="flex flex-col gap-4">
       <ul className="tp-card-soft bg-tp-surface p-5 sm:p-6">
         {items.map((item) => (
-          <FeedRow key={item.id} title="Comentario" at={item.createdAt}>
+          <FeedRow key={item.id} title="Comentario" at={item.createdAt} kind="comment">
             <p>en <TextLink href={item.target.href}>{item.target.label}</TextLink></p>
             <MathText text={item.body} className="mt-2 whitespace-pre-line break-words font-reading text-[17px] leading-[1.7] text-tp-ink" />
           </FeedRow>
@@ -58,11 +60,50 @@ export function CommentsPanel({ profile }) {
   )
 }
 
+// Points, the frames ladder and how far the next one is. Points only come
+// from what the team accepted (lib/frames.js).
+function LevelCard({ profile, level }) {
+  const current = frameById(level.frame)
+  const next = level.next
+  const from = current.min
+  const progress = next ? Math.round(((level.points - from) / (next.min - from)) * 100) : 100
+  const who = profile.isOwner ? 'Te faltan' : 'Le faltan'
+  return (
+    <section aria-labelledby="nivel-titulo" className="tp-card-soft bg-tp-surface p-5 sm:p-6">
+      <div className="flex flex-wrap items-center gap-4">
+        <Avatar id={profile.avatar} color={profile.avatarColor} frame={level.frame} size="picker" />
+        <div className="min-w-0 flex-1">
+          <h3 id="nivel-titulo" className="font-display text-[19px] font-extrabold">Marco {current.name}</h3>
+          <p className="text-sm text-tp-ink-muted">{level.points} {level.points === 1 ? 'punto' : 'puntos'}{next ? ` · ${who} ${next.remaining} para ${next.name}` : ' · ¡Nivel máximo!'}</p>
+        </div>
+      </div>
+      <div className="mt-4 h-3 overflow-hidden rounded-full border-2 border-tp-ink bg-tp-paper" role="progressbar" aria-label={next ? `Progreso hacia el marco ${next.name}` : 'Nivel máximo'} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+        <div className="h-full rounded-full bg-tp-violet" style={{ width: `${progress}%` }} />
+      </div>
+      <ol className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold" aria-label="Marcos">
+        {FRAMES.map((frame) => {
+          const has = level.points >= frame.min
+          return <li key={frame.id} className={has ? 'text-tp-ink' : 'text-tp-ink-muted'}>{frame.name} <span className="font-normal">({frame.min})</span>{has && <span className="sr-only">, desbloqueado</span>}</li>
+        })}
+      </ol>
+      <div className="mt-4 rounded-[12px] bg-tp-paper p-3.5 text-sm leading-6 text-tp-ink-soft">
+        <p className="font-bold text-tp-ink">Cómo se ganan puntos</p>
+        <ul className="mt-1">
+          {POINT_RULES.map((rule) => <li key={rule.key}>{rule.label}: <span className="font-bold text-tp-ink">+{POINTS[rule.key]}</span></li>)}
+        </ul>
+        <p className="mt-1 text-tp-ink-muted">Solo cuenta lo que el equipo revisa y acepta.</p>
+      </div>
+    </section>
+  )
+}
+
 export function BadgesPanel({ profile }) {
   const { data, error, loading } = usePanelData(`${base(profile.username)}/badges`)
   if (loading || error) return <PanelStatus loading={loading} error={error} />
   const missing = profile.isOwner ? 'Te faltan' : 'Le faltan'
   return (
+    <div className="flex flex-col gap-4">
+    {data.level && <LevelCard profile={profile} level={data.level} />}
     <ul className="grid gap-4 sm:grid-cols-2">
       {data.earned.map((badge) => (
         <li key={badge.id} className="tp-card-quiet flex flex-col items-start gap-2 bg-tp-surface p-5">
@@ -79,11 +120,13 @@ export function BadgesPanel({ profile }) {
         </li>
       ))}
     </ul>
+    </div>
   )
 }
 
 const SUBMISSION_STATUS = { pending: 'pending', 'published-pending': 'pending', rejected: 'rejected', 'published-rejected': 'rejected', published: 'accepted' }
 const FLAG_STATUS = { open: 'pending', resolved: 'applied', dismissed: 'dismissed' }
+const SOLUTION_STATUS = { pending: 'pending', approved: 'accepted', rejected: 'rejected' }
 
 function SubmissionRow({ title, href, status, editHref, reason }) {
   const [open, setOpen] = useState(false)
@@ -102,11 +145,12 @@ function SubmissionRow({ title, href, status, editHref, reason }) {
 export function SubmissionsPanel({ token }) {
   const problems = usePanelData('/api/submissions/mine', token)
   const flags = usePanelData('/api/flags/mine', token)
-  const loading = problems.loading || flags.loading
-  const error = problems.error || flags.error
+  const solutions = usePanelData('/api/solutions/mine', token)
+  const loading = problems.loading || flags.loading || solutions.loading
+  const error = problems.error || flags.error || solutions.error
   return (
     <div className="flex flex-col gap-4">
-      <p className="flex flex-wrap items-center gap-2 text-sm text-tp-ink-muted"><SoloTu /> Tus propuestas y sugerencias; nadie más las ve aquí.</p>
+      <p className="flex flex-wrap items-center gap-2 text-sm text-tp-ink-muted"><SoloTu /> Tus propuestas, soluciones y sugerencias; nadie más las ve aquí.</p>
       {(loading || error) ? <PanelStatus loading={loading} error={error} /> : (
         <>
           <section aria-labelledby="envios-problemas" className="tp-card-soft bg-tp-surface p-5 sm:p-6">
@@ -122,6 +166,14 @@ export function SubmissionsPanel({ token }) {
                   reason={SUBMISSION_STATUS[item.state] === 'rejected' ? item.latest?.reason : null}
                 />))}</ul>
               : <p className="text-tp-ink-soft">Aún no propones problemas. <Link to="/entrenamiento/problemas/proponer" className={LINK}>Proponer un problema</Link></p>}
+          </section>
+          <section aria-labelledby="envios-soluciones" className="tp-card-soft bg-tp-surface p-5 sm:p-6">
+            <h3 id="envios-soluciones" className="mb-3 font-display text-[19px] font-extrabold">Soluciones propuestas</h3>
+            {solutions.data.length
+              ? <ul>{solutions.data.map((item) => (
+                <SubmissionRow key={item.id} title={item.problem?.label ?? 'Problema'} href={item.problem?.href} status={SOLUTION_STATUS[item.status]} reason={item.status === 'rejected' ? item.reason : null} />
+              ))}</ul>
+              : <p className="text-tp-ink-soft">Cuando uses «Proponer una solución» en un problema, aparecerá aquí.</p>}
           </section>
           <section aria-labelledby="envios-sugerencias" className="tp-card-soft bg-tp-surface p-5 sm:p-6">
             <h3 id="envios-sugerencias" className="mb-3 font-display text-[19px] font-extrabold">Sugerencias de cambio</h3>
@@ -156,7 +208,7 @@ function PeopleRows({ people }) {
     <ul className="tp-card-soft bg-tp-surface p-5 sm:p-6">
       {people.map((person) => (
         <li key={person.username} className="flex items-center gap-3 border-t-2 border-dashed border-tp-rule py-3 first:border-t-0 first:pt-0 last:pb-0">
-          <Avatar id={person.avatar} color={person.avatarColor} />
+          <Avatar id={person.avatar} color={person.avatarColor} frame={person.frame} />
           <span className="min-w-0 flex-1 truncate font-bold">@{person.username}</span>
           <span className="tp-pill shrink-0 bg-tp-violet-soft text-xs">{roleName(person.role)}</span>
           <Link to={profilePath(person.username)} className={`${LINK} inline-flex min-h-11 shrink-0 items-center text-sm`}>Ver perfil</Link>

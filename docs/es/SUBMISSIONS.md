@@ -96,6 +96,36 @@ que no hizo falta migración.
   `POST /api/reports/content/:id/status` (resuelto o descartado, con nota
   opcional). Los reportes de comentarios siguen en sus rutas (`/api/reports`).
 
+## Soluciones propuestas, puntos y marcos
+
+- **«Proponer una solución»** está debajo de la solución oficial de cada
+  problema publicado. Con sesión iniciada se escribe una solución (20 a 20 000
+  caracteres, con fórmulas `$…$` revisadas como en el enunciado y vista
+  previa). Se guarda como `SolutionProposal` (`POST /api/solutions`): una en
+  revisión por persona y problema; varias personas pueden proponer para el mismo.
+- **Revisión:** Revisión › «Soluciones propuestas» (`GET /api/solutions/pending`,
+  `POST /api/solutions/:id/approve | reject`, permiso `solutions:review`).
+  Rechazar pide un motivo que la persona lee. Ambas decisiones quedan en
+  «Cambios de editores» y la persona recibe un aviso con enlace al problema.
+- **Publicada:** las soluciones aceptadas aparecen en «Soluciones de la
+  comunidad» (cerrada hasta abrirla), cada una con «Solución de @usuario», su
+  avatar y su marco (`GET /api/solutions/problem/:id`). La «Solución» oficial
+  no cambia. La persona ve sus propuestas en Mi Espacio › Mis envíos y puede
+  retirar una en revisión (`DELETE /api/solutions/:id`).
+- **Puntos** (`server/src/lib/levels.js`): solo cuenta lo que el equipo aceptó,
+  así nadie sube marcando «Resuelto» o comentando: problema aceptado +30,
+  solución aceptada +25, sugerencia aplicada +10. `lib/badges.js` los recalcula
+  y guarda `User.points` al leer un perfil o sus insignias, y justo después de
+  una aprobación o una sugerencia aplicada.
+- **Marcos:** Lápiz (0), Bronce (30), Plata (100), Oro (250), Olímpico (500),
+  alrededor del avatar en todo el sitio (`src/lib/frames.js`, `.tp-frame-*` en
+  `src/index.css`). En «Editar perfil» cada quien elige un marco que ya
+  desbloqueó (`PUT /api/profiles/me { frame }`, 403 si está bloqueado); sin
+  elegir, o si ya no lo alcanza, se ve el mejor. Insignias muestra los puntos,
+  el avance al siguiente marco y cómo ganar puntos. Hay insignias nuevas de
+  «Soluciones aceptadas»: Primera solución (1), Solucionador (5) y Maestro de
+  soluciones (20).
+
 ## Revisión (editores y admins)
 
 **En el sitio:** `/panel/revision` («Revisión» en «Panel del equipo»), para

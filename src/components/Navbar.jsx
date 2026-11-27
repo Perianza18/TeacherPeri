@@ -103,14 +103,19 @@ function AccountMenu({ user, token, logout }) {
         aria-label={`Cuenta de ${user.username}${notifications.unread ? `, ${notifications.unread} ${notifications.unread === 1 ? 'notificación nueva' : 'notificaciones nuevas'}` : ''}`}
         className="relative grid h-11 w-11 place-items-center rounded-full"
       >
-        <Avatar id={user.avatar} color={user.avatarColor} />
+        <Avatar id={user.avatar} color={user.avatarColor} frame={user.frame} />
         {notifications.unread > 0 && <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-tp-ink bg-tp-orange px-1 text-[11px] font-black leading-none text-tp-ink">{notifications.unread > 9 ? '9+' : notifications.unread}</span>}
       </button>
       {open && (
         <div id="tp-account-panel" className="tp-card-soft absolute right-0 top-full z-50 mt-3 w-72 max-w-[calc(100vw-32px)] bg-tp-surface p-5">
-          <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Sesión iniciada como</p>
-          <p className="mt-1 truncate text-base font-bold text-tp-ink">{user.username}</p>
-          <nav aria-label="Tu cuenta" className="mt-3 flex flex-col">
+          <div className="flex items-center gap-3">
+            <Avatar id={user.avatar} color={user.avatarColor} frame={user.frame} size="picker" />
+            <div className="min-w-0">
+              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-tp-ink-muted">Sesión iniciada como</p>
+              <p className="mt-1.5 truncate text-lg font-black leading-tight text-tp-ink">{user.username}</p>
+            </div>
+          </div>
+          <nav aria-label="Tu cuenta" className="mt-4 flex flex-col border-t-2 border-dashed border-tp-rule pt-2">
             <Link to={profilePath(user.username)} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Mi Espacio</Link>
             <Link to={MY_SUBMISSIONS_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Mis envíos</Link>
             <Link to={PROPOSE_PATH} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-tp-ink hover:text-tp-violet">Proponer un problema</Link>

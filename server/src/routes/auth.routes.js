@@ -27,13 +27,14 @@ import User from '../models/User.js'
 import { requireAuth } from '../middleware/auth.js'
 import { roleOf } from '../lib/permissions.js'
 import { avatarColorOf, avatarOf } from '../lib/profile.js'
+import { frameOf } from '../lib/levels.js'
 
 const router = Router()
 
 // Lo que el navegador recibe y guarda de la cuenta. El correo solo se manda
 // a su dueño (estas rutas siempre responden sobre la cuenta propia).
 function accountView(user) {
-  return { id: user._id, username: user.username, email: user.email, role: roleOf(user), avatar: avatarOf(user), avatarColor: avatarColorOf(user), bio: user.bio ?? '' }
+  return { id: user._id, username: user.username, email: user.email, role: roleOf(user), avatar: avatarOf(user), avatarColor: avatarColorOf(user), frame: frameOf(user), bio: user.bio ?? '' }
 }
 
 // Crea el token que el navegador va a guardar y reenviar en cada petición
@@ -113,7 +114,7 @@ router.post('/login', async (req, res) => {
 // tener el rol al día (por ejemplo, justo después de que alguien te nombre
 // editor) sin tener que cerrar sesión y volver a entrar.
 router.get('/me', requireAuth, async (req, res) => {
-  const user = await User.findById(req.userId).select('username email role avatar avatarColor bio').lean()
+  const user = await User.findById(req.userId).select('username email role avatar avatarColor points frame bio').lean()
   if (!user) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
   res.json({ user: accountView(user) })
 })

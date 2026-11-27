@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { nextTabIndex } from '../../lib/profile'
 
-// Tabs drawn as colored section-heading labels. Real tablist semantics:
+// White tabs with a colored dot; the selected one fills with its color and lifts. Real tablist semantics:
 // roving tabindex, ←/→ move and select (wrapping), Home and End jump.
 // `activeId` is null while a followers list is shown: no tab is selected and
 // the first one takes the Tab key.
@@ -18,8 +18,8 @@ export default function ProfileTabs({ tabs, activeId, onSelect, idPrefix = 'perf
   }
 
   return (
-    <div className="border-b-2 border-tp-rule pb-4">
-      <div role="tablist" aria-label="Secciones del perfil" className="flex flex-wrap gap-3">
+    <div>
+      <div role="tablist" aria-label="Secciones del perfil" className="flex flex-wrap gap-2.5">
         {tabs.map((tab, index) => {
           const selected = tab.id === activeId
           return (
@@ -34,8 +34,9 @@ export default function ProfileTabs({ tabs, activeId, onSelect, idPrefix = 'perf
               tabIndex={index === focusIndex ? 0 : -1}
               onClick={() => onSelect(tab.id)}
               onKeyDown={(event) => onKeyDown(event, index)}
-              className={`tp-tab ${tab.color}`}
+              className={`tp-tab ${selected ? tab.color : 'bg-tp-surface'}`}
             >
+              <span aria-hidden="true" className={`h-2.5 w-2.5 shrink-0 rounded-full border-[1.5px] border-tp-ink ${selected ? 'bg-tp-ink' : (tab.dot ?? tab.color)}`} />
               {tab.label}
             </button>
           )

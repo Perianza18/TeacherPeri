@@ -15,7 +15,7 @@ describe('Insignias', () => {
     await account('ana')
     const res = await badges('ana')
     expect(res.body.earned).toEqual([])
-    expect(res.body.locked.map((b) => [b.id, b.remaining])).toEqual([['solved-1', 1], ['comments-1', 1], ['contributions-1', 1], ['suggestions-1', 1]])
+    expect(res.body.locked.map((b) => [b.id, b.remaining])).toEqual([['solved-1', 1], ['comments-1', 1], ['contributions-1', 1], ['solutions-1', 1], ['suggestions-1', 1]])
   })
 
   it('«Lo resolví» cuenta problemas resueltos y otorga la insignia con su fecha', async () => {

@@ -297,11 +297,50 @@ function SuggestionCard({ flag, token, onDone }) {
   )
 }
 
+// A proposed solution («Proponer una solución»): the problem to compare with,
+// the solution and its automatic checks. Accepting publishes it with credit
+// and gives its author points; rejecting needs a reason they will read.
+function SolutionCard({ item, token, onDone }) {
+  const decide = (action) => async (note) => {
+    if (action === 'reject' && note.length < 5) throw new Error('Escribe el motivo para rechazarla (mínimo 5 caracteres). La persona lo leerá.')
+    await apiFetch(`/api/solutions/${item.id}/${action}`, { method: 'POST', token, body: action === 'reject' ? { reason: note } : {} })
+    onDone()
+  }
+  const href = item.problem ? `/entrenamiento/problemas/${item.problem.id}` : null
+  return (
+    <article className="tp-card-soft flex flex-col gap-3 bg-tp-surface p-5 sm:p-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="tp-pill bg-tp-violet-soft text-xs">Solución</span>
+        <span className="text-sm text-tp-ink-muted">@{item.author ?? 'cuenta eliminada'} · {fechaHora(item.createdAt)}</span>
+      </div>
+      <h3 className="font-display text-[19px] font-extrabold leading-snug">
+        {href ? <Link to={href} className="underline-offset-4 hover:text-tp-violet hover:underline">{item.problem.codigo} «{item.problem.titulo}»</Link> : 'Problema borrado'}
+      </h3>
+      {item.problem && (
+        <details className="rounded-[10px] border-2 border-dashed border-tp-rule px-4 py-2">
+          <summary className="min-h-11 cursor-pointer content-center text-sm font-bold">Enunciado{item.problem.hasSolution ? ' (ya tiene solución oficial)' : ''}</summary>
+          <MathText text={item.problem.enunciado} className="tp-reading-text whitespace-pre-wrap break-words pb-2 leading-7" />
+        </details>
+      )}
+      <MathText text={item.body} className="tp-reading-text whitespace-pre-wrap break-words leading-7" />
+      <Findings findings={item.findings} />
+      <CloseActions
+        noteLabel="Motivo (obligatorio para rechazar)"
+        placeholder="Por ejemplo: falta justificar el caso n = 2"
+        actions={[
+          { label: 'Aceptar y publicar', tone: 'bg-tp-mint text-tp-ink', run: decide('approve') },
+          { label: 'Rechazar', tone: 'bg-tp-surface text-tp-ink', run: decide('reject') },
+        ]}
+      />
+    </article>
+  )
+}
+
 // /panel/revision — editors and admins review everything the community
 // proposes: new problems, changes to problems, temas, exam folders and suggestions.
 export default function RevisionPage() {
   return (
-    <PanelShell title="Revisión" lead="Todo lo que propone la comunidad: problemas nuevos, cambios a problemas, temas, carpetas de examen y sugerencias en problemas y lecciones. Al aprobar, la persona autora recibe un aviso.">
+    <PanelShell title="Revisión" lead="Todo lo que propone la comunidad: problemas nuevos, cambios a problemas, soluciones, temas, carpetas de examen y sugerencias en problemas y lecciones. Al aprobar, la persona autora recibe un aviso.">
       {(auth) => <Revision token={auth.token} />}
     </PanelShell>
   )
@@ -311,16 +350,18 @@ function Revision({ token }) {
   const [type, setType] = useState('all')
   const queue = useApiData('/api/review', token)
   const flags = useApiData('/api/flags', token)
+  const pendingSolutions = useApiData('/api/solutions/pending', token)
   const vocab = useVocabulary(token)
   const data = queue.data
   const suggestions = flags.data
-  if (!data || !suggestions) return <LoadState loading={queue.loading || flags.loading} error={queue.error || flags.error} />
+  if (!data || !suggestions || !pendingSolutions.data) return <LoadState loading={queue.loading || flags.loading || pendingSolutions.loading} error={queue.error || flags.error || pendingSolutions.error} />
+  const solutions = pendingSolutions.data.items
   const topics = data.topics || []
   const problemSuggestions = suggestions.filter((flag) => flag.targetType === 'problem')
   const lessonSuggestions = suggestions.filter((flag) => flag.targetType === 'theory')
   const counts = {
-    all: data.submissions.length + data.folders.length + topics.length + suggestions.length,
-    problems: data.submissions.length + problemSuggestions.length,
+    all: data.submissions.length + data.folders.length + topics.length + suggestions.length + solutions.length,
+    problems: data.submissions.length + problemSuggestions.length + solutions.length,
     theory: lessonSuggestions.length,
     topics: topics.length,
     folders: data.folders.length,
@@ -341,6 +382,12 @@ function Revision({ token }) {
         <section aria-labelledby="envios-titulo" className="flex max-w-[840px] flex-col gap-4">
           <h2 id="envios-titulo" className="tp-section-title">Problemas propuestos ({data.submissions.length})</h2>
           {data.submissions.map((item) => <SubmissionCard key={item.id} item={item} token={token} vocab={vocab} onDone={queue.reload} />)}
+        </section>
+      )}
+      {show('problems') && solutions.length > 0 && (
+        <section aria-labelledby="soluciones-titulo" className="flex flex-col gap-4">
+          <h2 id="soluciones-titulo" className="tp-section-title">Soluciones propuestas ({solutions.length})</h2>
+          <div className="grid gap-5 lg:grid-cols-2">{solutions.map((item) => <SolutionCard key={item.id} item={item} token={token} onDone={pendingSolutions.reload} />)}</div>
         </section>
       )}
       {shownSuggestions.length > 0 && (

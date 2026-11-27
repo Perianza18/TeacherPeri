@@ -2,7 +2,7 @@
 //
 // GET    /api/profiles?q=                     public search: username prefix (2+ chars), 20 max, public fields only
 // GET    /api/profiles/:username              public; `email` only for the owner
-// PUT    /api/profiles/me                     signed in: { avatar, avatarColor, bio }
+// PUT    /api/profiles/me                     signed in: { avatar, avatarColor, bio, frame } (a frame they have unlocked)
 // GET    /api/profiles/:username/followers    public, 50 per page (?page=)
 // GET    /api/profiles/:username/following    public, 50 per page
 // PUT    /api/profiles/:username/follow       signed in, not yourself
@@ -11,7 +11,7 @@
 // GET    /api/profiles/:username/activity     owner only (404 for anyone else)
 // GET    /api/profiles/:username/solved       owner only (404 for anyone else)
 // GET    /api/profiles/:username/lists        public lists; the owner also gets private ones
-// GET    /api/profiles/:username/badges       public
+// GET    /api/profiles/:username/badges       public: { earned, locked, level }
 //
 // Privacy is fixed: activity, solved problems, «Mis envíos», private lists and the email are
 // only for the owner. They are filtered here, in the query, never sent and
@@ -24,6 +24,7 @@ import Flag from '../models/Flag.js'
 import Follow from '../models/Follow.js'
 import Problem from '../models/Problem.js'
 import ProblemSolve from '../models/ProblemSolve.js'
+import SolutionProposal from '../models/SolutionProposal.js'
 import User from '../models/User.js'
 import UserList from '../models/UserList.js'
 import UserListItem from '../models/UserListItem.js'
@@ -33,6 +34,7 @@ import { optionalAuth } from '../middleware/optionalAuth.js'
 import { roleOf } from '../lib/permissions.js'
 import { AVATAR_COLORS, AVATAR_IDS, avatarColorOf, avatarOf, isOwner, parseBio } from '../lib/profile.js'
 import { awardBadges, publicCommentFilter } from '../lib/badges.js'
+import { FRAME_IDS, frameOf, isUnlocked } from '../lib/levels.js'
 import { contentNames, problemHref } from '../lib/profileContent.js'
 import { ownSubmissionViews } from '../lib/submissions.js'
 import { listSummaries } from './userLists.routes.js'
@@ -47,7 +49,9 @@ export const SEARCH_MAX = 30
 export const SEARCH_LIMIT = 20
 
 const page = (value) => Math.max(1, Math.min(1000, Number.parseInt(value, 10) || 1))
-export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), avatarColor: avatarColorOf(user), role: roleOf(user) })
+export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), avatarColor: avatarColorOf(user), frame: frameOf(user), role: roleOf(user) })
+// The User fields personView needs.
+export const PERSON_FIELDS = 'username role avatar avatarColor points frame'
 
 // «Buscar usuarios» has its own budget per IP on top of the general /api one.
 export const searchLimiter = ({ max = 60, windowMs = 60 * 1000 } = {}) => rateLimit({
@@ -69,13 +73,13 @@ export function parseUserQuery(value) {
 router.get('/', searchLimiter(), async (req, res) => {
   const query = parseUserQuery(req.query.q)
   if (query.error) return res.status(400).json({ error: query.error })
-  const users = await User.find({ username: query.pattern }).sort({ username: 1 }).limit(SEARCH_LIMIT).select('username role avatar avatarColor').lean()
+  const users = await User.find({ username: query.pattern }).sort({ username: 1 }).limit(SEARCH_LIMIT).select(PERSON_FIELDS).lean()
   res.json({ items: users.map(personView) })
 })
 
 async function findProfile(req, res) {
   const username = typeof req.params.username === 'string' ? req.params.username : ''
-  const user = username ? await User.findOne({ username }).select('username email role bio avatar avatarColor createdAt').lean() : null
+  const user = username ? await User.findOne({ username }).select('username email role bio avatar avatarColor points frame createdAt').lean() : null
   if (!user) res.status(404).json({ error: 'Ese perfil no existe.' })
   return user
 }
@@ -95,12 +99,21 @@ router.put('/me', requireAuth, async (req, res) => {
     if (req.body.avatarColor !== null && !AVATAR_COLORS.includes(req.body.avatarColor)) return res.status(400).json({ error: 'Elige uno de los colores.' })
     update.avatarColor = req.body.avatarColor
   }
+  if ('frame' in req.body) {
+    const { frame } = req.body
+    if (frame !== null && !FRAME_IDS.includes(frame)) return res.status(400).json({ error: 'Elige uno de los marcos.' })
+    if (frame !== null) {
+      const me = await User.findById(req.userId).select('points').lean()
+      if (!isUnlocked(frame, me?.points)) return res.status(403).json({ error: 'Todavía no desbloqueas ese marco.' })
+    }
+    update.frame = frame
+  }
   if ('bio' in req.body) {
     const bio = parseBio(req.body.bio)
     if (bio.error) return res.status(400).json({ error: bio.error })
     update.bio = bio.value
   }
-  const user = await User.findByIdAndUpdate(req.userId, update, { new: true, runValidators: true }).select('username role bio avatar avatarColor').lean()
+  const user = await User.findByIdAndUpdate(req.userId, update, { new: true, runValidators: true }).select(`${PERSON_FIELDS} bio`).lean()
   res.json({ ...personView(user), bio: user.bio ?? '' })
 })
 
@@ -117,11 +130,12 @@ router.get('/:username', optionalAuth, async (req, res) => {
   ])
   const comments = await Comment.countDocuments(commentFilter)
   res.json({
-    ...personView(user),
+    ...personView({ ...user, points: badges.level.points }),
     bio: user.bio ?? '',
     joinedAt: user.createdAt,
     ...counts,
-    stats: { solved: badges.counts.solved, comments, proposed, badges: badges.earned.length },
+    stats: { solved: badges.counts.solved, comments, proposed, solutions: badges.counts.solutions, badges: badges.earned.length },
+    level: badges.level,
     isOwner: owner,
     isFollowing: Boolean(isFollowing),
     ...(owner ? { email: user.email } : {}),
@@ -135,7 +149,7 @@ async function followList(req, res, field, other) {
   const filter = { [field]: user._id }
   const [total, rows] = await Promise.all([
     Follow.countDocuments(filter),
-    Follow.find(filter).sort({ createdAt: -1 }).skip((current - 1) * FOLLOW_PAGE).limit(FOLLOW_PAGE).populate(other, 'username role avatar avatarColor').lean(),
+    Follow.find(filter).sort({ createdAt: -1 }).skip((current - 1) * FOLLOW_PAGE).limit(FOLLOW_PAGE).populate(other, PERSON_FIELDS).lean(),
   ])
   res.json({ total, page: current, pageSize: FOLLOW_PAGE, items: rows.filter((row) => row[other]).map((row) => personView(row[other])) })
 }
@@ -180,6 +194,7 @@ router.get('/:username/comments', async (req, res) => {
 })
 
 const FLAG_STATES = { open: 'pending', resolved: 'applied', dismissed: 'dismissed' }
+const SOLUTION_STATES = { pending: 'pending', approved: 'accepted', rejected: 'rejected' }
 const SUBMISSION_STATES = { pending: 'pending', 'published-pending': 'pending', rejected: 'rejected', 'published-rejected': 'rejected', published: 'accepted' }
 
 router.get('/:username/activity', optionalAuth, async (req, res) => {
@@ -188,16 +203,17 @@ router.get('/:username/activity', optionalAuth, async (req, res) => {
   // Same answer as an unknown profile, so nobody learns more than the public page shows.
   if (!isOwner(req.userId, user)) return res.status(404).json({ error: 'Ese perfil no existe.' })
   const limit = ACTIVITY_LIMIT
-  const [comments, submissions, flags, saved, solves, follows] = await Promise.all([
+  const [comments, submissions, flags, saved, solves, follows, solutions] = await Promise.all([
     Comment.find({ author: user._id, status: 'visible' }).sort({ createdAt: -1 }).limit(limit).select('problem createdAt').lean(),
     ownSubmissionViews(user._id),
     Flag.find({ reporter: user._id }).sort({ createdAt: -1 }).limit(limit).select('targetType target status createdAt').lean(),
     UserListItem.find({ owner: user._id }).sort({ createdAt: -1 }).limit(limit).populate('list', 'name').lean(),
     ProblemSolve.find({ user: user._id }).sort({ createdAt: -1 }).limit(limit).select('problem createdAt').lean(),
     Follow.find({ follower: user._id }).sort({ createdAt: -1 }).limit(limit).populate('followee', 'username').lean(),
+    SolutionProposal.find({ author: user._id, status: { $ne: 'withdrawn' } }).sort({ createdAt: -1 }).limit(limit).select('problem status createdAt').lean(),
   ])
   const problemIds = [
-    ...comments.map((c) => c.problem), ...solves.map((s) => s.problem),
+    ...comments.map((c) => c.problem), ...solves.map((s) => s.problem), ...solutions.map((s) => s.problem),
     ...flags.filter((f) => f.targetType === 'problem').map((f) => f.target),
     ...saved.filter((s) => s.itemType === 'problem').map((s) => s.item),
   ]
@@ -212,6 +228,10 @@ router.get('/:username/activity', optionalAuth, async (req, res) => {
   for (const s of submissions) {
     const label = s.examFolderPath.length > 1 ? `${s.examFolderPath.slice(1).join(' › ')}${s.proposal.problemNumber ? `, problema ${s.proposal.problemNumber}` : ''}` : (s.titulo || s.codigo)
     events.push({ kind: 'proposal', at: s.createdAt, target: { label, href: `/mis-envios/${s._id}` }, status: SUBMISSION_STATES[s.state] ?? 'pending' })
+  }
+  for (const s of solutions) {
+    const problem = nameOf('problem', s.problem)
+    if (problem) events.push({ kind: 'solution', at: s.createdAt, target: { label: problem.label, href: problem.href }, status: SOLUTION_STATES[s.status] })
   }
   for (const f of flags) {
     const target = nameOf(f.targetType, f.target)
@@ -261,8 +281,8 @@ router.get('/:username/lists', optionalAuth, async (req, res) => {
 router.get('/:username/badges', async (req, res) => {
   const user = await findProfile(req, res)
   if (!user) return
-  const { view } = await awardBadges(user)
-  res.json(view)
+  const { view, level } = await awardBadges(user)
+  res.json({ ...view, level })
 })
 
 export default router

@@ -100,10 +100,10 @@ export default function PerfilPage() {
             onSignIn={() => abrirModal()}
             onChange={setProfile}
             onShowPeople={(which) => setParams({ ver: which })}
-            onProfileSaved={(saved) => { setProfile({ avatar: saved.avatar, avatarColor: saved.avatarColor, bio: saved.bio }); updateUser({ avatar: saved.avatar, avatarColor: saved.avatarColor, bio: saved.bio }) }}
+            onProfileSaved={(saved) => { setProfile({ avatar: saved.avatar, avatarColor: saved.avatarColor, frame: saved.frame, bio: saved.bio }); updateUser({ avatar: saved.avatar, avatarColor: saved.avatarColor, frame: saved.frame, bio: saved.bio }) }}
           />
-          <UserSearch key={`${username}|${searchSeed.n}`} initial={searchSeed.user === username ? searchSeed.value : ''} onSearch={onSearch} />
           <NumbersCard stats={profile.stats} onShowSolved={profile.isOwner ? () => setParams({ ver: 'resueltos' }) : null} />
+          <UserSearch key={`${username}|${searchSeed.n}`} initial={searchSeed.user === username ? searchSeed.value : ''} onSearch={onSearch} />
         </div>
         <div className="flex min-w-0 flex-col gap-6">
           <ProfileTabs tabs={tabs} activeId={active} onSelect={select} />

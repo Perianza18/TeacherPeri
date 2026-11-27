@@ -23,6 +23,7 @@ import User from '../../models/User.js'
 import { DIFFICULTY_LEVELS, normalizeSlug } from '../../models/content.js'
 import { can, roleOf } from '../permissions.js'
 import { recordReview } from '../activity.js'
+import { awardBadges } from '../badges.js'
 import { folderPath, parseFolderName } from '../examFolders.js'
 import { derivedProblemFields, proposalFromProblem, statementImages, vocabulary } from '../submissions.js'
 import { imageUrl } from '../images.js'
@@ -210,6 +211,13 @@ async function notify(userId, type, problem, message) {
   await Notification.create({ user: userId, type, problem: problem._id, message })
 }
 
+// An accepted problem or an applied suggestion is worth points (lib/levels.js):
+// recount them now so the author's frame changes right away.
+async function refreshPoints(userId) {
+  const user = userId ? await User.findById(userId).select('role').lean() : null
+  if (user) await awardBadges(user)
+}
+
 // --- approve / reject ---------------------------------------------------------
 
 export async function approveSubmission({ ref, reviewer, fixes = {}, apply = false }) {
@@ -276,6 +284,7 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
     submission.set({ status: 'approved', proposed: proposal, reviewedBy: reviewer._id, reviewedAt: now, checks: findings })
     await submission.save()
     await notify(submission.author, 'submission-approved', problem, submission.kind === 'edit' ? `Tus cambios a ${problem.codigo} ya están publicados.` : `Tu problema ${problem.codigo} fue aprobado y ya está publicado.`)
+    await refreshPoints(submission.author)
     const folderNote = folders.length ? ` También aprobó la carpeta «${folderPath(proposal.examFolder, ctx.foldersById).join(' › ')}».` : ''
     await recordReview({
       targetType: 'problem', target: problem._id, targetLabel: `${problem.codigo} «${problem.titulo}»`, reviewer, action: 'approved',
@@ -486,6 +495,7 @@ export async function setFlagStatus({ ref, status, note, reviewer, apply = false
   if (apply) {
     flag.set({ status, handledBy: reviewer._id, handledAt: new Date(), handledNote: text || null })
     await flag.save()
+    if (status === 'resolved') await refreshPoints(flag.reporter?._id)
     const page = flag.targetType === 'problem'
       ? await Problem.findById(flag.target).select('codigo titulo').lean()
       : await Theory.findById(flag.target).select('title').lean()

@@ -19,6 +19,7 @@
 import mongoose from 'mongoose'
 import { DEFAULT_ROLE, LEGACY_ROLES, ROLES } from '../lib/permissions.js'
 import { AVATAR_COLORS, AVATAR_IDS, BIO_MAX } from '../lib/profile.js'
+import { FRAME_IDS } from '../lib/levels.js'
 
 const userSchema = new mongoose.Schema(
   {
@@ -69,6 +70,11 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, enum: [...AVATAR_IDS, null], default: null },
     // Fondo del avatar elegido en «Editar perfil»; null = el color propio del avatar.
     avatarColor: { type: String, enum: [...AVATAR_COLORS, null], default: null },
+    // Puntos por lo que el equipo aceptó (problemas, soluciones, sugerencias;
+    // ver lib/levels.js). Se recalculan en lib/badges.js; nunca los manda el navegador.
+    points: { type: Number, min: 0, default: 0 },
+    // Marco del avatar elegido en «Editar perfil»; null = el mejor que tenga.
+    frame: { type: String, enum: [...FRAME_IDS, null], default: null },
   },
   { timestamps: true }, // agrega automáticamente createdAt y updatedAt
 )

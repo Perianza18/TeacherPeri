@@ -121,6 +121,36 @@ needed a migration.
   `POST /api/reports/content/:id/status` (resolved or dismissed, with an
   optional note). Comment reports keep their own routes (`/api/reports`).
 
+## Proposed solutions, points and frames
+
+- **«Proponer una solución»** sits under the official solution of every
+  published problem. Signed-in users write a solution (20–20 000 characters,
+  `$…$` formulas checked like the statement, with a live preview). It is stored
+  as a `SolutionProposal` (`POST /api/solutions`), one pending per person per
+  problem; many people may propose for the same problem.
+- **Review:** Revisión › «Soluciones propuestas» (`GET /api/solutions/pending`,
+  `POST /api/solutions/:id/approve | reject`, permission `solutions:review`).
+  Rejecting needs a reason the author reads. Both are recorded in «Cambios de
+  editores» and the author gets a notification with a link to the problem.
+- **Published:** accepted solutions appear under «Soluciones de la comunidad»
+  (closed until opened), each credited «Solución de @usuario» with the author's
+  avatar and frame (`GET /api/solutions/problem/:id`). The problem's own
+  «Solución» never changes. The author sees their proposals in Mi Espacio ›
+  Mis envíos and can withdraw a pending one (`DELETE /api/solutions/:id`).
+- **Points** (`server/src/lib/levels.js`) only come from what the team accepted,
+  so nobody climbs by pressing «Resuelto» or posting comments: accepted problem
+  +30, accepted solution +25, applied suggestion +10. `lib/badges.js` recounts
+  them and stores `User.points` whenever a profile or its badges are read and
+  right after an approval or an applied suggestion.
+- **Frames:** Lápiz (0), Bronce (30), Plata (100), Oro (250), Olímpico (500),
+  drawn around the avatar everywhere it appears (`src/lib/frames.js`,
+  `.tp-frame-*` in `src/index.css`). In «Editar perfil» a person picks any
+  frame they have unlocked (`PUT /api/profiles/me { frame }`, 403 for a locked
+  one); without a choice, or if they no longer reach it, the best one shows.
+  Insignias shows the points, the progress to the next frame and how to earn
+  points. Badges add «Soluciones aceptadas»: Primera solución (1), Solucionador
+  (5), Maestro de soluciones (20).
+
 ## Review (editors and admins)
 
 **On the site:** `/panel/revision` («Revisión» in «Panel del equipo»), for
