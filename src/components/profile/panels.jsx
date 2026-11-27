@@ -75,6 +75,7 @@ function LevelCard({ profile, level }) {
         <div className="min-w-0 flex-1">
           <h3 id="nivel-titulo" className="font-display text-[19px] font-extrabold">Marco {current.name}</h3>
           <p className="text-sm text-tp-ink-muted">{level.points} {level.points === 1 ? 'punto' : 'puntos'}{next ? ` · ${who} ${next.remaining} para ${next.name}` : ' · ¡Nivel máximo!'}</p>
+          {profile.isOwner && <p className="text-sm text-tp-ink-muted">Puedes gastar {level.balance ?? level.points} en avatares desde «Editar perfil».</p>}
         </div>
       </div>
       <div className="mt-4 h-3 overflow-hidden rounded-full border-2 border-tp-ink bg-tp-paper" role="progressbar" aria-label={next ? `Progreso hacia el marco ${next.name}` : 'Nivel máximo'} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>

@@ -106,3 +106,40 @@ describe('Puntos y marcos', () => {
     expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ frame: null })).body.frame).toBe('plata')
   })
 })
+
+describe('Avatares que se compran con puntos', () => {
+  const buy = (token, id) => request(app).post(`/api/profiles/me/avatars/${id}`).set(as(token))
+
+  it('las cuentas nuevas y las figuras que ya no se ofrecen muestran «π»', async () => {
+    const { ana } = await setup()
+    expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('a04')
+    await User.updateOne({ _id: ana.user._id }, { avatar: 'a07' })
+    expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('a04')
+    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'a07' })).status).toBe(400)
+    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'gato-dormido' })).status).toBe(200)
+  })
+
+  it('se compra con el saldo; gastar no baja el marco y no se puede usar sin comprar', async () => {
+    const { problem, ana, editor } = await setup()
+    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'gato-de-traje' })).status).toBe(403)
+    expect((await buy(ana.token, 'gato-de-traje')).status).toBe(403)
+    expect((await buy(ana.token, 'no-existe')).status).toBe(404)
+
+    // Two accepted solutions: 50 points.
+    for (const body of [BODY, `${BODY} Bis.`]) {
+      const sent = await propose(ana.token, { problemId: String(problem._id), body })
+      await request(app).post(`/api/solutions/${sent.body.id}/approve`).set(as(editor.token))
+    }
+    const bought = await buy(ana.token, 'gato-pensando')
+    expect(bought.status).toBe(200)
+    expect(bought.body).toEqual({ unlockedAvatars: ['gato-pensando'], balance: 10 })
+    expect((await buy(ana.token, 'gato-de-traje')).status).toBe(403)
+    expect((await buy(ana.token, 'gato-pensando')).body.balance).toBe(10)
+
+    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'gato-pensando' })).status).toBe(200)
+    const profile = await request(app).get('/api/profiles/ana').set(as(ana.token))
+    expect(profile.body).toMatchObject({ avatar: 'gato-pensando', unlockedAvatars: ['gato-pensando'], level: { points: 50, balance: 10, frame: 'bronce' } })
+    // Visitors do not see what someone bought.
+    expect((await request(app).get('/api/profiles/ana')).body.unlockedAvatars).toBeUndefined()
+  })
+})
