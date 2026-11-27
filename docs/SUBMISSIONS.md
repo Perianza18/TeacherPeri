@@ -151,6 +151,15 @@ needed a migration.
   points. Badges add «Soluciones aceptadas»: Primera solución (1), Solucionador
   (5), Maestro de soluciones (20).
 
+- **Avatars bought with points:** five drawings cost points (Gato de traje 30,
+  Gato pensando 40, Sabelotodo 50, Gato gamer 75, Gatito que se siente león
+  100; `PREMIUM_AVATARS` in `server/src/lib/profile.js` and `src/lib/avatars.js`).
+  `POST /api/profiles/me/avatars/:id` buys one if the balance (points earned
+  minus points spent) covers it; the owner's profile returns `unlockedAvatars`
+  and `level.balance`. Spending never lowers the frame. Only «π» is still
+  offered among the math shapes, as the default for new accounts; accounts that
+  had another shape show «π».
+
 ## Review (editors and admins)
 
 **On the site:** `/panel/revision` («Revisión» in «Panel del equipo»), for

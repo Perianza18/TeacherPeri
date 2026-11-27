@@ -21,7 +21,7 @@ const BANNER = {
 
 // The hero card on the left: avatar, @username, role, bio, follower counts,
 // «Editar perfil» (owner) or «Seguir» (visitor), and the private email pill.
-export default function ProfileCard({ profile, auth, onSignIn, onChange, onShowPeople, onProfileSaved }) {
+export default function ProfileCard({ profile, auth, onSignIn, onChange, onShowPeople, onProfileSaved, onBought }) {
   const [editing, setEditing] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
@@ -79,7 +79,7 @@ export default function ProfileCard({ profile, auth, onSignIn, onChange, onShowP
           </p>
         )}
       </div>
-      {editing && <EditProfileDialog profile={profile} token={auth?.token} onClose={() => setEditing(false)} onSaved={(saved) => { setEditing(false); onProfileSaved(saved) }} />}
+      {editing && <EditProfileDialog profile={profile} token={auth?.token} onBought={onBought} onClose={() => setEditing(false)} onSaved={(saved) => { setEditing(false); onProfileSaved(saved) }} />}
     </section>
   )
 }

@@ -126,6 +126,15 @@ que no hizo falta migración.
   «Soluciones aceptadas»: Primera solución (1), Solucionador (5) y Maestro de
   soluciones (20).
 
+- **Avatares que se compran con puntos:** cinco dibujos cuestan puntos (Gato
+  de traje 30, Gato pensando 40, Sabelotodo 50, Gato gamer 75, Gatito que se
+  siente león 100; `PREMIUM_AVATARS` en `server/src/lib/profile.js` y
+  `src/lib/avatars.js`). `POST /api/profiles/me/avatars/:id` compra uno si el
+  saldo (puntos ganados menos gastados) alcanza; el perfil propio trae
+  `unlockedAvatars` y `level.balance`. Gastar nunca baja el marco. De las
+  figuras solo queda «π», como avatar predeterminado de las cuentas nuevas; las
+  cuentas que tenían otra figura muestran «π».
+
 ## Revisión (editores y admins)
 
 **En el sitio:** `/panel/revision` («Revisión» en «Panel del equipo»), para

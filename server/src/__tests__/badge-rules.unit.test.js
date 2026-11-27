@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { BADGE_IDS, badgeView, dueBadges } from '../lib/badgeRules.js'
-import { AVATAR_IDS, SHAPE_AVATAR_IDS, avatarColorOf, avatarOf, parseBio, parseListName } from '../lib/profile.js'
+import { AVATAR_IDS, avatarColorOf, avatarOf, parseBio, parseListName, pointBalance } from '../lib/profile.js'
 
 describe('reglas de insignias', () => {
   it('cada nivel usa la fecha de su elemento N; el rol usa ahora', () => {
@@ -25,18 +25,20 @@ describe('reglas de insignias', () => {
 })
 
 describe('perfil', () => {
-  it('avatar: el guardado, o uno fijo según el id', () => {
-    expect(avatarOf({ avatar: 'a03' })).toBe('a03')
-    const a = avatarOf({ _id: '65f0c0ffee00000000000abc' })
-    expect(AVATAR_IDS).toContain(a)
-    expect(avatarOf({ _id: '65f0c0ffee00000000000abc', avatar: 'nope' })).toBe(a)
+  it('avatar: el guardado si se sigue ofreciendo; si no, «π»', () => {
+    expect(avatarOf({ avatar: 'gato-dormido' })).toBe('gato-dormido')
+    expect(avatarOf({ avatar: 'a04' })).toBe('a04')
+    expect(avatarOf({ _id: '65f0c0ffee00000000000abc' })).toBe('a04')
+    expect(avatarOf({ avatar: 'a03' })).toBe('a04')
+    expect(avatarOf({ avatar: 'nope' })).toBe('a04')
+    expect(AVATAR_IDS).toContain('a03')
   })
 
-  it('sin avatar guardado, el fijo sale solo de las figuras, así que no cambia al sumar dibujos', () => {
-    for (const id of ['65f0c0ffee00000000000abc', '65f0c0ffee0000000000000b', '65f0c0ffee00000000ffffff']) {
-      expect(SHAPE_AVATAR_IDS).toContain(avatarOf({ _id: id }))
-    }
-    expect(avatarOf({ avatar: 'gato-dormido' })).toBe('gato-dormido')
+  it('un avatar de puntos solo se muestra si se compró', () => {
+    expect(avatarOf({ avatar: 'gato-gamer', unlockedAvatars: [] })).toBe('a04')
+    expect(avatarOf({ avatar: 'gato-gamer', unlockedAvatars: ['gato-gamer'] })).toBe('gato-gamer')
+    expect(pointBalance(100, ['gato-de-traje', 'gato-pensando'])).toBe(30)
+    expect(pointBalance(20, ['gato-gamer'])).toBe(0)
   })
 
   it('color de fondo: el guardado si existe, o null', () => {

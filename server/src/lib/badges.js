@@ -14,6 +14,7 @@ import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { roleOf } from './permissions.js'
 import { badgeView, dueBadges } from './badgeRules.js'
 import { levelView, pointsFrom } from './levels.js'
+import { pointBalance } from './profile.js'
 
 async function publishedIds(ids) {
   if (!ids.length) return new Set()
@@ -61,5 +62,6 @@ export async function awardBadges(user) {
   // stored total current so comments and lists can show the frame cheaply.
   const points = pointsFrom(counts)
   await User.updateOne({ _id: user._id, points: { $ne: points } }, { $set: { points } })
-  return { counts, earned, view: badgeView(earned, counts), level: levelView(points) }
+  const unlocked = user.unlockedAvatars ?? (await User.findById(user._id).select('unlockedAvatars').lean())?.unlockedAvatars ?? []
+  return { counts, earned, view: badgeView(earned, counts), level: levelView(points, pointBalance(points, unlocked)) }
 }

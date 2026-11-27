@@ -38,13 +38,16 @@ export function frameOf(user) {
   return isUnlocked(user?.frame, user?.points) ? user.frame : topFrame(user?.points).id
 }
 
-// For Mi Espacio: points, current best frame and how far the next one is.
-export function levelView(points) {
+// For Mi Espacio: points, what is left to spend on avatars (`balance`,
+// given separately because buying is in lib/profile.js), the current best
+// frame and how far the next one is.
+export function levelView(points, balance = null) {
   const p = safePoints(points)
   const current = topFrame(p)
   const next = FRAMES.find((frame) => frame.min > p) ?? null
   return {
     points: p,
+    balance: balance ?? p,
     frame: current.id,
     unlocked: FRAMES.filter((frame) => p >= frame.min).map((frame) => frame.id),
     next: next ? { id: next.id, name: next.name, min: next.min, remaining: next.min - p } : null,

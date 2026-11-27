@@ -2,14 +2,34 @@
 // the owner of a profile. The website draws the avatars (src/lib/avatars.js);
 // the server only knows their ids.
 
-// Math shapes drawn in ink, then the illustrated drawings (pictures with a
-// transparent background).
+// Math shapes drawn in ink (only «π» is still offered, as the default; the
+// others stay valid so old accounts load, and show the default), the free
+// drawings, then the drawings bought with points (PREMIUM_AVATARS).
 export const SHAPE_AVATAR_IDS = Object.freeze(['a01', 'a02', 'a03', 'a04', 'a05', 'a06', 'a07', 'a08', 'a09', 'a10', 'a11', 'a12'])
+export const DEFAULT_AVATAR = 'a04'
 export const DRAWING_AVATAR_IDS = Object.freeze([
   'pinguino-compu', 'ajolote-matematico', 'de-hecho', 'gato-programador', 'hamster-rapido', 'gato-estresado',
   'gato-llorando', 'gato-dormido', 'mucha-tarea', 'ternurin-cansado', 'vaquita-enojada', 'gatito-batalla',
 ])
-export const AVATAR_IDS = Object.freeze([...SHAPE_AVATAR_IDS, ...DRAWING_AVATAR_IDS])
+// id → price in points, cheapest first. Bought once, kept for good.
+export const PREMIUM_AVATARS = Object.freeze({
+  'gato-de-traje': 30,
+  'gato-pensando': 40,
+  sabelotodo: 50,
+  'gato-gamer': 75,
+  'gatito-leon': 100,
+})
+export const PREMIUM_AVATAR_IDS = Object.freeze(Object.keys(PREMIUM_AVATARS))
+export const AVATAR_IDS = Object.freeze([...SHAPE_AVATAR_IDS, ...DRAWING_AVATAR_IDS, ...PREMIUM_AVATAR_IDS])
+// What «Editar perfil» offers.
+export const CHOOSABLE_AVATAR_IDS = Object.freeze([DEFAULT_AVATAR, ...DRAWING_AVATAR_IDS, ...PREMIUM_AVATAR_IDS])
+
+// Points spent on avatars, and what is left to spend. Spending never lowers
+// the frame: frames follow the points earned (lib/levels.js).
+export const spentPoints = (unlocked = []) => unlocked.reduce((sum, id) => sum + (PREMIUM_AVATARS[id] ?? 0), 0)
+export const pointBalance = (points, unlocked = []) => Math.max(0, (Number.isFinite(points) ? points : 0) - spentPoints(unlocked))
+export const ownsAvatar = (user, id) => !PREMIUM_AVATARS[id] || (user?.unlockedAvatars ?? []).includes(id)
+
 // Background a person may choose for any avatar. Without one (null), each
 // avatar keeps its own pastel fill.
 export const AVATAR_COLORS = Object.freeze([
@@ -18,14 +38,12 @@ export const AVATAR_COLORS = Object.freeze([
 ])
 export const BIO_MAX = 160
 
-// The saved avatar, or a stable one picked from the account id. The fallback
-// only picks among the shapes, so accounts that never chose keep the avatar
-// they always had.
+// The saved avatar if it is still offered (and, for a bought one, owned);
+// otherwise the default «π». Accounts that never chose, or chose a shape
+// that is no longer offered, show the default.
 export function avatarOf(user) {
-  if (AVATAR_IDS.includes(user?.avatar)) return user.avatar
-  const hex = String(user?._id ?? '').slice(-6)
-  const n = Number.parseInt(hex || '0', 16)
-  return SHAPE_AVATAR_IDS[(Number.isFinite(n) ? n : 0) % SHAPE_AVATAR_IDS.length]
+  const id = user?.avatar
+  return CHOOSABLE_AVATAR_IDS.includes(id) && (!PREMIUM_AVATARS[id] || !Array.isArray(user?.unlockedAvatars) || user.unlockedAvatars.includes(id)) ? id : DEFAULT_AVATAR
 }
 
 // The saved background colour, or null for the avatar's own fill.

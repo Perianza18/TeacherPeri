@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useCallback, useId, useState } from 'react'
 import useDialog from '../../hooks/useDialog'
-import { AVATAR_COLORS, DRAWING_AVATARS, SHAPE_AVATARS, avatarById } from '../../lib/avatars'
+import { AVATAR_COLORS, DEFAULT_AVATAR, DRAWING_AVATARS, PREMIUM_AVATARS, avatarById } from '../../lib/avatars'
 import { apiFetch } from '../../lib/api'
 import { FRAMES } from '../../lib/frames'
 import Avatar from './Avatar'
@@ -12,17 +12,36 @@ const BIO_MAX = 160
 // through the group and a screen reader names each one, inside the tile you see.
 function Option({ name, checked, onChange, children, shape = 'rounded-full', disabled = false }) {
   return (
-    <label className={`relative grid place-items-center ${shape} p-1 has-[:checked]:outline has-[:checked]:outline-[3px] has-[:checked]:outline-tp-violet has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-tp-violet ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+    <label className={`relative grid place-items-center place-self-center ${shape} p-1 has-[:checked]:outline has-[:checked]:outline-[3px] has-[:checked]:outline-tp-violet has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-tp-violet ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
       <input type="radio" name={name} checked={checked} onChange={onChange} disabled={disabled} className="sr-only" />
       {children}
     </label>
   )
 }
 
-// «Editar perfil»: pick a preset avatar (a drawing or a math shape), its
-// background colour and one of the frames they have unlocked, and write a
-// short description.
-export default function EditProfileDialog({ profile, token, onSaved, onClose }) {
+// A drawing still for sale: its price and «Desbloquear» (or how many points
+// are missing). Buying spends points but never lowers the frame.
+function LockedAvatar({ option, color, balance, busy, onBuy }) {
+  const short = option.price - balance
+  return (
+    <div className="grid justify-items-center gap-1.5 rounded-xl p-1 text-center">
+      <span className="relative">
+        <Avatar id={option.id} color={color} size="picker" label={`${option.name}, bloqueado`} className="opacity-50 grayscale" />
+        <span aria-hidden="true" className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full border-2 border-tp-ink bg-tp-yellow">
+          <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="7" width="10" height="7" rx="1.5" /><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" /></svg>
+        </span>
+      </span>
+      {short > 0
+        ? <span className="text-[11px] font-semibold leading-tight text-tp-ink-muted">{option.price} pts<br />te faltan {short}</span>
+        : <button type="button" disabled={busy} onClick={() => onBuy(option)} className="min-h-9 rounded-full border-2 border-tp-ink bg-tp-yellow px-2.5 text-[11px] font-extrabold leading-tight disabled:opacity-60" aria-label={`Desbloquear ${option.name} por ${option.price} puntos`}>Desbloquear<br />{option.price} pts</button>}
+    </div>
+  )
+}
+
+// «Editar perfil»: pick a preset avatar («π», a free drawing or one bought
+// with points), its background colour and one of the frames they have
+// unlocked, and write a short description.
+export default function EditProfileDialog({ profile, token, onSaved, onClose, onBought = () => {} }) {
   const id = useId()
   const close = useCallback(() => onClose(), [onClose])
   const ref = useDialog(close)
@@ -30,6 +49,19 @@ export default function EditProfileDialog({ profile, token, onSaved, onClose }) 
   const [avatarColor, setAvatarColor] = useState(profile.avatarColor ?? null)
   const [frame, setFrame] = useState(profile.frame ?? 'lapiz')
   const points = profile.level?.points ?? 0
+  const [shop, setShop] = useState({ owned: profile.unlockedAvatars ?? [], balance: profile.level?.balance ?? points, busy: false, error: null })
+
+  const buy = async (option) => {
+    setShop((current) => ({ ...current, busy: true, error: null }))
+    try {
+      const result = await apiFetch(`/api/profiles/me/avatars/${option.id}`, { method: 'POST', token })
+      setShop({ owned: result.unlockedAvatars, balance: result.balance, busy: false, error: null })
+      setAvatar(option.id)
+      onBought(result)
+    } catch (error) {
+      setShop((current) => ({ ...current, busy: false, error: error.message }))
+    }
+  }
   const [bio, setBio] = useState(profile.bio || '')
   const [state, setState] = useState({ saving: false, error: null })
 
@@ -69,8 +101,22 @@ export default function EditProfileDialog({ profile, token, onSaved, onClose }) 
           </div>
           <fieldset>
             <legend className="text-sm font-bold">Elige tu avatar</legend>
-            {avatarGroup('Dibujos', DRAWING_AVATARS)}
-            {avatarGroup('Figuras', SHAPE_AVATARS)}
+            {avatarGroup('Dibujos', [avatarById(DEFAULT_AVATAR), ...DRAWING_AVATARS])}
+            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Se desbloquean con puntos</p>
+              <p className="text-sm font-semibold">Puedes gastar <span className="font-extrabold">{shop.balance}</span> {shop.balance === 1 ? 'punto' : 'puntos'}</p>
+            </div>
+            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+              {PREMIUM_AVATARS.map((option) => (shop.owned.includes(option.id)
+                ? (
+                  <Option key={option.id} name={`${id}-avatar`} checked={avatar === option.id} onChange={() => setAvatar(option.id)}>
+                    <Avatar id={option.id} color={avatarColor} size="picker" label={option.name} />
+                  </Option>
+                )
+                : <LockedAvatar key={option.id} option={option} color={avatarColor} balance={shop.balance} busy={shop.busy} onBuy={buy} />))}
+            </div>
+            <p className="mt-2 text-xs leading-5 text-tp-ink-muted">Gastar puntos no te baja de marco: el marco depende de todo lo que has ganado.</p>
+            {shop.error && <p role="alert" className="mt-2 text-sm font-semibold text-red-700">{shop.error}</p>}
           </fieldset>
           <fieldset>
             <legend className="text-sm font-bold">Color de fondo</legend>

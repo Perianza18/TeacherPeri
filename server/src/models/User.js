@@ -18,7 +18,7 @@
 
 import mongoose from 'mongoose'
 import { DEFAULT_ROLE, LEGACY_ROLES, ROLES } from '../lib/permissions.js'
-import { AVATAR_COLORS, AVATAR_IDS, BIO_MAX } from '../lib/profile.js'
+import { AVATAR_COLORS, AVATAR_IDS, BIO_MAX, PREMIUM_AVATAR_IDS } from '../lib/profile.js'
 import { FRAME_IDS } from '../lib/levels.js'
 
 const userSchema = new mongoose.Schema(
@@ -75,6 +75,9 @@ const userSchema = new mongoose.Schema(
     points: { type: Number, min: 0, default: 0 },
     // Marco del avatar elegido en «Editar perfil»; null = el mejor que tenga.
     frame: { type: String, enum: [...FRAME_IDS, null], default: null },
+    // Avatares comprados con puntos (PREMIUM_AVATARS en lib/profile.js). Lo
+    // gastado se resta del saldo, nunca de `points`: el marco no baja.
+    unlockedAvatars: { type: [{ type: String, enum: PREMIUM_AVATAR_IDS }], default: [] },
   },
   { timestamps: true }, // agrega automáticamente createdAt y updatedAt
 )

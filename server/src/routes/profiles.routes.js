@@ -2,7 +2,8 @@
 //
 // GET    /api/profiles?q=                     public search: username prefix (2+ chars), 20 max, public fields only
 // GET    /api/profiles/:username              public; `email` only for the owner
-// PUT    /api/profiles/me                     signed in: { avatar, avatarColor, bio, frame } (a frame they have unlocked)
+// PUT    /api/profiles/me                     signed in: { avatar, avatarColor, bio, frame } (an avatar they own, a frame they reached)
+// POST   /api/profiles/me/avatars/:id         signed in: buy a premium avatar with points
 // GET    /api/profiles/:username/followers    public, 50 per page (?page=)
 // GET    /api/profiles/:username/following    public, 50 per page
 // PUT    /api/profiles/:username/follow       signed in, not yourself
@@ -32,7 +33,7 @@ import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { requireAuth } from '../middleware/auth.js'
 import { optionalAuth } from '../middleware/optionalAuth.js'
 import { roleOf } from '../lib/permissions.js'
-import { AVATAR_COLORS, AVATAR_IDS, avatarColorOf, avatarOf, isOwner, parseBio } from '../lib/profile.js'
+import { AVATAR_COLORS, CHOOSABLE_AVATAR_IDS, PREMIUM_AVATARS, avatarColorOf, avatarOf, isOwner, ownsAvatar, parseBio, pointBalance } from '../lib/profile.js'
 import { awardBadges, publicCommentFilter } from '../lib/badges.js'
 import { FRAME_IDS, frameOf, isUnlocked } from '../lib/levels.js'
 import { contentNames, problemHref } from '../lib/profileContent.js'
@@ -79,7 +80,7 @@ router.get('/', searchLimiter(), async (req, res) => {
 
 async function findProfile(req, res) {
   const username = typeof req.params.username === 'string' ? req.params.username : ''
-  const user = username ? await User.findOne({ username }).select('username email role bio avatar avatarColor points frame createdAt').lean() : null
+  const user = username ? await User.findOne({ username }).select('username email role bio avatar avatarColor points frame unlockedAvatars createdAt').lean() : null
   if (!user) res.status(404).json({ error: 'Ese perfil no existe.' })
   return user
 }
@@ -92,7 +93,11 @@ async function followCounts(userId) {
 router.put('/me', requireAuth, async (req, res) => {
   const update = {}
   if ('avatar' in req.body) {
-    if (!AVATAR_IDS.includes(req.body.avatar)) return res.status(400).json({ error: 'Elige uno de los avatares.' })
+    if (!CHOOSABLE_AVATAR_IDS.includes(req.body.avatar)) return res.status(400).json({ error: 'Elige uno de los avatares.' })
+    if (PREMIUM_AVATARS[req.body.avatar]) {
+      const me = await User.findById(req.userId).select('unlockedAvatars').lean()
+      if (!ownsAvatar(me, req.body.avatar)) return res.status(403).json({ error: 'Primero desbloquea ese avatar con tus puntos.' })
+    }
     update.avatar = req.body.avatar
   }
   if ('avatarColor' in req.body) {
@@ -117,6 +122,26 @@ router.put('/me', requireAuth, async (req, res) => {
   res.json({ ...personView(user), bio: user.bio ?? '' })
 })
 
+// Buy a premium avatar: its price comes off the balance (points earned minus
+// points spent). The update only applies if the list did not change since it
+// was read, so two clicks at once cannot spend the same points twice.
+router.post('/me/avatars/:id', requireAuth, async (req, res) => {
+  const { id } = req.params
+  const price = PREMIUM_AVATARS[id]
+  if (!price) return res.status(404).json({ error: 'Ese avatar no se vende.' })
+  const me = await User.findById(req.userId).select('points unlockedAvatars role').lean()
+  if (!me) return res.status(401).json({ error: 'Inicia sesión de nuevo.' })
+  // Recount first, so points from something just accepted are there.
+  const { level } = await awardBadges(me)
+  const owned = me.unlockedAvatars ?? []
+  if (owned.includes(id)) return res.json({ unlockedAvatars: owned, balance: level.balance })
+  if (level.balance < price) return res.status(403).json({ error: `Te faltan ${price - level.balance} puntos para este avatar.` })
+  const result = await User.updateOne({ _id: me._id, unlockedAvatars: owned }, { $push: { unlockedAvatars: id } })
+  if (!result.modifiedCount) return res.status(409).json({ error: 'Tus avatares cambiaron. Recarga e intenta de nuevo.' })
+  const unlockedAvatars = [...owned, id]
+  res.json({ unlockedAvatars, balance: pointBalance(level.points, unlockedAvatars) })
+})
+
 router.get('/:username', optionalAuth, async (req, res) => {
   const user = await findProfile(req, res)
   if (!user) return
@@ -136,6 +161,7 @@ router.get('/:username', optionalAuth, async (req, res) => {
     ...counts,
     stats: { solved: badges.counts.solved, comments, proposed, solutions: badges.counts.solutions, badges: badges.earned.length },
     level: badges.level,
+    ...(owner ? { unlockedAvatars: user.unlockedAvatars ?? [] } : {}),
     isOwner: owner,
     isFollowing: Boolean(isFollowing),
     ...(owner ? { email: user.email } : {}),
