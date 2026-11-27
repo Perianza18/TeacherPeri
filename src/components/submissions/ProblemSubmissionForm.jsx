@@ -6,6 +6,7 @@ import ExamFolderPicker from './ExamFolderPicker'
 import ImagesField from '../images/ImagesField'
 
 const STATEMENT_MAX = 5000
+const SOLUTION_MAX = 20000
 
 // The form to propose a problem or change one of yours. `initial` is a
 // proposal ({ enunciado, topics, tags, isExam, examFolder, problemNumber });
@@ -13,20 +14,28 @@ const STATEMENT_MAX = 5000
 export default function ProblemSubmissionForm({ token, initial, problemId = null, isLive = false, onSaved, onCancel }) {
   const id = useId()
   const textareaRef = useRef(null)
-  const [form, setForm] = useState(() => ({ ...initial, problemNumber: initial.problemNumber ?? '', images: initial.images ?? [] }))
+  const [form, setForm] = useState(() => ({ ...initial, solution: initial.solution ?? '', problemNumber: initial.problemNumber ?? '', images: initial.images ?? [] }))
+  const [showSolution, setShowSolution] = useState(() => Boolean(initial.solution))
   const [data, setData] = useState({ topics: [], tags: [], folders: [], error: null, loaded: false })
   const [sending, setSending] = useState(false)
   const [problems, setProblems] = useState(null) // { error, checks }
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([apiFetch('/api/topics'), apiFetch('/api/tags'), apiFetch('/api/submissions/folders', { token })])
+    Promise.all([apiFetch('/api/submissions/topics', { token }), apiFetch('/api/tags'), apiFetch('/api/submissions/folders', { token })])
       .then(([topics, tags, folders]) => { if (!cancelled) setData({ topics, tags, folders, error: null, loaded: true }) })
       .catch((error) => { if (!cancelled) setData((current) => ({ ...current, error: error.message, loaded: true })) })
     return () => { cancelled = true }
   }, [token])
 
   const set = (field, value) => setForm((current) => ({ ...current, [field]: value }))
+
+  // A proposed tema stays in review; only its author sees it until then.
+  const createTopic = async (name, parent) => {
+    const topic = await apiFetch('/api/submissions/topics', { method: 'POST', token, body: { name, parent } })
+    setData((current) => ({ ...current, topics: [...current.topics, topic] }))
+    return topic
+  }
 
   const insertMath = () => {
     const el = textareaRef.current
@@ -47,6 +56,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
     setProblems(null)
     const body = {
       enunciado: form.enunciado,
+      solution: form.solution,
       topics: form.topics,
       tags: form.tags,
       isExam: form.isExam,
@@ -91,7 +101,7 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
           placeholder="Escribe el enunciado completo. Usa $...$ para las matemáticas, por ejemplo $x^2+1$."
           className="tp-input min-h-48 leading-7"
         />
-        <p id={`${id}-enunciado-ayuda`} className="text-sm text-tp-ink-muted">Solo el enunciado: sin pistas ni soluciones. {form.enunciado.length}/{STATEMENT_MAX}</p>
+        <p id={`${id}-enunciado-ayuda`} className="text-sm text-tp-ink-muted">Solo el enunciado. Si tienes la solución, puedes agregarla abajo. {form.enunciado.length}/{STATEMENT_MAX}</p>
         {form.enunciado.trim() && (
           <div className="rounded-[10px] border-2 border-dashed border-tp-rule bg-tp-surface px-4 py-3">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-tp-ink-muted">Vista previa</p>
@@ -102,7 +112,50 @@ export default function ProblemSubmissionForm({ token, initial, problemId = null
 
       <ImagesField value={form.images} onChange={(images) => set('images', images)} token={token} />
 
-      <VocabularyPicker topics={data.topics} tags={data.tags} value={{ topics: form.topics, tags: form.tags }} onChange={(next) => setForm((current) => ({ ...current, ...next }))} />
+      <div className="tp-card-quiet bg-tp-surface p-4 sm:p-5">
+        {!showSolution ? (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-bold text-tp-ink">Solución o respuesta <span className="font-semibold text-tp-ink-muted">(opcional)</span></p>
+              <p className="mt-1 text-sm text-tp-ink-muted">Si la sabes, agrégala. Se muestra en el problema, escondida, para quien quiera verla.</p>
+            </div>
+            <button type="button" onClick={() => setShowSolution(true)} className="tp-button gap-1.5 bg-tp-mint-soft px-3 text-sm font-extrabold"><span aria-hidden="true" className="text-lg leading-none">+</span>Agregar solución</button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <label htmlFor={`${id}-solucion`} className="text-sm font-bold text-tp-ink">Solución o respuesta <span className="font-semibold text-tp-ink-muted">(opcional)</span></label>
+              <button type="button" onClick={() => { set('solution', ''); setShowSolution(false) }} className="min-h-11 px-1 text-sm font-semibold text-tp-ink-muted underline underline-offset-2">Quitar</button>
+            </div>
+            <textarea
+              id={`${id}-solucion`}
+              autoFocus={!initial.solution}
+              value={form.solution}
+              onChange={(event) => set('solution', event.target.value)}
+              rows={6}
+              maxLength={SOLUTION_MAX}
+              aria-describedby={`${id}-solucion-ayuda`}
+              placeholder="Puede ser solo la respuesta (por ejemplo, $n=7$) o la solución completa."
+              className="tp-input min-h-36 leading-7"
+            />
+            <p id={`${id}-solucion-ayuda`} className="text-sm text-tp-ink-muted">Usa $...$ para las matemáticas, igual que en el enunciado.</p>
+            {form.solution.trim() && (
+              <div className="rounded-[10px] border-2 border-dashed border-tp-rule bg-tp-paper px-4 py-3">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-tp-ink-muted">Vista previa</p>
+                <MathText text={form.solution} className="whitespace-pre-wrap break-words leading-7 text-tp-ink" />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <VocabularyPicker
+        topics={data.topics}
+        tags={data.tags}
+        value={{ topics: form.topics, tags: form.tags }}
+        onChange={(next) => setForm((current) => ({ ...current, ...next }))}
+        onCreateTopic={createTopic}
+      />
 
       <div className="flex flex-col gap-3">
         <label className="inline-flex min-h-11 items-center gap-3 text-sm font-bold text-tp-ink">

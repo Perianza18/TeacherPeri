@@ -46,12 +46,14 @@ export const PERMISSIONS = Object.freeze({
   'problems:edit-own': 'user', // queda en revisión; la versión aprobada sigue publicada
   'problems:delete-own': 'user', // borrado suave, recuperable por un admin
   'folders:propose': 'user', // subcarpetas de examen, en revisión
+  'topics:propose': 'user', // temas nuevos dentro de un área, en revisión
   'comments:moderate': 'editor', // borrar comentarios ajenos con motivo; ver sus reportes
   'reports:moderate': 'editor', // ver y cerrar reportes de problemas y lecciones (Moderación)
   'suggestions:review': 'editor', // ver y cerrar sugerencias de cambio (Revisión)
   'content:edit-any': 'editor', // editar problemas y teoría de cualquiera (/api/editor)
   'submissions:review': 'editor', // aprobar o rechazar envíos (/api/review y npm run review)
   'folders:review': 'editor',
+  'topics:review': 'editor',
   'content:restore': 'admin',
   'roles:assign-editor': 'admin', // /api/users
   'activity:notified': 'admin', // avisos e historial de cambios de editores (/api/editor/revisions)

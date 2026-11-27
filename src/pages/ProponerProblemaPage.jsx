@@ -16,7 +16,7 @@ export default function ProponerProblemaPage() {
     <section className="mx-auto max-w-[840px] px-4 pb-24 pt-12 sm:px-6">
       <Link to="/entrenamiento/problemas" className="text-sm font-semibold text-tp-violet">← Volver a Problemas</Link>
       <div className="mt-6">
-        <TrainingHeader eyebrow="Comunidad" title="Proponer un problema" subtitle="Comparte un problema con su enunciado completo. Lo revisamos antes de publicarlo: que las fórmulas se vean bien, que el enunciado esté completo y que las etiquetas y la carpeta sean correctas." />
+        <TrainingHeader eyebrow="Comunidad" title="Proponer un problema" subtitle="Comparte un problema con su enunciado completo. Lo revisamos antes de publicarlo: que las fórmulas se vean bien, que el enunciado esté completo y que el tema y la carpeta sean correctos." />
       </div>
 
       {!auth && (

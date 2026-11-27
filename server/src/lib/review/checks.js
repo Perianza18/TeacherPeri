@@ -16,6 +16,7 @@ import { normalizeSlug } from '../../models/content.js'
 
 export const STATEMENT_MIN = 20
 export const STATEMENT_MAX = 5000
+export const SOLUTION_MAX = 20000
 // Tags only staff may apply: a community problem is not TeacherPeri material.
 export const RESERVED_TAG_SLUGS = ['teacherperi-original']
 const SIMILARITY_WARNING = 0.75
@@ -118,13 +119,17 @@ export function statementFindings(text) {
 // topics/tags: Maps id → document. folders: every Category the person may use.
 export function vocabularyFindings(proposal, { topics = new Map(), tags = new Map() } = {}) {
   const findings = []
-  for (const id of proposal.topics || []) if (!topics.has(String(id))) findings.push({ level: 'error', code: 'unknown-topic', message: 'Una de las áreas elegidas no existe.' })
+  for (const id of proposal.topics || []) {
+    const topic = topics.get(String(id))
+    if (!topic) findings.push({ level: 'error', code: 'unknown-topic', message: 'Uno de los temas elegidos no existe.' })
+    else if (topic.reviewStatus === 'pending') findings.push({ level: 'info', code: 'topic-pending', message: `El tema «${topic.name}» también está en revisión.` })
+  }
   for (const id of proposal.tags || []) {
     const tag = tags.get(String(id))
     if (!tag) findings.push({ level: 'error', code: 'unknown-tag', message: 'Una de las etiquetas elegidas no existe.' })
     else if (RESERVED_TAG_SLUGS.includes(tag.slug)) findings.push({ level: 'error', code: 'reserved-tag', message: `La etiqueta «${tag.label}» solo la usa el equipo de TeacherPeri.` })
   }
-  if (!(proposal.topics || []).length) findings.push({ level: 'warning', code: 'no-topic', message: 'Sin área: para aprobarlo hace falta al menos un área (Geometría, Álgebra, …).' })
+  if (!(proposal.topics || []).length) findings.push({ level: 'warning', code: 'no-topic', message: 'Sin tema: elige de qué tema es (Geometría, Álgebra, Teoría de Números o Combinatoria).' })
   return findings
 }
 
@@ -158,7 +163,16 @@ export function runSubmissionChecks(proposal, { topics, tags, folders, problems 
     ...folderFindings(proposal, folders),
     ...(statement.length ? [] : duplicateFindings(proposal.enunciado, problems)),
     ...spamFindings(proposal.enunciado),
+    ...solutionFindings(proposal.solution),
   ]
+}
+
+// The optional solution or answer: only its length and its formulas.
+export function solutionFindings(text) {
+  const value = String(text || '').trim()
+  if (!value) return []
+  if (value.length > SOLUTION_MAX) return [{ level: 'error', code: 'solution-long', message: `La solución no puede pasar de ${SOLUTION_MAX} caracteres.` }]
+  return mathFindings(value).map((finding) => ({ ...finding, message: `Solución: ${finding.message}` }))
 }
 
 export function hasErrors(findings) {

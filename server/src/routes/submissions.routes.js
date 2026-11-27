@@ -3,6 +3,8 @@
 //
 // GET    /api/submissions/folders        exam folders you can use (approved + your pending ones)
 // POST   /api/submissions/folders        propose an exam subfolder (stays pending)
+// GET    /api/submissions/topics         temas you can use (approved + your pending ones)
+// POST   /api/submissions/topics         propose a subtema inside an área (stays pending)
 // POST   /api/submissions                propose a new problem (stays a draft, pending review)
 // GET    /api/submissions/mine           your problems with their review state («Mis envíos»)
 // GET    /api/submissions/mine/:id       one of them, with what the edit form starts from
@@ -18,16 +20,19 @@ import { Router } from 'express'
 import mongoose from 'mongoose'
 import Category from '../models/Category.js'
 import Problem from '../models/Problem.js'
+import Topic from '../models/Topic.js'
 import ProblemSubmission from '../models/ProblemSubmission.js'
 import { requireAuth, requirePermission } from '../middleware/auth.js'
 import { ensureExamRoot, examFoldersVisibleTo, folderPath, parseFolderName } from '../lib/examFolders.js'
 import { hasErrors, runSubmissionChecks } from '../lib/review/checks.js'
+import { PROPOSABLE_ROOT_SLUGS, existingTopicNamed, freeTopicSlug, parseTopicName, topicView, topicsVisibleTo } from '../lib/topics.js'
 import { ImageError, assertUsableImages, deleteIfUnused } from '../lib/images.js'
 import { syncProblemExams } from '../lib/examSync.js'
 import { comparableProblemsFor, derivedProblemFields, nextCommunityCode, ownSubmissionViews, parseProposal, proposalFromProblem, sameProposal, vocabulary } from '../lib/submissions.js'
 
 const router = Router()
 const MAX_PENDING_FOLDERS = 20
+const MAX_PENDING_TOPICS = 20
 const MAX_PENDING_PROBLEMS = 30
 const isId = (value) => typeof value === 'string' && mongoose.isObjectIdOrHexString(value)
 
@@ -90,6 +95,36 @@ router.post('/folders', requirePermission('folders:propose'), async (req, res) =
   }
 })
 
+router.get('/topics', requirePermission('topics:propose'), async (req, res) => {
+  res.json((await topicsVisibleTo(req.userId)).map((topic) => topicView(topic, req.userId)))
+})
+
+// { name, parent }: parent is one of the four áreas (or «Demostraciones»).
+// When the área already has a topic with that name or that other name
+// («palomar» → «Principio de casillas»), answers 409 with `existing`, so the
+// form can offer it instead of creating a copy.
+router.post('/topics', requirePermission('topics:propose'), async (req, res) => {
+  const parsed = parseTopicName(req.body?.name)
+  if (parsed.error) return res.status(400).json({ error: parsed.error })
+  const visible = await topicsVisibleTo(req.userId)
+  const parent = isId(req.body?.parent) ? visible.find((topic) => String(topic._id) === String(req.body.parent) && !topic.parent && PROPOSABLE_ROOT_SLUGS.includes(topic.slug)) : null
+  if (!parent) return res.status(400).json({ error: 'Elige dentro de cuál tema va (Geometría, Álgebra, Teoría de Números o Combinatoria).' })
+  const everyone = await Topic.find({ parent: parent._id, reviewStatus: { $ne: 'rejected' } }).lean()
+  const existing = existingTopicNamed(parsed.name, parent._id, everyone)
+  if (existing) {
+    const usable = visible.some((topic) => String(topic._id) === String(existing._id))
+    return res.status(409).json({
+      error: usable ? `Ya existe: «${existing.name}» en ${parent.name}.` : `Alguien ya propuso «${existing.name}» en ${parent.name}; está en revisión.`,
+      ...(usable ? { existing: topicView(existing, req.userId) } : {}),
+    })
+  }
+  if (await Topic.countDocuments({ createdBy: req.userId, reviewStatus: 'pending' }) >= MAX_PENDING_TOPICS) {
+    return res.status(429).json({ error: 'Tienes muchos temas en revisión. Espera a que se revisen antes de proponer más.' })
+  }
+  const topic = await Topic.create({ name: parsed.name, slug: await freeTopicSlug(parsed.name, parent), parent: parent._id, reviewStatus: 'pending', createdBy: req.userId })
+  res.status(201).json(topicView(topic.toObject(), req.userId))
+})
+
 router.post('/', requirePermission('problems:submit'), async (req, res) => {
   const parsed = parseProposal(req.body)
   if (parsed.error) return res.status(400).json({ error: parsed.error })
@@ -98,7 +133,7 @@ router.post('/', requirePermission('problems:submit'), async (req, res) => {
   if (await ProblemSubmission.countDocuments({ author: req.userId, status: 'pending' }) >= MAX_PENDING_PROBLEMS) {
     return res.status(429).json({ error: 'Tienes muchos problemas en revisión. Espera a que se revisen antes de enviar más.' })
   }
-  const [{ folders, allById }, { topics, tags }, problems] = await Promise.all([folderContext(req.userId), vocabulary(), comparableProblemsFor(req.userId)])
+  const [{ folders, allById }, { topics, tags }, problems] = await Promise.all([folderContext(req.userId), vocabulary({ userId: req.userId }), comparableProblemsFor(req.userId)])
   const checks = runSubmissionChecks(proposal, { topics, tags, folders, problems })
   if (hasErrors(checks)) return invalid(res, checks)
 
@@ -109,6 +144,7 @@ router.post('/', requirePermission('problems:submit'), async (req, res) => {
       problem = await Problem.create({
         codigo: await nextCommunityCode(),
         enunciado: proposal.enunciado,
+        ...(proposal.solution ? { solution: proposal.solution } : {}),
         topics: proposal.topics,
         tags: proposal.tags,
         ...(proposal.images.length ? { images: proposal.images } : {}),
@@ -146,7 +182,7 @@ router.put('/mine/:id', requirePermission('problems:edit-own'), async (req, res)
   const { proposal } = parsed
   if (!await imagesOk(res, proposal, req.userId, problem._id)) return
   const before = [...(problem.images || []).map((entry) => String(entry.image))]
-  const [{ folders, allById }, { topics, tags }, problems] = await Promise.all([folderContext(req.userId), vocabulary(), comparableProblemsFor(req.userId, problem._id)])
+  const [{ folders, allById }, { topics, tags }, problems] = await Promise.all([folderContext(req.userId), vocabulary({ userId: req.userId }), comparableProblemsFor(req.userId, problem._id)])
   const checks = runSubmissionChecks(proposal, { topics, tags, folders, problems })
   if (hasErrors(checks)) return invalid(res, checks)
 
@@ -158,7 +194,7 @@ router.put('/mine/:id', requirePermission('problems:edit-own'), async (req, res)
 
   if (!isLive) {
     // Nunca aprobado: el borrador se actualiza en su lugar.
-    problem.set({ enunciado: proposal.enunciado, topics: proposal.topics, tags: proposal.tags, images: proposal.images.length ? proposal.images : undefined, ...derivedProblemFields(proposal, { folders: allById, topics, current: problem.toObject() }) })
+    problem.set({ enunciado: proposal.enunciado, solution: proposal.solution || undefined, topics: proposal.topics, tags: proposal.tags, images: proposal.images.length ? proposal.images : undefined, ...derivedProblemFields(proposal, { folders: allById, topics, current: problem.toObject() }) })
     await problem.save()
   }
   if (pending) {

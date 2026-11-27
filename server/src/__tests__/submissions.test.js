@@ -8,7 +8,7 @@ import ProblemSubmission from '../models/ProblemSubmission.js'
 import Tag from '../models/Tag.js'
 import Topic from '../models/Topic.js'
 import User from '../models/User.js'
-import { approveFolder, approveSubmission, rejectFolder, rejectSubmission, restoreProblem } from '../lib/review/service.js'
+import { approveFolder, approveSubmission, approveTopic, mergeTopic, rejectFolder, rejectSubmission, rejectTopic, renameTopic, restoreProblem } from '../lib/review/service.js'
 
 const STATEMENT = 'Demuestra que para todo entero $n$, el número $n^2+n$ es par.'
 const OTHER = 'Encuentra todos los enteros positivos $k$ tales que $k^2+3$ divide a $k^3+5$.'
@@ -292,5 +292,128 @@ describe('Carpetas de examen', () => {
     const extra = (await request(app).post('/api/submissions/folders').set(as(ana.token)).send({ name: '2025', parent: String(omm._id) })).body
     await approveFolder({ ref: extra._id, reviewer: admin.user, apply: true })
     expect((await Category.findById(extra._id).lean()).reviewStatus).toBe('approved')
+  })
+})
+
+describe('Temas propuestos', () => {
+  async function combinatoria() {
+    const root = await Topic.create({ name: 'Combinatoria', slug: 'omm-combinatorics' })
+    const casillas = await Topic.create({ name: 'Principio de casillas', slug: 'omm-combinatoria-principio-de-casillas', parent: root._id })
+    return { root, casillas }
+  }
+  const propose = (token, body) => request(app).post('/api/submissions/topics').set(as(token)).send(body)
+
+  it('se propone dentro de un área, queda en revisión y solo lo ve quien lo propuso', async () => {
+    const { ana, beto } = await setup()
+    const { root } = await combinatoria()
+    const res = await propose(ana.token, { name: '  coloraciones de tableros ', parent: String(root._id) })
+    expect(res.status).toBe(201)
+    expect(res.body).toMatchObject({ name: 'Coloraciones de tableros', reviewStatus: 'pending', mine: true, parent: String(root._id) })
+
+    expect((await request(app).get('/api/submissions/topics').set(as(ana.token))).body.map((t) => t.name)).toContain('Coloraciones de tableros')
+    expect((await request(app).get('/api/submissions/topics').set(as(beto.token))).body.map((t) => t.name)).not.toContain('Coloraciones de tableros')
+    expect((await request(app).get('/api/topics')).body.map((t) => t.name)).not.toContain('Coloraciones de tableros')
+
+    // Beto can't file a problem under Ana's pending tema; Ana can.
+    expect((await submit(beto.token, { enunciado: OTHER, topics: [String(root._id), res.body._id] })).status).toBe(422)
+    const mine = await submit(ana.token, { enunciado: STATEMENT, topics: [String(root._id), res.body._id] })
+    expect(mine.status).toBe(201)
+    expect(mine.body.topics.map((t) => t.name)).toEqual(['Combinatoria', 'Coloraciones de tableros'])
+
+    // Needs an área as parent, and a valid name.
+    expect((await propose(ana.token, { name: 'Algo', parent: res.body._id })).status).toBe(400)
+    expect((await propose(ana.token, { name: '<b>', parent: String(root._id) })).status).toBe(400)
+    expect((await request(app).post('/api/submissions/topics').send({ name: 'X', parent: String(root._id) })).status).toBe(401)
+  })
+
+  it('el buscador conoce otros nombres y no deja crear una copia de un tema que ya existe', async () => {
+    const { ana } = await setup()
+    const { root, casillas } = await combinatoria()
+    const listed = (await request(app).get('/api/topics')).body.find((t) => t.name === 'Principio de casillas')
+    expect(listed.aliases).toEqual(expect.arrayContaining(['palomar', 'cajones']))
+
+    const copy = await propose(ana.token, { name: 'Palomar', parent: String(root._id) })
+    expect(copy.status).toBe(409)
+    expect(copy.body.existing).toMatchObject({ _id: String(casillas._id), name: 'Principio de casillas' })
+  })
+
+  it('el problema no se aprueba con un tema en revisión; aprobar el tema lo publica', async () => {
+    const { ana, admin } = await setup()
+    const { root } = await combinatoria()
+    const topic = (await propose(ana.token, { name: 'Coloraciones', parent: String(root._id) })).body
+    const { body } = await submit(ana.token, { enunciado: STATEMENT, topics: [String(root._id), topic._id] })
+    await expect(approveSubmission({ ref: body.codigo, reviewer: admin.user, apply: true })).rejects.toMatchObject({ findings: expect.arrayContaining([expect.objectContaining({ code: 'topic-pending' })]) })
+
+    await expect(approveTopic({ ref: topic._id, reviewer: ana.user, apply: true })).rejects.toThrow(/permission/)
+    await approveTopic({ ref: topic._id, reviewer: admin.user, apply: true })
+    expect((await request(app).get('/api/topics')).body.map((t) => t.name)).toContain('Coloraciones')
+    await approveSubmission({ ref: body.codigo, reviewer: admin.user, apply: true })
+    expect((await Problem.findById(body._id).lean()).tema).toBe('Combinatoria')
+  })
+
+  it('unir lo cambia por el tema existente y guarda el nombre como otro nombre; rechazar lo quita', async () => {
+    const { ana, admin } = await setup()
+    const { root, casillas } = await combinatoria()
+    const pichon = (await propose(ana.token, { name: 'Cajas de Dirichlet bis', parent: String(root._id) })).body
+    const { body } = await submit(ana.token, { enunciado: STATEMENT, topics: [String(root._id), pichon._id] })
+
+    await mergeTopic({ ref: pichon._id, into: String(casillas._id), reviewer: admin.user, apply: true })
+    expect((await Topic.findById(pichon._id).lean()).reviewStatus).toBe('rejected')
+    expect((await Topic.findById(casillas._id).lean()).aliases).toContain('Cajas de Dirichlet bis')
+    const pending = await ProblemSubmission.findOne({ problem: body._id }).lean()
+    expect(pending.proposed.topics.map(String)).toEqual([String(root._id), String(casillas._id)])
+    expect((await Problem.findById(body._id).lean()).topics.map(String)).toEqual([String(root._id), String(casillas._id)])
+
+    const extra = (await propose(ana.token, { name: 'Sin sentido', parent: String(root._id) })).body
+    const other = await submit(ana.token, { enunciado: OTHER, topics: [String(root._id), extra._id] })
+    await renameTopic({ ref: extra._id, name: 'Con sentido', reviewer: admin.user, apply: true })
+    expect((await Topic.findById(extra._id).lean()).name).toBe('Con sentido')
+    await expect(rejectTopic({ ref: extra._id, reviewer: admin.user, reason: 'no', apply: true })).rejects.toThrow(/reason/)
+    await rejectTopic({ ref: extra._id, reviewer: admin.user, reason: 'No es un tema de olimpiada.', apply: true })
+    expect((await ProblemSubmission.findOne({ problem: other.body._id }).lean()).proposed.topics.map(String)).toEqual([String(root._id)])
+
+    const queue = await request(app).get('/api/review').set(as(admin.token))
+    expect(queue.body.topics).toEqual([])
+  })
+
+  it('Revisión lista los temas propuestos', async () => {
+    const { ana, editor } = await setup()
+    const { root } = await combinatoria()
+    await propose(ana.token, { name: 'Coloraciones', parent: String(root._id) })
+    const queue = await request(app).get('/api/review').set(as(editor.token))
+    expect(queue.body.topics).toEqual([expect.objectContaining({ name: 'Coloraciones', area: 'Combinatoria', createdBy: 'ana', pendingSubmissions: 0 })])
+    expect((await request(app).get('/api/review/topics').set(as(editor.token))).body.map((t) => t.name)).toContain('Coloraciones')
+    expect((await request(app).get('/api/review/topics').set(as(ana.token))).status).toBe(403)
+  })
+})
+
+describe('Solución opcional', () => {
+  it('se envía con el problema, se revisan sus fórmulas y se publica al aprobar', async () => {
+    const { ana, admin, algebra } = await setup()
+    const bad = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)], solution: 'Es $n+1' })
+    expect(bad.status).toBe(422)
+    expect(bad.body.checks.map((c) => c.message).join(' ')).toMatch(/Solución: Hay un signo/)
+
+    const res = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)], solution: '  $n(n+1)$ es producto de consecutivos.  ' })
+    expect(res.status).toBe(201)
+    expect(res.body.proposal.solution).toBe('$n(n+1)$ es producto de consecutivos.')
+    expect((await request(app).get(`/api/problems/${res.body._id}`)).status).toBe(404)
+
+    await approveSubmission({ ref: res.body.codigo, reviewer: admin.user, apply: true })
+    expect((await Problem.findById(res.body._id).lean()).solution).toBe('$n(n+1)$ es producto de consecutivos.')
+
+    // Editing the published problem keeps the live solution until approved.
+    const edit = await request(app).put(`/api/submissions/mine/${res.body._id}`).set(as(ana.token)).send({ enunciado: STATEMENT, topics: [String(algebra._id)], solution: 'Otra solución.' })
+    expect(edit.status).toBe(200)
+    expect((await Problem.findById(res.body._id).lean()).solution).toBe('$n(n+1)$ es producto de consecutivos.')
+    await approveSubmission({ ref: res.body.codigo, reviewer: admin.user, apply: true })
+    expect((await Problem.findById(res.body._id).lean()).solution).toBe('Otra solución.')
+  })
+
+  it('sin solución también se puede enviar', async () => {
+    const { ana, algebra } = await setup()
+    const res = await submit(ana.token, { enunciado: STATEMENT, topics: [String(algebra._id)] })
+    expect(res.status).toBe(201)
+    expect((await Problem.findById(res.body._id).lean()).solution).toBeUndefined()
   })
 })

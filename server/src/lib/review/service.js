@@ -17,6 +17,7 @@ import Flag from '../../models/Flag.js'
 import Notification from '../../models/Notification.js'
 import Problem from '../../models/Problem.js'
 import Theory from '../../models/Theory.js'
+import Topic from '../../models/Topic.js'
 import ProblemSubmission, { REJECTION_REASON_MAX } from '../../models/ProblemSubmission.js'
 import User from '../../models/User.js'
 import { DIFFICULTY_LEVELS, normalizeSlug } from '../../models/content.js'
@@ -27,6 +28,7 @@ import { derivedProblemFields, proposalFromProblem, statementImages, vocabulary 
 import { imageUrl } from '../images.js'
 import { examFolderMap, examFoldersOfProblem, folderAndDescendants, syncFolderExams, syncProblemExams } from '../examSync.js'
 import { hasErrors, runSubmissionChecks } from './checks.js'
+import { existingTopicNamed, parseTopicName, rootOf } from '../topics.js'
 
 export class ReviewError extends Error {
   constructor(message, findings = []) {
@@ -54,7 +56,7 @@ export async function findReviewer(value) {
 
 async function reviewContext(exceptProblemId = null) {
   const [{ topics, tags }, folders, problems] = await Promise.all([
-    vocabulary(),
+    vocabulary({ includePending: true }),
     Category.find({ kind: 'exam' }).lean(),
     Problem.find({ deletedAt: null, ...(exceptProblemId ? { _id: { $ne: exceptProblemId } } : {}) }).select('codigo enunciado').lean(),
   ])
@@ -78,6 +80,7 @@ async function findSubmission(ref, { pendingOnly = true } = {}) {
 function describeProposal(proposal, ctx) {
   return {
     enunciado: proposal.enunciado,
+    solution: proposal.solution || '',
     topics: label(ctx.topics, proposal.topics || [], 'name'),
     tags: label(ctx.tags, proposal.tags || [], 'label'),
     isExam: Boolean(proposal.isExam),
@@ -89,10 +92,11 @@ function describeProposal(proposal, ctx) {
 }
 
 export async function listPending() {
-  const [submissions, folders, openFlags] = await Promise.all([
+  const [submissions, folders, openFlags, pendingTopics] = await Promise.all([
     ProblemSubmission.find({ status: 'pending' }).sort({ createdAt: 1 }).populate('author', 'username').populate('problem', 'codigo publicationStatus').lean(),
     Category.find({ kind: 'exam', reviewStatus: 'pending' }).sort({ createdAt: 1 }).populate('createdBy', 'username').lean(),
     Flag.countDocuments({ status: 'open' }),
+    Topic.find({ reviewStatus: 'pending' }).sort({ createdAt: 1 }).populate('createdBy', 'username').lean(),
   ])
   const ctx = await reviewContext()
   const usage = await ProblemSubmission.aggregate([{ $match: { status: 'pending', 'proposed.examFolder': { $ne: null } } }, { $group: { _id: '$proposed.examFolder', count: { $sum: 1 } } }])
@@ -111,6 +115,14 @@ export async function listPending() {
       }
     }),
     folders: folders.map((folder) => ({ id: String(folder._id), path: folderPath(folder._id, ctx.foldersById).join(' › '), createdBy: folder.createdBy?.username ?? null, createdAt: folder.createdAt, pendingSubmissions: usageById.get(String(folder._id)) || 0 })),
+    topics: await Promise.all(pendingTopics.map(async (topic) => ({
+      id: String(topic._id),
+      name: topic.name,
+      area: rootOf(topic._id, ctx.topics)?.name ?? null,
+      createdBy: topic.createdBy?.username ?? null,
+      createdAt: topic.createdAt,
+      pendingSubmissions: await ProblemSubmission.countDocuments({ status: 'pending', 'proposed.topics': topic._id }),
+    }))),
     openFlags,
   }
 }
@@ -211,7 +223,13 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
 
   // A pending folder is approved together with the problem (listed in
   // `changes`), so its «still in review» note does not apply here.
-  const findings = runSubmissionChecks(proposal, ctx).filter((finding) => finding.code !== 'exam-folder-pending')
+  const findings = runSubmissionChecks(proposal, ctx).filter((finding) => !['exam-folder-pending', 'topic-pending'].includes(finding.code))
+  // A proposed tema is decided on its own (Revisión › Temas), never published
+  // by accident together with the problem.
+  for (const id of proposal.topics) {
+    const topic = ctx.topics.get(String(id))
+    if (topic?.reviewStatus === 'pending') findings.push({ level: 'error', code: 'topic-pending', message: `El tema «${topic.name}» sigue en revisión: apruébalo, únelo con otro o quítalo antes de aprobar el problema.` })
+  }
   if (!proposal.topics.length) findings.push({ level: 'error', code: 'no-topic', message: 'Add at least one área (--topics) before approving.' })
   if (hasErrors(findings)) throw new ReviewError('Fix the errors before approving.', findings)
 
@@ -224,6 +242,9 @@ export async function approveSubmission({ ref, reviewer, fixes = {}, apply = fal
   const keepCredit = problem.sourceAttribution && !AUTO_CREDIT.test(problem.sourceAttribution)
   const update = {
     enunciado: proposal.enunciado,
+    // A solution only replaces the live one when the proposal brings one
+    // (proposals sent before the field existed have none).
+    ...(proposal.solution ? { solution: proposal.solution } : {}),
     topics: proposal.topics,
     tags: proposal.tags,
     // The statement pictures come from the proposal; pictures an editor put in
@@ -345,6 +366,96 @@ export async function renameFolder({ ref, name, reviewer, apply = false }) {
     const map = await examFolderMap()
     await syncFolderExams(folderAndDescendants(folder._id, map), { foldersById: map })
     await recordReview({ targetType: 'folder', target: folder._id, targetLabel: `«${before}»`, reviewer, action: 'renamed', summary: `la carpeta de examen «${before}» a «${parsed.name}».` })
+  }
+  return { mode: apply ? 'applied' : 'dry-run', changes }
+}
+
+// --- proposed temas ---------------------------------------------------------------
+
+async function findPendingTopic(ref) {
+  const topic = isId(String(ref)) ? await Topic.findById(ref).lean() : null
+  if (!topic) throw new ReviewError(`No topic matches «${ref}».`)
+  if (topic.reviewStatus !== 'pending') throw new ReviewError('That topic is not pending.')
+  const parent = topic.parent ? await Topic.findById(topic.parent).select('name').lean() : null
+  return { topic, label: parent ? `${parent.name} › ${topic.name}` : topic.name }
+}
+
+async function siblingNamed(name, topic) {
+  const siblings = await Topic.find({ _id: { $ne: topic._id }, parent: topic.parent, reviewStatus: { $ne: 'rejected' } }).lean()
+  return existingTopicNamed(name, topic.parent, siblings)
+}
+
+// Takes the topic out of every pending proposal and draft problem;
+// `replacement` puts another one in its place.
+async function replaceTopicEverywhere(topicId, replacement = null) {
+  for (const [model, field, filter] of [
+    [ProblemSubmission, 'proposed.topics', { status: 'pending' }],
+    [Problem, 'topics', { publicationStatus: { $ne: 'published' } }],
+  ]) {
+    const where = { ...filter, [field]: topicId }
+    if (replacement) await model.updateMany(where, { $addToSet: { [field]: replacement } })
+    await model.updateMany({ ...filter, [field]: topicId }, { $pull: { [field]: topicId } })
+  }
+}
+
+export async function approveTopic({ ref, reviewer, apply = false }) {
+  assertReviewer(reviewer, 'topics:review')
+  const { topic, label: path } = await findPendingTopic(ref)
+  const twin = await siblingNamed(topic.name, topic)
+  if (twin) throw new ReviewError(`Ya existe «${twin.name}» en esa área: únelo con ese tema en lugar de aprobarlo.`)
+  const changes = [`approve topic «${path}»`]
+  if (apply) {
+    await Topic.updateOne({ _id: topic._id, reviewStatus: 'pending' }, { reviewStatus: 'approved', reviewedBy: reviewer._id, reviewedAt: new Date() })
+    await recordReview({ targetType: 'topic', target: topic._id, targetLabel: `«${path}»`, reviewer, action: 'approved', summary: `el tema «${path}».` })
+  }
+  return { mode: apply ? 'applied' : 'dry-run', changes }
+}
+
+export async function rejectTopic({ ref, reviewer, reason, apply = false }) {
+  assertReviewer(reviewer, 'topics:review')
+  const text = typeof reason === 'string' ? reason.trim() : ''
+  if (text.length < 5) throw new ReviewError('A rejection needs a reason (--reason "…").')
+  const { topic, label: path } = await findPendingTopic(ref)
+  const changes = [`reject topic «${path}» with reason: ${text}`, 'remove it from the pending problems that use it']
+  if (apply) {
+    await Topic.updateOne({ _id: topic._id, reviewStatus: 'pending' }, { reviewStatus: 'rejected', reviewReason: text, reviewedBy: reviewer._id, reviewedAt: new Date() })
+    await replaceTopicEverywhere(topic._id)
+    await recordReview({ targetType: 'topic', target: topic._id, targetLabel: `«${path}»`, reviewer, action: 'rejected', summary: `el tema «${path}».`, note: text })
+  }
+  return { mode: apply ? 'applied' : 'dry-run', changes }
+}
+
+export async function renameTopic({ ref, name, reviewer, apply = false }) {
+  assertReviewer(reviewer, 'topics:review')
+  const parsed = parseTopicName(name)
+  if (parsed.error) throw new ReviewError(parsed.error)
+  const { topic, label: before } = await findPendingTopic(ref)
+  const twin = await siblingNamed(parsed.name, topic)
+  if (twin) throw new ReviewError(`Ya existe «${twin.name}» en esa área: únelo con ese tema.`)
+  const changes = [`rename topic «${before}» to «${parsed.name}» (it stays pending)`]
+  if (apply) {
+    await Topic.updateOne({ _id: topic._id, reviewStatus: 'pending' }, { name: parsed.name, $addToSet: { aliases: topic.name } })
+    await recordReview({ targetType: 'topic', target: topic._id, targetLabel: `«${before}»`, reviewer, action: 'renamed', summary: `el tema «${before}» a «${parsed.name}».` })
+  }
+  return { mode: apply ? 'applied' : 'dry-run', changes }
+}
+
+// The proposed name was another way to say an existing tema («Palomar» →
+// «Principio de casillas»): problems take the existing one and the proposed
+// name becomes one of its other names, so the search finds it next time.
+export async function mergeTopic({ ref, into, reviewer, apply = false }) {
+  assertReviewer(reviewer, 'topics:review')
+  const { topic, label: path } = await findPendingTopic(ref)
+  const target = isId(String(into)) ? await Topic.findOne({ _id: into, reviewStatus: { $nin: ['pending', 'rejected'] } }).lean() : null
+  if (!target || String(target._id) === String(topic._id)) throw new ReviewError('Elige un tema aprobado para unirlo.')
+  const targetParent = target.parent ? await Topic.findById(target.parent).select('name').lean() : null
+  const targetLabel = targetParent ? `${targetParent.name} › ${target.name}` : target.name
+  const changes = [`merge topic «${path}» into «${targetLabel}»`, `«${topic.name}» becomes another name of «${target.name}»`, 'pending problems that used it take the existing topic']
+  if (apply) {
+    await Topic.updateOne({ _id: target._id }, { $addToSet: { aliases: topic.name } })
+    await replaceTopicEverywhere(topic._id, target._id)
+    await Topic.updateOne({ _id: topic._id, reviewStatus: 'pending' }, { reviewStatus: 'rejected', reviewReason: `Unido con «${targetLabel}».`, reviewedBy: reviewer._id, reviewedAt: new Date() })
+    await recordReview({ targetType: 'topic', target: topic._id, targetLabel: `«${path}»`, reviewer, action: 'merged', summary: `el tema «${path}» con «${targetLabel}».` })
   }
   return { mode: apply ? 'applied' : 'dry-run', changes }
 }

@@ -37,7 +37,7 @@ export function useAreaTree(library, source = null) {
   const childrenOf = (topic) => !topic ? [] : topics
     .filter((t) => String(t.parent) === String(topic._id) && (counts?.topics ? topicCount(t) > 0 : true))
     .sort((a, b) => a.name.localeCompare(b.name, 'es'))
-    .map((t) => ({ id: t._id, name: t.name, count: topicCount(t) }))
+    .map((t) => ({ id: t._id, name: t.name, aliases: t.aliases || [], count: topicCount(t) }))
   const roots = topics.filter((t) => !t.parent)
   const rootNamed = (name) => roots.find((t) => normalize(t.name) === normalize(name))
   const main = MAIN_AREAS.map((area) => ({ ...area, count: areaCount(area.name), children: childrenOf(rootNamed(area.name)) }))
@@ -58,14 +58,15 @@ export function pathOf(tree, area, topicId) {
 }
 
 // Áreas and subtemas whose name matches what the student typed, ignoring
-// accents and capitals: «triangulo» suggests «Geometría › Triángulos».
+// accents and capitals: «triangulo» suggests «Geometría › Triángulos». Other
+// names count too: «palomar» suggests «Combinatoria › Principio de casillas».
 export function matchingTopics(tree, query) {
   const wanted = normalize(query)
   if (wanted.length < 2) return []
   const found = []
   for (const area of [...tree.main, ...tree.others]) {
     if (normalize(area.name).includes(wanted)) found.push({ key: area.name, area: area.name, topic: '', label: area.name, count: area.count })
-    for (const child of area.children) if (normalize(child.name).includes(wanted)) found.push({ key: String(child.id), area: area.name, topic: child.id, label: `${area.name} › ${child.name}`, count: child.count })
+    for (const child of area.children) if ([child.name, ...(child.aliases || [])].some((name) => normalize(name).includes(wanted))) found.push({ key: String(child.id), area: area.name, topic: child.id, label: `${area.name} › ${child.name}`, count: child.count })
   }
   return found.slice(0, 6)
 }

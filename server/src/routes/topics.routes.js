@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import Topic from '../models/Topic.js'
+import Topic, { publicTopicQuery } from '../models/Topic.js'
+import { topicView } from '../lib/topics.js'
 import Problem from '../models/Problem.js'
 import { EXERCISE_CODES } from '../data/exerciseLists.js'
 import Theory from '../models/Theory.js'
@@ -11,8 +12,10 @@ const router = Router()
 // The four áreas always get a count, even in a database without Topics.
 const AREA_NAMES = ['Geometría', 'Álgebra', 'Teoría de Números', 'Combinatoria']
 
+// Approved topics only (one someone proposed shows up once it is approved),
+// each with its other names (`aliases`) for the search box.
 router.get('/', async (req, res) => {
-  res.json(await Topic.find().sort({ name: 1 }).lean())
+  res.json((await Topic.find(publicTopicQuery()).sort({ name: 1 }).lean()).map((topic) => topicView(topic)))
 })
 
 // How many published items each área and each topic has in one library,
@@ -29,13 +32,13 @@ router.get('/counts', async (req, res) => {
   if (!library) return res.status(400).json({ error: 'El parámetro library es inválido.' })
   const source = req.query.source
   if (source !== undefined && (req.query.library !== 'lists' || !LIST_SOURCES[source])) return res.status(400).json({ error: 'El parámetro source es inválido.' })
-  const topics = await Topic.find().select('_id parent').lean()
+  const topics = await Topic.find(publicTopicQuery()).select('_id parent').lean()
   const children = new Map()
   for (const topic of topics) if (topic.parent) children.set(String(topic.parent), [...(children.get(String(topic.parent)) || []), topic._id])
   const subtree = (id) => [id, ...(children.get(String(id)) || []).flatMap(subtree)]
   const base = { ...library.base(), ...(source ? { $and: [LIST_SOURCES[source]] } : {}) }
   const counts = await Promise.all(topics.map((topic) => library.model.countDocuments({ ...base, topics: { $in: subtree(topic._id) } })))
-  const roots = await Topic.find({ parent: null }).select('name').lean()
+  const roots = await Topic.find({ parent: null, ...publicTopicQuery() }).select('name').lean()
   const areaNames = [...new Set([...AREA_NAMES, ...roots.map((root) => root.name)])]
   const areaCounts = await Promise.all(areaNames.map(async (name) => library.model.countDocuments({ ...base, $and: [...(base.$and || []), await areaCondition(name)] })))
   res.json({

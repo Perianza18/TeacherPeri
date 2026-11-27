@@ -13,9 +13,9 @@
 
 import mongoose from 'mongoose'
 
-export const REVISION_TARGETS = ['problem', 'theory', 'folder']
+export const REVISION_TARGETS = ['problem', 'theory', 'folder', 'topic']
 export const REVISION_KINDS = ['edit', 'review']
-export const REVIEW_ACTIONS = ['approved', 'rejected', 'renamed', 'applied', 'dismissed']
+export const REVIEW_ACTIONS = ['approved', 'rejected', 'renamed', 'applied', 'dismissed', 'merged']
 
 const changeSchema = new mongoose.Schema(
   {

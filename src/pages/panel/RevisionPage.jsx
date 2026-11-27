@@ -26,6 +26,12 @@ function Proposal({ data, label }) {
       {label && <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">{label}</p>}
       <MathText text={data.enunciado} className="tp-reading-text whitespace-pre-wrap break-words leading-7" />
       <ReviewImages images={data.images} />
+      {data.solution && (
+        <details className="rounded-[10px] border-2 border-dashed border-tp-rule px-4 py-2">
+          <summary className="min-h-11 cursor-pointer content-center text-sm font-bold">Solución que propone</summary>
+          <MathText text={data.solution} className="tp-reading-text whitespace-pre-wrap break-words pb-2 leading-7" />
+        </details>
+      )}
       <p className="flex flex-wrap gap-2 text-sm">
         {data.isExam && <span className="tp-pill bg-tp-surface text-xs">{data.examFolder?.replace(/^Exámenes › /, '') ?? 'Sin carpeta'}{data.problemNumber ? ` · Problema ${data.problemNumber}` : ''}</span>}
         {data.topics.map((name) => <span key={name} className="tp-pill bg-tp-sky-soft text-xs">{name}</span>)}
@@ -129,6 +135,7 @@ function SubmissionCard({ item, token, vocab, onDone }) {
         <span className="text-xs font-black uppercase tracking-wider text-tp-violet">{item.codigo}</span>
         <span className={`tp-pill text-xs ${item.kind === 'edit' ? 'bg-tp-sky-soft' : 'bg-tp-yellow-soft'}`}>{item.kind === 'edit' ? 'Cambio a un problema publicado' : 'Problema nuevo'}</span>
         {item.examFolderStatus === 'pending' && <span className="tp-pill bg-tp-yellow-soft text-xs">Carpeta en revisión</span>}
+        {item.findings.some((f) => f.code === 'topic-pending') && <span className="tp-pill bg-tp-yellow-soft text-xs">Tema en revisión</span>}
         <span className="text-sm text-tp-ink-muted">@{item.author ?? '—'} · {fechaHora(item.createdAt)}</span>
       </div>
       {!open && <Proposal data={item} />}
@@ -182,17 +189,81 @@ function FolderCard({ folder, token, onDone }) {
   )
 }
 
-// Áreas, tags and every exam folder (pending ones too), loaded once.
+// A tema someone proposed: approve it, join it with an existing one (its name
+// becomes another name of that tema, so the search finds it), rename or reject.
+function TopicCard({ topic, token, topics, onDone }) {
+  const id = useId()
+  const [into, setInto] = useState('')
+  const [name, setName] = useState('')
+  const [reason, setReason] = useState('')
+  const [state, setState] = useState({ busy: false, error: null })
+  const act = async (path, body) => {
+    setState({ busy: true, error: null })
+    try {
+      await apiFetch(path, { method: 'POST', token, body })
+      setState({ busy: false, error: null })
+      onDone()
+    } catch (error) {
+      setState({ busy: false, error: error.message })
+    }
+  }
+  const byId = new Map(topics.map((t) => [String(t._id), t]))
+  const own = byId.get(topic.id)
+  const approved = topics.filter((t) => t.parent && t.reviewStatus !== 'pending')
+  const areaOf = (t) => byId.get(String(t.parent))?.name || ''
+  // The same área first, then the rest.
+  const options = [...approved].sort((a, b) => Number(String(b.parent) === String(own?.parent)) - Number(String(a.parent) === String(own?.parent)) || areaOf(a).localeCompare(areaOf(b), 'es') || a.name.localeCompare(b.name, 'es'))
+  return (
+    <article className="tp-card-soft flex flex-col gap-3 bg-tp-surface p-5">
+      <h3 className="font-bold"><span className="text-tp-ink-muted">{topic.area ?? 'Sin área'} › </span>{topic.name}</h3>
+      <p className="text-sm text-tp-ink-muted">@{topic.createdBy ?? '—'} · {fechaHora(topic.createdAt)} · {topic.pendingSubmissions} {topic.pendingSubmissions === 1 ? 'envío lo usa' : 'envíos lo usan'}</p>
+      <div className="flex flex-wrap gap-3">
+        <button type="button" disabled={state.busy} onClick={() => act(`/api/review/topics/${topic.id}/approve`)} className="tp-button bg-tp-mint px-4 text-sm font-bold text-tp-ink disabled:opacity-60">Aprobar tema</button>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <label htmlFor={`${id}-unir`} className="flex-1 text-sm font-bold">¿Ya existe con otro nombre? Únelo
+          <select id={`${id}-unir`} value={into} onChange={(event) => setInto(event.target.value)} className="tp-input mt-1 font-normal">
+            <option value="">Elige el tema que ya existe…</option>
+            {options.map((t) => <option key={t._id} value={t._id}>{areaOf(t)} › {t.name}</option>)}
+          </select>
+        </label>
+        <button type="button" disabled={state.busy || !into} onClick={() => act(`/api/review/topics/${topic.id}/merge`, { into })} className="tp-button bg-tp-sky-soft px-4 text-sm font-bold disabled:opacity-60">Unir</button>
+      </div>
+      <p className="-mt-1 text-xs text-tp-ink-muted">«{topic.name}» queda como otro nombre del tema elegido y los envíos que lo usan pasan a ese tema.</p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <label htmlFor={`${id}-nombre`} className="flex-1 text-sm font-bold">Nuevo nombre
+          <input id={`${id}-nombre`} value={name} onChange={(event) => setName(event.target.value)} maxLength={60} className="tp-input mt-1 font-normal" />
+        </label>
+        <button type="button" disabled={state.busy || !name.trim()} onClick={() => act(`/api/review/topics/${topic.id}/rename`, { name }).then(() => setName(''))} className="tp-button bg-tp-surface px-4 text-sm font-bold disabled:opacity-60">Renombrar</button>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <label htmlFor={`${id}-motivo`} className="flex-1 text-sm font-bold">Motivo del rechazo
+          <input id={`${id}-motivo`} value={reason} onChange={(event) => setReason(event.target.value)} maxLength={300} className="tp-input mt-1 font-normal" />
+        </label>
+        <button type="button" disabled={state.busy || reason.trim().length < 5} onClick={() => act(`/api/review/topics/${topic.id}/reject`, { reason })} className="tp-button bg-tp-orange px-4 text-sm font-bold text-tp-ink disabled:opacity-60">Rechazar</button>
+      </div>
+      <p className="-mt-1 text-xs text-tp-ink-muted">Al rechazarlo se quita de los envíos que lo usan.</p>
+      {state.error && <p role="alert" className="text-sm font-semibold text-red-700">{state.error}</p>}
+    </article>
+  )
+}
+
+// Temas (pending ones too), tags and every exam folder (pending ones too).
 function useVocabulary(token) {
   const [vocab, setVocab] = useState({ topics: [], tags: [], folders: [] })
+  const [version, setVersion] = useState(0)
   useEffect(() => {
     let cancelled = false
-    Promise.all([apiFetch('/api/topics'), apiFetch('/api/tags'), apiFetch('/api/review/folders', { token })])
+    Promise.all([apiFetch('/api/review/topics', { token }), apiFetch('/api/tags'), apiFetch('/api/review/folders', { token })])
       .then(([topics, tags, folders]) => { if (!cancelled) setVocab({ topics, tags, folders }) })
       .catch(() => {})
     return () => { cancelled = true }
-  }, [token])
-  return { ...vocab, addFolder: (folder) => setVocab((current) => ({ ...current, folders: [...current.folders, folder] })) }
+  }, [token, version])
+  return {
+    ...vocab,
+    addFolder: (folder) => setVocab((current) => ({ ...current, folders: [...current.folders, folder] })),
+    reload: () => setVersion((n) => n + 1),
+  }
 }
 
 // A suggestion («Sugerir un cambio») on a problem or a lesson.
@@ -227,10 +298,10 @@ function SuggestionCard({ flag, token, onDone }) {
 }
 
 // /panel/revision — editors and admins review everything the community
-// proposes: new problems, changes to problems, exam folders and suggestions.
+// proposes: new problems, changes to problems, temas, exam folders and suggestions.
 export default function RevisionPage() {
   return (
-    <PanelShell title="Revisión" lead="Todo lo que propone la comunidad: problemas nuevos, cambios a problemas, carpetas de examen y sugerencias en problemas y lecciones. Al aprobar, la persona autora recibe un aviso.">
+    <PanelShell title="Revisión" lead="Todo lo que propone la comunidad: problemas nuevos, cambios a problemas, temas, carpetas de examen y sugerencias en problemas y lecciones. Al aprobar, la persona autora recibe un aviso.">
       {(auth) => <Revision token={auth.token} />}
     </PanelShell>
   )
@@ -244,12 +315,14 @@ function Revision({ token }) {
   const data = queue.data
   const suggestions = flags.data
   if (!data || !suggestions) return <LoadState loading={queue.loading || flags.loading} error={queue.error || flags.error} />
+  const topics = data.topics || []
   const problemSuggestions = suggestions.filter((flag) => flag.targetType === 'problem')
   const lessonSuggestions = suggestions.filter((flag) => flag.targetType === 'theory')
   const counts = {
-    all: data.submissions.length + data.folders.length + suggestions.length,
+    all: data.submissions.length + data.folders.length + topics.length + suggestions.length,
     problems: data.submissions.length + problemSuggestions.length,
     theory: lessonSuggestions.length,
+    topics: topics.length,
     folders: data.folders.length,
   }
   const show = (section) => type === 'all' || type === section
@@ -260,6 +333,7 @@ function Revision({ token }) {
         { value: 'all', label: `Todo (${counts.all})` },
         { value: 'problems', label: `Problemas (${counts.problems})` },
         { value: 'theory', label: `Teoría (${counts.theory})` },
+        { value: 'topics', label: `Temas (${counts.topics})` },
         { value: 'folders', label: `Carpetas (${counts.folders})` },
       ]} />
       {counts[type] === 0 && <PanelNotice kicker="Al día" text="No hay nada esperando revisión aquí." />}
@@ -273,6 +347,12 @@ function Revision({ token }) {
         <section aria-labelledby="sugerencias-titulo" className="flex flex-col gap-4">
           <h2 id="sugerencias-titulo" className="tp-section-title">Sugerencias ({shownSuggestions.length})</h2>
           <div className="grid gap-5 lg:grid-cols-2">{shownSuggestions.map((flag) => <SuggestionCard key={flag.id} flag={flag} token={token} onDone={flags.reload} />)}</div>
+        </section>
+      )}
+      {show('topics') && topics.length > 0 && (
+        <section aria-labelledby="temas-titulo" className="flex flex-col gap-4">
+          <h2 id="temas-titulo" className="tp-section-title">Temas propuestos ({topics.length})</h2>
+          <div className="grid gap-5 lg:grid-cols-2">{topics.map((topic) => <TopicCard key={topic.id} topic={topic} token={token} topics={vocab.topics} onDone={() => { queue.reload(); vocab.reload() }} />)}</div>
         </section>
       )}
       {show('folders') && data.folders.length > 0 && (
