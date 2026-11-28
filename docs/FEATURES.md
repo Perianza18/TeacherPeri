@@ -121,7 +121,7 @@ A Ruta is an ordered path through existing material. See
 | Contacto | Done | Title «Contáctanos». The contact form works for signed-in users; choosing «Otro» in «¿Quién eres?» or «Motivo del mensaje» shows a required text field (up to 100 characters) to describe it. «Correo» opens contacto@teacherperi.com and Instagram opens @teacherperi_. LinkedIn has no page yet, so it leads to «Página no encontrada» |
 | Colabora (how to collaborate) | Planned | **Today:** use Contacto |
 | Experiencias (blog by past olympians) | Planned | **Today:** «Próximamente» page |
-| Equipo (team page) | Done | `/equipo`: two cards, Elías (TeacherPeri) and Catherine (TeacherCath), each opening their own page (`/equipo/elias`, `/equipo/catherine`, one file each in `src/pages/equipo/`), which each of them decorates. Linked from «Conócenos» in Inicio |
+| Equipo (team page) | Done | `/equipo`: two cards, Elías (TeacherPeri) and Catherine (TeacherCath), each opening their own page (`/equipo/elias`, `/equipo/catherine`, one file each in `src/pages/equipo/`), which each of them decorates. Linked from «Conócenos» in Inicio. `/equipo/elias/recruiter` is Elías's portfolio page (`EliasRecruiterPage.jsx`, Peri's workshop): only reachable by its URL, not in the navbar, the sitemap or any link on the site |
 
 ## Site and hosting
 

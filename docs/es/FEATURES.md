@@ -121,7 +121,7 @@ Una Ruta es un recorrido ordenado por material que ya existe. En
 | Contacto | Hecho | Título «Contáctanos». El formulario funciona con sesión iniciada; al elegir «Otro» en «¿Quién eres?» o en «Motivo del mensaje» aparece un campo de texto obligatorio (hasta 100 caracteres) para describirlo. «Correo» abre contacto@teacherperi.com e Instagram abre @teacherperi_. LinkedIn aún no tiene página, así que lleva a «Página no encontrada» |
 | Colabora (cómo colaborar) | Planeado | **Hoy:** usa Contacto |
 | Experiencias (blog de exolímpicos) | Planeado | **Hoy:** página «Próximamente» |
-| Equipo | Hecho | `/equipo`: dos tarjetas, Elías (TeacherPeri) y Catherine (TeacherCath), y cada una abre su propia página (`/equipo/elias`, `/equipo/catherine`, un archivo por persona en `src/pages/equipo/`), que cada quien decora. Enlazada desde «Conócenos» en Inicio |
+| Equipo | Hecho | `/equipo`: dos tarjetas, Elías (TeacherPeri) y Catherine (TeacherCath), y cada una abre su propia página (`/equipo/elias`, `/equipo/catherine`, un archivo por persona en `src/pages/equipo/`), que cada quien decora. Enlazada desde «Conócenos» en Inicio. `/equipo/elias/recruiter` es la página de portafolio de Elías (`EliasRecruiterPage.jsx`, el taller de Peri): solo se llega con su URL, no está en el menú, en el sitemap ni enlazada desde el sitio |
 
 ## Sitio y hospedaje
 
