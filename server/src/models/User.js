@@ -75,9 +75,12 @@ const userSchema = new mongoose.Schema(
     points: { type: Number, min: 0, default: 0 },
     // Marco del avatar elegido en «Editar perfil»; null = el mejor que tenga.
     frame: { type: String, enum: [...FRAME_IDS, null], default: null },
-    // Avatares comprados con puntos (PREMIUM_AVATARS en lib/profile.js). Lo
+    // Avatares comprados con puntos (AVATAR_PRICES en lib/profile.js). Lo
     // gastado se resta del saldo, nunca de `points`: el marco no baja.
     unlockedAvatars: { type: [{ type: String, enum: PREMIUM_AVATAR_IDS }], default: [] },
+    // Dibujo que ya tenía antes de que costaran puntos: se queda gratis aunque
+    // cambie de avatar (se guarda aquí al cambiarlo; no cuenta como gastado).
+    freeAvatars: { type: [{ type: String, enum: PREMIUM_AVATAR_IDS }], default: [] },
   },
   { timestamps: true }, // agrega automáticamente createdAt y updatedAt
 )

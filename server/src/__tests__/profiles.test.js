@@ -65,7 +65,8 @@ describe('Mi Espacio: perfil público y privado', () => {
   })
 
   it('editar perfil: un dibujo y su color de fondo, que se ven en la cuenta, el perfil y los comentarios', async () => {
-    const ana = await account('ana')
+    // The team may use every drawing without buying it.
+    const ana = await account('ana', 'editor')
     const put = (body) => request(app).put('/api/profiles/me').set(as(ana.token)).send(body)
     const ok = await put({ avatar: 'de-hecho', avatarColor: 'menta' })
     expect(ok.status).toBe(200)

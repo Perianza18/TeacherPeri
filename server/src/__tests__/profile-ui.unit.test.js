@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { nextTabIndex, plural, profilePath, relativeTime, tabsFor, userListPath, userQuery } from '../../../src/lib/profile.js'
-import { AVATARS, AVATAR_COLORS, DRAWING_AVATARS, avatarById, avatarFill } from '../../../src/lib/avatars.js'
-import { AVATAR_COLORS as COLOR_IDS, AVATAR_IDS } from '../lib/profile.js'
+import { AVATARS, AVATAR_COLORS, PREMIUM_AVATARS, avatarById, avatarFill } from '../../../src/lib/avatars.js'
+import { AVATAR_COLORS as COLOR_IDS, AVATAR_IDS, AVATAR_PRICES } from '../lib/profile.js'
 
 describe('Mi Espacio en el sitio', () => {
   it('visitantes ven Comentarios, Guardados e Insignias; el dueño ve las cinco pestañas', () => {
@@ -40,8 +40,13 @@ describe('Mi Espacio en el sitio', () => {
   })
 
   it('cada dibujo tiene su imagen y cada figura sus trazos', () => {
-    expect(DRAWING_AVATARS).toHaveLength(12)
+    expect(PREMIUM_AVATARS).toHaveLength(17)
     for (const avatar of AVATARS) expect(avatar.src || avatar.paths?.length, avatar.id).toBeTruthy()
+  })
+
+  it('cada dibujo cuesta lo mismo en el sitio y en el servidor; solo «π» es gratis', () => {
+    expect(Object.fromEntries(PREMIUM_AVATARS.map((a) => [a.id, a.price]))).toEqual({ ...AVATAR_PRICES })
+    expect(AVATARS.filter((a) => a.src && !a.price)).toEqual([])
   })
 
   it('el fondo es el color elegido, o el propio del avatar', () => {

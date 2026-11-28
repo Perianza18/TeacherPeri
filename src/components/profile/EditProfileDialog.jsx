@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useCallback, useId, useState } from 'react'
 import useDialog from '../../hooks/useDialog'
-import { AVATAR_COLORS, DEFAULT_AVATAR, DRAWING_AVATARS, PREMIUM_AVATARS, avatarById } from '../../lib/avatars'
+import { AVATAR_COLORS, DEFAULT_AVATAR, PREMIUM_AVATARS, avatarById } from '../../lib/avatars'
 import { apiFetch } from '../../lib/api'
 import { FRAMES } from '../../lib/frames'
 import Avatar from './Avatar'
@@ -101,12 +101,12 @@ export default function EditProfileDialog({ profile, token, onSaved, onClose, on
           </div>
           <fieldset>
             <legend className="text-sm font-bold">Elige tu avatar</legend>
-            {avatarGroup('Dibujos', [avatarById(DEFAULT_AVATAR), ...DRAWING_AVATARS])}
+            {avatarGroup('Gratis', [avatarById(DEFAULT_AVATAR)])}
             <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Se desbloquean con puntos</p>
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-tp-ink-muted">Dibujos: se desbloquean con puntos</p>
               <p className="text-sm font-semibold">Puedes gastar <span className="font-extrabold">{shop.balance}</span> {shop.balance === 1 ? 'punto' : 'puntos'}</p>
             </div>
-            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+            <div className="mt-2 grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-5">
               {PREMIUM_AVATARS.map((option) => (shop.owned.includes(option.id)
                 ? (
                   <Option key={option.id} name={`${id}-avatar`} checked={avatar === option.id} onChange={() => setAvatar(option.id)}>
