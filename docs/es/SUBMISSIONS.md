@@ -130,8 +130,10 @@ que no hizo falta migración.
   los doce originales de 10 a 25, y luego Gato de traje 30, Gato pensando 40,
   Sabelotodo 50, Gato gamer 75 y Gatito que se siente león 100 (`AVATAR_PRICES`
   en `server/src/lib/profile.js`, `price` en `src/lib/avatars.js`). El único
-  gratis es «π», el de las cuentas nuevas; quien tenía una figura o un dibujo
-  sin comprarlo ve «π». Editores y admins pueden usar todos sin pagar.
+  gratis es «π», el de las cuentas nuevas; quien tenía una figura ve «π».
+  Quien ya tenía uno de los doce dibujos originales se lo queda gratis, aunque
+  cambie de avatar (`freeAvatars`, no cuenta como gastado); los demás quedan
+  bloqueados. Editores y admins pueden usar todos sin pagar.
   `POST /api/profiles/me/avatars/:id` compra uno si el saldo (puntos ganados
   menos gastados) alcanza; el perfil propio trae `unlockedAvatars` y
   `level.balance`. Gastar nunca baja el marco.

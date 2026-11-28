@@ -120,11 +120,29 @@ describe('Avatares que se compran con puntos', () => {
     expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'a04' })).status).toBe(200)
   })
 
-  it('quien ya tenía un dibujo sin comprarlo ve «π»; el equipo los tiene todos', async () => {
-    const { ana, editor } = await setup()
-    await User.updateMany({}, { avatar: 'gatito-batalla' })
+  it('quien ya tenía un dibujo original se lo queda gratis, aunque cambie; los demás siguen bloqueados', async () => {
+    const { ana } = await setup()
+    await User.updateOne({ _id: ana.user._id }, { avatar: 'gatito-batalla' })
+    const put = (avatar) => request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar })
+    expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('gatito-batalla')
+    expect((await request(app).get('/api/profiles/ana').set(as(ana.token))).body.unlockedAvatars).toEqual(['gatito-batalla'])
+    expect((await put('gato-dormido')).status).toBe(403)
+    expect((await put('a04')).status).toBe(200)
+    expect((await put('gatito-batalla')).status).toBe(200)
+    const stored = await User.findById(ana.user._id).lean()
+    expect(stored).toMatchObject({ avatar: 'gatito-batalla', freeAvatars: ['gatito-batalla'], unlockedAvatars: [] })
+    // Keeping it costs nothing: the balance is not touched.
+    expect((await request(app).get('/api/profiles/ana').set(as(ana.token))).body.level.balance).toBe(0)
+    // A special drawing saved without buying it does not count.
+    await User.updateOne({ _id: ana.user._id }, { avatar: 'gatito-leon' })
     expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('a04')
-    expect((await request(app).get('/api/profiles/edith')).body.avatar).toBe('gatito-batalla')
+  })
+
+  it('el equipo usa todos los dibujos sin comprarlos', async () => {
+    const { ana, editor } = await setup()
+    await User.updateMany({}, { avatar: 'gatito-leon' })
+    expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('a04')
+    expect((await request(app).get('/api/profiles/edith')).body.avatar).toBe('gatito-leon')
     const own = await request(app).get('/api/profiles/edith').set(as(editor.token))
     expect(own.body.unlockedAvatars).toHaveLength(17)
     expect((await request(app).post('/api/profiles/me/avatars/gatito-leon').set(as(editor.token))).status).toBe(200)

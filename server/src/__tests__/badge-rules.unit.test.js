@@ -27,7 +27,8 @@ describe('reglas de insignias', () => {
 describe('perfil', () => {
   it('avatar: el guardado si se sigue ofreciendo; si no, «π»', () => {
     expect(avatarOf({ avatar: 'gato-dormido', unlockedAvatars: ['gato-dormido'] })).toBe('gato-dormido')
-    expect(avatarOf({ avatar: 'gato-dormido' })).toBe('a04')
+    expect(avatarOf({ avatar: 'gato-dormido' })).toBe('gato-dormido')
+    expect(avatarOf({ avatar: 'gato-gamer' })).toBe('a04')
     expect(avatarOf({ avatar: 'gato-dormido', role: 'admin' })).toBe('gato-dormido')
     expect(avatarOf({ avatar: 'a04' })).toBe('a04')
     expect(avatarOf({ _id: '65f0c0ffee00000000000abc' })).toBe('a04')

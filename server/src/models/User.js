@@ -78,6 +78,9 @@ const userSchema = new mongoose.Schema(
     // Avatares comprados con puntos (AVATAR_PRICES en lib/profile.js). Lo
     // gastado se resta del saldo, nunca de `points`: el marco no baja.
     unlockedAvatars: { type: [{ type: String, enum: PREMIUM_AVATAR_IDS }], default: [] },
+    // Dibujo que ya tenía antes de que costaran puntos: se queda gratis aunque
+    // cambie de avatar (se guarda aquí al cambiarlo; no cuenta como gastado).
+    freeAvatars: { type: [{ type: String, enum: PREMIUM_AVATAR_IDS }], default: [] },
   },
   { timestamps: true }, // agrega automáticamente createdAt y updatedAt
 )

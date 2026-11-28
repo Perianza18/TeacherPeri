@@ -27,7 +27,7 @@ const router = Router({ mergeParams: true })
 router.get('/', async (req, res) => {
   if (!isId(req.params.problemId)) return res.status(404).json({ error: 'Ese problema no existe.' })
   const comments = await Comment.find({ problem: req.params.problemId })
-    .populate('author', 'username role avatar avatarColor points frame unlockedAvatars') // reemplaza el ObjectId del autor por { _id, username, role }
+    .populate('author', 'username role avatar avatarColor points frame unlockedAvatars freeAvatars') // reemplaza el ObjectId del autor por { _id, username, role }
     .lean()
 
   // Hilos en orden de llegada, cada respuesta debajo de su padre, con la
@@ -73,7 +73,7 @@ router.post('/', requireAuth, requirePermission('comments:create'), async (req, 
     // Antes de responder, llenamos el campo author con { _id, username } en
     // vez de dejarlo como un ObjectId — así el frontend puede mostrar el
     // nombre del autor de inmediato, sin pedirlo aparte.
-    await comment.populate('author', 'username role avatar avatarColor points frame unlockedAvatars')
+    await comment.populate('author', 'username role avatar avatarColor points frame unlockedAvatars freeAvatars')
 
     res.status(201).json(publicComment(comment.toObject(), comment.depth))
   } catch (err) {

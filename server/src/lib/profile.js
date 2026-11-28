@@ -7,7 +7,9 @@ import { roleOf } from './permissions.js'
 // Math shapes drawn in ink (only «π» is offered, free, as the default; the
 // others stay valid so old accounts load, and show «π»), then every drawing,
 // each bought with points (AVATAR_PRICES). The team (editors and admins) may
-// use any of them without paying.
+// use any of them without paying, and whoever already had one of the twelve
+// original drawings before they cost points keeps that one for free
+// (`freeAvatars`, never counted as spent).
 export const SHAPE_AVATAR_IDS = Object.freeze(['a01', 'a02', 'a03', 'a04', 'a05', 'a06', 'a07', 'a08', 'a09', 'a10', 'a11', 'a12'])
 export const DEFAULT_AVATAR = 'a04'
 // id → price in points, cheapest first. Bought once, kept for good.
@@ -31,6 +33,8 @@ export const AVATAR_PRICES = Object.freeze({
   'gatito-leon': 100,
 })
 export const PREMIUM_AVATAR_IDS = Object.freeze(Object.keys(AVATAR_PRICES))
+// The drawings anyone could pick for free before they cost points.
+export const ORIGINAL_DRAWING_IDS = Object.freeze(PREMIUM_AVATAR_IDS.slice(0, 12))
 export const AVATAR_IDS = Object.freeze([...SHAPE_AVATAR_IDS, ...PREMIUM_AVATAR_IDS])
 // What «Editar perfil» offers.
 export const CHOOSABLE_AVATAR_IDS = Object.freeze([DEFAULT_AVATAR, ...PREMIUM_AVATAR_IDS])
@@ -41,8 +45,16 @@ const isTeam = (user) => ['editor', 'admin'].includes(roleOf(user))
 // the frame: frames follow the points earned (lib/levels.js).
 export const spentPoints = (unlocked = []) => unlocked.reduce((sum, id) => sum + (AVATAR_PRICES[id] ?? 0), 0)
 export const pointBalance = (points, unlocked = []) => Math.max(0, (Number.isFinite(points) ? points : 0) - spentPoints(unlocked))
-// The avatars someone may use: all of them for the team, otherwise the ones bought.
-export const ownedAvatars = (user) => (isTeam(user) ? [...PREMIUM_AVATAR_IDS] : (user?.unlockedAvatars ?? []))
+// An original drawing saved as someone's avatar was chosen while it was free
+// (since then nobody can save one they do not own), so it stays theirs.
+export const keptAvatar = (user) => (ORIGINAL_DRAWING_IDS.includes(user?.avatar) ? user.avatar : null)
+// The avatars someone may use: all of them for the team, otherwise the ones
+// bought, the ones kept from before, and the original drawing they still show.
+export function ownedAvatars(user) {
+  if (isTeam(user)) return [...PREMIUM_AVATAR_IDS]
+  const owned = new Set([...(user?.unlockedAvatars ?? []), ...(user?.freeAvatars ?? []), ...(keptAvatar(user) ? [keptAvatar(user)] : [])])
+  return PREMIUM_AVATAR_IDS.filter((id) => owned.has(id))
+}
 export const ownsAvatar = (user, id) => id === DEFAULT_AVATAR || ownedAvatars(user).includes(id)
 
 // Background a person may choose for any avatar. Without one (null), each
@@ -55,7 +67,7 @@ export const BIO_MAX = 160
 
 // The saved avatar if they may still use it; otherwise «π». The user document
 // needs `role` and `unlockedAvatars` (USER_AVATAR_FIELDS).
-export const USER_AVATAR_FIELDS = 'avatar avatarColor role unlockedAvatars'
+export const USER_AVATAR_FIELDS = 'avatar avatarColor role unlockedAvatars freeAvatars'
 export function avatarOf(user) {
   const id = user?.avatar
   return CHOOSABLE_AVATAR_IDS.includes(id) && ownsAvatar(user, id) ? id : DEFAULT_AVATAR

@@ -155,9 +155,10 @@ needed a migration.
   original ones 10–25, then Gato de traje 30, Gato pensando 40, Sabelotodo 50,
   Gato gamer 75 and Gatito que se siente león 100 (`AVATAR_PRICES` in
   `server/src/lib/profile.js`, `price` in `src/lib/avatars.js`). The only free
-  avatar is «π», the default for new accounts; accounts that had a shape or a
-  drawing they did not buy show «π». Editors and admins may use every drawing
-  without paying. `POST /api/profiles/me/avatars/:id` buys one if the balance
+  avatar is «π», the default for new accounts; accounts that had a shape show
+  «π». Whoever already had one of the twelve original drawings keeps it for
+  free, even after switching away (`freeAvatars`, never counted as spent); the
+  rest stay locked. Editors and admins may use every drawing without paying. `POST /api/profiles/me/avatars/:id` buys one if the balance
   (points earned minus points spent) covers it; the owner's profile returns
   `unlockedAvatars` and `level.balance`. Spending never lowers the frame.
 
