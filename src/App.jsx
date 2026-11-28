@@ -13,6 +13,7 @@ const RecursosPage = lazy(() => import('./pages/RecursosPage'))
 const ExperienciasPage = lazy(() => import('./pages/ExperienciasPage'))
 const EquipoPage = lazy(() => import('./pages/EquipoPage'))
 const EliasPage = lazy(() => import('./pages/equipo/EliasPage'))
+const EliasRecruiterPage = lazy(() => import('./pages/equipo/EliasRecruiterPage'))
 const CatherinePage = lazy(() => import('./pages/equipo/CatherinePage'))
 const EstudiaExtranjeroPage = lazy(() => import('./pages/EstudiaExtranjeroPage'))
 const ContactoPage = lazy(() => import('./pages/ContactoPage'))
@@ -96,6 +97,8 @@ function App() {
           <Route path="/experiencias" element={<ExperienciasPage />} />
           <Route path="/equipo" element={<EquipoPage />} />
           <Route path="/equipo/elias" element={<EliasPage />} />
+          {/* Portfolio link Elías shares directly; not linked from the site. */}
+          <Route path="/equipo/elias/recruiter" element={<EliasRecruiterPage />} />
           <Route path="/equipo/catherine" element={<CatherinePage />} />
           <Route path="/estudia-en-el-extranjero" element={<EstudiaExtranjeroPage />} />
           <Route path="/contacto" element={<ContactoPage />} />
