@@ -114,7 +114,7 @@ router.post('/login', async (req, res) => {
 // tener el rol al día (por ejemplo, justo después de que alguien te nombre
 // editor) sin tener que cerrar sesión y volver a entrar.
 router.get('/me', requireAuth, async (req, res) => {
-  const user = await User.findById(req.userId).select('username email role avatar avatarColor points frame bio').lean()
+  const user = await User.findById(req.userId).select('username email role avatar avatarColor points frame unlockedAvatars bio').lean()
   if (!user) return res.status(401).json({ error: 'Tu sesión no es válida o ya expiró.' })
   res.json({ user: accountView(user) })
 })

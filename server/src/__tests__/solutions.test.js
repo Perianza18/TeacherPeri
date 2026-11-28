@@ -116,7 +116,20 @@ describe('Avatares que se compran con puntos', () => {
     await User.updateOne({ _id: ana.user._id }, { avatar: 'a07' })
     expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('a04')
     expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'a07' })).status).toBe(400)
-    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'gato-dormido' })).status).toBe(200)
+    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'gato-dormido' })).status).toBe(403)
+    expect((await request(app).put('/api/profiles/me').set(as(ana.token)).send({ avatar: 'a04' })).status).toBe(200)
+  })
+
+  it('quien ya tenía un dibujo sin comprarlo ve «π»; el equipo los tiene todos', async () => {
+    const { ana, editor } = await setup()
+    await User.updateMany({}, { avatar: 'gatito-batalla' })
+    expect((await request(app).get('/api/profiles/ana')).body.avatar).toBe('a04')
+    expect((await request(app).get('/api/profiles/edith')).body.avatar).toBe('gatito-batalla')
+    const own = await request(app).get('/api/profiles/edith').set(as(editor.token))
+    expect(own.body.unlockedAvatars).toHaveLength(17)
+    expect((await request(app).post('/api/profiles/me/avatars/gatito-leon').set(as(editor.token))).status).toBe(200)
+    expect((await User.findById(editor.user._id).lean()).unlockedAvatars).toEqual([])
+    expect(ana).toBeTruthy()
   })
 
   it('se compra con el saldo; gastar no baja el marco y no se puede usar sin comprar', async () => {

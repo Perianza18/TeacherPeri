@@ -65,7 +65,7 @@ router.post('/', requireAuth, async (req, res) => {
 })
 
 router.get('/:id', optionalAuth, async (req, res) => {
-  const list = isId(req.params.id) ? await UserList.findById(req.params.id).populate('owner', 'username role avatar avatarColor points frame').lean() : null
+  const list = isId(req.params.id) ? await UserList.findById(req.params.id).populate('owner', 'username role avatar avatarColor points frame unlockedAvatars').lean() : null
   if (!list || !list.owner) return notFound(res)
   const owner = Boolean(req.userId) && String(list.owner._id) === req.userId
   if (!list.isPublic && !owner) return notFound(res)

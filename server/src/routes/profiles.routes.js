@@ -33,7 +33,7 @@ import { publishedOrLegacyProblemQuery } from '../models/content.js'
 import { requireAuth } from '../middleware/auth.js'
 import { optionalAuth } from '../middleware/optionalAuth.js'
 import { roleOf } from '../lib/permissions.js'
-import { AVATAR_COLORS, CHOOSABLE_AVATAR_IDS, PREMIUM_AVATARS, avatarColorOf, avatarOf, isOwner, ownsAvatar, parseBio, pointBalance } from '../lib/profile.js'
+import { AVATAR_COLORS, AVATAR_PRICES, CHOOSABLE_AVATAR_IDS, avatarColorOf, avatarOf, isOwner, ownedAvatars, ownsAvatar, parseBio, pointBalance } from '../lib/profile.js'
 import { awardBadges, publicCommentFilter } from '../lib/badges.js'
 import { FRAME_IDS, frameOf, isUnlocked } from '../lib/levels.js'
 import { contentNames, problemHref } from '../lib/profileContent.js'
@@ -52,7 +52,7 @@ export const SEARCH_LIMIT = 20
 const page = (value) => Math.max(1, Math.min(1000, Number.parseInt(value, 10) || 1))
 export const personView = (user) => ({ username: user.username, avatar: avatarOf(user), avatarColor: avatarColorOf(user), frame: frameOf(user), role: roleOf(user) })
 // The User fields personView needs.
-export const PERSON_FIELDS = 'username role avatar avatarColor points frame'
+export const PERSON_FIELDS = 'username role avatar avatarColor points frame unlockedAvatars'
 
 // «Buscar usuarios» has its own budget per IP on top of the general /api one.
 export const searchLimiter = ({ max = 60, windowMs = 60 * 1000 } = {}) => rateLimit({
@@ -94,10 +94,8 @@ router.put('/me', requireAuth, async (req, res) => {
   const update = {}
   if ('avatar' in req.body) {
     if (!CHOOSABLE_AVATAR_IDS.includes(req.body.avatar)) return res.status(400).json({ error: 'Elige uno de los avatares.' })
-    if (PREMIUM_AVATARS[req.body.avatar]) {
-      const me = await User.findById(req.userId).select('unlockedAvatars').lean()
-      if (!ownsAvatar(me, req.body.avatar)) return res.status(403).json({ error: 'Primero desbloquea ese avatar con tus puntos.' })
-    }
+    const me = await User.findById(req.userId).select('role unlockedAvatars').lean()
+    if (!ownsAvatar(me, req.body.avatar)) return res.status(403).json({ error: 'Primero desbloquea ese avatar con tus puntos.' })
     update.avatar = req.body.avatar
   }
   if ('avatarColor' in req.body) {
@@ -127,14 +125,14 @@ router.put('/me', requireAuth, async (req, res) => {
 // was read, so two clicks at once cannot spend the same points twice.
 router.post('/me/avatars/:id', requireAuth, async (req, res) => {
   const { id } = req.params
-  const price = PREMIUM_AVATARS[id]
+  const price = AVATAR_PRICES[id]
   if (!price) return res.status(404).json({ error: 'Ese avatar no se vende.' })
   const me = await User.findById(req.userId).select('points unlockedAvatars role').lean()
   if (!me) return res.status(401).json({ error: 'Inicia sesión de nuevo.' })
   // Recount first, so points from something just accepted are there.
   const { level } = await awardBadges(me)
+  if (ownsAvatar(me, id)) return res.json({ unlockedAvatars: ownedAvatars(me), balance: level.balance })
   const owned = me.unlockedAvatars ?? []
-  if (owned.includes(id)) return res.json({ unlockedAvatars: owned, balance: level.balance })
   if (level.balance < price) return res.status(403).json({ error: `Te faltan ${price - level.balance} puntos para este avatar.` })
   const result = await User.updateOne({ _id: me._id, unlockedAvatars: owned }, { $push: { unlockedAvatars: id } })
   if (!result.modifiedCount) return res.status(409).json({ error: 'Tus avatares cambiaron. Recarga e intenta de nuevo.' })
@@ -161,7 +159,7 @@ router.get('/:username', optionalAuth, async (req, res) => {
     ...counts,
     stats: { solved: badges.counts.solved, comments, proposed, solutions: badges.counts.solutions, badges: badges.earned.length },
     level: badges.level,
-    ...(owner ? { unlockedAvatars: user.unlockedAvatars ?? [] } : {}),
+    ...(owner ? { unlockedAvatars: ownedAvatars(user) } : {}),
     isOwner: owner,
     isFollowing: Boolean(isFollowing),
     ...(owner ? { email: user.email } : {}),

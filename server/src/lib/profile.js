@@ -2,33 +2,48 @@
 // the owner of a profile. The website draws the avatars (src/lib/avatars.js);
 // the server only knows their ids.
 
-// Math shapes drawn in ink (only «π» is still offered, as the default; the
-// others stay valid so old accounts load, and show the default), the free
-// drawings, then the drawings bought with points (PREMIUM_AVATARS).
+import { roleOf } from './permissions.js'
+
+// Math shapes drawn in ink (only «π» is offered, free, as the default; the
+// others stay valid so old accounts load, and show «π»), then every drawing,
+// each bought with points (AVATAR_PRICES). The team (editors and admins) may
+// use any of them without paying.
 export const SHAPE_AVATAR_IDS = Object.freeze(['a01', 'a02', 'a03', 'a04', 'a05', 'a06', 'a07', 'a08', 'a09', 'a10', 'a11', 'a12'])
 export const DEFAULT_AVATAR = 'a04'
-export const DRAWING_AVATAR_IDS = Object.freeze([
-  'pinguino-compu', 'ajolote-matematico', 'de-hecho', 'gato-programador', 'hamster-rapido', 'gato-estresado',
-  'gato-llorando', 'gato-dormido', 'mucha-tarea', 'ternurin-cansado', 'vaquita-enojada', 'gatito-batalla',
-])
 // id → price in points, cheapest first. Bought once, kept for good.
-export const PREMIUM_AVATARS = Object.freeze({
+export const AVATAR_PRICES = Object.freeze({
+  'pinguino-compu': 10,
+  'ajolote-matematico': 10,
+  'de-hecho': 15,
+  'gato-programador': 15,
+  'hamster-rapido': 15,
+  'gato-estresado': 15,
+  'gato-llorando': 20,
+  'gato-dormido': 20,
+  'mucha-tarea': 20,
+  'ternurin-cansado': 20,
+  'vaquita-enojada': 25,
+  'gatito-batalla': 25,
   'gato-de-traje': 30,
   'gato-pensando': 40,
   sabelotodo: 50,
   'gato-gamer': 75,
   'gatito-leon': 100,
 })
-export const PREMIUM_AVATAR_IDS = Object.freeze(Object.keys(PREMIUM_AVATARS))
-export const AVATAR_IDS = Object.freeze([...SHAPE_AVATAR_IDS, ...DRAWING_AVATAR_IDS, ...PREMIUM_AVATAR_IDS])
+export const PREMIUM_AVATAR_IDS = Object.freeze(Object.keys(AVATAR_PRICES))
+export const AVATAR_IDS = Object.freeze([...SHAPE_AVATAR_IDS, ...PREMIUM_AVATAR_IDS])
 // What «Editar perfil» offers.
-export const CHOOSABLE_AVATAR_IDS = Object.freeze([DEFAULT_AVATAR, ...DRAWING_AVATAR_IDS, ...PREMIUM_AVATAR_IDS])
+export const CHOOSABLE_AVATAR_IDS = Object.freeze([DEFAULT_AVATAR, ...PREMIUM_AVATAR_IDS])
+
+const isTeam = (user) => ['editor', 'admin'].includes(roleOf(user))
 
 // Points spent on avatars, and what is left to spend. Spending never lowers
 // the frame: frames follow the points earned (lib/levels.js).
-export const spentPoints = (unlocked = []) => unlocked.reduce((sum, id) => sum + (PREMIUM_AVATARS[id] ?? 0), 0)
+export const spentPoints = (unlocked = []) => unlocked.reduce((sum, id) => sum + (AVATAR_PRICES[id] ?? 0), 0)
 export const pointBalance = (points, unlocked = []) => Math.max(0, (Number.isFinite(points) ? points : 0) - spentPoints(unlocked))
-export const ownsAvatar = (user, id) => !PREMIUM_AVATARS[id] || (user?.unlockedAvatars ?? []).includes(id)
+// The avatars someone may use: all of them for the team, otherwise the ones bought.
+export const ownedAvatars = (user) => (isTeam(user) ? [...PREMIUM_AVATAR_IDS] : (user?.unlockedAvatars ?? []))
+export const ownsAvatar = (user, id) => id === DEFAULT_AVATAR || ownedAvatars(user).includes(id)
 
 // Background a person may choose for any avatar. Without one (null), each
 // avatar keeps its own pastel fill.
@@ -38,12 +53,12 @@ export const AVATAR_COLORS = Object.freeze([
 ])
 export const BIO_MAX = 160
 
-// The saved avatar if it is still offered (and, for a bought one, owned);
-// otherwise the default «π». Accounts that never chose, or chose a shape
-// that is no longer offered, show the default.
+// The saved avatar if they may still use it; otherwise «π». The user document
+// needs `role` and `unlockedAvatars` (USER_AVATAR_FIELDS).
+export const USER_AVATAR_FIELDS = 'avatar avatarColor role unlockedAvatars'
 export function avatarOf(user) {
   const id = user?.avatar
-  return CHOOSABLE_AVATAR_IDS.includes(id) && (!PREMIUM_AVATARS[id] || !Array.isArray(user?.unlockedAvatars) || user.unlockedAvatars.includes(id)) ? id : DEFAULT_AVATAR
+  return CHOOSABLE_AVATAR_IDS.includes(id) && ownsAvatar(user, id) ? id : DEFAULT_AVATAR
 }
 
 // The saved background colour, or null for the avatar's own fill.
